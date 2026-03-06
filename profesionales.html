@@ -11,7 +11,6 @@ header { background:linear-gradient(135deg,#0d3d26,#1a6b4a); padding:28px 20px 2
 header h1 { font-size:1.6rem; font-weight:700; margin-bottom:6px; }
 header p { font-size:.85rem; color:rgba(255,255,255,.75); }
 .back { display:inline-flex; align-items:center; gap:5px; color:rgba(255,255,255,.8); text-decoration:none; font-size:.8rem; margin-bottom:14px; }
-.back:hover { color:#fff; }
 .search-wrap { max-width:900px; margin:20px auto 0; padding:0 16px; }
 .search { display:block; width:100%; padding:11px 20px; border:2px solid #1a6b4a; border-radius:30px; font-size:.95rem; outline:none; background:#fff; }
 .content { max-width:900px; margin:0 auto; padding:20px 16px 60px; }
@@ -29,37 +28,312 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
 .item:last-child { border-bottom:none; }
 .item:hover { background:#f0faf5; }
 .ii { font-size:1rem; flex-shrink:0; width:22px; text-align:center; }
-.it { flex:1; }
-.it-title { font-size:.86rem; font-weight:600; color:#1a3a2a; }
+.it { flex:1; min-width:0; }
+.it-title { font-size:.86rem; font-weight:600; color:#1a3a2a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .it-desc { font-size:.73rem; color:#888; margin-top:1px; }
-.bp { font-size:.67rem; background:#fff0e0; color:#c8920a; padding:2px 8px; border-radius:10px; font-weight:700; flex-shrink:0; }
+.bp { font-size:.67rem; background:#fff0e0; color:#c8920a; padding:2px 8px; border-radius:10px; font-weight:700; flex-shrink:0; white-space:nowrap; }
 .hidden { display:none !important; }
 .footer { text-align:center; font-size:.72rem; color:#aaa; padding:20px; }
 .footer a { color:#1a6b4a; text-decoration:none; }
 </style>
 </head>
 <body>
-
 <header>
   <a class="back" href="https://ramongalera22-ai.github.io/Cartagenaeste/sites-inicio.html" target="_top">← Inicio</a>
   <h1>👨‍⚕️ Recursos Profesionales</h1>
-  <p>Archivo de Docencia Clínica · Centro de Salud Cartagena Este</p>
+  <p>Archivo Clínico · Centro de Salud Cartagena Este · 620 documentos</p>
 </header>
 
 <div class="search-wrap">
-  <input class="search" type="text" placeholder="🔍 Buscar especialidad o tema..." oninput="filtrar(this.value)">
+  <input class="search" type="text" placeholder="🔍 Buscar especialidad, protocolo o tema..." oninput="filtrar(this.value)">
 </div>
 
 <div class="content" id="content">
 
-  <!-- PROTOCOLOS AP COMPLETOS -->
+  <!-- URGENCIAS -->
   <div class="section">
     <div class="sh open" onclick="toggle(this)">
-      <span class="si">📋</span><span class="st">Protocolos Atención Primaria · Completo</span>
-      <span class="sc">11 PDFs</span><span class="chev">▼</span>
+      <span class="si">🚨</span><span class="st">Urgencias y Emergencias</span><span class="sc">40+ docs</span><span class="chev">▼</span>
     </div>
     <div class="sb open">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-atencion-primaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Atención Primaria (documento completo)</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Chuleta-urgencias-actualizada-.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Chuleta de Urgencias Actualizada</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/PROTOCOLO-CETOACIDOSIS-DIABETICA-URGENCIAS-copia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Cetoacidosis Diabética Urgencias</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-cetoacidosis-diabetica-03.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento Cetoacidosis Diabética</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/cetoacidosis-diabetica.-Victo-2-11.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Cetoacidosis Diabética (sesión)</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-situacion-hiperosmolar-04.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Situación Hiperosmolar</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-shock.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Shock</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-Anafilaxia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Anafilaxia</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-trauma-grave.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Trauma Grave</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-trauma-toracico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Trauma Torácico</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-trauma-abdominal.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Trauma Abdominal</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-Traumatismo-Craneo-Encefalico-TCE.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo TCE (Traumatismo Craneo-Encefálico)</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-RCP-Reanimacion-Cardio-Pulmonar.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo RCP</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-RCP-guiada-por-telefono-Reanimacion-Cardio-Pulmonar.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">RCP Guiada por Teléfono</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-RCP-pediatrica-Reanimacion-Cardio-Pulmonar-pediatrica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">RCP Pediátrica</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-disnea-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Disnea Aguda</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-dolor-toracico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Dolor Torácico</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-crisis-hipertensiva-Hipertension.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Crisis Hipertensiva</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-Bradiarritmia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Bradiarritmia</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-taquicardia-QRS-ancho.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Taquicardia QRS Ancho</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-taquicardia-QRS-estrecho.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Taquicardia QRS Estrecho</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-sindrome-coronario-agudo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Síndrome Coronario Agudo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-sindrome-coronario-agudo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento SCA</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-fibrinolisis.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Fibrinolisis</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-crisis-convulsiva-en-adultos.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Crisis Convulsiva Adultos</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-convulsiones-ninos-Crisis-convulsivas-ninos.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Convulsiones Niños</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-sincopes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento Síncopes</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-manejo-insuficiencia-cardiaca-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Insuficiencia Cardíaca Aguda</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-edema-agudo-de-pulmon-cardiogenico-EAPC.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Edema Agudo de Pulmón Cardiogénico</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-atencion-al-quemado.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Atención al Quemado</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-paciente-ahogado.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Paciente Ahogado</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-Sistema-de-Alerta-Precoz-y-Respuesta-Rapida-SIARP.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SIARP - Alerta Precoz y Respuesta Rápida</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolos-pat.-vascular-SU-HUSL-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Patología Vascular SU HUSL</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-VMNI-del-HUGCR.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual VMNI</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Guia-de-manejo-avanzado-de-la-via-aerea.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Manejo Avanzado Vía Aérea</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-crisis-asmatica-07.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento Crisis Asmática</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-ventilacion-mecanica-no-invasiva-prehospitalaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">VMNI Prehospitalaria</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Libro-para-Urgencias-2010-vol.-I.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro de Urgencias 2010 Vol. I</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Libro-para-Urgencias-2010-vol.-II.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro de Urgencias 2010 Vol. II</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- NEUROLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🧠</span><span class="st">Neurología</span><span class="sc">10 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/4.1.-Accidente-isquemico-transitorio.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">AIT - Accidente Isquémico Transitorio</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/4.2.-Ictus-isquemico-agudo-I.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Ictus Isquémico Agudo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Guia-atencion-ICTUS-isquemico-agudo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Atención ICTUS Isquémico Agudo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/4.5.-Hemorragia-cerebral.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hemorragia Cerebral</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/8.9.-Estado-epileptico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Estado Epiléptico</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Cefaleas.2019.-REcomendacionesSEN.Pregunar.EF_.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Cefaleas - Recomendaciones SEN 2019</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/5_Guia-oficial-SEN-de-practica-clinica-en-Cefaleas-2020.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía SEN Cefaleas 2020</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Migrana-y-Mujer.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Migraña y Mujer</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Migrana-y-gestacion-300725.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Migraña y Gestación</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual_Urgencias_neurologicas_2023_DIGITAL.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Urgencias Neurológicas 2023</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- CARDIOLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">❤️</span><span class="st">Cardiología</span><span class="sc">8 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/CODIGO-IAM-CARM-2018.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Código IAM CARM 2018</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-Codigo-Infarto-Protocolo-regional.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Código Infarto Regional</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Traslados-angioplastia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Traslados Angioplastia</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/IC-caprimur.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Insuficiencia Cardíaca - CAPRIMUR</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/guia-ic-esc.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía IC ESC</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Interpretacion-ECG-cardiologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Interpretación ECG</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/RESUMEN-PRESENTACION-ARRIXACA-MAYO-2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Presentación Arrixaca Mayo 2025</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- NEUMOLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🫁</span><span class="st">Neumología</span><span class="sc">8 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Actualizacion-en-el-Abordaje-de-las-Neumonias-desde-Atencion-Primaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Actualización Neumonía desde AP</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/actualizacion-del-manejo-de-nnac-en-ap-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Actualización NAC en AP</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/GEMA_50_ok_22.05.2020_red-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">GEMA 5.0 - Guía Asma</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/epoc-gold-2023-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">EPOC GOLD 2023</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-obstruccion-cronica-al-flujo-aereo-reagudizado-OCFA.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento OCFA Reagudizado</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/LIBRO-INHALADORES-TABLAS-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro Inhaladores - Tablas</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/LIBRO-INHALADORESTABLA-NEBULIZADOS.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro Inhaladores - Nebulizados</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/5-EXPLORACION-Neumologia-3_ed.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Exploración Neumología 3ª ed.</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/CURSO-DE-RADIOLOGIA-TORACICA.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Curso de Radiología Torácica</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- ENDOCRINOLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🩸</span><span class="st">Endocrinología y Metabolismo</span><span class="sc">8 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Definicion-y-clasificacion-de-la-diabetes-mellitus.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Diabetes Mellitus: Definición y Clasificación</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Hipertiroidismo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Hipertiroidismo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Hipotiroidismo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Hipotiroidismo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Bocio-y-nodulo-tiroideo-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Bocio y Nódulo Tiroideo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Epidemiologia-diagnostico-y-clasificacion-de-las-dislipidemias.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Dislipemias</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/DISLIPIEMIAS-DEFINITIVO-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Dislipemias - Guía definitiva</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/hoja-de-controles-glucosa.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hoja de Controles de Glucosa</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- GERIATRÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">👴</span><span class="st">Geriatría y Demencias</span><span class="sc">4 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/NUTRICION-ANCVIANO-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Nutrición en el Paciente Anciano</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/deprescripcion-AP-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Deprescripción en AP</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/ERC.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Enfermedad Renal Crónica</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Enfermedad-renal-cronica-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Enfermedad Renal Crónica (2)</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- DIGESTIVO -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🫃</span><span class="st">Digestivo</span><span class="sc">8 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/enfermedad-inflamatoria-cronica-intestinal-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Enfermedad Inflamatoria Crónica Intestinal</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Colangitis-Aguda-Protocolo-de-Manejo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Colangitis Aguda - Protocolo de Manejo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/protocolo-colangitis-urgencias.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Colangitis Urgencias</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/SIBO-GEH.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SIBO - GEH</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Infografia-dispepsia-min.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Infografía Dispepsia</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/recomendaciones-dieteticas-en-diarrea-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Recomendaciones Dietéticas Diarrea Aguda</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/recomendaciones-generales-para-pacientes-con-enfermedad-por-reflujo-20150528093913.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Recomendaciones Enfermedad por Reflujo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/recomendaciones-nutricionales-para-pacientes-de-colelitiasis-20150114114017.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Recomendaciones Colelitiasis</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- REUMATOLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🦴</span><span class="st">Reumatología y Aparato Locomotor</span><span class="sc">3 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Guia-de-infiltraciones_compressed-1-copia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía de Infiltraciones</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual_de_Exploracion_Fisica_del_Aparato_Locomotor-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Exploración Aparato Locomotor</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-de-Rotacion-del-residente-en-Reumatologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Rotación Residente Reumatología</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-del-Residente-De-C.O.T.DeLaSECOT-SECOT.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Residente COT - SECOT</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- DERMATOLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🧬</span><span class="st">Dermatología</span><span class="sc">5 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/543680445-Fitzpatrick-Atlas-de-Dermatologia-Clinica-7-Ed.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Fitzpatrick - Atlas Dermatología Clínica 7ª Ed.</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/PUNTOS-SOYER.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Puntos Soyer</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/manejo-qujeratosis-actinica-en-AP2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Queratosis Actínica en AP</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/4.sesion-diagnostico-diferencial-exantemas.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Diagnóstico Diferencial Exantemas</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/22-36-Exantemas.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Exantemas</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- PEDIATRÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">👶</span><span class="st">Pediatría</span><span class="sc">4 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Guia-emergencias-y-urgencias-pediatricas-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Emergencias y Urgencias Pediátricas 2024</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolos-SEUP-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos SEUP 2024</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-regional-de-translados-de-neonatos-criticos.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Traslados Neonatos Críticos</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-RCP-pediatrica-Reanimacion-Cardio-Pulmonar-pediatrica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">RCP Pediátrica</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- GINECOLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">👩‍⚕️</span><span class="st">Ginecología, Obstetricia e ITS</span><span class="sc">10 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/AEPCC_revista09-Anticonceptivos-web.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Anticonceptivos AEPCC</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Metodos-Anticonceptivos-para-Adolescentes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Métodos Anticonceptivos para Adolescentes</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/AEPCC_guia_CRIBADO_2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Cribado Cáncer Cuello Útero 2025</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/AEPCC-guia-13_CONDILOMAS-22112025_web.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Condilomas AEPCC 2025</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Gripe-y-gestacion-2024-2025-14112024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Gripe y Gestación 2024-2025</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Tiroides-y-embarazo-140725.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Tiroides y Embarazo</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/hiperemesis-gravidica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hiperemesis Gravídica</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/hiperemesis-gravidica-recomendaciones.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hiperemesis Gravídica - Recomendaciones</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/ITS.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">ITS - Infecciones de Transmisión Sexual</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Infeccion-por-VPH-Vacunacion.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Infección VPH y Vacunación</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Salud_Sexual_Conocer_Prevenir_Actuar.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Salud Sexual: Conocer, Prevenir, Actuar</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/triptico_mutilacion.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Mutilación Genital Femenina</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- SALUD MENTAL -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🧩</span><span class="st">Salud Mental</span><span class="sc">5 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Depresion-sesion.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Depresión - Sesión clínica</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/PDF-1.-Sueno.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Trastornos del Sueño</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/2.-INFORMACION-SOBRE-LA-UNIDAD-DE-SALUD-MENTAL-LABORAL.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Unidad Salud Mental Laboral</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-de-primeros-auxilios-psicologicos-PAP.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Primeros Auxilios Psicológicos (PAP)</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-traslado-enfermos-mentales.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Traslado Enfermos Mentales</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- ORL -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">👂</span><span class="st">ORL - Otorrinolaringología</span><span class="sc">5 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/PROTOCOLO-DE-ACTUACION-EN-LA-PATOLOGIA-ORL-URGENTE-EN-EL-AREA-II-DEL-SMS-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo ORL Urgente Área II SMS</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-faringoamigdalitis-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Faringoamigdalitis Aguda</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-manejo-faringoamigdalitis.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Faringoamigdalitis</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-manejo-otitis-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Otitis Aguda</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/5.-sesion-ORL2pdf.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Sesión ORL</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- UROLOGÍA / NEFROLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🫘</span><span class="st">Urología y Nefrología</span><span class="sc">4 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Urgencias-urolA³gicas-curso-residentes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Urgencias Urológicas - Curso Residentes</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/guia-Colico-nefritico-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Cólico Nefrítico</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/IRA.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Insuficiencia Renal Aguda</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/guia_urgencias_oftalmologica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Urgencias Oftalmológicas</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- INFECTOLOGÍA -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🦠</span><span class="st">Infectología y Enfermedades Infecciosas</span><span class="sc">5 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-riesgo-biologico-Profilaxis-Meningitis.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Profilaxis Meningitis</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-riesgo-biologico-Profilaxis-Rabia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Profilaxis Rabia</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-Toma-de-Muestras-Viruela-del-Mono-MPX.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Viruela del Mono (MPX) - Toma de Muestras</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Procedimiento-de-actuacion-frente-a-casos-sospechosos-de-enfermedad-por-virus-ebola-EVE.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Ébola</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-exposicion-accidental-ocupacional-a-material-biologico-Riesgo-biologico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Exposición Accidental Material Biológico</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- PREVENCIÓN -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">🌿</span><span class="st">Prevención y Salud Pública</span><span class="sc">6 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Calendario-de-vacunacion-a-lo-largo-de-toda-la-vida.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Calendario Vacunación a lo Largo de la Vida</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/TabaquIsmo-Guia-para-dejar-de-fumar_2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía para Dejar de Fumar 2025</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Tabaquismo-Guia-para-Fumadores_2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía para Fumadores 2025</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-vigilancia-calor-Region-de-Murcia-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Vigilancia Calor - Región de Murcia 2024</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/el-plato-para-comer-saludable.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">El Plato para Comer Saludable</div></div><span class="bp">📥 PDF</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/PNC-3.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Plan Nacional de Control (PNC)</div></div><span class="bp">📥 PDF</span></a>
+    </div>
+  </div>
+
+  <!-- PROTOCOLOS AP -->
+  <div class="section">
+    <div class="sh" onclick="toggle(this)">
+      <span class="si">📋</span><span class="st">Protocolos Atención Primaria</span><span class="sc">11 docs</span><span class="chev">▼</span>
+    </div>
+    <div class="sb">
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-atencion-primaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos AP (documento completo)</div></div><span class="bp">📥 PDF</span></a>
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/01-problemas-generales.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">01 · Problemas Generales</div></div><span class="bp">📥 PDF</span></a>
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/02-respiratorio-cardiovascular.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">02 · Respiratorio y Cardiovascular</div></div><span class="bp">📥 PDF</span></a>
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/03-digestivo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">03 · Digestivo</div></div><span class="bp">📥 PDF</span></a>
@@ -73,251 +347,19 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
     </div>
   </div>
 
-  <!-- URGENCIAS -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🚨</span><span class="st">Urgencias</span>
-      <span class="sc">3 PDFs · 9 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos ORL en AP</div><div class="it-desc">Oído, nariz, garganta · dolor de garganta, faringoamigdalitis</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Riñón y Vías Urinarias</div><div class="it-desc">Hematuria, ITU, cólico renal, incontinencia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-10.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Respiratorio y Cardiovascular</div><div class="it-desc">Dolor torácico, disnea, tos, palpitaciones, síncope</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-4.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Musculoesquelético</div><div class="it-desc">Cervicalgia, lumbalgia, hombro, rodilla</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-8.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Digestivo</div><div class="it-desc">Dolor abdominal, diarrea, hemorragia digestiva, ictericia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-7.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Sistema Nervioso</div><div class="it-desc">Cefalea, vértigo, convulsiones, pérdida de fuerza</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-5.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Enfermedades Crónicas</div><div class="it-desc">HTA, diabetes, dislipemia, EPOC, asma</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-3.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Dermatología en AP</div><div class="it-desc">Lesiones cutáneas, acné, prurito, úlceras</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-6.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Salud Mental</div><div class="it-desc">Ansiedad, depresión, insomnio</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- NEUROLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🧠</span><span class="st">Neurología</span>
-      <span class="sc">2 PDFs · 7 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-7.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Sistema Nervioso</div><div class="it-desc">Cefalea, vértigo, convulsiones, pérdida de fuerza, memoria</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/04-neurologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Neurología AP (protocolo completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/aitaccidente-isquemico-transitorio/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">AIT · Accidente Isquémico Transitorio</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/hemorragia-cerebral/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Hemorragia Cerebral</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/cefaleas-ii/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Cefaleas II</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/cefaleas/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Cefaleas</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/estado-epileptico/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Estado Epiléptico</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/ictus-isquemico/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Ictus Isquémico</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/urgencias-neuro/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Urgencias Neurológicas</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- CARDIOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">❤️</span><span class="st">Cardiología</span>
-      <span class="sc">1 PDF · 3 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-10.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Respiratorio y Cardiovascular</div><div class="it-desc">Dolor torácico, disnea, tos, palpitaciones, síncope</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/02-respiratorio-cardiovascular.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Respiratorio y Cardiovascular AP (completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/codigo-iam/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Código IAM</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/icc/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">ICC · Insuficiencia Cardíaca</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/fibrilacion-auricular-ap/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Fibrilación Auricular en AP 2025</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- NEUMOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🫁</span><span class="st">Neumología</span>
-      <span class="sc">1 PDF · 5 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/02-respiratorio-cardiovascular.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Respiratorio y Cardiovascular AP</div><div class="it-desc">EPOC, asma, neumonía, disnea</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/actualizacion-neumonia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Actualización Neumonía</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/libro-inhaladores/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Libro de Inhaladores</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/manejo-neumo/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Manejo Neumológico</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/neumologia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Neumología general</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/guia-de-practica-clinica-neumologia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Guía de Práctica Clínica Neumología</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- ENDOCRINOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🩸</span><span class="st">Endocrinología</span>
-      <span class="sc">1 PDF · 5 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-5.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Enfermedades Crónicas</div><div class="it-desc">HTA, Diabetes, Dislipemia, EPOC, Asma</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/hipertiroidismo/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Hipertiroidismo</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/hipotiroidismo/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Hipotiroidismo</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/manejo-nodulo-tiroideo/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Manejo Nódulo Tiroideo</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/guia-dm/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Guía Diabetes Mellitus</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/guia-dislipemias/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Guía Dislipemias</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- GERIATRÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👴</span><span class="st">Geriatría</span>
-      <span class="sc">5 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://cartagenaeste.es/nutricion-en-el-paciente-anciano/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Nutrición en el Paciente Anciano</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/sobrecarga-del-cuidador/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Sobrecarga del Cuidador</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/trastornos-de-la-conducta-en-las-demencias/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Trastornos de Conducta en Demencias</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/otras-demencias/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Otras Demencias</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/diagnostico-precoz-demencias/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Diagnóstico Precoz de Demencias</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- DIGESTIVO -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🫃</span><span class="st">Digestivo</span>
-      <span class="sc">2 PDFs · 5 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-8.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Problemas Digestivos</div><div class="it-desc">Dolor abdominal, diarrea, hemorragia digestiva, ictericia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/03-digestivo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Digestivo AP (protocolo completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/manejo-compartido-ap-digestivo-2/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Manejo Compartido AP-Digestivo (II)</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/manejo-compartido-ap-digestivo/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Manejo Compartido AP-Digestivo</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/eeii/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">EEII · Enfermedad Inflamatoria Intestinal</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/algoritmo-eeii-en-ap/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Algoritmo EII en AP</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/digestivo-3/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Protocolos AP-Digestivo</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- REUMATOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🦴</span><span class="st">Reumatología</span>
-      <span class="sc">1 PDF · 4 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-4.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Musculoesquelético</div><div class="it-desc">Cervicalgia, lumbalgia, hombro, rodilla</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/criterios-de-derivacion/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Criterios de Derivación</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/manual/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Manual de Reumatología</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/guia-de-infiltraciones/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Guía de Infiltraciones</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/manual-exploracion-aparato-locomotor/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Manual Exploración Aparato Locomotor</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- DERMATOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🧬</span><span class="st">Dermatología</span>
-      <span class="sc">2 PDFs · 3 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-3.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Dermatología en AP</div><div class="it-desc">Lesiones cutáneas, acné, prurito, úlceras, ABCDE</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/08-dermatologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Dermatología AP (protocolo completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/atlas-de-imagenes/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Atlas de Imágenes Dermatológicas</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/dermatologia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Dermatología general</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/guia-dermatologia-ap/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Guía Dermatología AP</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- PEDIATRÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👶</span><span class="st">Pediatría</span>
-      <span class="sc">4 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://cartagenaeste.es/chuleta-urgencias-pedia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Chuleta Urgencias Pediatría</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/exantemas-en-pediatria/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Exantemas en Pediatría</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/protocolos-seup-pedia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Protocolos SEUP Pediatría</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/guia-urgencias-pedia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Guía Urgencias Pediatría</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- GINECOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👩‍⚕️</span><span class="st">Ginecología y Embarazo</span>
-      <span class="sc">9 temas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://cartagenaeste.es/guia-anticonceptivos/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Guía Anticonceptivos</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/guia-2025-cribado-cancer-de-cuello-de-utero/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Cribado Cáncer Cuello Útero 2025</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/condilomas/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Condilomas</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/gripe-y-embarazo/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Gripe y Embarazo</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/tiroides-y-embarazo/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Tiroides y Embarazo</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/migrana-y-gestacion/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Migraña y Gestación</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/hiperemesis-gravidica-2/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Hiperemesis Gravídica (II)</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/hiperemesis-gravidica/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Hiperemesis Gravídica</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/motivos-frecuentes-de-consulta/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Motivos Frecuentes de Consulta</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- SALUD MENTAL -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🧩</span><span class="st">Salud Mental</span>
-      <span class="sc">2 PDFs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-6.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Salud Mental</div><div class="it-desc">Ansiedad, depresión, insomnio</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/05-salud-mental.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Salud Mental AP (protocolo completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/category/psiquiatria/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Psiquiatría en AP</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- ORL -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👂</span><span class="st">ORL · Otorrinolaringología</span>
-      <span class="sc">2 PDFs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos ORL en AP</div><div class="it-desc">Oído, nariz, garganta, boca · faringoamigdalitis</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/10-ORL.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">ORL AP (protocolo completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/category/otorrinolaringologia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Artículos ORL en el blog</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- UROLOGÍA / NEFROLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🫘</span><span class="st">Urología y Nefrología</span>
-      <span class="sc">2 PDFs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Riñón y Vías Urinarias</div><div class="it-desc">Hematuria, ITU, cólico renal, incontinencia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos/09-urologia-nefrologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Urología y Nefrología AP (completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://cartagenaeste.es/category/urologia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Artículos de Urología en el blog</div></div><span class="bp">🔗 Leer</span></a>
-      <a class="item" href="https://cartagenaeste.es/category/nefrologia/" target="_blank"><span class="ii">🔗</span><div class="it"><div class="it-title">Artículos de Nefrología en el blog</div></div><span class="bp">🔗 Leer</span></a>
-    </div>
-  </div>
-
-  <!-- PREVENCIÓN -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🌿</span><span class="st">Prevención y PAPPS</span>
-      <span class="sc">1 PDF</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/papps-estilos-vida-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">PAPPS Estilos de Vida 2024</div><div class="it-desc">Actividades preventivas y promoción de la salud</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
   <!-- APP IA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🤖</span><span class="st">App Médica IA</span>
-      <span class="sc">Herramientas</span><span class="chev">▼</span>
+      <span class="si">🤖</span><span class="st">App Médica IA</span><span class="sc">Herramientas</span><span class="chev">▼</span>
     </div>
     <div class="sb">
-      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html" target="_top"><span class="ii">📱</span><div class="it"><div class="it-title">App Médica Area II Cartagena</div><div class="it-desc">Cuaderno IA · Protocolos · Calculadoras · Herramientas</div></div><span class="bp">🔗 Abrir</span></a>
+      <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html" target="_top"><span class="ii">📱</span><div class="it"><div class="it-title">App Médica Area II Cartagena</div><div class="it-desc">Cuaderno IA · Protocolos · Calculadoras</div></div><span class="bp">🔗 Abrir</span></a>
     </div>
   </div>
 
 </div>
 
-<p class="footer">© 2026 <a href="https://cartagenaeste.es">cartagenaeste.es</a> · Centro de Salud Cartagena Este</p>
+<p class="footer">© 2026 <a href="https://cartagenaeste.es">cartagenaeste.es</a> · Centro de Salud Cartagena Este · 620 documentos alojados en GitHub</p>
 
 <script>
 function toggle(h) {
