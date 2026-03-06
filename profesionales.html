@@ -53,7 +53,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- URGENCIAS -->
   <div class="section">
     <div class="sh open" onclick="toggle(this)">
-      <span class="si">🚨</span><span class="st">Urgencias y Emergencias</span><span class="sc">40+ docs</span><span class="chev">▼</span>
+      <span class="si">🚨</span><span class="st" id="urgencias">Urgencias y Emergencias</span><span class="sc">40+ docs</span><span class="chev">▼</span>
     </div>
     <div class="sb open">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Chuleta-urgencias-actualizada-.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Chuleta de Urgencias Actualizada</div></div><span class="bp">📥 PDF</span></a>
@@ -100,7 +100,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- NEUROLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🧠</span><span class="st">Neurología</span><span class="sc">10 docs</span><span class="chev">▼</span>
+      <span class="si">🧠</span><span class="st" id="neurologia">Neurología</span><span class="sc">10 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/4.1.-Accidente-isquemico-transitorio.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">AIT - Accidente Isquémico Transitorio</div></div><span class="bp">📥 PDF</span></a>
@@ -119,7 +119,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- CARDIOLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">❤️</span><span class="st">Cardiología</span><span class="sc">8 docs</span><span class="chev">▼</span>
+      <span class="si">❤️</span><span class="st" id="cardiologia">Cardiología</span><span class="sc">8 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/CODIGO-IAM-CARM-2018.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Código IAM CARM 2018</div></div><span class="bp">📥 PDF</span></a>
@@ -135,7 +135,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- NEUMOLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🫁</span><span class="st">Neumología</span><span class="sc">8 docs</span><span class="chev">▼</span>
+      <span class="si">🫁</span><span class="st" id="neumologia">Neumología</span><span class="sc">8 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Actualizacion-en-el-Abordaje-de-las-Neumonias-desde-Atencion-Primaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Actualización Neumonía desde AP</div></div><span class="bp">📥 PDF</span></a>
@@ -153,7 +153,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- ENDOCRINOLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🩸</span><span class="st">Endocrinología y Metabolismo</span><span class="sc">8 docs</span><span class="chev">▼</span>
+      <span class="si">🩸</span><span class="st" id="endocrinologia">Endocrinología y Metabolismo</span><span class="sc">8 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Definicion-y-clasificacion-de-la-diabetes-mellitus.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Diabetes Mellitus: Definición y Clasificación</div></div><span class="bp">📥 PDF</span></a>
@@ -169,7 +169,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- GERIATRÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">👴</span><span class="st">Geriatría y Demencias</span><span class="sc">4 docs</span><span class="chev">▼</span>
+      <span class="si">👴</span><span class="st" id="geriatria">Geriatría y Demencias</span><span class="sc">4 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/NUTRICION-ANCVIANO-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Nutrición en el Paciente Anciano</div></div><span class="bp">📥 PDF</span></a>
@@ -182,7 +182,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- DIGESTIVO -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🫃</span><span class="st">Digestivo</span><span class="sc">8 docs</span><span class="chev">▼</span>
+      <span class="si">🫃</span><span class="st" id="digestivo">Digestivo</span><span class="sc">8 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/enfermedad-inflamatoria-cronica-intestinal-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Enfermedad Inflamatoria Crónica Intestinal</div></div><span class="bp">📥 PDF</span></a>
@@ -199,7 +199,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- REUMATOLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🦴</span><span class="st">Reumatología y Aparato Locomotor</span><span class="sc">3 docs</span><span class="chev">▼</span>
+      <span class="si">🦴</span><span class="st" id="reumatologia">Reumatología y Aparato Locomotor</span><span class="sc">3 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Guia-de-infiltraciones_compressed-1-copia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía de Infiltraciones</div></div><span class="bp">📥 PDF</span></a>
@@ -212,7 +212,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- DERMATOLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🧬</span><span class="st">Dermatología</span><span class="sc">5 docs</span><span class="chev">▼</span>
+      <span class="si">🧬</span><span class="st" id="dermatologia">Dermatología</span><span class="sc">5 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/543680445-Fitzpatrick-Atlas-de-Dermatologia-Clinica-7-Ed.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Fitzpatrick - Atlas Dermatología Clínica 7ª Ed.</div></div><span class="bp">📥 PDF</span></a>
@@ -226,7 +226,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- PEDIATRÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">👶</span><span class="st">Pediatría</span><span class="sc">4 docs</span><span class="chev">▼</span>
+      <span class="si">👶</span><span class="st" id="pediatria">Pediatría</span><span class="sc">4 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Guia-emergencias-y-urgencias-pediatricas-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Emergencias y Urgencias Pediátricas 2024</div></div><span class="bp">📥 PDF</span></a>
@@ -239,7 +239,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- GINECOLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">👩‍⚕️</span><span class="st">Ginecología, Obstetricia e ITS</span><span class="sc">10 docs</span><span class="chev">▼</span>
+      <span class="si">👩‍⚕️</span><span class="st" id="ginecologia">Ginecología, Obstetricia e ITS</span><span class="sc">10 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/AEPCC_revista09-Anticonceptivos-web.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Anticonceptivos AEPCC</div></div><span class="bp">📥 PDF</span></a>
@@ -260,7 +260,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- SALUD MENTAL -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🧩</span><span class="st">Salud Mental</span><span class="sc">5 docs</span><span class="chev">▼</span>
+      <span class="si">🧩</span><span class="st" id="salud-mental">Salud Mental</span><span class="sc">5 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Depresion-sesion.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Depresión - Sesión clínica</div></div><span class="bp">📥 PDF</span></a>
@@ -274,7 +274,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- ORL -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">👂</span><span class="st">ORL - Otorrinolaringología</span><span class="sc">5 docs</span><span class="chev">▼</span>
+      <span class="si">👂</span><span class="st" id="orl">ORL - Otorrinolaringología</span><span class="sc">5 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/PROTOCOLO-DE-ACTUACION-EN-LA-PATOLOGIA-ORL-URGENTE-EN-EL-AREA-II-DEL-SMS-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo ORL Urgente Área II SMS</div></div><span class="bp">📥 PDF</span></a>
@@ -288,7 +288,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- UROLOGÍA / NEFROLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🫘</span><span class="st">Urología y Nefrología</span><span class="sc">4 docs</span><span class="chev">▼</span>
+      <span class="si">🫘</span><span class="st" id="urologia">Urología y Nefrología</span><span class="sc">4 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Urgencias-urolA³gicas-curso-residentes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Urgencias Urológicas - Curso Residentes</div></div><span class="bp">📥 PDF</span></a>
@@ -301,7 +301,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- INFECTOLOGÍA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🦠</span><span class="st">Infectología y Enfermedades Infecciosas</span><span class="sc">5 docs</span><span class="chev">▼</span>
+      <span class="si">🦠</span><span class="st" id="infectologia">Infectología y Enfermedades Infecciosas</span><span class="sc">5 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Protocolo-riesgo-biologico-Profilaxis-Meningitis.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Profilaxis Meningitis</div></div><span class="bp">📥 PDF</span></a>
@@ -315,7 +315,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- PREVENCIÓN -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🌿</span><span class="st">Prevención y Salud Pública</span><span class="sc">6 docs</span><span class="chev">▼</span>
+      <span class="si">🌿</span><span class="st" id="prevencion">Prevención y Salud Pública</span><span class="sc">6 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/docs/Calendario-de-vacunacion-a-lo-largo-de-toda-la-vida.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Calendario Vacunación a lo Largo de la Vida</div></div><span class="bp">📥 PDF</span></a>
@@ -330,7 +330,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- PROTOCOLOS AP -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">📋</span><span class="st">Protocolos Atención Primaria</span><span class="sc">11 docs</span><span class="chev">▼</span>
+      <span class="si">📋</span><span class="st" id="protocolos-ap">Protocolos Atención Primaria</span><span class="sc">11 docs</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-atencion-primaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos AP (documento completo)</div></div><span class="bp">📥 PDF</span></a>
@@ -350,7 +350,7 @@ header p { font-size:.85rem; color:rgba(255,255,255,.75); }
   <!-- APP IA -->
   <div class="section">
     <div class="sh" onclick="toggle(this)">
-      <span class="si">🤖</span><span class="st">App Médica IA</span><span class="sc">Herramientas</span><span class="chev">▼</span>
+      <span class="si">🤖</span><span class="st" id="app-ia">App Médica IA</span><span class="sc">Herramientas</span><span class="chev">▼</span>
     </div>
     <div class="sb">
       <a class="item" href="https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html" target="_top"><span class="ii">📱</span><div class="it"><div class="it-title">App Médica Area II Cartagena</div><div class="it-desc">Cuaderno IA · Protocolos · Calculadoras</div></div><span class="bp">🔗 Abrir</span></a>
@@ -378,5 +378,28 @@ function filtrar(q) {
   });
 }
 </script>
+
+<script>
+// Scroll automático a la sección si hay hash en la URL
+window.addEventListener('load', function() {
+  if (window.location.hash) {
+    const id = window.location.hash.substring(1);
+    const el = document.getElementById(id);
+    if (el) {
+      const section = el.closest('.section');
+      if (section) {
+        // Abrir la sección
+        const sh = section.querySelector('.sh');
+        const sb = section.querySelector('.sb');
+        sh.classList.add('open');
+        sb.classList.add('open');
+        // Scroll suave
+        setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+      }
+    }
+  }
+});
+</script>
+
 </body>
 </html>
