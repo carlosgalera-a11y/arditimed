@@ -3942,36 +3942,58 @@ function showScanLogin(){
 function scanGoogleLogin(){
     console.log("scanGoogleLogin called");
     var provider=new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).then(function(result){
-        console.log("Login success:",result.user.email);
-        document.getElementById("scanLoginModal").style.display="none";
-        // Cargar moderadores y verificar estado
-        loadModeradoresFromFirestore(function(){
-            isAdminLoggedIn=isAdmin();
-            apShowAdminTab(isAdminLoggedIn);
-            updateModBadgeAll();
-            // Si es superadmin y no hay página pendiente, abrir panel admin
-            if(isAdminLoggedIn && !pendingPageAfterLogin){
-                document.getElementById("adminPanel").style.display="flex";
+    var errEl=document.getElementById("scanLoginError");
+    errEl.style.display="none";
+
+    function doLogin(){
+        firebase.auth().signInWithPopup(provider).then(function(result){
+            console.log("Login success:",result.user.email);
+            document.getElementById("scanLoginModal").style.display="none";
+            loadModeradoresFromFirestore(function(){
+                isAdminLoggedIn=isAdmin();
+                apShowAdminTab(isAdminLoggedIn);
+                updateModBadgeAll();
+                if(isAdminLoggedIn && !pendingPageAfterLogin){
+                    document.getElementById("adminPanel").style.display="flex";
+                }
+            });
+            if(pendingPageAfterLogin){
+                var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;
+                logPageAccess(pg,result.user);
+                showPage(pg);
+            }else{
+                showPage("pageScanIA");scanRenderHist();
+            }
+        }).catch(function(error){
+            console.error("Google login error:",error);
+            if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"){
+                firebase.auth().signInWithRedirect(provider);
+            }else if(error.message&&(error.message.indexOf("transaction")>-1||error.message.indexOf("aborted")>-1||error.message.indexOf("IndexedDB")>-1)){
+                // IndexedDB bloqueado (AdBlock, Brave, modo privado) → forzar SESSION persistence
+                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function(){
+                    return firebase.auth().signInWithPopup(provider);
+                }).then(function(result){
+                    document.getElementById("scanLoginModal").style.display="none";
+                    loadModeradoresFromFirestore(function(){
+                        isAdminLoggedIn=isAdmin();apShowAdminTab(isAdminLoggedIn);updateModBadgeAll();
+                        if(isAdminLoggedIn&&!pendingPageAfterLogin)document.getElementById("adminPanel").style.display="flex";
+                    });
+                    if(pendingPageAfterLogin){var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;logPageAccess(pg,result.user);showPage(pg);}
+                    else{showPage("pageScanIA");scanRenderHist();}
+                }).catch(function(e2){
+                    errEl.innerHTML="❌ Error al iniciar sesión. Desactiva AdBlock para este sitio e inténtalo de nuevo.";
+                    errEl.style.display="block";
+                    console.error("Login con SESSION persistence falló:",e2);
+                });
+            }else{
+                errEl.innerHTML="❌ "+error.message;
+                errEl.style.display="block";
             }
         });
-        if(pendingPageAfterLogin){
-            var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;
-            logPageAccess(pg,result.user);
-            showPage(pg);
-        }else{
-            showPage("pageScanIA");scanRenderHist();
-        }
-    }).catch(function(error){
-        console.error("Google login error:",error);
-        if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"){
-            console.log("Popup blocked, trying redirect...");
-            firebase.auth().signInWithRedirect(provider);
-        }else{
-            document.getElementById("scanLoginError").innerHTML="❌ "+error.message;
-            document.getElementById("scanLoginError").style.display="block";
-        }
-    });
+    }
+
+    // Intentar primero con SESSION persistence para evitar problemas de IndexedDB
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(doLogin).catch(doLogin);
 }
 
 function scanSetType(t,btn){scanType=t;document.querySelectorAll(".scan-mode-btn").forEach(function(b){b.style.borderColor="var(--border)";b.style.background="var(--bg-card)";b.style.color="var(--text)";});if(btn){btn.style.borderColor="#0066cc";btn.style.background="linear-gradient(135deg,#0066cc,#004499)";btn.style.color="#fff";}var m=SCAN_MODELS[t];if(m){var html="<strong>"+m.model+"</strong><br><span style='font-size:.8rem;color:var(--text-muted);'>📊 "+m.dataset+"</span>";if(m.repo)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>📦 "+m.repo+"</span>";if(m.precision)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>🎯 "+m.precision+"</span>";if(m.formato)html+="<br><span style='font-size:.78rem;color:var(--text-muted);'>⚙️ "+m.formato+"</span>";if(m.nota)html+="<br><span style='font-size:.78rem;color:"+(m.nota.indexOf("⚠️")>-1?"#d97706":"#64748b")+";font-style:italic;'>"+m.nota+"</span>";if(m.links){html+="<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;'>";if(m.links.physionet)html+="<a href='"+m.links.physionet+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#e0f2fe;color:#0369a1;border-radius:4px;text-decoration:none;font-weight:600;'>📥 PhysioNet</a>";if(m.links.github)html+="<a href='"+m.links.github+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#f0fdf4;color:#15803d;border-radius:4px;text-decoration:none;font-weight:600;'>💻 GitHub</a>";if(m.links.paper)html+="<a href='"+m.links.paper+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;text-decoration:none;font-weight:600;'>📄 Paper</a>";html+="</div>";}html+="<br><span style='font-size:.78rem;color:#0066cc;'>Análisis por Llama 4 Scout (Groq)</span>";document.getElementById("scanModelRef").innerHTML=html;}}
