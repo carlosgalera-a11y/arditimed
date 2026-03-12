@@ -325,7 +325,11 @@
             .page{display:block!important;page-break-after:always}
         }
         .scan-mode-btn.active,.scan-mode-btn[style*="border-color: rgb(0, 102, 204)"]{border-color:#0066cc!important;background:linear-gradient(135deg,#0066cc,#004499)!important;color:#fff!important;}
-    </style>
+    
+.tr-opcion{padding:14px 10px;border:2px solid var(--border);border-radius:10px;background:var(--bg-card);cursor:pointer;font-size:.9rem;font-weight:600;color:var(--text);transition:.15s;width:100%;}
+.tr-opcion:hover{border-color:#1a6b4a;background:rgba(26,107,74,.05);}
+.tr-opcion.selected{border-color:#1a6b4a;background:rgba(26,107,74,.1);color:#1a6b4a;}
+</style>
 <!-- PWA Meta Tags -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f6b4a">
@@ -353,6 +357,7 @@
                 <h2>Tu salud, nuestra prioridad</h2>
                 <p>Salud y formación para tu comunidad. Accede a recursos para pacientes o herramientas de docencia clínica para profesionales.</p>
                 <div class="hero-buttons">
+                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageTriaje')" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🩺</span> Autotriaje</a>
                     <a class="hero-btn hero-btn-patients" onclick="showPage('pagePatients')"><span class="hero-btn-icon">👤</span> Pacientes</a>
                     <a class="hero-btn hero-btn-professionals" onclick="showPage('pageProfessionals')"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
@@ -1383,6 +1388,66 @@
             <div style="margin-top:24px;padding:14px;background:var(--bg-subtle);border-radius:var(--radius-sm);font-size:.82rem;color:var(--text-muted);line-height:1.6;">
                 🏥 <strong>Hospital General Universitario Santa Lucía</strong> · C/ Mezquita, s/n · 30202 Cartagena · Centralita: 968 12 86 00
             </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════ TRIAJE PACIENTES PAGE ═══════ -->
+<div class="page" id="pageTriaje">
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:20px 16px;">
+        <div style="max-width:680px;margin:0 auto;" id="triajeApp">
+        <div style="background:linear-gradient(135deg,#1a6b4a,#0f4a32);border-radius:14px;padding:24px 20px;color:#fff;margin-bottom:20px;">
+            <div style="font-size:2rem;margin-bottom:8px;">🩺</div>
+            <h2 style="font-size:1.25rem;font-weight:700;margin:0 0 6px;">Orientación de Urgencias</h2>
+            <p style="font-size:.88rem;opacity:.85;margin:0 0 12px;line-height:1.5;">Responde estas preguntas para saber qué tipo de atención necesitas.</p>
+            <div style="padding:10px 12px;background:rgba(255,255,255,.12);border-radius:8px;font-size:.8rem;line-height:1.5;">⚠️ <b>NO sustituye la valoración médica.</b> Ante cualquier duda, llama al 112.</div>
+        </div>
+        <div id="trInicio">
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;">
+                <p style="font-size:.95rem;font-weight:600;color:var(--text);margin:0 0 12px;">¿Para quién es la consulta?</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <button onclick="trSetPersona('yo')" class="tr-opcion">👤 Para mí</button>
+                    <button onclick="trSetPersona('otro')" class="tr-opcion">👥 Para otra persona</button>
+                </div>
+            </div>
+            <div style="background:#fef3e2;border:1px solid #f59e0b;border-radius:10px;padding:12px 14px;font-size:.82rem;color:#7c4a03;line-height:1.5;">🔒 <b>Privacidad:</b> Esta herramienta no guarda ningún dato en ningún servidor. Todo se procesa en tu dispositivo.</div>
+        </div>
+        <div id="trBloqueA" style="display:none;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                <div style="background:#c0392b;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;">!</div>
+                <div><p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0;">Señales de emergencia</p><p style="font-size:.82rem;color:var(--text-muted);margin:0;">¿Tienes alguno de estos síntomas AHORA MISMO?</p></div>
+            </div>
+            <div id="trAlertasList" style="display:grid;gap:7px;margin-bottom:14px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <button onclick="trBloqueARespuesta(false)" style="padding:13px;border:2px solid #1a6b4a;border-radius:10px;background:var(--bg-card);cursor:pointer;font-size:.9rem;font-weight:600;color:#1a6b4a;">✅ No, ninguno</button>
+                <button onclick="trBloqueARespuesta(true)" style="padding:13px;border:2px solid #c0392b;border-radius:10px;background:#fdecea;cursor:pointer;font-size:.9rem;font-weight:600;color:#c0392b;">🚨 Sí, tengo uno</button>
+            </div>
+        </div>
+        <div id="trBloqueB" style="display:none;">
+            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 12px;">¿Qué zona o problema principal te preocupa?</p>
+            <div id="trAreasList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+        </div>
+        <div id="trBloqueC" style="display:none;">
+            <button onclick="trVolverAreas()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;">← Volver</button>
+            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 12px;" id="trSintomaLabel">¿Cuál es el síntoma principal?</p>
+            <div id="trSintomasList" style="display:grid;gap:7px;"></div>
+        </div>
+        <div id="trBloqueD" style="display:none;">
+            <button onclick="trVolverSintomas()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;">← Volver</button>
+            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 6px;">¿Cómo de intenso es? <span id="trIntensidadVal" style="color:#1a6b4a;font-weight:700;">5</span>/10</p>
+            <input type="range" min="1" max="10" value="5" id="trIntensidad" style="width:100%;margin-bottom:16px;" oninput="document.getElementById('trIntensidadVal').textContent=this.value">
+            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 10px;">¿Cuánto tiempo llevas así?</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="trDuracionList"></div>
+        </div>
+        <div id="trBloqueE" style="display:none;">
+            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 8px;">¿Tienes alguna de estas condiciones? <span style="font-weight:400;font-size:.82rem;color:var(--text-muted)">(Selecciona las que apliquen)</span></p>
+            <div id="trContextoList" style="display:grid;gap:6px;margin-bottom:14px;"></div>
+            <button onclick="trCalcularResultado()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1a6b4a,#0f4a32);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;">Ver mi orientación →</button>
+        </div>
+        <div id="trResultado" style="display:none;"></div>
+        <div style="margin-top:18px;padding:10px 12px;background:var(--bg-subtle);border-radius:8px;font-size:.74rem;color:var(--text-muted);line-height:1.5;text-align:center;">Herramienta de orientación del <b>Área II de Cartagena · Hospital Santa Lucía</b>. No constituye diagnóstico médico. Basada en el Sistema Español de Triaje (SET) y protocolos del SMS. En caso de emergencia llama al <b>112</b>.</div>
         </div>
     </div>
 </div>
@@ -4410,6 +4475,289 @@ document.addEventListener('keydown',function(e){
   adjustFHMobile();
   window.addEventListener('resize',adjustFHMobile);
 })();
+
+// ══════════════════════════════════════════════════════
+// MÓDULO DE AUTOTRIAJE — Área II Cartagena
+// Basado en el Sistema Español de Triaje (SET) y
+// protocolos del Servicio Murciano de Salud (SMS)
+// NO almacena datos. Procesamiento 100% local.
+// ══════════════════════════════════════════════════════
+var TR_STATE = {persona:null, intensidad:5, duracion:null, area:null, sintoma:null, contexto:[], nivelBase:3};
+
+var TR_ALERTAS = [
+  "Dolor en el pecho, brazo izquierdo o mandíbula",
+  "Dificultad para respirar grave (no puede hablar)",
+  "Pérdida de conciencia o no responde",
+  "Parálisis o debilidad súbita en cara, brazo o pierna",
+  "Dificultad repentina para hablar o entender",
+  "Sangrado abundante que no para",
+  "Convulsiones activas",
+  "Reacción alérgica grave (hinchazón garganta, dificultad respirar)",
+  "Herida penetrante en cabeza, tórax o abdomen",
+  "Intoxicación grave o sobredosis"
+];
+
+var TR_AREAS = [
+  {id:'cabeza',  icon:'🧠', label:'Cabeza / Neurológico'},
+  {id:'pecho',   icon:'🫀', label:'Pecho / Corazón'},
+  {id:'resp',    icon:'🫁', label:'Respiración'},
+  {id:'abdomen', icon:'🫃', label:'Abdomen / Digestivo'},
+  {id:'trauma',  icon:'🦴', label:'Traumatismo / Golpe'},
+  {id:'fiebre',  icon:'🌡️', label:'Fiebre / Infección'},
+  {id:'mental',  icon:'🧘', label:'Salud mental / Ansiedad'},
+  {id:'piel',    icon:'🩹', label:'Piel / Alergia'},
+  {id:'otro',    icon:'❓', label:'Otro / No sé'},
+];
+
+var TR_SINTOMAS = {
+  cabeza: [
+    {label:'Dolor de cabeza muy intenso y repentino', nivel:2},
+    {label:'Dolor de cabeza moderado', nivel:4},
+    {label:'Mareo o inestabilidad', nivel:3},
+    {label:'Vómitos repetidos', nivel:3},
+    {label:'Visión doble o borrosa súbita', nivel:2},
+    {label:'Pérdida de memoria reciente', nivel:3},
+  ],
+  pecho: [
+    {label:'Dolor opresivo en el pecho', nivel:1},
+    {label:'Palpitaciones rápidas o irregulares', nivel:2},
+    {label:'Dolor que se irradia al brazo o mandíbula', nivel:1},
+    {label:'Sensación de presión sin irradiación', nivel:2},
+    {label:'Dolor leve o pinchazos', nivel:4},
+  ],
+  resp: [
+    {label:'No puedo hablar por falta de aire', nivel:1},
+    {label:'Ahogo intenso en reposo', nivel:2},
+    {label:'Dificultad respiratoria al caminar', nivel:2},
+    {label:'Sibilancias (pitidos) moderadas', nivel:3},
+    {label:'Tos con sangre', nivel:2},
+    {label:'Tos persistente sin disnea', nivel:5},
+  ],
+  abdomen: [
+    {label:'Dolor abdominal muy intenso y continuo', nivel:2},
+    {label:'Vómitos de sangre', nivel:1},
+    {label:'Heces negras o con sangre', nivel:2},
+    {label:'Dolor cólico moderado', nivel:3},
+    {label:'Náuseas y vómitos sin sangre', nivel:4},
+    {label:'Diarrea sin fiebre alta', nivel:5},
+  ],
+  trauma: [
+    {label:'Golpe en la cabeza con pérdida de conciencia', nivel:1},
+    {label:'Posible fractura (deformidad, no puedo moverlo)', nivel:2},
+    {label:'Herida profunda que no para de sangrar', nivel:2},
+    {label:'Golpe con dolor intenso pero puedo moverme', nivel:3},
+    {label:'Contusión o hematoma sin deformidad', nivel:4},
+    {label:'Esguince leve', nivel:5},
+  ],
+  fiebre: [
+    {label:'Fiebre muy alta (>40°C) con rigidez de nuca', nivel:1},
+    {label:'Fiebre alta (>39°C) con dificultad respiratoria', nivel:2},
+    {label:'Fiebre alta sin mejoría con antitérmico', nivel:3},
+    {label:'Fiebre moderada (38-39°C)', nivel:4},
+    {label:'Fiebre leve con síntomas catarrales', nivel:5},
+  ],
+  mental: [
+    {label:'Pensamientos de hacerme daño o a otros', nivel:1},
+    {label:'Crisis de angustia intensa (no puedo respirar)', nivel:2},
+    {label:'Agitación intensa o desorientación', nivel:2},
+    {label:'Ansiedad o crisis de pánico moderada', nivel:4},
+    {label:'Tristeza profunda, no quiero salir de casa', nivel:4},
+    {label:'Estrés o ansiedad leve', nivel:5},
+  ],
+  piel: [
+    {label:'Urticaria con hinchazón de labios o garganta', nivel:1},
+    {label:'Reacción alérgica extensa y rápida', nivel:2},
+    {label:'Erupción generalizada con fiebre', nivel:3},
+    {label:'Picadura o mordedura con inflamación', nivel:3},
+    {label:'Erupción localizada sin fiebre', nivel:5},
+  ],
+  otro: [
+    {label:'Me siento muy mal pero no sé explicar qué', nivel:3},
+    {label:'Tengo algo que me preocupa pero no es urgente', nivel:5},
+    {label:'Necesito renovar receta o resultado analítica', nivel:5},
+  ],
+};
+
+var TR_DURACIONES = [
+  {label:'Ahora mismo (menos de 1h)', factor:1.2},
+  {label:'Hoy (1-12 horas)', factor:1.0},
+  {label:'Ayer o antes de ayer', factor:0.9},
+  {label:'Varios días (3-7 días)', factor:0.8},
+  {label:'Más de una semana', factor:0.7},
+];
+
+var TR_CONTEXTO = [
+  {id:'mayor70', label:'Tengo más de 70 años', factor:1.3},
+  {id:'menor2', label:'Es un bebé menor de 2 años', factor:1.4},
+  {id:'embarazo', label:'Estoy embarazada', factor:1.3},
+  {id:'inmuno', label:'Tengo las defensas bajas (quimio, VIH, trasplante)', factor:1.4},
+  {id:'anticoag', label:'Tomo anticoagulantes (Sintrom, Xarelto...)', factor:1.3},
+  {id:'diabetes', label:'Soy diabético/a con insulina', factor:1.2},
+  {id:'cardio', label:'Tengo enfermedad del corazón conocida', factor:1.2},
+  {id:'ninguno', label:'Ninguna de las anteriores', factor:1.0},
+];
+
+var TR_NIVELES = {
+  1: {color:'#c0392b', bg:'#fdecea', texto:'EMERGENCIA', icon:'🚨',
+      accion:'Llama al 112 ahora mismo',
+      desc:'Tus síntomas pueden indicar una emergencia vital que necesita atención médica inmediata. No conduzcas, llama al 112.',
+      telefono:'112', tel_label:'Llamar al 112 (Emergencias)'},
+  2: {color:'#e67e22', bg:'#fef3e2', texto:'URGENCIA ALTA', icon:'🔴',
+      accion:'Acude a Urgencias del Hospital Santa Lucía ahora',
+      desc:'Necesitas ser valorado por un médico en las próximas 30 minutos. Si empeoras antes de llegar, llama al 112.',
+      telefono:'112', tel_label:'Llamar al 112 si empeora'},
+  3: {color:'#f1c40f', bg:'#fffde8', texto:'URGENCIA MEDIA', icon:'🟡',
+      accion:'Ve a Urgencias o a tu Punto de Atención Continuada (PAC)',
+      desc:'Deberías ser valorado en las próximas 2 horas. Puedes ir a Urgencias del HSL o a tu PAC de referencia.',
+      telefono:'061', tel_label:'Llamar al 061 (Urgencias SMS)'},
+  4: {color:'#27ae60', bg:'#eef8ee', texto:'ATENCIÓN PREFERENTE', icon:'🟢',
+      accion:'Llama a tu médico de cabecera o al 061 para orientación',
+      desc:'Tu situación no es urgente inmediata, pero deberías consultar hoy o mañana con tu médico de familia o enfermera.',
+      telefono:'061', tel_label:'Llamar al 061 (Orientación)'},
+  5: {color:'#2980b9', bg:'#e8f0fe', texto:'NO URGENTE', icon:'🔵',
+      accion:'Pide cita con tu médico de cabecera o consulta con tu farmacéutico',
+      desc:'Tu situación puede gestionarse de forma programada. Tu médico o farmacéutico pueden orientarte sin necesidad de acudir a urgencias.',
+      telefono:'', tel_label:''},
+};
+
+function trShow(id){['trInicio','trBloqueA','trBloqueB','trBloqueC','trBloqueD','trBloqueE','trResultado'].forEach(function(s){document.getElementById(s).style.display='none';});document.getElementById(id).style.display='';}
+
+function trSetPersona(p){
+  TR_STATE.persona=p;
+  // Renderizar alertas
+  var el=document.getElementById('trAlertasList');
+  el.innerHTML='';
+  TR_ALERTAS.forEach(function(a){
+    el.innerHTML+='<div style="padding:10px 12px;background:#fdecea;border:1px solid #f5b7b1;border-radius:8px;font-size:.88rem;color:#5a0000;display:flex;align-items:center;gap:10px;"><span style="font-size:1rem;flex-shrink:0;">⚠️</span>'+a+'</div>';
+  });
+  trShow('trBloqueA');
+  window.scrollTo(0,0);
+}
+
+function trBloqueARespuesta(tieneAlerta){
+  if(tieneAlerta){trMostrarResultado(1);return;}
+  // Renderizar áreas
+  var el=document.getElementById('trAreasList');
+  el.innerHTML='';
+  TR_AREAS.forEach(function(a){
+    el.innerHTML+='<button onclick="trSeleccionarArea(''+a.id+'')" class="tr-opcion" style="text-align:center;padding:14px 6px;"><div style="font-size:1.4rem;margin-bottom:4px;">'+a.icon+'</div><div style="font-size:.82rem;">'+a.label+'</div></button>';
+  });
+  trShow('trBloqueB');
+}
+
+function trSeleccionarArea(area){
+  TR_STATE.area=area;
+  var sintomas=TR_SINTOMAS[area]||[];
+  var label=TR_AREAS.find(function(a){return a.id===area;})||{label:'Síntoma'};
+  document.getElementById('trSintomaLabel').textContent=label.icon+' '+label.label+' — ¿Cuál es el síntoma principal?';
+  var el=document.getElementById('trSintomasList');
+  el.innerHTML='';
+  sintomas.forEach(function(s,i){
+    el.innerHTML+='<button onclick="trSeleccionarSintoma('+i+')" class="tr-opcion" style="text-align:left;padding:12px 14px;">'+s.label+'</button>';
+  });
+  trShow('trBloqueC');
+}
+
+function trVolverAreas(){trShow('trBloqueB');}
+
+function trSeleccionarSintoma(idx){
+  var sintoma=TR_SINTOMAS[TR_STATE.area][idx];
+  TR_STATE.sintoma=sintoma;
+  TR_STATE.nivelBase=sintoma.nivel;
+  // Renderizar duraciones
+  var el=document.getElementById('trDuracionList');
+  el.innerHTML='';
+  TR_DURACIONES.forEach(function(d,i){
+    el.innerHTML+='<button onclick="trSeleccionarDuracion('+i+')" class="tr-opcion" style="font-size:.84rem;padding:11px 8px;text-align:center;">'+d.label+'</button>';
+  });
+  document.getElementById('trIntensidad').value=5;
+  document.getElementById('trIntensidadVal').textContent='5';
+  trShow('trBloqueD');
+}
+
+function trVolverSintomas(){trShow('trBloqueC');}
+
+function trSeleccionarDuracion(idx){
+  TR_STATE.duracion=TR_DURACIONES[idx];
+  // Renderizar contexto
+  var el=document.getElementById('trContextoList');
+  el.innerHTML='';
+  TR_CONTEXTO.forEach(function(c){
+    el.innerHTML+='<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;cursor:pointer;"><input type="checkbox" value="'+c.id+'" id="tr_ctx_'+c.id+'" style="width:16px;height:16px;flex-shrink:0;accent-color:#1a6b4a;"><span style="font-size:.88rem;color:var(--text);">'+c.label+'</span></label>';
+  });
+  trShow('trBloqueE');
+}
+
+function trCalcularResultado(){
+  var intensidad=parseInt(document.getElementById('trIntensidad').value)||5;
+  TR_STATE.intensidad=intensidad;
+  // Recoger contextos seleccionados
+  TR_STATE.contexto=[];
+  TR_CONTEXTO.forEach(function(c){
+    var cb=document.getElementById('tr_ctx_'+c.id);
+    if(cb&&cb.checked) TR_STATE.contexto.push(c);
+  });
+  // Calcular nivel
+  var nivel=TR_STATE.nivelBase;
+  // Ajuste por intensidad
+  if(intensidad>=8 && nivel>1) nivel=Math.max(1, nivel-1);
+  if(intensidad<=3 && nivel<5) nivel=Math.min(5, nivel+1);
+  // Ajuste por duración
+  if(TR_STATE.duracion){
+    var f=TR_STATE.duracion.factor;
+    if(f>=1.2 && nivel>1) nivel=Math.max(1, nivel-1);
+    else if(f<=0.8 && nivel<5) nivel=Math.min(5, nivel+1);
+  }
+  // Ajuste por contexto (el más severo gana)
+  var maxFactor=1.0;
+  TR_STATE.contexto.forEach(function(c){if(c.factor>maxFactor)maxFactor=c.factor;});
+  if(maxFactor>=1.4 && nivel>1) nivel=Math.max(1,nivel-2);
+  else if(maxFactor>=1.3 && nivel>1) nivel=Math.max(1,nivel-1);
+  else if(maxFactor>=1.2 && nivel>2) nivel=Math.max(2,nivel-1);
+  trMostrarResultado(nivel);
+}
+
+function trMostrarResultado(nivel){
+  var n=TR_NIVELES[nivel]||TR_NIVELES[3];
+  var el=document.getElementById('trResultado');
+  var telBtn=n.telefono?'<a href="tel:'+n.telefono+'" style="display:block;width:100%;text-align:center;padding:13px;background:'+n.color+';color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;text-decoration:none;margin-bottom:10px;">📞 '+n.tel_label+'</a>':'';
+  el.innerHTML='<div style="background:'+n.bg+';border:2px solid '+n.color+';border-radius:14px;padding:22px 18px;margin-bottom:14px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'
+    +'<div style="font-size:2.2rem;">'+n.icon+'</div>'
+    +'<div><div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:'+n.color+';font-weight:700;margin-bottom:2px;">Nivel '+nivel+' de 5</div>'
+    +'<div style="font-size:1.2rem;font-weight:800;color:'+n.color+';">'+n.texto+'</div></div></div>'
+    +'<div style="font-size:.95rem;font-weight:700;color:#1a1a1a;margin-bottom:8px;">'+n.accion+'</div>'
+    +'<div style="font-size:.88rem;color:#333;line-height:1.5;margin-bottom:16px;">'+n.desc+'</div>'
+    +telBtn
+    +'<button onclick="trReiniciar()" style="width:100%;padding:11px;background:transparent;border:1.5px solid '+n.color+';border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:600;color:'+n.color+';">🔄 Hacer de nuevo</button>'
+    +'</div>'
+    +'<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;">'
+    +'<p style="font-size:.85rem;font-weight:700;color:var(--text);margin:0 0 8px;">📋 Recuerda siempre:</p>'
+    +'<div style="font-size:.83rem;color:var(--text-muted);line-height:1.7;">'
+    +'• Si empeoras en cualquier momento, llama al <b>112</b><br>'
+    +'• Si tienes dudas, llama al <b>061</b> (gratuito, 24h)<br>'
+    +'• Esta orientación puede variar según tu historial médico<br>'
+    +'• Tu médico de cabecera conoce tu situación mejor que ningún algoritmo'
+    +'</div></div>';
+  trShow('trResultado');
+  window.scrollTo(0,0);
+}
+
+function trReiniciar(){
+  TR_STATE={persona:null,intensidad:5,duracion:null,area:null,sintoma:null,contexto:[],nivelBase:3};
+  trShow('trInicio');
+  window.scrollTo(0,0);
+}
+
+// Inicializar al abrir la página
+document.addEventListener('DOMContentLoaded',function(){
+  var orig=window.showPage;
+  if(typeof orig==='function'){
+    var _sp=orig;
+    window._showPageHooked=true;
+  }
+});
+// ══════════════════════════════════════════════════════
 </script>
 
 </body>
