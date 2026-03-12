@@ -3185,7 +3185,7 @@ function infDescargar(formato){
     w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}</style></head><body>');
     w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>');
     w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'</div>');
-    w.document.write('</body></html>');
+    w.document.write('<\/body><\/html>');
     w.document.close();
     setTimeout(function(){w.print();},500);
 
@@ -3213,7 +3213,7 @@ function infDescargar(formato){
     htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
     htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
     htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
-    htmlDoc+='</body></html>';
+    htmlDoc+='<\/body><\/html>';
 
     var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName+'.doc';a.click();
