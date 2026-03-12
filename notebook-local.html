@@ -369,7 +369,7 @@
                     <a class="hero-btn hero-btn-professionals" onclick="showPage('pageProtocolosUrgencias')" style="background:transparent;border-color:rgba(255,255,255,.4);color:#fff;"><span class="hero-btn-icon">🚨</span> Protocolos Urgencias</a>
                 </div>
                 <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showScanLogin()" style="background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🛠️</span> Herramientas</a>
+                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageScanIA')" style="background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🛠️</span> Herramientas</a>
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageTelefonos')" style="background:linear-gradient(135deg,#d4a853,#b8912e);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📞</span> Teléfonos Buscas</a>
                 </div>
                 <div class="hero-buttons" style="margin-top:20px;">
@@ -1993,7 +1993,7 @@
             <div style="position:absolute;top:12px;right:12px;cursor:pointer;font-size:1.5rem;opacity:.7;" onclick="document.getElementById('scanLoginModal').style.display='none'">✕</div>
             <div style="font-size:2.2rem;margin-bottom:10px;">🔬</div>
             <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;">Herramientas</h2>
-            <p style="margin:6px 0 0;opacity:.85;font-size:.88rem;">Acceso con cuenta de Google</p>
+            <p style="margin:6px 0 0;opacity:.85;font-size:.88rem;">Acceso con cuenta de Google · <span style="color:#86efac;">Pacientes y Autotriaje son libres</span></p>
         </div>
         <div style="padding:28px;">
             <p style="font-size:.88rem;color:var(--text-light);margin-bottom:18px;text-align:center;">Inicia sesión con tu cuenta de Google para acceder al módulo de Herramientas.</p>
@@ -3039,7 +3039,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ═══ PAGE NAVIGATION ═══
-var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria"];
+var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
 function showPage(id){
     if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
@@ -3056,7 +3056,7 @@ function showPage(id){
     }
     document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
     document.getElementById(id).classList.add("active");
-    if(id==="pageProfessionals")initProfessionals();
+    if(id==="pageProfessionals")initProfessionals();if(id==="pageScanIA")try{scanRenderHist();}catch(e){}
     if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}
 }
 var pendingPageAfterLogin=null;
