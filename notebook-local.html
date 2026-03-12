@@ -348,7 +348,7 @@
 <!-- ═══════ LANDING PAGE ═══════ -->
 <div class="page active" id="pageLanding">
     <div class="landing">
-        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button></div></nav>
+        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button id="loginBtnLanding" onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button></div></nav>
         <div class="hero">
             <div class="hero-bg"></div>
             <div class="hero-overlay"></div>
@@ -428,14 +428,14 @@
 
 <!-- ═══════ PATIENTS PAGE ═══════ -->
 <div class="page" id="pagePatients">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <div class="patients-header"><h2>👤 Pacientes</h2><p>Recursos e información para pacientes del Area II Cartagena</p></div>
     <div class="patients-grid" id="patientsGrid"></div>
 </div>
 
 <!-- ═══════ PROFESSIONALS PAGE ═══════ -->
 <div class="page" id="pageProfessionals">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><span id="statusBadge" class="nav-status wait">⚙️ Config</span></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><span id="statusBadge" class="nav-status wait">⚙️ Config</span></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
     <div id="modBar_pageProfessionals" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProfessionals" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
@@ -501,7 +501,7 @@
 
 <!-- ═══════ PROTOCOLOS ATENCION PRIMARIA PAGE ═══════ -->
 <div class="page" id="pageProtocolosAP">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
     <div id="modBar_pageProtocolosAP" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProtocolosAP" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
@@ -819,7 +819,7 @@
 
 <!-- ═══════ PROTOCOLOS URGENCIAS PAGE ═══════ -->
 <div class="page" id="pageProtocolosUrgencias">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
     <div id="modBar_pageProtocolosUrgencias" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProtocolosUrgencias" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
@@ -1418,7 +1418,7 @@
 
 <!-- ═══════ TELÉFONOS BUSCAS PAGE ═══════ -->
 <div class="page" id="pageTelefonos">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;">
         <div style="max-width:800px;margin:0 auto;">
             <div style="background:linear-gradient(135deg,#d4a853,#b8912e);border-radius:var(--radius);padding:28px;color:#fff;margin-bottom:28px;position:relative;overflow:hidden;">
@@ -1446,7 +1446,7 @@
 
 <!-- ═══════ TRIAJE PACIENTES PAGE ═══════ -->
 <div class="page" id="pageTriaje">
-    <nav class="landing-nav" style="background:linear-gradient(135deg,#c0392b,#7b1a12);"><div class="brand"><div class="logo">🩺</div><h1 style="color:#fff;">Autotriaje <span style="color:rgba(255,255,255,.7);">Urgencias</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);">← Inicio</button></div></nav>
+    <nav class="landing-nav" style="background:linear-gradient(135deg,#c0392b,#7b1a12);"><div class="brand"><div class="logo">🩺</div><h1 style="color:#fff;">Autotriaje <span style="color:rgba(255,255,255,.7);">Urgencias</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:20px 16px;">
         <div style="max-width:680px;margin:0 auto;" id="triajeApp">
         <!-- Banner de urgencias -->
@@ -1532,7 +1532,7 @@
 
 <!-- ═══════ SCAN IA PAGE (protegido con contraseña) ═══════ -->
 <div class="page" id="pageScanIA">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
     <div id="modBar_pageScanIA" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageScanIA" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
@@ -1685,7 +1685,7 @@
 <!-- ═══════ ENFERMERÍA PAGE ═══════ -->
 <div class="page" id="pageEnfermeria">
     <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
     <div id="modBar_pageEnfermeria" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageEnfermeria" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
@@ -1945,7 +1945,7 @@
 <!-- ═══════ FILEHUB PAGE — Cuaderno IA + Blog Publisher ═══════ -->
 <div class="page" id="pageFilehub">
     <div class="scan-container" style="max-width:1100px;margin:0 auto;">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <div style="padding:30px 20px;text-align:center;">
         <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px;">📖 FILEHUB</h2>
         <p style="color:var(--text-light);margin-bottom:30px;">Cuaderno IA y Blog Publisher para cartagenaeste.es</p>
@@ -2057,7 +2057,7 @@
 
 <!-- ═══════ POLÍTICA DE PRIVACIDAD Y AVISO LEGAL ═══════ -->
 <div class="page" id="pagePrivacidad">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <div style="max-width:720px;margin:0 auto;padding:24px 16px 48px;">
         <h1 style="font-family:var(--font-display);font-size:1.6rem;font-weight:700;margin-bottom:6px;color:var(--text);">Política de Privacidad y Aviso Legal</h1>
         <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:24px;">Última actualización: marzo 2026 · Área II de Cartagena — Servicio Murciano de Salud</p>
@@ -2652,6 +2652,10 @@ function logoutAdmin(){
     moderadoresCache=null;
     firebase.auth().signOut().then(function(){
         apShowAdminTab(false);
+        document.querySelectorAll('[id^="loginBtn"], button[onclick="showLoginModal()"]').forEach(function(btn){
+            btn.textContent="🔐 Login";
+            btn.style.background="linear-gradient(135deg,#1a6b4a,#238c62)";
+        });
         document.querySelectorAll(".btn-subir-contenido,.btn-panel-mod").forEach(function(el){ el.style.display="none"; });
         document.querySelectorAll('[id^="modBar_"]').forEach(function(b){ b.style.display="none"; });
         document.querySelectorAll(".mod-badge-count").forEach(function(el){ el.textContent=""; });
@@ -4620,6 +4624,12 @@ loadGroqKeyFromFirestore();
 // Cuando admin inicia sesión, si no hay key en Firestore, pedir que la introduzca
 firebase.auth().onAuthStateChanged(function(user){
     if(user){
+        // Actualizar botones de login con nombre del usuario
+        var nombre = user.displayName ? user.displayName.split(" ")[0] : "Usuario";
+        document.querySelectorAll('[id^="loginBtn"]').forEach(function(btn){
+            btn.textContent="👤 "+nombre;
+            btn.style.background="rgba(255,255,255,.2)";
+        });
         loadModeradoresFromFirestore(function(){
             isAdminLoggedIn=isAdmin();
             apShowAdminTab(isAdminLoggedIn);
