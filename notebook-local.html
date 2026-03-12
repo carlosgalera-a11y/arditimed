@@ -5370,7 +5370,7 @@ if ('serviceWorker' in navigator && location.hostname === 'ramongalera22-ai.gith
         }
       });
     });
-    // Clear ALL old caches
+    // Clear any old caches with wrong paths
     if ('caches' in window) {
       caches.keys().then(function(keys) {
         keys.forEach(function(k) {
