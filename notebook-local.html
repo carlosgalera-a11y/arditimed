@@ -1377,14 +1377,7 @@
             </div>
 
             <!-- Phone directory -->
-            <div id="telDirectory">
-                <div style="text-align:center;padding:50px 20px;color:var(--text-muted);">
-                    <div style="font-size:3rem;margin-bottom:16px;opacity:.4;">📋</div>
-                    <p style="font-size:1rem;font-weight:600;margin-bottom:8px;">Directorio en preparación</p>
-                    <p style="font-size:.9rem;">Los números de buscas del Hospital Santa Lucía se añadirán próximamente.</p>
-                    <p style="font-size:.85rem;margin-top:12px;color:var(--text-light);">El administrador puede subir el listado desde el Panel Admin.</p>
-                </div>
-            </div>
+            <div id="telDirectory"></div>
 
             <!-- Info footer -->
             <div style="margin-top:24px;padding:14px;background:var(--bg-subtle);border-radius:var(--radius-sm);font-size:.82rem;color:var(--text-muted);line-height:1.6;">
@@ -2972,6 +2965,7 @@ function showPage(id){
     document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
     document.getElementById(id).classList.add("active");
     if(id==="pageProfessionals")initProfessionals();
+    if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}
 }
 var pendingPageAfterLogin=null;
 function logPageAccess(pageId,user){
@@ -3488,7 +3482,135 @@ function nihFallbackSVG(label){
 }
 
 // ═══ TELÉFONOS BUSCAS ═══
-var TEL_DATA=[];
+var TEL_DATA=[
+  {s:"Admisión Ambulancias",t:"950496"},
+  {s:"Admisión Camas URG",t:"950210"},
+  {s:"Admisión Central",t:"950281 / 82"},
+  {s:"Admisión Urgencias",t:"950493 / 94"},
+  {s:"Admisión Ventanilla",t:"950493 / 4"},
+  {s:"Análisis Clínicos (Laboratorio)",t:"956014"},
+  {s:"Aux. Información (Busca)",t:"956086"},
+  {s:"Aux. Información (Fijo)",t:"950011"},
+  {s:"Banco de Sangre",t:"951500 / 956018"},
+  {s:"Bioquímica",t:"951458"},
+  {s:"Box Emergencias",t:"950417"},
+  {s:"Busca Rosell",t:"931811"},
+  {s:"Busca Enf. Pasillos",t:"956103"},
+  {s:"Busca Médico",t:"956030"},
+  {s:"Busca Referente URG",t:"85300"},
+  {s:"C. Amarillo (4,5,6,7,8,9,10)",t:"950424 / 23 / 14 / 11 / 09 / 07 / 363"},
+  {s:"C. Celadores / Celador Consulta 20",t:"950434"},
+  {s:"C. Otorrino / OFT",t:"950418"},
+  {s:"C. Verde (1 y 2)",t:"950436 / 28"},
+  {s:"Cafetería Personal",t:"959503"},
+  {s:"Cardiología",t:"86292"},
+  {s:"Casius Informática",t:"279100"},
+  {s:"Centralita",t:"128600"},
+  {s:"Cirugía General",t:"956033 / 34"},
+  {s:"Cocina",t:"959505"},
+  {s:"Control Encamamientos",t:"950412 / 13"},
+  {s:"Control Unidad Monitores",t:"950396 / 7"},
+  {s:"Control Unidad C9-C16 M. / C17-C24 H.",t:"950394 / 5 / 405"},
+  {s:"Dermatología",t:"956100"},
+  {s:"Ecógrafo",t:"950300"},
+  {s:"Electromedicina (Siemens)",t:"956057"},
+  {s:"Encamamiento (1, 2 y 3)",t:"950406 / 20 / 04"},
+  {s:"Encargado de Turno",t:"956053"},
+  {s:"Endoscopias",t:"950261 / 950264"},
+  {s:"Enf. Consulta (21,22,23,24)",t:"950430 / 25 / 26 / 951693"},
+  {s:"Enf. Nutrición / Preventiva",t:"956046 / 950410"},
+  {s:"Estar Enfermería",t:"950399"},
+  {s:"Esterilización",t:"959512"},
+  {s:"Farmacia General",t:"956035"},
+  {s:"Farmacia Enfermería",t:"951486 / 7"},
+  {s:"Farmacia Noche",t:"951481 / 82"},
+  {s:"Ginecología",t:"956003 / 04"},
+  {s:"Hematología",t:"956029"},
+  {s:"Hemodinámica",t:"950450"},
+  {s:"Incidencias Informática",t:"6195034 / 952054 / 5 / 6 / 7"},
+  {s:"Internista Rosell",t:"326800"},
+  {s:"Jefe de Servicio / Sección",t:"950454 / 399"},
+  {s:"Jefa Admisión URG",t:"950366"},
+  {s:"Laboratorio Urgencias",t:"956014 / 18"},
+  {s:"Limpieza General",t:"956015"},
+  {s:"Limpieza URG",t:"956083"},
+  {s:"Mantenimiento UTECIMA",t:"956025"},
+  {s:"Maxilofacial (Maxilo)",t:"951356"},
+  {s:"Medicina Interna",t:"956028"},
+  {s:"Megafonía",t:"969902"},
+  {s:"Microbiología",t:"956098"},
+  {s:"Nefrología",t:"956009"},
+  {s:"Neumología",t:"956068 / 67"},
+  {s:"Neurocirugía HUVA",t:"83244"},
+  {s:"Neurología",t:"956040"},
+  {s:"Número Destacado (recuadro)",t:"956058"},
+  {s:"Oftalmología (OFT)",t:"86018"},
+  {s:"Oncología General",t:"956112"},
+  {s:"Oncología RT",t:"956109"},
+  {s:"ORL (Otorrinolaringología)",t:"956054"},
+  {s:"Pediatría",t:"956008"},
+  {s:"Urgencias Pediatría",t:"950353"},
+  {s:"PSQ (Psiquiatría / Guardia)",t:"956002"},
+  {s:"Quirófano",t:"951563"},
+  {s:"Quirofanillo",t:"950419"},
+  {s:"Radiología Técnico",t:"950505"},
+  {s:"Radiología Intervencionista",t:"950303"},
+  {s:"Radiólogo (>15:00)",t:"956042"},
+  {s:"Rayos X URG",t:"950505"},
+  {s:"TAC",t:"950298"},
+  {s:"Reanimación",t:"951604 / 05"},
+  {s:"Referente General",t:"85300"},
+  {s:"Referente UCI",t:"956061"},
+  {s:"Ropero / Residuos",t:"956057 / 959521"},
+  {s:"Seguridad",t:"950001 / 2 / 637448014"},
+  {s:"Sesiones Médicas",t:"951522"},
+  {s:"Supervisor de Guardia",t:"956052"},
+  {s:"Supervisor URG",t:"956078"},
+  {s:"Traumatología",t:"956043 / 50"},
+  {s:"Triaje Consulta 0",t:"950415"},
+  {s:"UCI 1",t:"951653"},
+  {s:"UCI 2",t:"951639 / 40"},
+  {s:"UCI 3",t:"951629 / 30"},
+  {s:"Unidad Psiquiatría (PSQ)",t:"956000"},
+  {s:"Celador PSQ",t:"956074"},
+  {s:"Unidad Sillones",t:"950400"},
+  {s:"UPI",t:"950489 / 92"},
+  {s:"Urgencias HUSL",t:"956030"},
+  {s:"Urología",t:"956047"},
+  {s:"Vascular",t:"956095"},
+  {s:"Verde 3.C 12 / Trauma",t:"950421"},
+  {s:"Zoonosis",t:"969368954"}
+];
+
+function renderTelefonos(data){
+  var el=document.getElementById("telDirectory");
+  if(!el)return;
+  if(!data||data.length===0){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">Sin resultados</div>';
+    return;
+  }
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">';
+  data.forEach(function(item){
+    html+='<div onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+item.t.split(" ")[0]+'\').then(function(){var el=event.currentTarget.querySelector(\'.tel-num\');var orig=el.textContent;el.textContent=\'✓ Copiado\';el.style.color=\'#1a6b4a\';setTimeout(function(){el.textContent=orig;el.style.color=\'\';},1200);})" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between;gap:8px;" onmouseover="this.style.borderColor=\'#1a6b4a\';this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.borderColor=\'\';this.style.transform=\'\'"><span style="font-size:.88rem;color:var(--text);font-weight:500;line-height:1.3;">'+item.s+'</span><span class="tel-num" style="font-family:monospace;font-size:.88rem;font-weight:700;color:var(--primary,#1a6b4a);white-space:nowrap;flex-shrink:0;">'+item.t+'</span></div>';
+  });
+  html+='</div><div style="margin-top:12px;font-size:.78rem;color:var(--text-muted);text-align:center;">Toca una tarjeta para copiar el número al portapapeles</div>';
+  el.innerHTML=html;
+}
+
+function filterTelefonos(){
+  var q=(document.getElementById("telSearch")||{value:""}).value.toLowerCase().trim();
+  if(!q){renderTelefonos(TEL_DATA);return;}
+  renderTelefonos(TEL_DATA.filter(function(x){return x.s.toLowerCase().includes(q)||x.t.includes(q);}));
+}
+
+// Inicializar al cargar la página de teléfonos
+(function(){
+  function tryRender(){
+    if(document.getElementById("telDirectory")&&TEL_DATA.length){renderTelefonos(TEL_DATA);}
+  }
+  document.addEventListener("DOMContentLoaded",tryRender);
+  setTimeout(tryRender,500);
+})();
 
 // ═══ PACIENTES GUARDIA ═══
 var GP_DATA={prof:[],urg:[]};
