@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // === PROPUESTAS — usuarios autenticados pueden subir a su carpeta ===
+    match /propuestas/{fileName} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.size < 50 * 1024 * 1024  // Max 50 MB
+                    && (request.resource.contentType.matches('application/pdf')
+                        || request.resource.contentType.matches('application/msword')
+                        || request.resource.contentType.matches('application/vnd.openxmlformats.*')
+                        || request.resource.contentType.matches('application/vnd.ms-.*'));
+      allow delete: if request.auth != null 
+                    && request.auth.token.email == "ramongalera22@gmail.com";
+    }
+
+    // === ARCHIVOS ADMIN — solo admin ===
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+                   && request.auth.token.email == "ramongalera22@gmail.com";
+    }
+  }
+}

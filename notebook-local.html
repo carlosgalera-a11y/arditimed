@@ -348,7 +348,7 @@
 <!-- ═══════ LANDING PAGE ═══════ -->
 <div class="page active" id="pageLanding">
     <div class="landing">
-        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button class="page-back" id="loginBtnLanding" onclick="showLoginModal()" style="background: linear-gradient(135deg, #1a6b4a, #238c62); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: .85rem; font-family: var(--font-body);">🔐 Admin Login</button></div></nav>
+        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button class="page-back" id="loginBtnLanding" onclick="showLoginModal()" style="background: linear-gradient(135deg, #1a6b4a, #238c62); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: .85rem; font-family: var(--font-body);">🔐 Admin Login</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:rgba(124,58,237,.85);border:none;color:#fff;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">🛡️ Moderación<span class="mod-badge-count" style="color:#fbbf24;"></span></button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;background:rgba(0,102,204,.8);border:none;color:#fff;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
         <div class="hero">
             <div class="hero-bg"></div>
             <div class="hero-overlay"></div>
@@ -436,6 +436,14 @@
 <!-- ═══════ PROFESSIONALS PAGE ═══════ -->
 <div class="page" id="pageProfessionals">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button class="page-back" id="loginBtnProf" onclick="showLoginModal()" style="background: linear-gradient(135deg, #1a6b4a, #238c62); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: .85rem; font-family: var(--font-body);">🔐 Admin Login</button><span id="statusBadge" class="nav-status wait">⚙️ Config</span></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageProfessionals" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProfessionals" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
     <!-- ⚖️ AVISO PROPIEDAD INTELECTUAL -->
     <div style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:8px;padding:10px 14px;margin:10px 16px;font-size:.76rem;color:#0c4a6e;line-height:1.5;">
         <strong>📚 Propiedad intelectual y uso responsable:</strong> Los documentos disponibles en esta plataforma son para uso interno del Área II de Cartagena. Su distribución externa puede vulnerar los derechos de las sociedades científicas emisoras (SEMFYC, SEMES, SMS y otras). Acceso restringido a profesionales autorizados.
@@ -494,6 +502,14 @@
 <!-- ═══════ PROTOCOLOS ATENCION PRIMARIA PAGE ═══════ -->
 <div class="page" id="pageProtocolosAP">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button class="page-back" id="loginBtnAP" onclick="showLoginModal()" style="background: linear-gradient(135deg, #1a6b4a, #238c62); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: .85rem; font-family: var(--font-body);">🔐 Admin Login</button></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageProtocolosAP" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProtocolosAP" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos AP')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
     <!-- ⚖️ AVISO PROPIEDAD INTELECTUAL -->
     <div style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:8px;padding:10px 14px;margin:10px 16px;font-size:.76rem;color:#0c4a6e;line-height:1.5;">
         <strong>📚 Propiedad intelectual y uso responsable:</strong> Los documentos disponibles en esta plataforma son para uso interno del Área II de Cartagena. Su distribución externa puede vulnerar los derechos de las sociedades científicas emisoras (SEMFYC, SEMES, SMS y otras). Acceso restringido a profesionales autorizados.
@@ -804,6 +820,14 @@
 <!-- ═══════ PROTOCOLOS URGENCIAS PAGE ═══════ -->
 <div class="page" id="pageProtocolosUrgencias">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button class="page-back" id="loginBtnUrgencias" onclick="showLoginModal()" style="background: linear-gradient(135deg, #1a6b4a, #238c62); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: .85rem; font-family: var(--font-body);">🔐 Admin Login</button></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageProtocolosUrgencias" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProtocolosUrgencias" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos Urgencias')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
     <!-- ⚖️ AVISO PROPIEDAD INTELECTUAL -->
     <div style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:8px;padding:10px 14px;margin:10px 16px;font-size:.76rem;color:#0c4a6e;line-height:1.5;">
         <strong>📚 Propiedad intelectual y uso responsable:</strong> Los documentos disponibles en esta plataforma son para uso interno del Área II de Cartagena. Su distribución externa puede vulnerar los derechos de las sociedades científicas emisoras (SEMES, SMS, SEMES-CAM y otras). Acceso restringido a profesionales autorizados.
@@ -1509,6 +1533,14 @@
 <!-- ═══════ SCAN IA PAGE (protegido con contraseña) ═══════ -->
 <div class="page" id="pageScanIA">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageScanIA" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageScanIA" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
     <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;">
         <div style="max-width:800px;margin:0 auto;">
             <div style="background:linear-gradient(135deg,#0066cc,#004499);border-radius:var(--radius);padding:28px;color:#fff;margin-bottom:28px;position:relative;overflow:hidden;">
@@ -1654,6 +1686,14 @@
 <div class="page" id="pageEnfermeria">
     <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageEnfermeria" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageEnfermeria" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Enfermería')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
     <div style="background:linear-gradient(135deg,#880e4f,#c2185b);padding:20px 28px;color:#fff;">
         <h2 style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:4px;">👩‍⚕️ Enfermería</h2>
         <p style="font-size:.88rem;opacity:.8;">Herramientas, protocolos y recursos para enfermería del Área II Cartagena</p>
@@ -2065,6 +2105,139 @@
     </div>
 </div>
 
+
+<!-- ═══════ MODAL SUBIDA DE CONTENIDO — Usuarios logueados ═══════ -->
+<div id="modalSubirContenido" onclick="if(event.target===this)cerrarModalSubir()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1010;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+    <div style="background:#fff;border-radius:16px;max-width:520px;width:94%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 80px rgba(0,0,0,.4);animation:slideInUp .3s ease;">
+        <div style="background:linear-gradient(135deg,#0066cc,#004499);padding:22px 24px;color:#fff;position:sticky;top:0;z-index:1;">
+            <div style="position:absolute;top:12px;right:14px;cursor:pointer;font-size:1.5rem;opacity:.7;" onclick="cerrarModalSubir()">✕</div>
+            <div style="font-size:1.8rem;margin-bottom:6px;">📤</div>
+            <h2 style="font-size:1.2rem;font-weight:700;margin:0;">Proponer contenido</h2>
+            <p style="margin:4px 0 0;font-size:.82rem;opacity:.85;">Tu propuesta quedará pendiente de revisión por un moderador</p>
+        </div>
+        <div style="padding:22px;">
+            <!-- Sección destino -->
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">📂 Sección de destino *</label>
+                <select id="subirSeccion" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.9rem;font-family:var(--font-body);background:#fff;">
+                    <option value="">-- Selecciona una sección --</option>
+                    <option value="Protocolos AP">📋 Protocolos Atención Primaria</option>
+                    <option value="Protocolos Urgencias">🚨 Protocolos Urgencias</option>
+                    <option value="Profesionales">🩺 Profesionales / Cuaderno IA</option>
+                    <option value="Enfermería">👩‍⚕️ Enfermería</option>
+                    <option value="Pacientes">👤 Pacientes</option>
+                    <option value="Otro">📌 Otro (especifica en descripción)</option>
+                </select>
+            </div>
+            <!-- Tipo de aportación -->
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">📎 Tipo de aportación *</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <label id="tipoLabelArchivo" style="border:2px solid #0066cc;border-radius:8px;padding:10px 12px;cursor:pointer;background:#f0f9ff;display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:600;color:#0066cc;">
+                        <input type="radio" name="tipoSubida" value="archivo" checked onchange="toggleTipoSubida('archivo')" style="accent-color:#0066cc;">
+                        📄 Archivo PDF
+                    </label>
+                    <label id="tipoLabelUrl" style="border:2px solid #d1d5db;border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:600;color:#6b7280;">
+                        <input type="radio" name="tipoSubida" value="url" onchange="toggleTipoSubida('url')" style="accent-color:#0066cc;">
+                        🔗 Enlace URL
+                    </label>
+                </div>
+            </div>
+            <!-- Campo archivo -->
+            <div id="campoArchivo" style="margin-bottom:14px;">
+                <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">Selecciona el archivo *</label>
+                <div id="dropZonaSubir" ondragover="event.preventDefault();this.style.borderColor='#0066cc'" ondragleave="this.style.borderColor='#d1d5db'" ondrop="handleDropSubir(event)" style="border:2px dashed #d1d5db;border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:.2s;" onclick="document.getElementById('inputArchivoSubir').click()">
+                    <div style="font-size:2rem;">📄</div>
+                    <p style="font-size:.85rem;color:#6b7280;margin:6px 0 0;">Arrastra el PDF aquí o <strong style="color:#0066cc;">haz clic</strong></p>
+                    <p id="nombreArchivoSubir" style="font-size:.8rem;color:#0066cc;margin-top:6px;font-weight:600;"></p>
+                </div>
+                <input type="file" id="inputArchivoSubir" accept=".pdf,.doc,.docx,.ppt,.pptx" style="display:none;" onchange="mostrarNombreArchivo(this)">
+            </div>
+            <!-- Campo URL -->
+            <div id="campoUrl" style="margin-bottom:14px;display:none;">
+                <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">URL del recurso *</label>
+                <input type="url" id="inputUrlSubir" placeholder="https://..." style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.9rem;font-family:var(--font-body);">
+            </div>
+            <!-- Título -->
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">📝 Título del documento *</label>
+                <input type="text" id="subirTitulo" placeholder="Ej: Protocolo manejo de la EPOC 2025" maxlength="120" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.9rem;font-family:var(--font-body);">
+            </div>
+            <!-- Descripción -->
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">💬 Descripción / contexto (opcional)</label>
+                <textarea id="subirDescripcion" rows="3" placeholder="Describe brevemente el contenido, la fuente o por qué lo propones..." style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.88rem;font-family:var(--font-body);resize:vertical;"></textarea>
+            </div>
+            <!-- Barra de progreso -->
+            <div id="barraProgresoSubida" style="display:none;margin-bottom:12px;">
+                <div style="background:#e5e7eb;border-radius:8px;height:8px;overflow:hidden;">
+                    <div id="progresoSubidaInner" style="background:linear-gradient(90deg,#0066cc,#004499);height:100%;width:0%;transition:width .3s;border-radius:8px;"></div>
+                </div>
+                <p id="progresoSubidaTexto" style="font-size:.78rem;color:#6b7280;margin:4px 0 0;text-align:center;">Subiendo...</p>
+            </div>
+            <div id="statusSubirContenido" style="display:none;padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:12px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <button onclick="enviarPropuesta()" style="background:linear-gradient(135deg,#0066cc,#004499);color:#fff;padding:12px;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.92rem;font-family:var(--font-body);display:flex;align-items:center;justify-content:center;gap:6px;">📤 Enviar propuesta</button>
+                <button onclick="cerrarModalSubir()" style="background:#f3f4f6;color:#374151;padding:12px;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;font-weight:600;font-size:.92rem;font-family:var(--font-body);">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════ PANEL DE MODERACIÓN — Solo moderadores ═══════ -->
+<div id="panelModeracion" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1015;overflow:auto;padding:16px;backdrop-filter:blur(3px);">
+    <div style="background:#fff;border-radius:16px;max-width:820px;margin:0 auto;box-shadow:0 25px 80px rgba(0,0,0,.4);">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#1a6b4a,#0d4a33);padding:22px 24px;color:#fff;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-size:1.6rem;margin-bottom:4px;">🛡️</div>
+                <h2 style="font-size:1.2rem;font-weight:700;margin:0;">Panel de Moderación</h2>
+                <p style="margin:2px 0 0;font-size:.82rem;opacity:.85;">Gestión de propuestas de contenido</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+                <button id="btnVerPendientes" onclick="modFiltrar('pendiente')" style="padding:7px 14px;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.2);color:#fff;border-radius:8px;cursor:pointer;font-weight:700;font-size:.8rem;font-family:var(--font-body);">⏳ Pendientes</button>
+                <button id="btnVerAprobados" onclick="modFiltrar('aprobado')" style="padding:7px 14px;border:2px solid transparent;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:8px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:var(--font-body);">✅ Aprobados</button>
+                <button id="btnVerRechazados" onclick="modFiltrar('rechazado')" style="padding:7px 14px;border:2px solid transparent;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:8px;cursor:pointer;font-weight:600;font-size:.8rem;font-family:var(--font-body);">❌ Rechazados</button>
+                <button onclick="document.getElementById('panelModeracion').style.display='none'" style="padding:7px 14px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;cursor:pointer;font-size:.8rem;font-family:var(--font-body);">✕ Cerrar</button>
+            </div>
+        </div>
+        <!-- Pestaña Moderadores (solo superadmin) -->
+        <div id="tabGestionMods" style="display:none;padding:18px 24px;background:#f8fafc;border-bottom:1px solid #e5e7eb;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <h3 style="font-size:.95rem;font-weight:700;color:#0d4a33;margin:0;">👥 Gestión de Moderadores</h3>
+                <button onclick="toggleAñadirModerador()" style="background:#1a6b4a;color:#fff;border:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:700;font-family:var(--font-body);">+ Añadir moderador</button>
+            </div>
+            <!-- Formulario añadir moderador -->
+            <div id="formAñadirModerador" style="display:none;background:#fff;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;">
+                    <div>
+                        <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Email de Google *</label>
+                        <input type="email" id="modEmail" placeholder="usuario@gmail.com" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:.85rem;font-family:var(--font-body);">
+                    </div>
+                    <div>
+                        <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Nombre visible *</label>
+                        <input type="text" id="modNombre" placeholder="Dr. García" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:.85rem;font-family:var(--font-body);">
+                    </div>
+                    <button onclick="añadirModerador()" style="background:#0066cc;color:#fff;border:none;padding:9px 16px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.82rem;font-family:var(--font-body);white-space:nowrap;">✓ Añadir</button>
+                </div>
+                <div id="statusAñadirMod" style="display:none;margin-top:8px;font-size:.8rem;"></div>
+            </div>
+            <!-- Lista de moderadores -->
+            <div id="listaModeradoresPanel" style="display:grid;gap:8px;"></div>
+        </div>
+        <!-- Lista de propuestas -->
+        <div style="padding:18px 24px;">
+            <div id="modFiltroActivo" style="font-size:.82rem;color:#6b7280;margin-bottom:12px;">Mostrando: <strong>propuestas pendientes</strong></div>
+            <div id="listaPropuestas" style="display:grid;gap:12px;">
+                <div style="text-align:center;padding:40px;color:#6b7280;">
+                    <div style="font-size:2.5rem;margin-bottom:10px;">⏳</div>
+                    <p style="font-size:.92rem;">Cargando propuestas...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="scanLoginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1001;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
     <div style="background:#fff;border-radius:16px;max-width:400px;width:90%;box-shadow:0 25px 80px rgba(0,0,0,.4);overflow:hidden;animation:slideInUp .3s ease;">
         <div style="background:linear-gradient(135deg,#0066cc,#004499);padding:28px 24px;color:#fff;text-align:center;position:relative;">
@@ -2232,7 +2405,7 @@
             </div>
         </div>
         
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
             <button onclick="showUploadForm()" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:20px;border:none;border-radius:12px;cursor:pointer;font-weight:600;font-size:.95rem;font-family:var(--font-body);text-align:left;">
                 <div style="font-size:1.8rem;margin-bottom:8px;">📤</div>
                 <div>Subir Archivos</div>
@@ -2242,6 +2415,11 @@
                 <div style="font-size:1.8rem;margin-bottom:8px;">➕</div>
                 <div>Crear Categoría</div>
                 <div style="font-size:.8rem;opacity:.8;margin-top:4px;">Nueva especialidad</div>
+            </button>
+            <button onclick="document.getElementById('adminPanel').style.display='none';abrirPanelModeracion();" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;padding:20px;border:none;border-radius:12px;cursor:pointer;font-weight:600;font-size:.95rem;font-family:var(--font-body);text-align:left;position:relative;">
+                <div style="font-size:1.8rem;margin-bottom:8px;">🛡️</div>
+                <div>Moderación</div>
+                <div style="font-size:.8rem;opacity:.8;margin-top:4px;">Aprobar propuestas<span class="mod-badge-count" style="color:#fbbf24;"></span></div>
             </button>
         </div>
 
@@ -2319,25 +2497,99 @@ function renderPatients(){
 }
 
 // ═══ ADMIN LOGIN - GOOGLE BASED ═══
-var ADMIN_EMAIL="ramongalera22@gmail.com";
+// ═══ SISTEMA DE MODERADORES ═══
+var SUPERADMIN_EMAIL="ramongalera22@gmail.com";
+var ADMIN_EMAIL=SUPERADMIN_EMAIL; // compatibilidad hacia atrás
 var isAdminLoggedIn=false;
+var isModerador=false;
+var moderadoresCache=null; // {email: {nombre, rol, activo}}
 var loginAttempts=0;
 var lockoutTime=0;
 
+// Carga la lista de moderadores desde Firestore (cache en memoria)
+function loadModeradoresFromFirestore(callback){
+    try{
+        db.collection("moderadores").where("activo","==",true).get().then(function(snap){
+            moderadoresCache={};
+            snap.forEach(function(doc){
+                var d=doc.data();
+                moderadoresCache[d.email]={nombre:d.nombre||d.email,rol:d.rol||"moderador",activo:true};
+            });
+            // Siempre incluir superadmin
+            moderadoresCache[SUPERADMIN_EMAIL]={nombre:"Superadmin",rol:"superadmin",activo:true};
+            console.log("Moderadores cargados:",Object.keys(moderadoresCache).length);
+            if(callback)callback(moderadoresCache);
+        }).catch(function(e){
+            console.error("Error cargando moderadores:",e);
+            moderadoresCache={};
+            moderadoresCache[SUPERADMIN_EMAIL]={nombre:"Superadmin",rol:"superadmin",activo:true};
+            if(callback)callback(moderadoresCache);
+        });
+    }catch(e){
+        moderadoresCache={};
+        moderadoresCache[SUPERADMIN_EMAIL]={nombre:"Superadmin",rol:"superadmin",activo:true};
+        if(callback)callback(moderadoresCache);
+    }
+}
+
 function isAdmin(){
     var user=firebase.auth().currentUser;
-    return user&&user.email===ADMIN_EMAIL;
+    if(!user)return false;
+    if(user.email===SUPERADMIN_EMAIL)return true;
+    if(moderadoresCache&&moderadoresCache[user.email]&&moderadoresCache[user.email].activo)return true;
+    return false;
+}
+function isSuperAdmin(){
+    var user=firebase.auth().currentUser;
+    return user&&user.email===SUPERADMIN_EMAIL;
+}
+function getMiRol(){
+    var user=firebase.auth().currentUser;
+    if(!user)return null;
+    if(user.email===SUPERADMIN_EMAIL)return "superadmin";
+    if(moderadoresCache&&moderadoresCache[user.email])return moderadoresCache[user.email].rol;
+    return null;
 }
 
 function checkAdminStatus(){
     var wasAdmin=isAdminLoggedIn;
-    isAdminLoggedIn=isAdmin();
-    if(isAdminLoggedIn&&!wasAdmin){
-        apShowAdminTab(true);
-    }else if(!isAdminLoggedIn&&wasAdmin){
-        apShowAdminTab(false);
+    loadModeradoresFromFirestore(function(mods){
+        isAdminLoggedIn=isAdmin();
+        isModerador=isAdminLoggedIn;
+        if(isAdminLoggedIn&&!wasAdmin){
+            apShowAdminTab(true);
+            // Mostrar badge de moderador en navbar
+            updateModBadgeAll();
+        }else if(!isAdminLoggedIn&&wasAdmin){
+            apShowAdminTab(false);
+            updateModBadgeAll();
+        }
+    });
+    return isAdmin();
+}
+
+function updateModBadgeAll(){
+    // Actualizar badge de moderador en todos los navbars
+    document.querySelectorAll(".mod-badge").forEach(function(el){
+        var user=firebase.auth().currentUser;
+        if(user&&isAdmin()){
+            var rol=getMiRol();
+            el.style.display="flex";
+            el.textContent=rol==="superadmin"?"👑 Admin":"🛡️ Moderador";
+        }else{
+            el.style.display="none";
+        }
+    });
+    // Actualizar botones de subida de contenido
+    document.querySelectorAll(".btn-subir-contenido").forEach(function(el){
+        var user=firebase.auth().currentUser;
+        el.style.display=(user&&firebase.auth().currentUser)?"inline-flex":"none";
+    });
+    // Mostrar panel de moderación pendiente si es moderador
+    var pendEl=document.getElementById("modBadgePendiente");
+    if(pendEl&&isAdmin()){
+        contarPendientes();
     }
-    return isAdminLoggedIn;
 }
 
 function initLoginSession(){
@@ -2389,8 +2641,14 @@ function showLoginError(msg){
 
 function logoutAdmin(){
     isAdminLoggedIn=false;
-    firebase.auth().signOut().catch(function(e){});
-    apShowAdminTab(false);
+    isModerador=false;
+    moderadoresCache=null;
+    firebase.auth().signOut().then(function(){
+        apShowAdminTab(false);
+        document.querySelectorAll(".btn-subir-contenido,.btn-panel-mod").forEach(function(el){ el.style.display="none"; });
+        document.querySelectorAll('[id^="modBar_"]').forEach(function(b){ b.style.display="none"; });
+        document.querySelectorAll(".mod-badge-count").forEach(function(el){ el.textContent=""; });
+    }).catch(function(e){});
 }
 
 function showUploadForm(){document.getElementById("uploadForm").style.display="block";document.getElementById("categoryForm").style.display="none"}
@@ -3140,6 +3398,16 @@ function showPage(id){
     document.getElementById(id).classList.add("active");
     if(id==="pageProfessionals")initProfessionals();if(id==="pageScanIA")try{scanRenderHist();}catch(e){}
     if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}
+    // Actualizar barra de moderación en la página activa
+    try{
+        var modUser = firebase.auth().currentUser;
+        var barEl = document.getElementById("modBar_"+id);
+        if(barEl){
+            if(modUser){ barEl.style.display="flex"; var uel=document.getElementById("modBarUser_"+id); if(uel)uel.textContent=modUser.displayName||modUser.email; }
+            else { barEl.style.display="none"; }
+        }
+        if(modUser) mostrarBtnSubir();
+    }catch(e){}
 }
 var pendingPageAfterLogin=null;
 function logPageAccess(pageId,user){
@@ -3197,6 +3465,388 @@ function initProfessionals(){
     document.getElementById("preguntaInput").addEventListener("keypress",function(e){if(e.key==="Enter")hacerPregunta()});
     if(!isReady())setTimeout(function(){switchTab("config",document.querySelectorAll(".tab-btn")[4])},500);
 }
+
+
+// ═══════════════════════════════════════════════════════════
+// SISTEMA DE MODERACIÓN DE CONTENIDO
+// ═══════════════════════════════════════════════════════════
+
+// ── Variables globales de moderación ──
+var modFiltroActual = "pendiente";
+var archivoSubirSeleccionado = null;
+
+// ── Botón global flotante de propuesta (aparece en todas las páginas protegidas) ──
+function mostrarBtnSubir(){
+    var user = firebase.auth().currentUser;
+    if(!user) return;
+    document.querySelectorAll(".btn-subir-contenido").forEach(function(el){
+        el.style.display = "inline-flex";
+    });
+    if(isAdmin()){
+        document.querySelectorAll(".btn-panel-mod").forEach(function(el){
+            el.style.display = "inline-flex";
+        });
+        contarPendientes();
+    }
+}
+
+// ── Toggle tipo de subida (archivo / URL) ──
+function toggleTipoSubida(tipo){
+    document.getElementById("campoArchivo").style.display = tipo==="archivo" ? "block" : "none";
+    document.getElementById("campoUrl").style.display    = tipo==="url"     ? "block" : "none";
+    document.getElementById("tipoLabelArchivo").style.borderColor = tipo==="archivo" ? "#0066cc" : "#d1d5db";
+    document.getElementById("tipoLabelArchivo").style.background  = tipo==="archivo" ? "#f0f9ff" : "#fff";
+    document.getElementById("tipoLabelArchivo").style.color        = tipo==="archivo" ? "#0066cc" : "#6b7280";
+    document.getElementById("tipoLabelUrl").style.borderColor = tipo==="url" ? "#0066cc" : "#d1d5db";
+    document.getElementById("tipoLabelUrl").style.background  = tipo==="url" ? "#f0f9ff" : "#fff";
+    document.getElementById("tipoLabelUrl").style.color        = tipo==="url" ? "#0066cc" : "#6b7280";
+}
+
+function mostrarNombreArchivo(input){
+    archivoSubirSeleccionado = input.files[0];
+    var el = document.getElementById("nombreArchivoSubir");
+    if(archivoSubirSeleccionado){
+        var mb = (archivoSubirSeleccionado.size/1024/1024).toFixed(2);
+        el.textContent = "✓ " + archivoSubirSeleccionado.name + " (" + mb + " MB)";
+        document.getElementById("dropZonaSubir").style.borderColor = "#0066cc";
+        document.getElementById("dropZonaSubir").style.background = "#f0f9ff";
+    }
+}
+
+function handleDropSubir(e){
+    e.preventDefault();
+    var files = e.dataTransfer.files;
+    if(files.length){
+        document.getElementById("inputArchivoSubir").files = files;
+        mostrarNombreArchivo(document.getElementById("inputArchivoSubir"));
+    }
+}
+
+// ── Abrir / cerrar modal de subida ──
+function abrirModalSubir(seccionPreset){
+    var user = firebase.auth().currentUser;
+    if(!user){ pendingPageAfterLogin=null; document.getElementById("scanLoginModal").style.display="flex"; resetDisclaimerCheck(); return; }
+    // Resetear formulario
+    document.getElementById("subirSeccion").value = seccionPreset || "";
+    document.getElementById("subirTitulo").value = "";
+    document.getElementById("subirDescripcion").value = "";
+    document.getElementById("inputArchivoSubir").value = "";
+    document.getElementById("inputUrlSubir").value = "";
+    document.getElementById("nombreArchivoSubir").textContent = "";
+    document.getElementById("dropZonaSubir").style.borderColor = "#d1d5db";
+    document.getElementById("dropZonaSubir").style.background = "#fff";
+    document.getElementById("statusSubirContenido").style.display = "none";
+    document.getElementById("barraProgresoSubida").style.display = "none";
+    archivoSubirSeleccionado = null;
+    toggleTipoSubida("archivo");
+    document.getElementById("modalSubirContenido").style.display = "flex";
+}
+
+function cerrarModalSubir(){
+    document.getElementById("modalSubirContenido").style.display = "none";
+}
+
+// ── Enviar propuesta ──
+async function enviarPropuesta(){
+    var user = firebase.auth().currentUser;
+    if(!user){ alert("Debes iniciar sesión primero"); return; }
+    
+    var seccion    = document.getElementById("subirSeccion").value;
+    var titulo     = document.getElementById("subirTitulo").value.trim();
+    var descripcion= document.getElementById("subirDescripcion").value.trim();
+    var tipo       = document.querySelector('input[name="tipoSubida"]:checked').value;
+    var urlInput   = document.getElementById("inputUrlSubir").value.trim();
+    
+    if(!seccion){ alert("Selecciona una sección de destino"); return; }
+    if(!titulo)  { alert("El título es obligatorio"); return; }
+    if(tipo==="url" && !urlInput){ alert("Introduce una URL válida"); return; }
+    if(tipo==="archivo" && !archivoSubirSeleccionado){ alert("Selecciona un archivo"); return; }
+    
+    var statusEl = document.getElementById("statusSubirContenido");
+    var barraEl  = document.getElementById("barraProgresoSubida");
+    statusEl.style.display = "none";
+    
+    // Datos base de la propuesta
+    var propuesta = {
+        titulo:      titulo,
+        descripcion: descripcion,
+        seccion:     seccion,
+        tipo:        tipo,
+        estado:      "pendiente",
+        email:       user.email,
+        nombre:      user.displayName || user.email,
+        fecha:       new Date(),
+        timestamp:   Date.now(),
+        url:         "",
+        fileName:    "",
+        storagePath: ""
+    };
+    
+    try{
+        if(tipo === "url"){
+            propuesta.url = urlInput;
+            barraEl.style.display = "block";
+            document.getElementById("progresoSubidaInner").style.width = "100%";
+            document.getElementById("progresoSubidaTexto").textContent = "Guardando propuesta...";
+            await db.collection("propuestas_contenido").add(propuesta);
+        } else {
+            // Subir archivo a Firebase Storage
+            var ext   = archivoSubirSeleccionado.name.split(".").pop();
+            var ts    = Date.now();
+            var path  = "propuestas/" + user.uid + "_" + ts + "." + ext;
+            var ref   = firebase.storage().ref(path);
+            barraEl.style.display = "block";
+            document.getElementById("progresoSubidaTexto").textContent = "Subiendo archivo...";
+            
+            var uploadTask = ref.put(archivoSubirSeleccionado);
+            uploadTask.on("state_changed",
+                function(snap){ 
+                    var pct = Math.round(snap.bytesTransferred/snap.totalBytes*90);
+                    document.getElementById("progresoSubidaInner").style.width = pct + "%";
+                },
+                function(err){ throw err; },
+                async function(){
+                    document.getElementById("progresoSubidaInner").style.width = "95%";
+                    document.getElementById("progresoSubidaTexto").textContent = "Guardando registro...";
+                    var downloadURL = await ref.getDownloadURL();
+                    propuesta.url         = downloadURL;
+                    propuesta.fileName    = archivoSubirSeleccionado.name;
+                    propuesta.storagePath = path;
+                    propuesta.sizeMB      = (archivoSubirSeleccionado.size/1024/1024).toFixed(2);
+                    await db.collection("propuestas_contenido").add(propuesta);
+                    document.getElementById("progresoSubidaInner").style.width = "100%";
+                    document.getElementById("progresoSubidaTexto").textContent = "✅ ¡Propuesta enviada!";
+                    mostrarStatusSubida("✅ Propuesta enviada correctamente. Un moderador la revisará pronto.", "success");
+                    setTimeout(cerrarModalSubir, 2200);
+                }
+            );
+            return; // La promesa se resuelve en el callback
+        }
+        
+        document.getElementById("progresoSubidaInner").style.width = "100%";
+        mostrarStatusSubida("✅ Propuesta enviada correctamente. Un moderador la revisará pronto.", "success");
+        setTimeout(cerrarModalSubir, 2200);
+    } catch(err){
+        mostrarStatusSubida("❌ Error: " + err.message, "error");
+        barraEl.style.display = "none";
+    }
+}
+
+function mostrarStatusSubida(msg, tipo){
+    var el = document.getElementById("statusSubirContenido");
+    el.style.display = "block";
+    el.style.background = tipo==="success" ? "#f0fdf4" : "#fef2f2";
+    el.style.color      = tipo==="success" ? "#166534" : "#991b1b";
+    el.style.border     = "1px solid " + (tipo==="success" ? "#86efac" : "#fca5a5");
+    el.textContent      = msg;
+}
+
+// ── Panel de moderación ──
+function abrirPanelModeracion(){
+    if(!isAdmin()){ alert("Solo moderadores pueden acceder a este panel."); return; }
+    document.getElementById("panelModeracion").style.display = "block";
+    document.getElementById("tabGestionMods").style.display = isSuperAdmin() ? "block" : "none";
+    modFiltrar("pendiente");
+    if(isSuperAdmin()) cargarListaModeradoresPanel();
+}
+
+function modFiltrar(estado){
+    modFiltroActual = estado;
+    // Actualizar estilo botones
+    ["btnVerPendientes","btnVerAprobados","btnVerRechazados"].forEach(function(id){
+        var btn = document.getElementById(id);
+        if(!btn) return;
+        var activo = (id==="btnVerPendientes"&&estado==="pendiente")||(id==="btnVerAprobados"&&estado==="aprobado")||(id==="btnVerRechazados"&&estado==="rechazado");
+        btn.style.borderColor = activo ? "rgba(255,255,255,.8)" : "transparent";
+        btn.style.background  = activo ? "rgba(255,255,255,.25)" : "rgba(255,255,255,.1)";
+        btn.style.color       = activo ? "#fff" : "rgba(255,255,255,.65)";
+    });
+    var labels = {pendiente:"propuestas pendientes",aprobado:"propuestas aprobadas",rechazado:"propuestas rechazadas"};
+    document.getElementById("modFiltroActivo").innerHTML = "Mostrando: <strong>" + labels[estado] + "</strong>";
+    cargarPropuestas(estado);
+}
+
+function cargarPropuestas(estado){
+    var container = document.getElementById("listaPropuestas");
+    container.innerHTML = '<div style="text-align:center;padding:30px;color:#6b7280;"><div style="font-size:2rem;">⏳</div><p>Cargando...</p></div>';
+    
+    db.collection("propuestas_contenido")
+        .where("estado","==",estado)
+        .orderBy("timestamp","desc")
+        .limit(50)
+        .get()
+        .then(function(snap){
+            if(snap.empty){
+                var icons = {pendiente:"📭",aprobado:"✅",rechazado:"🗑️"};
+                var msgs  = {pendiente:"No hay propuestas pendientes",aprobado:"No hay propuestas aprobadas",rechazado:"No hay propuestas rechazadas"};
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;"><div style="font-size:2.5rem;margin-bottom:8px;">'+icons[estado]+'</div><p>'+msgs[estado]+'</p></div>';
+                return;
+            }
+            var html = "";
+            snap.forEach(function(doc){
+                var d  = doc.data();
+                var id = doc.id;
+                var fecha = d.fecha ? new Date(d.fecha.seconds*1000).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+                var tipoIcon = d.tipo==="url" ? "🔗" : "📄";
+                var estadoBadge = {
+                    pendiente: '<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">⏳ PENDIENTE</span>',
+                    aprobado:  '<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">✅ APROBADO</span>',
+                    rechazado: '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">❌ RECHAZADO</span>'
+                }[d.estado] || "";
+                
+                html += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);">';
+                html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">';
+                html += '<div style="flex:1;min-width:0;">';
+                html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">';
+                html += tipoIcon + ' <strong style="font-size:.92rem;color:#111;">' + escMod(d.titulo) + '</strong> ' + estadoBadge;
+                html += '</div>';
+                html += '<div style="font-size:.78rem;color:#6b7280;margin-bottom:4px;">📂 '+escMod(d.seccion||"—")+'  ·  👤 '+escMod(d.nombre||d.email)+'  ·  🕒 '+fecha+'</div>';
+                if(d.descripcion) html += '<div style="font-size:.82rem;color:#374151;background:#f9fafb;padding:8px 10px;border-radius:7px;margin-top:6px;">'+escMod(d.descripcion)+'</div>';
+                if(d.url) html += '<div style="margin-top:8px;"><a href="'+d.url+'" target="_blank" style="font-size:.8rem;color:#0066cc;font-weight:600;text-decoration:none;">👁️ Ver / Descargar</a></div>';
+                html += '</div>';
+                // Botones de acción
+                if(d.estado==="pendiente"){
+                    html += '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">';
+                    html += '<button onclick="moderarPropuesta(''+id+'','aprobado')" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">✅ Aprobar</button>';
+                    html += '<button onclick="pedirMotivo(''+id+'')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">❌ Rechazar</button>';
+                    html += '</div>';
+                } else if(d.estado==="aprobado"){
+                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta(''+id+'','rechazado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Revertir</button></div>';
+                } else {
+                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta(''+id+'','aprobado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Recuperar</button></div>';
+                }
+                if(d.motivoRechazo) html += '<div style="font-size:.78rem;color:#991b1b;background:#fef2f2;padding:6px 10px;border-radius:6px;margin-top:6px;width:100%;">Motivo: '+escMod(d.motivoRechazo)+'</div>';
+                html += '</div>';
+                html += '</div>';
+            });
+            container.innerHTML = html;
+        })
+        .catch(function(err){
+            container.innerHTML = '<div style="color:#dc2626;padding:20px;text-align:center;">❌ Error al cargar: '+err.message+'</div>';
+        });
+}
+
+function escMod(t){ if(!t)return ""; return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function pedirMotivo(docId){
+    var motivo = prompt("¿Motivo del rechazo? (opcional, se mostrará al autor):");
+    moderarPropuesta(docId, "rechazado", motivo||"");
+}
+
+function moderarPropuesta(docId, nuevoEstado, motivo){
+    var user = firebase.auth().currentUser;
+    if(!user||!isAdmin()){ alert("Sin permisos"); return; }
+    var update = {
+        estado:           nuevoEstado,
+        moderadoPor:      user.email,
+        moderadoNombre:   user.displayName || user.email,
+        fechaModeracion:  new Date()
+    };
+    if(motivo) update.motivoRechazo = motivo;
+    
+    db.collection("propuestas_contenido").doc(docId).update(update)
+        .then(function(){
+            cargarPropuestas(modFiltroActual);
+            contarPendientes();
+            if(nuevoEstado==="aprobado"){
+                // Notificar en consola (en producción se enviaría email via Cloud Function)
+                console.log("✅ Propuesta aprobada:", docId);
+            }
+        })
+        .catch(function(err){ alert("Error: "+err.message); });
+}
+
+function contarPendientes(){
+    db.collection("propuestas_contenido").where("estado","==","pendiente").get()
+        .then(function(snap){
+            var n = snap.size;
+            document.querySelectorAll(".mod-badge-count").forEach(function(el){
+                el.textContent = n > 0 ? " ("+n+")" : "";
+                el.style.color  = n > 0 ? "#dc2626" : "inherit";
+            });
+        }).catch(function(){});
+}
+
+// ── Gestión de moderadores (solo superadmin) ──
+function toggleAñadirModerador(){
+    var f = document.getElementById("formAñadirModerador");
+    f.style.display = f.style.display==="none" ? "block" : "none";
+}
+
+function añadirModerador(){
+    if(!isSuperAdmin()){ alert("Solo el superadmin puede añadir moderadores"); return; }
+    var email   = document.getElementById("modEmail").value.trim().toLowerCase();
+    var nombre  = document.getElementById("modNombre").value.trim();
+    var statusEl= document.getElementById("statusAñadirMod");
+    if(!email||!nombre){ statusEl.innerHTML='<span style="color:#dc2626">❌ Email y nombre son obligatorios</span>'; statusEl.style.display="block"; return; }
+    if(!email.includes("@")){ statusEl.innerHTML='<span style="color:#dc2626">❌ Email inválido</span>'; statusEl.style.display="block"; return; }
+    
+    statusEl.innerHTML='<span style="color:#6b7280">⏳ Añadiendo...</span>';
+    statusEl.style.display="block";
+    
+    db.collection("moderadores").where("email","==",email).get().then(function(snap){
+        if(!snap.empty){
+            // Reactivar si estaba inactivo
+            return snap.docs[0].ref.update({activo:true,nombre:nombre,actualizadoPor:SUPERADMIN_EMAIL,actualizadoEn:new Date()});
+        } else {
+            return db.collection("moderadores").add({
+                email:       email,
+                nombre:      nombre,
+                rol:         "moderador",
+                activo:      true,
+                añadidoPor:  SUPERADMIN_EMAIL,
+                fechaAlta:   new Date()
+            });
+        }
+    }).then(function(){
+        statusEl.innerHTML='<span style="color:#166534">✅ Moderador añadido: '+escMod(nombre)+'</span>';
+        document.getElementById("modEmail").value = "";
+        document.getElementById("modNombre").value = "";
+        moderadoresCache = null; // Invalidar caché
+        cargarListaModeradoresPanel();
+    }).catch(function(err){
+        statusEl.innerHTML='<span style="color:#dc2626">❌ '+err.message+'</span>';
+    });
+}
+
+function cargarListaModeradoresPanel(){
+    var container = document.getElementById("listaModeradoresPanel");
+    if(!container) return;
+    db.collection("moderadores").orderBy("fechaAlta","asc").get().then(function(snap){
+        if(snap.empty){ container.innerHTML='<p style="font-size:.82rem;color:#6b7280;">No hay moderadores añadidos aún.</p>'; return; }
+        var html="";
+        snap.forEach(function(doc){
+            var d=doc.data();
+            var badge = d.email===SUPERADMIN_EMAIL ? '👑 Superadmin' : (d.activo ? '🛡️ Moderador' : '⏸️ Inactivo');
+            var colorBg = d.activo ? '#f0fdf4' : '#f9fafb';
+            var colorBorder = d.activo ? '#86efac' : '#e5e7eb';
+            html += '<div style="background:'+colorBg+';border:1px solid '+colorBorder+';border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">';
+            html += '<div><div style="font-size:.88rem;font-weight:700;color:#111;">'+escMod(d.nombre)+'</div><div style="font-size:.75rem;color:#6b7280;">'+escMod(d.email)+'  ·  '+badge+'</div></div>';
+            if(d.email !== SUPERADMIN_EMAIL){
+                var btnTxt = d.activo ? "🚫 Desactivar" : "✅ Reactivar";
+                var btnAction = d.activo ? "desactivarModerador" : "reactivarModerador";
+                html += '<button onclick="'+btnAction+'(''+doc.id+'')" style="background:#fff;border:1px solid #d1d5db;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;color:#374151;">'+btnTxt+'</button>';
+            }
+            html += '</div>';
+        });
+        container.innerHTML = html;
+    }).catch(function(err){ container.innerHTML='<p style="color:#dc2626;font-size:.82rem;">Error: '+err.message+'</p>'; });
+}
+
+function desactivarModerador(docId){
+    if(!confirm("¿Desactivar este moderador?")) return;
+    db.collection("moderadores").doc(docId).update({activo:false,desactivadoPor:SUPERADMIN_EMAIL,fechaBaja:new Date()})
+        .then(function(){ moderadoresCache=null; cargarListaModeradoresPanel(); })
+        .catch(function(err){ alert("Error: "+err.message); });
+}
+
+function reactivarModerador(docId){
+    db.collection("moderadores").doc(docId).update({activo:true,reactivadoPor:SUPERADMIN_EMAIL,fechaReactivacion:new Date()})
+        .then(function(){ moderadoresCache=null; cargarListaModeradoresPanel(); })
+        .catch(function(err){ alert("Error: "+err.message); });
+}
+
+// Fin sistema de moderación
 
 // ═══ SCAN IA MODULE ═══
 var SCAN_PWD="gmail";
@@ -3266,8 +3916,11 @@ function scanGoogleLogin(){
     firebase.auth().signInWithPopup(provider).then(function(result){
         console.log("Login success:",result.user.email);
         document.getElementById("scanLoginModal").style.display="none";
-        // Check admin status
-        checkAdminStatus();
+        // Cargar moderadores y luego verificar estado
+        loadModeradoresFromFirestore(function(){
+            checkAdminStatus();
+            updateModBadgeAll();
+        });
         if(pendingPageAfterLogin){
             var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;
             logPageAccess(pg,result.user);
@@ -3954,8 +4607,14 @@ loadGroqKeyFromFirestore();
 
 // Cuando admin inicia sesión, si no hay key en Firestore, pedir que la introduzca
 firebase.auth().onAuthStateChanged(function(user){
+    if(user){
+        loadModeradoresFromFirestore(function(){
+            checkAdminStatus();
+            updateModBadgeAll();
+        });
+    }
     if(user&&user.email==="ramongalera22@gmail.com"){
-        checkAdminStatus();
+        // superadmin extra init
         setTimeout(function(){
             if(!SCAN_GROQ_KEY_DEFAULT&&!CONFIG.groqKey){
                 var k=prompt("🔑 Admin: Introduce la API Key de Groq para guardarla en la base de datos.\n\nLa key empieza por gsk_...");

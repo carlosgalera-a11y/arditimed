@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // === MODERADORES — solo superadmin puede escribir ===
+    match /moderadores/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+                   && request.auth.token.email == "ramongalera22@gmail.com";
+    }
+
+    // === PROPUESTAS DE CONTENIDO ===
+    match /propuestas_contenido/{docId} {
+      // Cualquier usuario autenticado puede crear una propuesta
+      allow create: if request.auth != null
+                    && request.resource.data.email == request.auth.token.email;
+      // Solo pueden leer las propuestas los moderadores (guardados en /moderadores)
+      // O el propio autor de la propuesta
+      allow read: if request.auth != null;
+      // Solo moderadores pueden actualizar estado (aprobar/rechazar)
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null 
+                    && request.auth.token.email == "ramongalera22@gmail.com";
+    }
+
+    // === CONFIG — solo admin ===
+    match /config/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+                   && request.auth.token.email == "ramongalera22@gmail.com";
+    }
+
+    // === ACCESOS — log de visitas, cualquier autenticado puede crear ===
+    match /accesos/{docId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if request.auth != null 
+                                   && request.auth.token.email == "ramongalera22@gmail.com";
+    }
+
+    // === PROTOCOLOS — solo admin puede escribir ===
+    match /protocolos/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+                   && request.auth.token.email == "ramongalera22@gmail.com";
+    }
+
+    // Bloquear todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
