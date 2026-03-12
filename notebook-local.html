@@ -2606,12 +2606,18 @@ function resetDisclaimerCheck(){
 }
 
 function showLoginModal(){
-    if(isAdmin()){
-        isAdminLoggedIn=true;
-        apShowAdminTab(true);
+    var user=firebase.auth().currentUser;
+    if(user){
+        // Ya hay sesion activa — cargar moderadores y abrir panel
+        loadModeradoresFromFirestore(function(){
+            isAdminLoggedIn=isAdmin();
+            apShowAdminTab(isAdminLoggedIn);
+            updateModBadgeAll();
+            document.getElementById("adminPanel").style.display="flex";
+        });
         return;
     }
-    // Use Google login modal (scanLoginModal)
+    // Sin sesion — mostrar modal de Google login
     try{
         document.getElementById("scanLoginModal").style.display="flex";
         document.getElementById("scanLoginError").style.display="none";
@@ -3916,10 +3922,15 @@ function scanGoogleLogin(){
     firebase.auth().signInWithPopup(provider).then(function(result){
         console.log("Login success:",result.user.email);
         document.getElementById("scanLoginModal").style.display="none";
-        // Cargar moderadores y luego verificar estado
+        // Cargar moderadores y verificar estado
         loadModeradoresFromFirestore(function(){
-            checkAdminStatus();
+            isAdminLoggedIn=isAdmin();
+            apShowAdminTab(isAdminLoggedIn);
             updateModBadgeAll();
+            // Si es superadmin y no hay página pendiente, abrir panel admin
+            if(isAdminLoggedIn && !pendingPageAfterLogin){
+                document.getElementById("adminPanel").style.display="flex";
+            }
         });
         if(pendingPageAfterLogin){
             var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;
