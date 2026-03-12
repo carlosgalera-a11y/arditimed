@@ -2704,7 +2704,7 @@ var patientSections=[
 
 function renderPatients(){
     var g=document.getElementById("patientsGrid");
-    g.innerHTML=patientSections.map(function(s){return'<a class="patient-card" href="'+s.url+'" target="_blank"><div class="patient-card-icon">'+s.icon+'</div><div class="patient-card-title">'+s.title+'</div><div class="patient-card-desc">'+s.desc+'</div></a>'}).join("");
+    g.innerHTML=patientSections.map(function(s){return'<a class="patient-card" href="'+s.url+'" target="_blank"><div class="patient-card-icon">'+s.icon+'<\/div><div class="patient-card-title">'+s.title+'<\/div><div class="patient-card-desc">'+s.desc+'<\/div><\/a>'}).join("");
 }
 
 // ═══ ADMIN LOGIN - GOOGLE BASED ═══
@@ -3034,7 +3034,7 @@ function infRenderFiles(){
   infArchivos.forEach(function(f,i){
     var div=document.createElement('div');
     div.style.cssText='position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid var(--border);';
-    div.innerHTML='<img src="'+f.data+'" style="width:100%;height:100%;object-fit:cover;"><button onclick="infRemoveFile('+i+')" style="position:absolute;top:-4px;right:-4px;width:22px;height:22px;background:#ef4444;color:#fff;border:none;border-radius:50%;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>';
+    div.innerHTML='<img src="'+f.data+'" style="width:100%;height:100%;object-fit:cover;"><button onclick="infRemoveFile('+i+')" style="position:absolute;top:-4px;right:-4px;width:22px;height:22px;background:#ef4444;color:#fff;border:none;border-radius:50%;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕<\/button>';
     container.appendChild(div);
   });
 }
@@ -3121,7 +3121,7 @@ async function infGenerar(){
   // Show loading
   document.getElementById('infResultado').style.display='block';
   document.getElementById('infResultTitle').textContent='📄 '+tipoLabels[infTipoSeleccionado];
-  document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">⏳</div>Generando informe...</div>';
+  document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">⏳<\/div>Generando informe...<\/div>';
   document.getElementById('infBtnGenerar').disabled=true;
 
   // If using images and Groq (which doesn't support vision well), use a text-only approach
@@ -3149,11 +3149,11 @@ async function infGenerar(){
       document.getElementById('infBtnGenerar').disabled=false;
     })
     .catch(function(e){
-      document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ Error: '+e.message+'</span>';
+      document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ Error: '+e.message+'<\/span>';
       document.getElementById('infBtnGenerar').disabled=false;
     });
   }catch(e){
-    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ '+e.message+'</span>';
+    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ '+e.message+'<\/span>';
     document.getElementById('infBtnGenerar').disabled=false;
   }
 }
@@ -3182,9 +3182,9 @@ function infDescargar(formato){
   }else if(formato==='pdf'){
     // Generate PDF using browser print
     var w=window.open('','_blank');
-    w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}<\/style><\/head><body>');
-    w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>');
-    w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'</div>');
+    w.document.write('<\html><\head><title>'+fileName+'<\/title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}<\/style><\/head><\body>');
+    w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<\/pre>');
+    w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'<\/div>');
     w.document.write('<\/body><\/html>');
     w.document.close();
     setTimeout(function(){w.print();},500);
@@ -3195,24 +3195,24 @@ function infDescargar(formato){
     content+='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">';
     content+='<w:body>';
     // Title
-    content+='<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</w:t></w:r></w:p>';
-    content+='<w:p><w:r><w:rPr><w:sz w:val="20"/><w:color w:val="888888"/></w:rPr><w:t>Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</w:t></w:r></w:p>';
-    content+='<w:p></w:p>';
+    content+='<w:p><w:pPr><w:pStyle w:val="Heading1"/><\/w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><\/w:rPr><w:t>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'<\/w:t><\/w:r><\/w:p>';
+    content+='<w:p><w:r><w:rPr><w:sz w:val="20"/><w:color w:val="888888"/><\/w:rPr><w:t>Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'<\/w:t><\/w:r><\/w:p>';
+    content+='<w:p><\/w:p>';
     // Body paragraphs
     infResultadoTexto.split('\n').forEach(function(line){
-      content+='<w:p><w:r><w:t xml:space="preserve">'+line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</w:t></w:r></w:p>';
+      content+='<w:p><w:r><w:t xml:space="preserve">'+line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<\/w:t><\/w:r><\/w:p>';
     });
-    content+='</w:body></w:document>';
+    content+='<\/w:body><\/w:document>';
 
     // Build minimal .docx (ZIP with XML)
     // For simplicity, use HTML-based approach that Word can open
-    var htmlDoc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
-    htmlDoc+='<head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}<\/style><\/head>';
-    htmlDoc+='<body>';
-    htmlDoc+='<h1>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</h1>';
-    htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
-    htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
-    htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
+    var htmlDoc='<\html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
+    htmlDoc+='<\head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}<\/style><\/head>';
+    htmlDoc+='<\body>';
+    htmlDoc+='<h1>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'<\/h1>';
+    htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'<\/p>';
+    htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<\/pre>';
+    htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena<\/p>';
     htmlDoc+='<\/body><\/html>';
 
     var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
@@ -3258,22 +3258,22 @@ function apGuardarConfig(){
         document.getElementById("cfgQwenKey").value=CONFIG.qwenKey;
         document.getElementById("cfgQwenModel").value=CONFIG.qwenModel;
     }catch(e){}
-    document.getElementById("apCfgStatus").innerHTML='<span style="color:var(--primary)">✅ Guardado</span>';
+    document.getElementById("apCfgStatus").innerHTML='<span style="color:var(--primary)">✅ Guardado<\/span>';
     setTimeout(function(){document.getElementById("apCfgStatus").innerHTML=""},3000);
 }
 
 async function apTestApiKey(){
     apGuardarConfig();
-    if(!isReady()){document.getElementById("apCfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}
+    if(!isReady()){document.getElementById("apCfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida<\/span>';return;}
     var st=document.getElementById("apCfgStatus");
-    st.innerHTML='<span style="color:var(--accent)">⏳ Probando...</span>';
+    st.innerHTML='<span style="color:var(--accent)">⏳ Probando...<\/span>';
     var e=ep();
     try{
         var r=await fetch(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"user",content:"Di: OK"}],max_tokens:10})});
-        if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!</span>';
-        else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';
-        else st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+'</span>';
-    }catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+'</span>';}
+        if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!<\/span>';
+        else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida<\/span>';
+        else st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+'<\/span>';
+    }catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+'<\/span>';}
 }
 
 
@@ -3328,11 +3328,11 @@ async function apHacerPregunta() {
 function apRenderPreguntas() {
     var el = document.getElementById('apPreguntasList');
     if (apPreguntas.length === 0) {
-        el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🩺</div><p>Haz tu primera pregunta sobre los protocolos</p></div>';
+        el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🩺<\/div><p>Haz tu primera pregunta sobre los protocolos<\/p><\/div>';
         return;
     }
     el.innerHTML = apPreguntas.slice().reverse().map(function(p) {
-        return '<div class="question-box"><div class="question-text">' + esc(p.pregunta) + '</div><div class="answer-text">' + esc(p.respuesta) + '</div><div class="note-time">' + p.fecha + '</div></div>';
+        return '<div class="question-box"><div class="question-text">' + esc(p.pregunta) + '<\/div><div class="answer-text">' + esc(p.respuesta) + '<\/div><div class="note-time">' + p.fecha + '<\/div><\/div>';
     }).join('');
 }
 
@@ -3385,11 +3385,11 @@ function apAddProtocol(){
     var status=document.getElementById('apAddStatus');
     
     if(!name){
-        status.innerHTML='<span style="color:#dc2626">❌ Escribe un nombre para el protocolo</span>';
+        status.innerHTML='<span style="color:#dc2626">❌ Escribe un nombre para el protocolo<\/span>';
         return;
     }
     if(!content || content.length<50){
-        status.innerHTML='<span style="color:#dc2626">❌ El contenido es demasiado corto (mínimo 50 caracteres)</span>';
+        status.innerHTML='<span style="color:#dc2626">❌ El contenido es demasiado corto (mínimo 50 caracteres)<\/span>';
         return;
     }
     
@@ -3407,7 +3407,7 @@ function apAddProtocol(){
     document.getElementById('apNewProtoContent').value='';
     document.getElementById('apProtoFile').value='';
     
-    status.innerHTML='<span style="color:var(--primary)">✅ Protocolo "'+esc(name)+'" añadido correctamente</span>';
+    status.innerHTML='<span style="color:var(--primary)">✅ Protocolo "'+esc(name)+'" añadido correctamente<\/span>';
     setTimeout(function(){ status.innerHTML=''; },4000);
     
     apRenderCustomList();
@@ -3431,21 +3431,21 @@ function apRenderCustomList(){
     var list=apGetCustomProtocols();
     
     if(list.length===0){
-        el.innerHTML='<div class="empty-state" style="padding:24px;"><div class="empty-state-icon">📭</div><p>No hay protocolos personalizados aún</p></div>';
+        el.innerHTML='<div class="empty-state" style="padding:24px;"><div class="empty-state-icon">📭<\/div><p>No hay protocolos personalizados aún<\/p><\/div>';
         return;
     }
     
     el.innerHTML=list.map(function(p,i){
         return '<div style="background:var(--bg-main);padding:14px 16px;border-radius:8px;margin-bottom:10px;border-left:4px solid var(--primary);display:flex;justify-content:space-between;align-items:center;gap:12px;">'
             +'<div style="flex:1;min-width:0;">'
-            +'<div style="font-weight:600;color:var(--text);font-size:.92rem;margin-bottom:3px;">📄 '+esc(p.name)+'</div>'
-            +'<div style="font-size:.78rem;color:var(--text-muted);">'+p.chars+' caracteres · Añadido '+p.date+'</div>'
-            +'</div>'
+            +'<div style="font-weight:600;color:var(--text);font-size:.92rem;margin-bottom:3px;">📄 '+esc(p.name)+'<\/div>'
+            +'<div style="font-size:.78rem;color:var(--text-muted);">'+p.chars+' caracteres · Añadido '+p.date+'<\/div>'
+            +'<\/div>'
             +'<div style="display:flex;gap:6px;flex-shrink:0;">'
-            +'<button onclick="apPreviewProtocol('+i+')" style="padding:6px 10px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.82rem;color:var(--primary);font-family:var(--font-body);" title="Vista previa">👁️</button>'
-            +'<button onclick="apDeleteProtocol('+i+')" style="padding:6px 10px;background:#fee;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:.82rem;color:#c00;font-family:var(--font-body);" title="Eliminar">🗑️</button>'
-            +'</div>'
-            +'</div>';
+            +'<button onclick="apPreviewProtocol('+i+')" style="padding:6px 10px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.82rem;color:var(--primary);font-family:var(--font-body);" title="Vista previa">👁️<\/button>'
+            +'<button onclick="apDeleteProtocol('+i+')" style="padding:6px 10px;background:#fee;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:.82rem;color:#c00;font-family:var(--font-body);" title="Eliminar">🗑️<\/button>'
+            +'<\/div>'
+            +'<\/div>';
     }).join('');
 }
 
@@ -3509,20 +3509,20 @@ function urgViewProtocol(id) {
     document.getElementById('urgProtoModalSummary').textContent = p.summary || '';
     
     var bodyHtml = '';
-    if (p.indications) bodyHtml += '<div style="background:#fff3e0;padding:12px;border-radius:8px;margin-bottom:12px;border-left:4px solid #f57c00;"><strong style="color:#e65100;">📌 Indicaciones</strong><br>' + p.indications + '</div>';
+    if (p.indications) bodyHtml += '<div style="background:#fff3e0;padding:12px;border-radius:8px;margin-bottom:12px;border-left:4px solid #f57c00;"><strong style="color:#e65100;">📌 Indicaciones<\/strong><br>' + p.indications + '<\/div>';
     
     var textLines = p.text.split('\n');
     var formattedText = '';
     for (var i = 0; i < textLines.length; i++) {
         var line = textLines[i];
         if (line.indexOf('⚠️') === 0 || line.indexOf('Alertas') !== -1) {
-            formattedText += '<div style="background:#ffebee;padding:10px;border-radius:6px;margin:8px 0;border-left:3px solid #d32f2f;color:#c62828;">' + line + '</div>';
+            formattedText += '<div style="background:#ffebee;padding:10px;border-radius:6px;margin:8px 0;border-left:3px solid #d32f2f;color:#c62828;">' + line + '<\/div>';
         } else if (line.match(/^\d+\./)) {
-            formattedText += '<div style="margin:6px 0;padding-left:8px;border-left:2px solid #1a6b4a;">' + line + '</div>';
+            formattedText += '<div style="margin:6px 0;padding-left:8px;border-left:2px solid #1a6b4a;">' + line + '<\/div>';
         } else if (line.indexOf('Pasos:') === 0 || line.indexOf('Tratamiento:') === 0) {
-            formattedText += '<h4 style="color:#1a6b4a;margin:14px 0 6px;font-size:.95rem;">' + line + '</h4>';
+            formattedText += '<h4 style="color:#1a6b4a;margin:14px 0 6px;font-size:.95rem;">' + line + '<\/h4>';
         } else {
-            formattedText += '<p style="margin:4px 0;">' + line + '</p>';
+            formattedText += '<p style="margin:4px 0;">' + line + '<\/p>';
         }
     }
     bodyHtml += formattedText;
@@ -3586,11 +3586,11 @@ async function urgHacerPregunta() {
 function urgRenderPreguntas() {
     var el = document.getElementById('urgPreguntasList');
     if (urgPreguntas.length === 0) {
-        el.innerHTML = '<div style="text-align:center;padding:30px;opacity:.5;"><div style="font-size:2rem;margin-bottom:8px;">🩺</div><p>Haz tu primera pregunta sobre urgencias</p></div>';
+        el.innerHTML = '<div style="text-align:center;padding:30px;opacity:.5;"><div style="font-size:2rem;margin-bottom:8px;">🩺<\/div><p>Haz tu primera pregunta sobre urgencias<\/p><\/div>';
         return;
     }
     el.innerHTML = urgPreguntas.slice().reverse().map(function(p) {
-        return '<div style="background:rgba(255,255,255,.08);padding:14px;border-radius:8px;margin-bottom:10px;border-left:3px solid #d32f2f;"><div style="font-weight:600;margin-bottom:8px;font-size:.9rem;">❓ '+esc(p.pregunta)+'</div><div style="font-size:.88rem;opacity:.9;line-height:1.6;white-space:pre-wrap;">'+esc(p.respuesta)+'</div><div style="font-size:.75rem;opacity:.4;margin-top:8px;">'+p.fecha+'</div></div>';
+        return '<div style="background:rgba(255,255,255,.08);padding:14px;border-radius:8px;margin-bottom:10px;border-left:3px solid #d32f2f;"><div style="font-weight:600;margin-bottom:8px;font-size:.9rem;">❓ '+esc(p.pregunta)+'<\/div><div style="font-size:.88rem;opacity:.9;line-height:1.6;white-space:pre-wrap;">'+esc(p.respuesta)+'<\/div><div style="font-size:.75rem;opacity:.4;margin-top:8px;">'+p.fecha+'<\/div><\/div>';
     }).join('');
 }
 
@@ -3669,9 +3669,9 @@ function eliminarNota(i){if(!confirm("¿Eliminar?"))return;notas[currentCategory
 function switchTab(n,b){document.querySelectorAll(".tab-content").forEach(function(t){t.classList.remove("active")});document.querySelectorAll(".tab-btn").forEach(function(x){x.classList.remove("active")});document.getElementById(n).classList.add("active");if(b)b.classList.add("active");if(n==="guardiaPacientes")gpRender("");}
 function cambiarCategoria(c,b){currentCategory=c;document.querySelectorAll(".category-btn").forEach(function(x){x.classList.remove("active")});if(b)b.classList.add("active");document.getElementById("categoryTitle").textContent=c;var sc=document.getElementById("studioCategory");if(sc)sc.textContent=c;switchTab("preguntas",document.querySelector(".tab-btn"));actualizarUI();}
 function esc(t){if(!t)return"";return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-function actualizarUI(){var docs=documents[currentCategory]||[];document.getElementById("documentosList").innerHTML=docs.length===0?'<div class="empty-state"><div class="empty-state-icon">📄</div><p>No hay documentos</p></div>':docs.map(function(d){return'<div class="doc-item"><div><div class="doc-name">'+d.name+'</div><div class="doc-size">'+d.size_mb+' MB · '+d.type+'</div></div><a href="'+d.url+'" target="_blank" class="doc-btn">Abrir</a></div>'}).join("");document.getElementById("docsCount").textContent=docs.length;document.getElementById("preguntasCount").textContent=(preguntas[currentCategory]||[]).length;document.getElementById("notasCount").textContent=(notas[currentCategory]||[]).length;var pa=preguntas[currentCategory]||[],pl=document.getElementById("preguntasList");pl.innerHTML=pa.length===0?'<div class="empty-state"><div class="empty-state-icon">🩺</div><p>Haz tu primera pregunta</p></div>':pa.map(function(p){return'<div class="question-box"><div class="question-text">'+esc(p.pregunta)+'</div><div class="answer-text">'+esc(p.respuesta)+'</div><div class="note-time">'+p.fecha+'</div></div>'}).join("");var na=notas[currentCategory]||[],nl=document.getElementById("notasList");nl.innerHTML=na.length===0?'<div class="empty-state"><div class="empty-state-icon">📝</div><p>Sin notas</p></div>':na.map(function(n,i){return'<div class="question-box" style="border-left-color:var(--accent)"><div style="font-size:.92rem;white-space:pre-wrap;padding-right:30px;font-weight:300;line-height:1.6">'+esc(n.texto)+'</div><div class="note-time">'+n.fecha+'</div><button onclick="eliminarNota('+i+')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;opacity:.35">🗑️</button></div>'}).join("");}
-function guardarConfig(){CONFIG.provider=document.getElementById("cfgProvider").value;CONFIG.groqKey=document.getElementById("cfgGroqKey").value.trim();CONFIG.groqModel=document.getElementById("cfgGroqModel").value;CONFIG.qwenKey=document.getElementById("cfgQwenKey").value.trim();CONFIG.qwenModel=document.getElementById("cfgQwenModel").value;localStorage.setItem("notebook_ai_cfg_v3",JSON.stringify(CONFIG));if(CONFIG.groqKey&&isAdmin())saveGroqKeyToFirestore(CONFIG.groqKey);updateStatus();document.getElementById("cfgStatus").innerHTML='<span style="color:var(--primary)">✅ Guardado</span>';}
-async function testApiKey(){guardarConfig();if(!isReady()){document.getElementById("cfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}var st=document.getElementById("cfgStatus");st.innerHTML='<span style="color:var(--accent)">⏳ Probando...</span>';var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"user",content:"Di: OK"}],max_tokens:10})});if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!</span>';else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';else{var err=await r.json().catch(function(){return{}});st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+"</span>";}}catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+"</span>";}}
+function actualizarUI(){var docs=documents[currentCategory]||[];document.getElementById("documentosList").innerHTML=docs.length===0?'<div class="empty-state"><div class="empty-state-icon">📄<\/div><p>No hay documentos<\/p><\/div>':docs.map(function(d){return'<div class="doc-item"><div><div class="doc-name">'+d.name+'<\/div><div class="doc-size">'+d.size_mb+' MB · '+d.type+'<\/div><\/div><a href="'+d.url+'" target="_blank" class="doc-btn">Abrir<\/a><\/div>'}).join("");document.getElementById("docsCount").textContent=docs.length;document.getElementById("preguntasCount").textContent=(preguntas[currentCategory]||[]).length;document.getElementById("notasCount").textContent=(notas[currentCategory]||[]).length;var pa=preguntas[currentCategory]||[],pl=document.getElementById("preguntasList");pl.innerHTML=pa.length===0?'<div class="empty-state"><div class="empty-state-icon">🩺<\/div><p>Haz tu primera pregunta<\/p><\/div>':pa.map(function(p){return'<div class="question-box"><div class="question-text">'+esc(p.pregunta)+'<\/div><div class="answer-text">'+esc(p.respuesta)+'<\/div><div class="note-time">'+p.fecha+'<\/div><\/div>'}).join("");var na=notas[currentCategory]||[],nl=document.getElementById("notasList");nl.innerHTML=na.length===0?'<div class="empty-state"><div class="empty-state-icon">📝<\/div><p>Sin notas<\/p><\/div>':na.map(function(n,i){return'<div class="question-box" style="border-left-color:var(--accent)"><div style="font-size:.92rem;white-space:pre-wrap;padding-right:30px;font-weight:300;line-height:1.6">'+esc(n.texto)+'<\/div><div class="note-time">'+n.fecha+'<\/div><button onclick="eliminarNota('+i+')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;opacity:.35">🗑️<\/button><\/div>'}).join("");}
+function guardarConfig(){CONFIG.provider=document.getElementById("cfgProvider").value;CONFIG.groqKey=document.getElementById("cfgGroqKey").value.trim();CONFIG.groqModel=document.getElementById("cfgGroqModel").value;CONFIG.qwenKey=document.getElementById("cfgQwenKey").value.trim();CONFIG.qwenModel=document.getElementById("cfgQwenModel").value;localStorage.setItem("notebook_ai_cfg_v3",JSON.stringify(CONFIG));if(CONFIG.groqKey&&isAdmin())saveGroqKeyToFirestore(CONFIG.groqKey);updateStatus();document.getElementById("cfgStatus").innerHTML='<span style="color:var(--primary)">✅ Guardado<\/span>';}
+async function testApiKey(){guardarConfig();if(!isReady()){document.getElementById("cfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida<\/span>';return;}var st=document.getElementById("cfgStatus");st.innerHTML='<span style="color:var(--accent)">⏳ Probando...<\/span>';var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"user",content:"Di: OK"}],max_tokens:10})});if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!<\/span>';else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida<\/span>';else{var err=await r.json().catch(function(){return{}});st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+"<\/span>";}}catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+"<\/span>";}}
 function guardarDatos(){localStorage.setItem("cartagena_preguntas",JSON.stringify(preguntas));localStorage.setItem("cartagena_notas",JSON.stringify(notas));}
 function cargarDatos(){try{preguntas=JSON.parse(localStorage.getItem("cartagena_preguntas"))||{};}catch(e){preguntas={};}try{notas=JSON.parse(localStorage.getItem("cartagena_notas"))||{};}catch(e){notas={};}}
 
@@ -3679,7 +3679,7 @@ function initProfessionals(){
     if(profInitialized)return;profInitialized=true;
     var p=new URLSearchParams(window.location.search),c=p.get("category");if(c&&categories[c])currentCategory=c;
     var list=document.getElementById("categoriesList");
-    Object.keys(categories).forEach(function(cat){var btn=document.createElement("button");btn.className="category-btn"+(cat===currentCategory?" active":"");btn.innerHTML='<span class="cat-emoji">'+categories[cat]+'</span>'+cat;btn.onclick=function(){cambiarCategoria(cat,btn)};list.appendChild(btn);});
+    Object.keys(categories).forEach(function(cat){var btn=document.createElement("button");btn.className="category-btn"+(cat===currentCategory?" active":"");btn.innerHTML='<span class="cat-emoji">'+categories[cat]+'<\/span>'+cat;btn.onclick=function(){cambiarCategoria(cat,btn)};list.appendChild(btn);});
     document.getElementById("categoryTitle").textContent=currentCategory;
     document.getElementById("cfgProvider").value=CONFIG.provider;cambiarProvider();
     document.getElementById("cfgGroqKey").value=CONFIG.groqKey||"";document.getElementById("cfgGroqModel").value=CONFIG.groqModel;
@@ -3886,13 +3886,13 @@ function modFiltrar(estado){
         btn.style.color       = activo ? "#fff" : "rgba(255,255,255,.65)";
     });
     var labels = {pendiente:"propuestas pendientes",aprobado:"propuestas aprobadas",rechazado:"propuestas rechazadas"};
-    document.getElementById("modFiltroActivo").innerHTML = "Mostrando: <strong>" + labels[estado] + "</strong>";
+    document.getElementById("modFiltroActivo").innerHTML = "Mostrando: <strong>" + labels[estado] + "<\/strong>";
     cargarPropuestas(estado);
 }
 
 function cargarPropuestas(estado){
     var container = document.getElementById("listaPropuestas");
-    container.innerHTML = '<div style="text-align:center;padding:30px;color:#6b7280;"><div style="font-size:2rem;">⏳</div><p>Cargando...</p></div>';
+    container.innerHTML = '<div style="text-align:center;padding:30px;color:#6b7280;"><div style="font-size:2rem;">⏳<\/div><p>Cargando...<\/p><\/div>';
     
     db.collection("propuestas_contenido")
         .where("estado","==",estado)
@@ -3903,7 +3903,7 @@ function cargarPropuestas(estado){
             if(snap.empty){
                 var icons = {pendiente:"📭",aprobado:"✅",rechazado:"🗑️"};
                 var msgs  = {pendiente:"No hay propuestas pendientes",aprobado:"No hay propuestas aprobadas",rechazado:"No hay propuestas rechazadas"};
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;"><div style="font-size:2.5rem;margin-bottom:8px;">'+icons[estado]+'</div><p>'+msgs[estado]+'</p></div>';
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;"><div style="font-size:2.5rem;margin-bottom:8px;">'+icons[estado]+'<\/div><p>'+msgs[estado]+'<\/p><\/div>';
                 return;
             }
             var html = "";
@@ -3913,40 +3913,40 @@ function cargarPropuestas(estado){
                 var fecha = d.fecha ? new Date(d.fecha.seconds*1000).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
                 var tipoIcon = d.tipo==="url" ? "🔗" : "📄";
                 var estadoBadge = {
-                    pendiente: '<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">⏳ PENDIENTE</span>',
-                    aprobado:  '<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">✅ APROBADO</span>',
-                    rechazado: '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">❌ RECHAZADO</span>'
+                    pendiente: '<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">⏳ PENDIENTE<\/span>',
+                    aprobado:  '<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">✅ APROBADO<\/span>',
+                    rechazado: '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:12px;font-size:.73rem;font-weight:700;">❌ RECHAZADO<\/span>'
                 }[d.estado] || "";
                 
                 html += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);">';
                 html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">';
                 html += '<div style="flex:1;min-width:0;">';
                 html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">';
-                html += tipoIcon + ' <strong style="font-size:.92rem;color:#111;">' + escMod(d.titulo) + '</strong> ' + estadoBadge;
-                html += '</div>';
-                html += '<div style="font-size:.78rem;color:#6b7280;margin-bottom:4px;">📂 '+escMod(d.seccion||"—")+'  ·  👤 '+escMod(d.nombre||d.email)+'  ·  🕒 '+fecha+'</div>';
-                if(d.descripcion) html += '<div style="font-size:.82rem;color:#374151;background:#f9fafb;padding:8px 10px;border-radius:7px;margin-top:6px;">'+escMod(d.descripcion)+'</div>';
-                if(d.url) html += '<div style="margin-top:8px;"><a href="'+d.url+'" target="_blank" style="font-size:.8rem;color:#0066cc;font-weight:600;text-decoration:none;">👁️ Ver / Descargar</a></div>';
-                html += '</div>';
+                html += tipoIcon + ' <strong style="font-size:.92rem;color:#111;">' + escMod(d.titulo) + '<\/strong> ' + estadoBadge;
+                html += '<\/div>';
+                html += '<div style="font-size:.78rem;color:#6b7280;margin-bottom:4px;">📂 '+escMod(d.seccion||"—")+'  ·  👤 '+escMod(d.nombre||d.email)+'  ·  🕒 '+fecha+'<\/div>';
+                if(d.descripcion) html += '<div style="font-size:.82rem;color:#374151;background:#f9fafb;padding:8px 10px;border-radius:7px;margin-top:6px;">'+escMod(d.descripcion)+'<\/div>';
+                if(d.url) html += '<div style="margin-top:8px;"><a href="'+d.url+'" target="_blank" style="font-size:.8rem;color:#0066cc;font-weight:600;text-decoration:none;">👁️ Ver / Descargar<\/a><\/div>';
+                html += '<\/div>';
                 // Botones de acción
                 if(d.estado==="pendiente"){
                     html += '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">';
-                    html += '<button onclick="moderarPropuesta(\'' + id + '\',\'aprobado\')" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">✅ Aprobar</button>';
-                    html += '<button onclick="pedirMotivo(\'' + id + '\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">❌ Rechazar</button>';
-                    html += '</div>';
+                    html += '<button onclick="moderarPropuesta(\'' + id + '\',\'aprobado\')" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">✅ Aprobar<\/button>';
+                    html += '<button onclick="pedirMotivo(\'' + id + '\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">❌ Rechazar<\/button>';
+                    html += '<\/div>';
                 } else if(d.estado==="aprobado"){
-                    html += '<div style="flex-shrink:0;"><button data-id="'+id+'" data-estado="rechazado" onclick="moderarPropuesta(this.dataset.id,this.dataset.estado)" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Revertir</button></div>';
+                    html += '<div style="flex-shrink:0;"><button data-id="'+id+'" data-estado="rechazado" onclick="moderarPropuesta(this.dataset.id,this.dataset.estado)" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Revertir<\/button><\/div>';
                 } else {
-                    html += '<div style="flex-shrink:0;"><button data-id="'+id+'" data-estado="aprobado" onclick="moderarPropuesta(this.dataset.id,this.dataset.estado)" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Recuperar</button></div>';
+                    html += '<div style="flex-shrink:0;"><button data-id="'+id+'" data-estado="aprobado" onclick="moderarPropuesta(this.dataset.id,this.dataset.estado)" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Recuperar<\/button><\/div>';
                 }
-                if(d.motivoRechazo) html += '<div style="font-size:.78rem;color:#991b1b;background:#fef2f2;padding:6px 10px;border-radius:6px;margin-top:6px;width:100%;">Motivo: '+escMod(d.motivoRechazo)+'</div>';
-                html += '</div>';
-                html += '</div>';
+                if(d.motivoRechazo) html += '<div style="font-size:.78rem;color:#991b1b;background:#fef2f2;padding:6px 10px;border-radius:6px;margin-top:6px;width:100%;">Motivo: '+escMod(d.motivoRechazo)+'<\/div>';
+                html += '<\/div>';
+                html += '<\/div>';
             });
             container.innerHTML = html;
         })
         .catch(function(err){
-            container.innerHTML = '<div style="color:#dc2626;padding:20px;text-align:center;">❌ Error al cargar: '+err.message+'</div>';
+            container.innerHTML = '<div style="color:#dc2626;padding:20px;text-align:center;">❌ Error al cargar: '+err.message+'<\/div>';
         });
 }
 
@@ -4002,10 +4002,10 @@ function añadirModerador(){
     var email   = document.getElementById("modEmail").value.trim().toLowerCase();
     var nombre  = document.getElementById("modNombre").value.trim();
     var statusEl= document.getElementById("statusAñadirMod");
-    if(!email||!nombre){ statusEl.innerHTML='<span style="color:#dc2626">❌ Email y nombre son obligatorios</span>'; statusEl.style.display="block"; return; }
-    if(!email.includes("@")){ statusEl.innerHTML='<span style="color:#dc2626">❌ Email inválido</span>'; statusEl.style.display="block"; return; }
+    if(!email||!nombre){ statusEl.innerHTML='<span style="color:#dc2626">❌ Email y nombre son obligatorios<\/span>'; statusEl.style.display="block"; return; }
+    if(!email.includes("@")){ statusEl.innerHTML='<span style="color:#dc2626">❌ Email inválido<\/span>'; statusEl.style.display="block"; return; }
     
-    statusEl.innerHTML='<span style="color:#6b7280">⏳ Añadiendo...</span>';
+    statusEl.innerHTML='<span style="color:#6b7280">⏳ Añadiendo...<\/span>';
     statusEl.style.display="block";
     
     db.collection("moderadores").where("email","==",email).get().then(function(snap){
@@ -4023,13 +4023,13 @@ function añadirModerador(){
             });
         }
     }).then(function(){
-        statusEl.innerHTML='<span style="color:#166534">✅ Moderador añadido: '+escMod(nombre)+'</span>';
+        statusEl.innerHTML='<span style="color:#166534">✅ Moderador añadido: '+escMod(nombre)+'<\/span>';
         document.getElementById("modEmail").value = "";
         document.getElementById("modNombre").value = "";
         moderadoresCache = null; // Invalidar caché
         cargarListaModeradoresPanel();
     }).catch(function(err){
-        statusEl.innerHTML='<span style="color:#dc2626">❌ '+err.message+'</span>';
+        statusEl.innerHTML='<span style="color:#dc2626">❌ '+err.message+'<\/span>';
     });
 }
 
@@ -4037,7 +4037,7 @@ function cargarListaModeradoresPanel(){
     var container = document.getElementById("listaModeradoresPanel");
     if(!container) return;
     db.collection("moderadores").orderBy("fechaAlta","asc").get().then(function(snap){
-        if(snap.empty){ container.innerHTML='<p style="font-size:.82rem;color:#6b7280;">No hay moderadores añadidos aún.</p>'; return; }
+        if(snap.empty){ container.innerHTML='<p style="font-size:.82rem;color:#6b7280;">No hay moderadores añadidos aún.<\/p>'; return; }
         var html="";
         snap.forEach(function(doc){
             var d=doc.data();
@@ -4045,16 +4045,16 @@ function cargarListaModeradoresPanel(){
             var colorBg = d.activo ? '#f0fdf4' : '#f9fafb';
             var colorBorder = d.activo ? '#86efac' : '#e5e7eb';
             html += '<div style="background:'+colorBg+';border:1px solid '+colorBorder+';border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">';
-            html += '<div><div style="font-size:.88rem;font-weight:700;color:#111;">'+escMod(d.nombre)+'</div><div style="font-size:.75rem;color:#6b7280;">'+escMod(d.email)+'  ·  '+badge+'</div></div>';
+            html += '<div><div style="font-size:.88rem;font-weight:700;color:#111;">'+escMod(d.nombre)+'<\/div><div style="font-size:.75rem;color:#6b7280;">'+escMod(d.email)+'  ·  '+badge+'<\/div><\/div>';
             if(d.email !== SUPERADMIN_EMAIL){
                 var btnTxt = d.activo ? "🚫 Desactivar" : "✅ Reactivar";
                 var btnAction = d.activo ? "desactivarModerador" : "reactivarModerador";
-                html += '<button onclick="'+btnAction+'(\''+doc.id+'\')" style="background:#fff;border:1px solid #d1d5db;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;color:#374151;">'+btnTxt+'</button>';
+                html += '<button onclick="'+btnAction+'(\''+doc.id+'\')" style="background:#fff;border:1px solid #d1d5db;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;color:#374151;">'+btnTxt+'<\/button>';
             }
-            html += '</div>';
+            html += '<\/div>';
         });
         container.innerHTML = html;
-    }).catch(function(err){ container.innerHTML='<p style="color:#dc2626;font-size:.82rem;">Error: '+err.message+'</p>'; });
+    }).catch(function(err){ container.innerHTML='<p style="color:#dc2626;font-size:.82rem;">Error: '+err.message+'<\/p>'; });
 }
 
 function desactivarModerador(docId){
@@ -4154,7 +4154,7 @@ function cnbCargarLista(){
         var total=snap.size;
         if(count)count.textContent=total+" cuaderno"+(total!==1?"s":"");
         if(total===0){
-            lista.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">No tienes cuadernos todavía.<br>Pulsa <strong>+ Nuevo cuaderno</strong> para crear el primero.</div>';
+            lista.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">No tienes cuadernos todavía.<br>Pulsa <strong>+ Nuevo cuaderno<\/strong> para crear el primero.<\/div>';
             return;
         }
         snap.forEach(function(doc){
@@ -4167,15 +4167,15 @@ function cnbCargarLista(){
             var preview=(d.contenido||"").replace(/
 /g," ").substring(0,80);
             item.innerHTML=
-                '<span style="font-size:1.6rem;flex-shrink:0;">'+( d.icono||"📓")+'</span>'+
+                '<span style="font-size:1.6rem;flex-shrink:0;">'+( d.icono||"📓")+'<\/span>'+
                 '<div style="flex:1;min-width:0;">'+
-                    '<div style="font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(d.nombre||"Sin nombre")+'</div>'+
-                    '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(preview||(fecha?"Modificado "+fecha:"Vacío"))+'</div>'+
-                '</div>'+
+                    '<div style="font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(d.nombre||"Sin nombre")+'<\/div>'+
+                    '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(preview||(fecha?"Modificado "+fecha:"Vacío"))+'<\/div>'+
+                '<\/div>'+
                 '<div style="display:flex;gap:6px;flex-shrink:0;">'+
-                    '<button onclick="event.stopPropagation();cnbAbrirEditor(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'',''+( d.icono||"📓")+'')" style="padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">✏️ Abrir</button>'+
-                    '<button onclick="event.stopPropagation();cnbEliminar(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'')" style="padding:6px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🗑️</button>'+
-                '</div>';
+                    '<button onclick="event.stopPropagation();cnbAbrirEditor(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'',''+( d.icono||"📓")+'')" style="padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">✏️ Abrir<\/button>'+
+                    '<button onclick="event.stopPropagation();cnbEliminar(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'')" style="padding:6px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🗑️<\/button>'+
+                '<\/div>';
             item.onclick=function(){cnbAbrirEditor(doc.id,d.nombre||"Sin nombre",d.icono||"📓");};
             lista.appendChild(item);
         });
@@ -4450,7 +4450,7 @@ async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
-    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">El modelo está procesando. Puede tardar unos segundos...</div></div>';
+    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...<\/div><div style="color:var(--text-muted);font-size:.9rem;">El modelo está procesando. Puede tardar unos segundos...<\/div><\/div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
     try{
@@ -4458,21 +4458,21 @@ async function scanAnalyze(){
         if(!r.ok){var ed=await r.json().catch(function(){return{}});throw new Error(ed.error?.message||"Error HTTP "+r.status);}
         var d=await r.json(),txt=d.choices?.[0]?.message?.content||"Sin respuesta";
         var fmt=txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-        var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por inteligencia artificial y <strong>NO constituye un diagnóstico médico</strong>, acto clínico ni base para decisiones terapéuticas. Clasificación: sistema de IA de alto riesgo en contexto sanitario. Uso restringido a formación y docencia. El diagnóstico definitivo requiere valoración presencial por un profesional sanitario.</div>';
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+SCAN_GROQ_MODEL+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
+        var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689<\/strong><br>Este análisis ha sido generado por inteligencia artificial y <strong>NO constituye un diagnóstico médico<\/strong>, acto clínico ni base para decisiones terapéuticas. Clasificación: sistema de IA de alto riesgo en contexto sanitario. Uso restringido a formación y docencia. El diagnóstico definitivo requiere valoración presencial por un profesional sanitario.<\/div>';
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+SCAN_GROQ_MODEL+'<\/div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
         scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:SCAN_GROQ_MODEL,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
-    }catch(e){res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">'+e.message+"<br><br>Posibles causas: API key incorrecta, modelo no soporta imágenes, o límite de rate.</div></div>";}
+    }catch(e){res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error<\/div><div style="color:var(--text);font-size:.9rem;">'+e.message+"<br><br>Posibles causas: API key incorrecta, modelo no soporta imágenes, o límite de rate.</div></div>";}
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
 }
 
 function scanRenderHist(){
     var l=document.getElementById("scanHistList");if(!l)return;
-    if(scanHist.length===0){l.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:10px;opacity:.5;">🔬</div><p style="font-size:.92rem;">Aún no hay análisis</p></div>';return;}
-    l.innerHTML=scanHist.map(function(h,i){return'<div onclick="scanViewHist('+i+')" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;cursor:pointer;transition:.2s;" onmouseover="this.style.borderColor=\'#0066cc\'" onmouseout="this.style.borderColor=\'var(--border)\'"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-weight:600;font-size:.85rem;color:#0066cc;">'+h.label+'</span><span style="font-size:.78rem;color:var(--text-muted);">'+h.date+'</span></div><div style="font-size:.85rem;color:var(--text-light);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">'+h.result.substring(0,140)+"...</div></div>";}).join("");
+    if(scanHist.length===0){l.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:10px;opacity:.5;">🔬<\/div><p style="font-size:.92rem;">Aún no hay análisis<\/p><\/div>';return;}
+    l.innerHTML=scanHist.map(function(h,i){return'<div onclick="scanViewHist('+i+')" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;cursor:pointer;transition:.2s;" onmouseover="this.style.borderColor=\'#0066cc\'" onmouseout="this.style.borderColor=\'var(--border)\'"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-weight:600;font-size:.85rem;color:#0066cc;">'+h.label+'<\/span><span style="font-size:.78rem;color:var(--text-muted);">'+h.date+'<\/span><\/div><div style="font-size:.85rem;color:var(--text-light);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">'+h.result.substring(0,140)+"...</div></div>";}).join("");
 }
-function scanViewHist(i){var h=scanHist[i];if(!h)return;var fmt=h.result.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");var euAiBannerH='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por IA y NO constituye diagnóstico médico ni base para decisiones terapéuticas.</div>';
+function scanViewHist(i){var h=scanHist[i];if(!h)return;var fmt=h.result.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");var euAiBannerH='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689<\/strong><br>Este análisis ha sido generado por IA y NO constituye diagnóstico médico ni base para decisiones terapéuticas.<\/div>';
 document.getElementById("scanResult").innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBannerH+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">📋 '+h.label+" — "+h.model+" — "+h.date+"</div>"+(h.ctx?'<div style="font-size:.85rem;color:var(--text-muted);margin-bottom:10px;font-style:italic;">Contexto: '+h.ctx+"</div>":"")+'<div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";}
 
 // ═══ TAB SWITCHING ═══
@@ -4596,7 +4596,7 @@ function tradAddBurbuja(texto,who,tipo,langName){
     div.style.cssText="display:flex;flex-direction:column;align-items:"+align+";gap:2px;";
     div.innerHTML='<span style="font-size:.7rem;color:var(--text-muted);font-weight:600;">'+icon+" "+labelTxt+"</span>"+
         '<div style="max-width:85%;padding:10px 14px;border-radius:12px;background:'+bgColor+';color:'+textColor+';border:'+border+';font-size:.9rem;line-height:1.55;word-break:break-word;'+(isTraduccion?'font-style:italic;':'')+'">'+
-        texto.replace(/</g,"&lt;").replace(/>/g,"&gt;")+
+        texto.replace(/<\/g,"&lt;").replace(/>/g,"&gt;")+
         "</div>";
     conv.appendChild(div);
     conv.scrollTop=conv.scrollHeight;
@@ -4609,7 +4609,7 @@ function tradAddSpinner(id,who){
     var div=document.createElement("div");
     div.id=id;
     div.style.cssText="display:flex;justify-content:"+(isDoc?"flex-end":"flex-start")+";";
-    div.innerHTML='<div style="padding:8px 14px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:10px;font-size:.85rem;color:var(--text-muted);">⏳ Traduciendo...</div>';
+    div.innerHTML='<div style="padding:8px 14px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:10px;font-size:.85rem;color:var(--text-muted);">⏳ Traduciendo...<\/div>';
     conv.appendChild(div);
     conv.scrollTop=conv.scrollHeight;
 }
@@ -4622,7 +4622,7 @@ function tradRemoveSpinner(id){
 function tradLimpiar(){
     var conv=document.getElementById("tradConversacion");
     if(conv){
-        conv.innerHTML='<p style="text-align:center;color:var(--text-muted);font-size:.85rem;margin:auto;">La conversación aparecerá aquí</p>';
+        conv.innerHTML='<p style="text-align:center;color:var(--text-muted);font-size:.85rem;margin:auto;">La conversación aparecerá aquí<\/p>';
     }
     var inpDoc=document.getElementById("tradInputDoc");
     var inpPat=document.getElementById("tradInputPat");
@@ -4693,7 +4693,7 @@ function nihReset(){
     document.getElementById("nihCorrect").textContent="0";
     document.getElementById("nihWrong").textContent="0";
     document.getElementById("nihTotal").textContent="0";
-    document.getElementById("nihCaseImage").innerHTML='<div style="color:#fff;opacity:.5;font-size:1.1rem;">Pulsa "Siguiente caso" para empezar</div>';
+    document.getElementById("nihCaseImage").innerHTML='<div style="color:#fff;opacity:.5;font-size:1.1rem;">Pulsa "Siguiente caso" para empezar<\/div>';
     document.getElementById("nihCaseInfo").innerHTML="";
     document.getElementById("nihQuizOptions").style.display="none";
     document.getElementById("nihCompareArea").style.display="none";
@@ -4712,8 +4712,8 @@ function nihNextCase(){
 function nihShowCase(c){
     // Generate a representative chest X-ray SVG placeholder
     var svg=nihGenerateXraySVG(c.label);
-    document.getElementById("nihCaseImage").innerHTML='<div style="position:relative;width:100%;max-width:400px;margin:0 auto;">'+svg+'<div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.7);color:#fff;padding:4px 10px;border-radius:4px;font-size:.75rem;">ID: '+c.id+'</div></div>';
-    document.getElementById("nihCaseInfo").innerHTML='<span style="background:var(--bg-subtle);padding:4px 10px;border-radius:4px;font-size:.82rem;margin-right:8px;">👤 '+c.sex+', '+c.age+' años</span><span style="background:var(--bg-subtle);padding:4px 10px;border-radius:4px;font-size:.82rem;">📋 Caso #'+c.id+'</span>';
+    document.getElementById("nihCaseImage").innerHTML='<div style="position:relative;width:100%;max-width:400px;margin:0 auto;">'+svg+'<div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.7);color:#fff;padding:4px 10px;border-radius:4px;font-size:.75rem;">ID: '+c.id+'<\/div><\/div>';
+    document.getElementById("nihCaseInfo").innerHTML='<span style="background:var(--bg-subtle);padding:4px 10px;border-radius:4px;font-size:.82rem;margin-right:8px;">👤 '+c.sex+', '+c.age+' años<\/span><span style="background:var(--bg-subtle);padding:4px 10px;border-radius:4px;font-size:.82rem;">📋 Caso #'+c.id+'<\/span>';
     document.getElementById("nihFeedback").style.display="none";
 
     if(nihMode==="quiz"){
@@ -4723,8 +4723,8 @@ function nihShowCase(c){
     }else{
         document.getElementById("nihQuizOptions").style.display="none";
         document.getElementById("nihCompareArea").style.display="block";
-        document.getElementById("nihGroundTruth").innerHTML='<span style="display:inline-block;background:#2e7d32;color:#fff;padding:6px 14px;border-radius:20px;font-weight:700;font-size:.9rem;">'+NIH_LABELS_ES[c.label]+'</span><p style="margin-top:10px;font-size:.85rem;color:var(--text-light);">'+c.desc+'</p>';
-        document.getElementById("nihAIDiagnosis").innerHTML='<button id="nihRunIA" onclick="nihAnalyzeWithIA()" style="padding:10px 20px;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-family:var(--font-body);font-size:.88rem;">🔬 Analizar con IA</button>';
+        document.getElementById("nihGroundTruth").innerHTML='<span style="display:inline-block;background:#2e7d32;color:#fff;padding:6px 14px;border-radius:20px;font-weight:700;font-size:.9rem;">'+NIH_LABELS_ES[c.label]+'<\/span><p style="margin-top:10px;font-size:.85rem;color:var(--text-light);">'+c.desc+'<\/p>';
+        document.getElementById("nihAIDiagnosis").innerHTML='<button id="nihRunIA" onclick="nihAnalyzeWithIA()" style="padding:10px 20px;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-family:var(--font-body);font-size:.88rem;">🔬 Analizar con IA<\/button>';
     }
 }
 
@@ -4735,7 +4735,7 @@ function nihRenderOptions(c){
     // Shuffle
     for(var i=opts.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=opts[i];opts[i]=opts[j];opts[j]=t;}
     var html=opts.map(function(o){
-        return'<button onclick="nihAnswer(\''+o+'\')" class="nih-opt-btn" style="padding:14px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.9rem;font-weight:600;transition:.25s;text-align:center;" onmouseover="this.style.borderColor=\'#0066cc\';this.style.background=\'#f0f7ff\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'var(--bg-card)\'">'+NIH_LABELS_ES[o]+'</button>';
+        return'<button onclick="nihAnswer(\''+o+'\')" class="nih-opt-btn" style="padding:14px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.9rem;font-weight:600;transition:.25s;text-align:center;" onmouseover="this.style.borderColor=\'#0066cc\';this.style.background=\'#f0f7ff\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'var(--bg-card)\'">'+NIH_LABELS_ES[o]+'<\/button>';
     }).join("");
     document.getElementById("nihOptions").innerHTML=html;
 }
@@ -4760,13 +4760,13 @@ function nihAnswer(ans){
     fb.style.display="block";
     fb.style.background=correct?"#e8f5e9":"#fef2f2";
     fb.style.borderLeft=correct?"4px solid #4caf50":"4px solid #dc2626";
-    fb.innerHTML=(correct?'<strong style="color:#2e7d32;">✅ ¡Correcto!</strong>':'<strong style="color:#dc2626;">❌ Incorrecto.</strong> La respuesta era: <strong>'+NIH_LABELS_ES[c.label]+'</strong>')+'<p style="margin-top:8px;font-size:.88rem;color:var(--text-light);">'+c.desc+'</p>';
+    fb.innerHTML=(correct?'<strong style="color:#2e7d32;">✅ ¡Correcto!<\/strong>':'<strong style="color:#dc2626;">❌ Incorrecto.<\/strong> La respuesta era: <strong>'+NIH_LABELS_ES[c.label]+'<\/strong>')+'<p style="margin-top:8px;font-size:.88rem;color:var(--text-light);">'+c.desc+'<\/p>';
 }
 
 function nihAnalyzeWithIA(){
     var c=nihCurrentCase;if(!c)return;
     var el=document.getElementById("nihAIDiagnosis");
-    el.innerHTML='<div style="text-align:center;padding:20px;"><div class="scan-spinner" style="margin:0 auto 10px;width:30px;height:30px;border:3px solid var(--border);border-top-color:#0066cc;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="font-size:.85rem;color:var(--text-muted);">Analizando con Llama 4 Scout...</div></div>';
+    el.innerHTML='<div style="text-align:center;padding:20px;"><div class="scan-spinner" style="margin:0 auto 10px;width:30px;height:30px;border:3px solid var(--border);border-top-color:#0066cc;border-radius:50%;animation:spin 1s linear infinite;"><\/div><div style="font-size:.85rem;color:var(--text-muted);">Analizando con Llama 4 Scout...<\/div><\/div>';
 
     // Check if there's a real image loaded
     var imgEl=document.querySelector("#nihCaseImage img");
@@ -4828,14 +4828,14 @@ function nihSendTextAnalysis(c,el){
         })
     }).then(function(r){return r.json();}).then(function(d){
         nihDisplayIAResult(c,d,el);
-    }).catch(function(e){el.innerHTML='<div style="color:#dc2626;">❌ Error de conexión: '+e.message+'</div>';});
+    }).catch(function(e){el.innerHTML='<div style="color:#dc2626;">❌ Error de conexión: '+e.message+'<\/div>';});
 }
 
 function nihDisplayIAResult(c,d,el){
-    if(d.error){el.innerHTML='<div style="color:#dc2626;">❌ Error: '+d.error.message+'</div>';return;}
+    if(d.error){el.innerHTML='<div style="color:#dc2626;">❌ Error: '+d.error.message+'<\/div>';return;}
     var txt=d.choices[0].message.content;
     var fmt=txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-    el.innerHTML='<div style="line-height:1.7;font-size:.88rem;">'+fmt+'</div>';
+    el.innerHTML='<div style="line-height:1.7;font-size:.88rem;">'+fmt+'<\/div>';
 
     var fb=document.getElementById("nihFeedback");
     var iaLower=txt.toLowerCase();
@@ -4843,7 +4843,7 @@ function nihDisplayIAResult(c,d,el){
     fb.style.display="block";
     fb.style.background=match?"#e8f5e9":"#fff3cd";
     fb.style.borderLeft=match?"4px solid #4caf50":"4px solid #ffc107";
-    fb.innerHTML=match?'<strong style="color:#2e7d32;">✅ La IA coincide con el diagnóstico NIH:</strong> '+NIH_LABELS_ES[c.label]:'<strong style="color:#856404;">⚠️ La IA puede diferir del diagnóstico NIH:</strong> '+NIH_LABELS_ES[c.label]+'<p style="margin-top:6px;font-size:.85rem;color:var(--text-light);">Recuerda que las etiquetas NIH fueron extraídas por NLP y tienen ~90% de precisión.</p>';
+    fb.innerHTML=match?'<strong style="color:#2e7d32;">✅ La IA coincide con el diagnóstico NIH:<\/strong> '+NIH_LABELS_ES[c.label]:'<strong style="color:#856404;">⚠️ La IA puede diferir del diagnóstico NIH:<\/strong> '+NIH_LABELS_ES[c.label]+'<p style="margin-top:6px;font-size:.85rem;color:var(--text-light);">Recuerda que las etiquetas NIH fueron extraídas por NLP y tienen ~90% de precisión.<\/p>';
 }
 
 function nihGenerateXraySVG(label){
@@ -4880,29 +4880,29 @@ function nihFallbackSVG(label){
     '<path d="M165 180 Q150 200 140 230 Q130 260 125 290"/><path d="M165 180 Q155 210 160 250"/>'+
     '<path d="M235 180 Q250 200 260 230 Q270 260 275 290"/><path d="M235 180 Q245 210 240 250"/>'+
     '<path d="M160 190 Q140 210 130 240"/><path d="M240 190 Q260 210 270 240"/>'+
-    '</g>';
+    '<\/g>';
 
     if(label==="Cardiomegaly"){heartRx="90";heartRy="80";extras='<ellipse cx="195" cy="280" rx="90" ry="80" fill="rgba(160,160,160,.45)" stroke="rgba(200,200,200,.2)" stroke-width="1"/>';}
     else if(label==="Effusion")extras='<path d="M65 350 Q130 325 200 335 Q260 325 335 350 L335 450 Q200 430 65 450Z" fill="rgba(180,180,180,.55)"/><path d="M65 360 Q200 340 335 360" stroke="rgba(200,200,200,.3)" stroke-width="1" fill="none"/>';
-    else if(label==="Pneumothorax")extras='<path d="M260 140 Q310 150 315 220 Q315 300 280 360" stroke="rgba(255,255,200,.4)" stroke-width="2" fill="none"/><rect x="265" y="160" width="45" height="170" fill="rgba(0,0,0,.3)" rx="4"/><text x="272" y="250" fill="rgba(255,255,200,.35)" font-size="9" font-family="sans-serif">sin trama</text>';
+    else if(label==="Pneumothorax")extras='<path d="M260 140 Q310 150 315 220 Q315 300 280 360" stroke="rgba(255,255,200,.4)" stroke-width="2" fill="none"/><rect x="265" y="160" width="45" height="170" fill="rgba(0,0,0,.3)" rx="4"/><text x="272" y="250" fill="rgba(255,255,200,.35)" font-size="9" font-family="sans-serif">sin trama<\/text>';
     else if(label==="Consolidation")extras='<ellipse cx="145" cy="320" rx="55" ry="45" fill="rgba(190,190,190,.5)"/><path d="M120 310 L130 315 M135 305 L140 320 M150 300 L145 315" stroke="rgba(220,220,220,.3)" stroke-width="1"/>';
-    else if(label==="Pneumonia")extras='<ellipse cx="260" cy="300" rx="50" ry="45" fill="rgba(190,190,190,.5)"/><g stroke="rgba(220,220,220,.25)" stroke-width="1"><line x1="240" y1="290" x2="250" y2="310"/><line x1="255" y1="285" x2="260" y2="305"/><line x1="270" y1="290" x2="265" y2="310"/></g>';
+    else if(label==="Pneumonia")extras='<ellipse cx="260" cy="300" rx="50" ry="45" fill="rgba(190,190,190,.5)"/><g stroke="rgba(220,220,220,.25)" stroke-width="1"><line x1="240" y1="290" x2="250" y2="310"/><line x1="255" y1="285" x2="260" y2="305"/><line x1="270" y1="290" x2="265" y2="310"/><\/g>';
     else if(label==="Nodule")extras='<circle cx="260" cy="200" r="14" fill="rgba(190,190,190,.55)" stroke="rgba(220,220,220,.3)" stroke-width="1"/><circle cx="260" cy="200" r="8" fill="rgba(200,200,200,.3)"/>';
     else if(label==="Mass")extras='<ellipse cx="145" cy="210" rx="35" ry="30" fill="rgba(190,190,190,.5)" stroke="rgba(220,220,220,.25)" stroke-width="1"/><ellipse cx="145" cy="210" rx="20" ry="18" fill="rgba(200,200,200,.25)"/>';
-    else if(label==="Edema")extras='<ellipse cx="200" cy="250" rx="90" ry="70" fill="rgba(180,180,180,.25)"/><ellipse cx="200" cy="250" rx="60" ry="45" fill="rgba(190,190,190,.2)"/><g stroke="rgba(200,200,200,.15)" stroke-width="1"><line x1="95" y1="340" x2="105" y2="340"/><line x1="100" y1="345" x2="110" y2="345"/><line x1="290" y1="340" x2="300" y2="340"/><line x1="295" y1="345" x2="305" y2="345"/></g>';
-    else if(label==="Emphysema")extras='<ellipse cx="130" cy="250" rx="90" ry="115" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1"/><ellipse cx="270" cy="250" rx="90" ry="115" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1"/><path d="M65 380 L335 380" stroke="rgba(200,200,200,.2)" stroke-width="1" stroke-dasharray="3,2"/><text x="150" y="395" fill="rgba(255,255,255,.2)" font-size="8" font-family="sans-serif">diafragma aplanado</text>';
-    else if(label==="Fibrosis")extras='<g opacity=".35" stroke="#aaa" stroke-width="1"><path d="M110 310 Q120 320 115 335"/><path d="M140 315 Q150 325 145 340"/><path d="M170 310 Q180 320 175 335"/><path d="M230 310 Q240 320 235 335"/><path d="M260 315 Q270 325 265 340"/><path d="M290 310 Q300 320 295 335"/></g><g opacity=".2"><circle cx="130" cy="340" r="5" fill="#aaa"/><circle cx="160" cy="345" r="4" fill="#aaa"/><circle cx="240" cy="340" r="5" fill="#aaa"/><circle cx="270" cy="345" r="4" fill="#aaa"/></g>';
-    else if(label==="Hernia")extras='<ellipse cx="200" cy="380" rx="50" ry="40" fill="rgba(180,180,180,.4)"/><ellipse cx="200" cy="380" rx="30" ry="20" fill="rgba(50,50,50,.3)"/><text x="175" y="405" fill="rgba(255,255,255,.2)" font-size="8" font-family="sans-serif">aire retrocardiaco</text>';
-    else if(label==="Atelectasis")extras='<path d="M100 310 Q140 340 100 370" stroke="rgba(200,200,200,.4)" stroke-width="2" fill="rgba(200,200,200,.25)"/><path d="M65 355 Q130 340 200 350" stroke="rgba(200,200,200,.25)" stroke-width="1.5" fill="none" stroke-dasharray="2,2"/><text x="70" y="345" fill="rgba(255,255,255,.25)" font-size="8" font-family="sans-serif">↑ hemidiafragma</text>';
+    else if(label==="Edema")extras='<ellipse cx="200" cy="250" rx="90" ry="70" fill="rgba(180,180,180,.25)"/><ellipse cx="200" cy="250" rx="60" ry="45" fill="rgba(190,190,190,.2)"/><g stroke="rgba(200,200,200,.15)" stroke-width="1"><line x1="95" y1="340" x2="105" y2="340"/><line x1="100" y1="345" x2="110" y2="345"/><line x1="290" y1="340" x2="300" y2="340"/><line x1="295" y1="345" x2="305" y2="345"/><\/g>';
+    else if(label==="Emphysema")extras='<ellipse cx="130" cy="250" rx="90" ry="115" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1"/><ellipse cx="270" cy="250" rx="90" ry="115" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1"/><path d="M65 380 L335 380" stroke="rgba(200,200,200,.2)" stroke-width="1" stroke-dasharray="3,2"/><text x="150" y="395" fill="rgba(255,255,255,.2)" font-size="8" font-family="sans-serif">diafragma aplanado<\/text>';
+    else if(label==="Fibrosis")extras='<g opacity=".35" stroke="#aaa" stroke-width="1"><path d="M110 310 Q120 320 115 335"/><path d="M140 315 Q150 325 145 340"/><path d="M170 310 Q180 320 175 335"/><path d="M230 310 Q240 320 235 335"/><path d="M260 315 Q270 325 265 340"/><path d="M290 310 Q300 320 295 335"/><\/g><g opacity=".2"><circle cx="130" cy="340" r="5" fill="#aaa"/><circle cx="160" cy="345" r="4" fill="#aaa"/><circle cx="240" cy="340" r="5" fill="#aaa"/><circle cx="270" cy="345" r="4" fill="#aaa"/><\/g>';
+    else if(label==="Hernia")extras='<ellipse cx="200" cy="380" rx="50" ry="40" fill="rgba(180,180,180,.4)"/><ellipse cx="200" cy="380" rx="30" ry="20" fill="rgba(50,50,50,.3)"/><text x="175" y="405" fill="rgba(255,255,255,.2)" font-size="8" font-family="sans-serif">aire retrocardiaco<\/text>';
+    else if(label==="Atelectasis")extras='<path d="M100 310 Q140 340 100 370" stroke="rgba(200,200,200,.4)" stroke-width="2" fill="rgba(200,200,200,.25)"/><path d="M65 355 Q130 340 200 350" stroke="rgba(200,200,200,.25)" stroke-width="1.5" fill="none" stroke-dasharray="2,2"/><text x="70" y="345" fill="rgba(255,255,255,.25)" font-size="8" font-family="sans-serif">↑ hemidiafragma<\/text>';
     else if(label==="Pleural_Thickening")extras='<path d="M65 150 Q58 260 65 370" stroke="rgba(200,200,200,.4)" stroke-width="5"/><path d="M335 150 Q342 260 335 370" stroke="rgba(200,200,200,.4)" stroke-width="5"/><path d="M68 150 Q62 260 68 370" stroke="rgba(180,180,180,.2)" stroke-width="3"/><path d="M332 150 Q338 260 332 370" stroke="rgba(180,180,180,.2)" stroke-width="3"/>';
-    else if(label==="Infiltration")extras='<g opacity=".35"><circle cx="150" cy="230" r="10" fill="#bbb"/><circle cx="170" cy="255" r="8" fill="#bbb"/><circle cx="225" cy="225" r="9" fill="#bbb"/><circle cx="245" cy="250" r="7" fill="#bbb"/><circle cx="200" cy="275" r="11" fill="#bbb"/><circle cx="135" cy="260" r="6" fill="#bbb"/><circle cx="260" cy="235" r="8" fill="#bbb"/></g>';
+    else if(label==="Infiltration")extras='<g opacity=".35"><circle cx="150" cy="230" r="10" fill="#bbb"/><circle cx="170" cy="255" r="8" fill="#bbb"/><circle cx="225" cy="225" r="9" fill="#bbb"/><circle cx="245" cy="250" r="7" fill="#bbb"/><circle cx="200" cy="275" r="11" fill="#bbb"/><circle cx="135" cy="260" r="6" fill="#bbb"/><circle cx="260" cy="235" r="8" fill="#bbb"/><\/g>';
 
     return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;max-width:400px;background:#0a0a0a;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'+
     '<defs>'+
-    '<radialGradient id="lgL" cx="35%" cy="50%" r="45%"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="70%" stop-color="#181818"/><stop offset="100%" stop-color="#0a0a0a"/></radialGradient>'+
-    '<radialGradient id="lgR" cx="65%" cy="50%" r="45%"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="70%" stop-color="#181818"/><stop offset="100%" stop-color="#0a0a0a"/></radialGradient>'+
-    '<radialGradient id="hrt" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#555"/><stop offset="100%" stop-color="#333"/></radialGradient>'+
-    '</defs>'+
+    '<radialGradient id="lgL" cx="35%" cy="50%" r="45%"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="70%" stop-color="#181818"/><stop offset="100%" stop-color="#0a0a0a"/><\/radialGradient>'+
+    '<radialGradient id="lgR" cx="65%" cy="50%" r="45%"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="70%" stop-color="#181818"/><stop offset="100%" stop-color="#0a0a0a"/><\/radialGradient>'+
+    '<radialGradient id="hrt" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#555"/><stop offset="100%" stop-color="#333"/><\/radialGradient>'+
+    '<\/defs>'+
     '<rect width="'+w+'" height="'+h+'" fill="#0a0a0a"/>'+
     // Soft tissue outline
     '<ellipse cx="200" cy="260" rx="150" ry="190" fill="none" stroke="rgba(200,200,200,.06)" stroke-width="2"/>'+
@@ -4927,7 +4927,7 @@ function nihFallbackSVG(label){
     '<path d="M85 165 Q140 155 200 160 Q260 155 315 165"/><path d="M80 200 Q140 188 200 193 Q260 188 320 200"/>'+
     '<path d="M78 235 Q140 220 200 225 Q260 220 322 235"/><path d="M80 270 Q140 255 200 260 Q260 255 320 270"/>'+
     '<path d="M83 305 Q140 290 200 295 Q260 290 317 305"/><path d="M88 340 Q140 325 200 330 Q260 325 312 340"/>'+
-    '</g>'+
+    '<\/g>'+
     // Clavicles
     '<path d="M85 130 Q130 120 190 125" stroke="rgba(200,200,200,.12)" stroke-width="2.5" fill="none"/>'+
     '<path d="M315 130 Q270 120 210 125" stroke="rgba(200,200,200,.12)" stroke-width="2.5" fill="none"/>'+
@@ -4946,12 +4946,12 @@ function nihFallbackSVG(label){
     // Pathology overlay
     extras+
     // Labels
-    '<text x="10" y="18" fill="rgba(255,255,255,.4)" font-size="11" font-family="monospace">NIH CXR-14</text>'+
-    '<text x="10" y="32" fill="rgba(255,255,255,.25)" font-size="9" font-family="monospace">Esquema docente</text>'+
-    '<text x="'+( w-55)+'" y="18" fill="rgba(255,255,255,.3)" font-size="10" font-family="monospace">PA</text>'+
+    '<text x="10" y="18" fill="rgba(255,255,255,.4)" font-size="11" font-family="monospace">NIH CXR-14<\/text>'+
+    '<text x="10" y="32" fill="rgba(255,255,255,.25)" font-size="9" font-family="monospace">Esquema docente<\/text>'+
+    '<text x="'+( w-55)+'" y="18" fill="rgba(255,255,255,.3)" font-size="10" font-family="monospace">PA<\/text>'+
     '<rect x="8" y="'+( h-28)+'" width="6" height="16" fill="rgba(255,255,255,.3)" rx="1"/>'+
-    '<text x="20" y="'+( h-15)+'" fill="rgba(255,255,255,.25)" font-size="8" font-family="monospace">L</text>'+
-    '</svg>';
+    '<text x="20" y="'+( h-15)+'" fill="rgba(255,255,255,.25)" font-size="8" font-family="monospace">L<\/text>'+
+    '<\/svg>';
 }
 
 // ═══ TELÉFONOS BUSCAS ═══
@@ -5059,7 +5059,7 @@ function renderTelefonos(data){
   var el=document.getElementById("telDirectory");
   if(!el)return;
   if(!data||data.length===0){
-    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:12px;">&#128269;</div><p style="font-weight:600;margin-bottom:4px;">Sin resultados</p><p style="font-size:.85rem;">Prueba con otra búsqueda</p></div>';
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:12px;">&#128269;<\/div><p style="font-weight:600;margin-bottom:4px;">Sin resultados<\/p><p style="font-size:.85rem;">Prueba con otra búsqueda<\/p><\/div>';
     return;
   }
   // Agrupar por letra normalizada
@@ -5075,33 +5075,33 @@ function renderTelefonos(data){
   // Índice
   var idx='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px;padding:10px 12px;background:var(--bg-subtle);border-radius:8px;">';
   allAlpha.forEach(function(l){
-    if(groups[l]){idx+='<a href="#tlg-'+l+'" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--primary,#1a6b4a);color:#fff;border-radius:5px;font-weight:700;font-size:.78rem;text-decoration:none;">'+l+'</a>';}
-    else{idx+='<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;color:var(--text-muted);font-size:.78rem;opacity:.35;">'+l+'</span>';}
+    if(groups[l]){idx+='<a href="#tlg-'+l+'" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--primary,#1a6b4a);color:#fff;border-radius:5px;font-weight:700;font-size:.78rem;text-decoration:none;">'+l+'<\/a>';}
+    else{idx+='<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;color:var(--text-muted);font-size:.78rem;opacity:.35;">'+l+'<\/span>';}
   });
-  idx+='</div>';
+  idx+='<\/div>';
   // Grupos
   var rows='';
   letters.forEach(function(letra){
     rows+='<div id="tlg-'+letra+'" style="margin-bottom:20px;scroll-margin-top:60px;">';
     rows+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;position:sticky;top:0;z-index:2;background:var(--bg-main,#fff);padding:4px 0;">';
-    rows+='<span style="width:30px;height:30px;background:var(--primary,#1a6b4a);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;">'+letra+'</span>';
-    rows+='<div style="flex:1;height:1px;background:var(--border);"></div>';
-    rows+='<span style="font-size:.75rem;color:var(--text-muted);">'+groups[letra].length+'</span>';
-    rows+='</div>';
+    rows+='<span style="width:30px;height:30px;background:var(--primary,#1a6b4a);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;">'+letra+'<\/span>';
+    rows+='<div style="flex:1;height:1px;background:var(--border);"><\/div>';
+    rows+='<span style="font-size:.75rem;color:var(--text-muted);">'+groups[letra].length+'<\/span>';
+    rows+='<\/div>';
     rows+='<div style="display:grid;gap:5px;">';
     groups[letra].forEach(function(item){
       var fn=item.t.replace(/\s/g,'').split('/')[0];
       rows+='<div onclick="(function(div,num){if(!navigator.clipboard)return;navigator.clipboard.writeText(num).then(function(){var h=div.querySelector(\'.ch\');h.textContent=\'&#10003; Copiado\';h.style.color=\'#1a6b4a\';setTimeout(function(){h.textContent=\'Copiar\';h.style.color=\'\';},1400);});})(this,\''+fn+'\')" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:border-color .15s,background .15s;" onmouseover="this.style.borderColor=\'#1a6b4a\';this.style.background=\'rgba(26,107,74,.05)\'" onmouseout="this.style.borderColor=\'\';this.style.background=\'var(--bg-card)\'">';
-      rows+='<span style="font-size:.87rem;font-weight:500;color:var(--text);line-height:1.35;flex:1;">'+item.s+'</span>';
+      rows+='<span style="font-size:.87rem;font-weight:500;color:var(--text);line-height:1.35;flex:1;">'+item.s+'<\/span>';
       rows+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">';
-      rows+='<span style="font-family:monospace;font-size:.88rem;font-weight:700;color:var(--primary,#1a6b4a);white-space:nowrap;">'+item.t+'</span>';
-      rows+='<span class="ch" style="font-size:.68rem;color:var(--text-muted);">Copiar</span>';
-      rows+='</div></div>';
+      rows+='<span style="font-family:monospace;font-size:.88rem;font-weight:700;color:var(--primary,#1a6b4a);white-space:nowrap;">'+item.t+'<\/span>';
+      rows+='<span class="ch" style="font-size:.68rem;color:var(--text-muted);">Copiar<\/span>';
+      rows+='<\/div><\/div>';
     });
-    rows+='</div></div>';
+    rows+='<\/div><\/div>';
   });
   var total=data.length;
-  el.innerHTML='<div style="font-size:.78rem;color:var(--text-muted);text-align:right;margin-bottom:8px;">'+total+' registro'+(total!==1?'s':'')+'</div>'+idx+rows+'<div style="margin-top:12px;padding:10px;background:var(--bg-subtle);border-radius:7px;font-size:.75rem;color:var(--text-muted);text-align:center;">&#128203; Toca cualquier fila para copiar el número</div>';
+  el.innerHTML='<div style="font-size:.78rem;color:var(--text-muted);text-align:right;margin-bottom:8px;">'+total+' registro'+(total!==1?'s':'')+'<\/div>'+idx+rows+'<div style="margin-top:12px;padding:10px;background:var(--bg-subtle);border-radius:7px;font-size:.75rem;color:var(--text-muted);text-align:center;">&#128203; Toca cualquier fila para copiar el número<\/div>';
 }
 
 function filterTelefonos(){
@@ -5178,7 +5178,7 @@ function gpRender(suffix){
     var list=GP_DATA[key]||[];
     var el=document.getElementById("gpList"+suffix);
     if(!list.length){
-        el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);opacity:.6;"><div style="font-size:2rem;margin-bottom:8px;">🛏️</div><p style="font-size:.9rem;">No hay pacientes registrados en esta guardia</p></div>';
+        el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);opacity:.6;"><div style="font-size:2rem;margin-bottom:8px;">🛏️<\/div><p style="font-size:.9rem;">No hay pacientes registrados en esta guardia<\/p><\/div>';
         return;
     }
     var prioOrder={urgente:0,atento:1,normal:2};
@@ -5192,19 +5192,19 @@ function gpRender(suffix){
         return '<div style="background:'+(isDark?"rgba(255,255,255,.04)":pc.bg)+';border:1px solid '+(isDark?"rgba(255,255,255,.1)":pc.border)+';border-left:4px solid '+(p.prioridad==="urgente"?"#dc2626":p.prioridad==="atento"?"#f59e0b":"#4caf50")+';border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;'+doneStyle+'">'+
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'+
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'+
-        '<span style="font-size:.85rem;">'+pc.dot+'</span>'+
-        (p.cama?'<span style="background:'+(isDark?"rgba(255,255,255,.12)":"var(--bg-subtle)")+';padding:3px 8px;border-radius:4px;font-weight:700;font-size:.85rem;">'+p.cama+'</span>':'')+
-        (p.id?'<span style="font-weight:600;font-size:.9rem;">'+p.id+'</span>':'')+
-        (p.edad?'<span style="font-size:.82rem;color:'+(isDark?"rgba(255,255,255,.5)":"var(--text-muted)")+';">'+p.edad+'</span>':'')+
-        '<span style="font-size:.78rem;color:'+(isDark?"rgba(255,255,255,.35)":"var(--text-muted)")+';">⏰ '+p.hora+'</span>'+
-        '</div>'+
+        '<span style="font-size:.85rem;">'+pc.dot+'<\/span>'+
+        (p.cama?'<span style="background:'+(isDark?"rgba(255,255,255,.12)":"var(--bg-subtle)")+';padding:3px 8px;border-radius:4px;font-weight:700;font-size:.85rem;">'+p.cama+'<\/span>':'')+
+        (p.id?'<span style="font-weight:600;font-size:.9rem;">'+p.id+'<\/span>':'')+
+        (p.edad?'<span style="font-size:.82rem;color:'+(isDark?"rgba(255,255,255,.5)":"var(--text-muted)")+';">'+p.edad+'<\/span>':'')+
+        '<span style="font-size:.78rem;color:'+(isDark?"rgba(255,255,255,.35)":"var(--text-muted)")+';">⏰ '+p.hora+'<\/span>'+
+        '<\/div>'+
         '<div style="display:flex;gap:4px;">'+
-        '<button onclick="gpToggleDone(\''+key+'\','+i+')" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:2px;" title="'+(p.done?"Desmarcar":"Marcar como hecho")+'">'+(p.done?"↩️":"✅")+'</button>'+
-        '<button onclick="if(confirm(\'¿Eliminar?\'))gpDelete(\''+key+'\','+i+')" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:2px;" title="Eliminar">🗑️</button>'+
-        '</div></div>'+
-        (p.motivo?'<div style="font-size:.88rem;font-weight:600;margin-bottom:4px;'+(isDark?"color:#fff;":"")+'">'+p.motivo+'</div>':'')+
-        (p.notas?'<div style="font-size:.84rem;color:'+(isDark?"rgba(255,255,255,.65)":"var(--text-light)")+';line-height:1.5;">'+p.notas.replace(/\n/g,"<br>")+'</div>':'')+
-        '</div>';
+        '<button onclick="gpToggleDone(\''+key+'\','+i+')" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:2px;" title="'+(p.done?"Desmarcar":"Marcar como hecho")+'">'+(p.done?"↩️":"✅")+'<\/button>'+
+        '<button onclick="if(confirm(\'¿Eliminar?\'))gpDelete(\''+key+'\','+i+')" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:2px;" title="Eliminar">🗑️<\/button>'+
+        '<\/div><\/div>'+
+        (p.motivo?'<div style="font-size:.88rem;font-weight:600;margin-bottom:4px;'+(isDark?"color:#fff;":"")+'">'+p.motivo+'<\/div>':'')+
+        (p.notas?'<div style="font-size:.84rem;color:'+(isDark?"rgba(255,255,255,.65)":"var(--text-light)")+';line-height:1.5;">'+p.notas.replace(/\n/g,"<br>")+'<\/div>':'')+
+        '<\/div>';
     }).join("");
     el.innerHTML=html;
 }
@@ -5507,22 +5507,22 @@ m.style.display='flex';
 })();
 function secretKeySave(){
 var k=document.getElementById('secretKeyInput').value.trim();
-if(!k||!k.startsWith('gsk_')){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Key debe empezar por gsk_</span>';return;}
+if(!k||!k.startsWith('gsk_')){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Key debe empezar por gsk_<\/span>';return;}
 EMBEDDED_GROQ_KEY=k;
 if(!CONFIG.groqKey){CONFIG.groqKey='';}
 // Also save to Firestore if available
 try{if(typeof saveGroqKeyToFirestore==='function')saveGroqKeyToFirestore(k);}catch(e){}
-document.getElementById('secretKeyStatus').innerHTML='<span style="color:#059669">✅ Key actualizada en memoria y Firestore</span>';
+document.getElementById('secretKeyStatus').innerHTML='<span style="color:#059669">✅ Key actualizada en memoria y Firestore<\/span>';
 }
 async function secretKeyTest(){
 var k=document.getElementById('secretKeyInput').value.trim();
-if(!k||!k.startsWith('gsk_')){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}
-document.getElementById('secretKeyStatus').innerHTML='<span style="color:#d97706">⏳ Probando...</span>';
+if(!k||!k.startsWith('gsk_')){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Key inválida<\/span>';return;}
+document.getElementById('secretKeyStatus').innerHTML='<span style="color:#d97706">⏳ Probando...<\/span>';
 try{
 var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:'qwen/qwen3-32b',messages:[{role:'user',content:'Di: OK'}],max_tokens:10})});
-if(r.ok)document.getElementById('secretKeyStatus').innerHTML='<span style="color:#059669">✅ ¡Conexión exitosa!</span>';
-else document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Error '+r.status+'</span>';
-}catch(e){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ '+e.message+'</span>';}
+if(r.ok)document.getElementById('secretKeyStatus').innerHTML='<span style="color:#059669">✅ ¡Conexión exitosa!<\/span>';
+else document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Error '+r.status+'<\/span>';
+}catch(e){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ '+e.message+'<\/span>';}
 }
 function secretKeyShow(){
 var inp=document.getElementById('secretKeyInput');
@@ -5572,14 +5572,14 @@ async function enfCallAI(prompt,resultDiv,titleDiv,titleText){
   if(titleDiv)document.getElementById(titleDiv).textContent=titleText||'Resultado';
   document.getElementById(resultDiv).style.display='block';
   var contentDiv=resultDiv.replace('Result','Content');
-  document.getElementById(contentDiv).innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);">⏳ Generando respuesta...</div>';
+  document.getElementById(contentDiv).innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);">⏳ Generando respuesta...<\/div>';
   try{
     var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:enfModel,messages:[{role:'system',content:'Eres un experto en enfermería clínica española. Responde en español de forma clara, estructurada y práctica. Usa formato con secciones numeradas. Incluye indicaciones, contraindicaciones y precauciones cuando sea relevante. Enfocado a enfermería de Atención Primaria y urgencias.'},{role:'user',content:prompt}],max_tokens:4096,temperature:0.4})});
     if(!res.ok)throw new Error('Error API: '+res.status);
     var data=await res.json();
     var text=data.choices[0]?.message?.content||'Sin respuesta';
     document.getElementById(contentDiv).textContent=text;
-  }catch(e){document.getElementById(contentDiv).innerHTML='<span style="color:#ef4444;">❌ '+e.message+'</span>';}
+  }catch(e){document.getElementById(contentDiv).innerHTML='<span style="color:#ef4444;">❌ '+e.message+'<\/span>';}
 }
 
 async function enfHacerPregunta(){
@@ -5589,7 +5589,7 @@ async function enfHacerPregunta(){
   input.value='';
   var list=document.getElementById('enfPreguntasList');
   var qDiv=document.createElement('div');qDiv.className='question-box';
-  qDiv.innerHTML='<div class="question-text">'+text+'</div><div class="answer-text" style="color:var(--text-muted);">⏳ Pensando...</div><div class="note-time">'+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'</div>';
+  qDiv.innerHTML='<div class="question-text">'+text+'<\/div><div class="answer-text" style="color:var(--text-muted);">⏳ Pensando...<\/div><div class="note-time">'+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'<\/div>';
   if(list.querySelector('.empty-state'))list.innerHTML='';
   list.prepend(qDiv);
   var key=enfGetKey();
@@ -5600,7 +5600,7 @@ async function enfHacerPregunta(){
     var data=await res.json();
     qDiv.querySelector('.answer-text').textContent=data.choices[0]?.message?.content||'Sin respuesta';
     qDiv.querySelector('.answer-text').style.color='';
-  }catch(e){qDiv.querySelector('.answer-text').innerHTML='<span style="color:#ef4444;">❌ '+e.message+'</span>';}
+  }catch(e){qDiv.querySelector('.answer-text').innerHTML='<span style="color:#ef4444;">❌ '+e.message+'<\/span>';}
 }
 
 function enfAskAI(prompt){enfCallAI(prompt,'enfTecnicaResult','enfTecnicaTitle',prompt.substring(0,60)+'...');}
@@ -5636,7 +5636,7 @@ function enfBuscarFarmacoDir(farmaco){
 function enfGuardarConfig(){
   enfModel=document.getElementById('enfModel').value;
   localStorage.setItem('enfModel',enfModel);
-  document.getElementById('enfConfigStatus').innerHTML='<span style="color:#059669;">✅ Modelo guardado: '+enfModel+'</span>';
+  document.getElementById('enfConfigStatus').innerHTML='<span style="color:#059669;">✅ Modelo guardado: '+enfModel+'<\/span>';
 }
 
 // Init enfermería model selector
@@ -5673,7 +5673,7 @@ function closeFHNotebook(){document.getElementById('fh-nb-overlay').style.displa
 function fhRenderSuggestions(){
   var el=document.getElementById('fh-nb-suggestions');
   if(!el)return;
-  el.innerHTML=fhDefaultSuggestions.map(function(s){return '<button onclick="document.getElementById(\'fh-nb-input\').value=\''+s+'\';fhSendMsg()" style="display:inline-block;padding:6px 14px;border-radius:20px;background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;border:none;cursor:pointer;margin:4px;">'+s+'</button>';}).join('');
+  el.innerHTML=fhDefaultSuggestions.map(function(s){return '<button onclick="document.getElementById(\'fh-nb-input\').value=\''+s+'\';fhSendMsg()" style="display:inline-block;padding:6px 14px;border-radius:20px;background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;border:none;cursor:pointer;margin:4px;">'+s+'<\/button>';}).join('');
 }
 
 function fhUpdateSubtitle(){
@@ -5706,7 +5706,7 @@ function fhRenderFiles(){
   var noFiles=document.getElementById('fh-nb-no-files');
   if(fhFiles.length===0){list.innerHTML='';noFiles.style.display='block';return;}
   noFiles.style.display='none';
-  list.innerHTML=fhFiles.map(function(f){return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:rgba(30,41,59,.5);margin-bottom:6px;"><span style="font-size:14px">📄</span><span style="flex:1;font-size:11px;color:#cbd5e1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+f.name+'</span><span style="font-size:9px;color:#475569;">'+fhFormatSize(f.size)+'</span><button onclick="fhRemoveFile(\''+f.id+'\')" style="width:20px;height:20px;border:none;background:none;color:#ef4444;cursor:pointer;font-size:14px;">✕</button></div>';}).join('');
+  list.innerHTML=fhFiles.map(function(f){return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:rgba(30,41,59,.5);margin-bottom:6px;"><span style="font-size:14px">📄<\/span><span style="flex:1;font-size:11px;color:#cbd5e1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+f.name+'<\/span><span style="font-size:9px;color:#475569;">'+fhFormatSize(f.size)+'<\/span><button onclick="fhRemoveFile(\''+f.id+'\')" style="width:20px;height:20px;border:none;background:none;color:#ef4444;cursor:pointer;font-size:14px;">✕<\/button><\/div>';}).join('');
 }
 
 function fhAddMessage(role,content){fhMessages.push({role:role,content:content});fhRenderMessages();}
@@ -5716,12 +5716,12 @@ function fhRenderMessages(){
   var empty=document.getElementById('fh-nb-empty');
   if(fhMessages.length===0){empty.style.display='flex';}else{empty.style.display='none';}
   var html=fhMessages.map(function(m){
-    var formatted=m.content.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/`(.*?)`/g,'<code style="padding:1px 4px;background:rgba(0,0,0,.2);border-radius:3px;font-size:11px;">$1</code>').replace(/\n/g,'<br>');
+    var formatted=m.content.replace(/\*\*(.*?)\*\*/g,'<strong>$1<\/strong>').replace(/\*(.*?)\*/g,'<em>$1<\/em>').replace(/`(.*?)`/g,'<code style="padding:1px 4px;background:rgba(0,0,0,.2);border-radius:3px;font-size:11px;">$1<\/code>').replace(/\n/g,'<br>');
     var avatarStyle='width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;';
-    if(m.role==='assistant')return '<div style="display:flex;gap:10px;margin-bottom:16px;"><div style="'+avatarStyle+'background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;">🤖</div><div style="max-width:80%;padding:10px 16px;border-radius:16px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;background:#1e293b;color:#cbd5e1;border-bottom-left-radius:4px;">'+formatted+'</div></div>';
-    return '<div style="display:flex;gap:10px;margin-bottom:16px;justify-content:flex-end;"><div style="max-width:80%;padding:10px 16px;border-radius:16px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;background:#4f46e5;color:#fff;border-bottom-right-radius:4px;">'+formatted+'</div><div style="'+avatarStyle+'background:#334155;color:#94a3b8;">👤</div></div>';
+    if(m.role==='assistant')return '<div style="display:flex;gap:10px;margin-bottom:16px;"><div style="'+avatarStyle+'background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;">🤖<\/div><div style="max-width:80%;padding:10px 16px;border-radius:16px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;background:#1e293b;color:#cbd5e1;border-bottom-left-radius:4px;">'+formatted+'<\/div><\/div>';
+    return '<div style="display:flex;gap:10px;margin-bottom:16px;justify-content:flex-end;"><div style="max-width:80%;padding:10px 16px;border-radius:16px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;background:#4f46e5;color:#fff;border-bottom-right-radius:4px;">'+formatted+'<\/div><div style="'+avatarStyle+'background:#334155;color:#94a3b8;">👤<\/div><\/div>';
   }).join('');
-  if(fhIsLoading)html+='<div style="display:flex;gap:10px;margin-bottom:16px;"><div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">🤖</div><div style="background:#1e293b;padding:12px 16px;border-radius:16px;border-bottom-left-radius:4px;color:#818cf8;font-size:12px;">Pensando...</div></div>';
+  if(fhIsLoading)html+='<div style="display:flex;gap:10px;margin-bottom:16px;"><div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">🤖<\/div><div style="background:#1e293b;padding:12px 16px;border-radius:16px;border-bottom-left-radius:4px;color:#818cf8;font-size:12px;">Pensando...<\/div><\/div>';
   if(fhMessages.length===0)html=document.getElementById('fh-nb-empty').outerHTML;
   el.innerHTML=html;el.scrollTop=el.scrollHeight;
 }
@@ -5771,7 +5771,7 @@ function closeBlogPublisher(){document.getElementById('fh-blog-overlay').style.d
 
 function fhBlogLog(msg,type){
   var el=document.getElementById('fh-blog-status');
-  el.innerHTML+='<div style="font-family:monospace;font-size:11px;padding:2px 0;color:'+(type==='ok'?'#34d399':type==='err'?'#f87171':'#60a5fa')+';">'+msg+'</div>';
+  el.innerHTML+='<div style="font-family:monospace;font-size:11px;padding:2px 0;color:'+(type==='ok'?'#34d399':type==='err'?'#f87171':'#60a5fa')+';">'+msg+'<\/div>';
   el.scrollTop=el.scrollHeight;
 }
 
@@ -5813,8 +5813,8 @@ function fhBlogRenderFiles(){
   if(fhBlogFiles.length===0){el.innerHTML='';return;}
   el.innerHTML=fhBlogFiles.map(function(f,i){
     var isImg=f.type.startsWith('image/');
-    var thumb=isImg?'<img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:22px">📎</div>';
-    return '<div style="position:relative;width:72px;height:72px;border-radius:10px;border:1px solid #334155;overflow:hidden;background:#1e293b;">'+thumb+'<button onclick="fhBlogRemoveFile('+i+')" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(239,68,68,.9);color:#fff;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;">✕</button><div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);font-size:7px;color:#94a3b8;text-align:center;padding:1px 2px;">'+(f.size/1024).toFixed(0)+'KB</div></div>';
+    var thumb=isImg?'<img src="'+URL.createObjectURL(f)+'" style="width:100%;height:100%;object-fit:cover;">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:22px">📎<\/div>';
+    return '<div style="position:relative;width:72px;height:72px;border-radius:10px;border:1px solid #334155;overflow:hidden;background:#1e293b;">'+thumb+'<button onclick="fhBlogRemoveFile('+i+')" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(239,68,68,.9);color:#fff;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;">✕<\/button><div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);font-size:7px;color:#94a3b8;text-align:center;padding:1px 2px;">'+(f.size/1024).toFixed(0)+'KB<\/div><\/div>';
   }).join('');
 }
 
@@ -5832,7 +5832,7 @@ async function fhBlogGeneratePost(text,imgUrls){
   var imgCtx='';
   if(imgUrls&&imgUrls.length>0)imgCtx='\n\nImagenes: '+imgUrls.map(function(u,i){return(i+1)+'. '+u}).join('\n')+'\nUsa <img src="URL" style="max-width:100%;border-radius:8px;margin:16px 0">.';
   var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+FH_GROQ_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,temperature:0.7,messages:[
-    {role:'system',content:'Editor blog cartagenaeste.es. Responde SOLO JSON: {"title":"","content":"<p>HTML</p>","excerpt":"","tags":[],"category_suggestion":""}. Si hay documentos adjuntos, incluye al final del HTML una seccion con enlaces de descarga usando: <div style="background:#f0f9ff;padding:16px;border-radius:12px;margin-top:24px"><h3>📎 Documentos adjuntos</h3><ul><li><a href="URL" target="_blank">NOMBRE</a></li></ul></div>'},
+    {role:'system',content:'Editor blog cartagenaeste.es. Responde SOLO JSON: {"title":"","content":"<p>HTML<\/p>","excerpt":"","tags":[],"category_suggestion":""}. Si hay documentos adjuntos, incluye al final del HTML una seccion con enlaces de descarga usando: <div style="background:#f0f9ff;padding:16px;border-radius:12px;margin-top:24px"><h3>📎 Documentos adjuntos<\/h3><ul><li><a href="URL" target="_blank">NOMBRE<\/a><\/li><\/ul><\/div>'},
     {role:'user',content:'Genera entrada completa. HTML limpio, tono local Cartagena.'+imgCtx+'\n\nContenido:\n'+text}
   ]})});
   if(!res.ok)throw new Error('Groq error: '+res.status);
@@ -5879,7 +5879,7 @@ async function fhBlogPublish(){
     var result=await fhBlogAPI('publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(wpData)});
     fhBlogLog('✅ ¡'+(status==='publish'?'PUBLICADO':'BORRADOR')+'! → '+result.link,'ok');
     var successEl=document.getElementById('fh-blog-success');
-    successEl.innerHTML='<h3 style="font-size:14px;font-weight:900;color:#34d399;margin-bottom:6px;">✅ ¡'+(status==='publish'?'Publicado':'Borrador')+'!</h3><p style="font-size:13px;color:#cbd5e1;font-weight:700;">'+post.title+'</p><a href="'+result.link+'" target="_blank" style="color:#38bdf8;font-size:12px;word-break:break-all;">🔗 '+result.link+'</a>';
+    successEl.innerHTML='<h3 style="font-size:14px;font-weight:900;color:#34d399;margin-bottom:6px;">✅ ¡'+(status==='publish'?'Publicado':'Borrador')+'!<\/h3><p style="font-size:13px;color:#cbd5e1;font-weight:700;">'+post.title+'<\/p><a href="'+result.link+'" target="_blank" style="color:#38bdf8;font-size:12px;word-break:break-all;">🔗 '+result.link+'<\/a>';
     successEl.style.display='block';
     document.getElementById('fh-blog-content').value='';
     fhBlogFiles=[];fhBlogRenderFiles();
@@ -6074,7 +6074,7 @@ function trSetPersona(p){
   var el=document.getElementById('trAlertasList');
   el.innerHTML='';
   TR_ALERTAS.forEach(function(a){
-    el.innerHTML+='<div style="padding:10px 12px;background:#fdecea;border:1px solid #f5b7b1;border-radius:8px;font-size:.88rem;color:#5a0000;display:flex;align-items:center;gap:10px;"><span style="font-size:1rem;flex-shrink:0;">⚠️</span>'+a+'</div>';
+    el.innerHTML+='<div style="padding:10px 12px;background:#fdecea;border:1px solid #f5b7b1;border-radius:8px;font-size:.88rem;color:#5a0000;display:flex;align-items:center;gap:10px;"><span style="font-size:1rem;flex-shrink:0;">⚠️<\/span>'+a+'<\/div>';
   });
   trShow('trBloqueA');
   window.scrollTo(0,0);
@@ -6086,7 +6086,7 @@ function trBloqueARespuesta(tieneAlerta){
   var el=document.getElementById('trAreasList');
   el.innerHTML='';
   TR_AREAS.forEach(function(a){
-    el.innerHTML+='<button onclick="trSeleccionarArea(\'' + a.id + '\')" class="tr-opcion" style="text-align:center;padding:14px 6px;"><div style="font-size:1.4rem;margin-bottom:4px;">'+a.icon+'</div><div style="font-size:.82rem;">'+a.label+'</div></button>';
+    el.innerHTML+='<button onclick="trSeleccionarArea(\'' + a.id + '\')" class="tr-opcion" style="text-align:center;padding:14px 6px;"><div style="font-size:1.4rem;margin-bottom:4px;">'+a.icon+'<\/div><div style="font-size:.82rem;">'+a.label+'<\/div><\/button>';
   });
   trShow('trBloqueB');
 }
@@ -6099,7 +6099,7 @@ function trSeleccionarArea(area){
   var el=document.getElementById('trSintomasList');
   el.innerHTML='';
   sintomas.forEach(function(s,i){
-    el.innerHTML+='<button onclick="trSeleccionarSintoma('+i+')" class="tr-opcion" style="text-align:left;padding:12px 14px;">'+s.label+'</button>';
+    el.innerHTML+='<button onclick="trSeleccionarSintoma('+i+')" class="tr-opcion" style="text-align:left;padding:12px 14px;">'+s.label+'<\/button>';
   });
   trShow('trBloqueC');
 }
@@ -6114,7 +6114,7 @@ function trSeleccionarSintoma(idx){
   var el=document.getElementById('trDuracionList');
   el.innerHTML='';
   TR_DURACIONES.forEach(function(d,i){
-    el.innerHTML+='<button onclick="trSeleccionarDuracion('+i+')" class="tr-opcion" style="font-size:.84rem;padding:11px 8px;text-align:center;">'+d.label+'</button>';
+    el.innerHTML+='<button onclick="trSeleccionarDuracion('+i+')" class="tr-opcion" style="font-size:.84rem;padding:11px 8px;text-align:center;">'+d.label+'<\/button>';
   });
   document.getElementById('trIntensidad').value=5;
   document.getElementById('trIntensidadVal').textContent='5';
@@ -6129,7 +6129,7 @@ function trSeleccionarDuracion(idx){
   var el=document.getElementById('trContextoList');
   el.innerHTML='';
   TR_CONTEXTO.forEach(function(c){
-    el.innerHTML+='<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;cursor:pointer;"><input type="checkbox" value="'+c.id+'" id="tr_ctx_'+c.id+'" style="width:16px;height:16px;flex-shrink:0;accent-color:#1a6b4a;"><span style="font-size:.88rem;color:var(--text);">'+c.label+'</span></label>';
+    el.innerHTML+='<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;cursor:pointer;"><input type="checkbox" value="'+c.id+'" id="tr_ctx_'+c.id+'" style="width:16px;height:16px;flex-shrink:0;accent-color:#1a6b4a;"><span style="font-size:.88rem;color:var(--text);">'+c.label+'<\/span><\/label>';
   });
   trShow('trBloqueE');
 }
@@ -6166,25 +6166,25 @@ function trCalcularResultado(){
 function trMostrarResultado(nivel){
   var n=TR_NIVELES[nivel]||TR_NIVELES[3];
   var el=document.getElementById('trResultado');
-  var telBtn=n.telefono?'<a href="tel:'+n.telefono+'" style="display:block;width:100%;text-align:center;padding:13px;background:'+n.color+';color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;text-decoration:none;margin-bottom:10px;">📞 '+n.tel_label+'</a>':'';
+  var telBtn=n.telefono?'<a href="tel:'+n.telefono+'" style="display:block;width:100%;text-align:center;padding:13px;background:'+n.color+';color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;text-decoration:none;margin-bottom:10px;">📞 '+n.tel_label+'<\/a>':'';
   el.innerHTML='<div style="background:'+n.bg+';border:2px solid '+n.color+';border-radius:14px;padding:22px 18px;margin-bottom:14px;">'
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'
-    +'<div style="font-size:2.2rem;">'+n.icon+'</div>'
-    +'<div><div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:'+n.color+';font-weight:700;margin-bottom:2px;">Nivel '+nivel+' de 5</div>'
-    +'<div style="font-size:1.2rem;font-weight:800;color:'+n.color+';">'+n.texto+'</div></div></div>'
-    +'<div style="font-size:.95rem;font-weight:700;color:#1a1a1a;margin-bottom:8px;">'+n.accion+'</div>'
-    +'<div style="font-size:.88rem;color:#333;line-height:1.5;margin-bottom:16px;">'+n.desc+'</div>'
+    +'<div style="font-size:2.2rem;">'+n.icon+'<\/div>'
+    +'<div><div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:'+n.color+';font-weight:700;margin-bottom:2px;">Nivel '+nivel+' de 5<\/div>'
+    +'<div style="font-size:1.2rem;font-weight:800;color:'+n.color+';">'+n.texto+'<\/div><\/div><\/div>'
+    +'<div style="font-size:.95rem;font-weight:700;color:#1a1a1a;margin-bottom:8px;">'+n.accion+'<\/div>'
+    +'<div style="font-size:.88rem;color:#333;line-height:1.5;margin-bottom:16px;">'+n.desc+'<\/div>'
     +telBtn
-    +'<button onclick="trReiniciar()" style="width:100%;padding:11px;background:transparent;border:1.5px solid '+n.color+';border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:600;color:'+n.color+';">🔄 Hacer de nuevo</button>'
-    +'</div>'
+    +'<button onclick="trReiniciar()" style="width:100%;padding:11px;background:transparent;border:1.5px solid '+n.color+';border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:600;color:'+n.color+';">🔄 Hacer de nuevo<\/button>'
+    +'<\/div>'
     +'<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;">'
-    +'<p style="font-size:.85rem;font-weight:700;color:var(--text);margin:0 0 8px;">📋 Recuerda siempre:</p>'
+    +'<p style="font-size:.85rem;font-weight:700;color:var(--text);margin:0 0 8px;">📋 Recuerda siempre:<\/p>'
     +'<div style="font-size:.83rem;color:var(--text-muted);line-height:1.7;">'
-    +'• Si empeoras en cualquier momento, llama al <b>112</b><br>'
-    +'• Si tienes dudas, llama al <b>061</b> (gratuito, 24h)<br>'
+    +'• Si empeoras en cualquier momento, llama al <b>112<\/b><br>'
+    +'• Si tienes dudas, llama al <b>061<\/b> (gratuito, 24h)<br>'
     +'• Esta orientación puede variar según tu historial médico<br>'
     +'• Tu médico de cabecera conoce tu situación mejor que ningún algoritmo'
-    +'</div></div>';
+    +'<\/div><\/div>';
   trShow('trResultado');
   window.scrollTo(0,0);
 }
