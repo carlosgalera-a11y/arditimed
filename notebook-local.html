@@ -3278,7 +3278,7 @@ function cerrarMapaFarmacias(){
 document.addEventListener("keydown",function(e){if(e.key==="Escape")cerrarMapaFarmacias();});
 </script>
 
-</body></html>');
+<\/body><\/html>');
     w.document.close();
     setTimeout(function(){w.print();},500);
 
@@ -3306,7 +3306,7 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape")cerrarMapaFa
     htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
     htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
     htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
-    htmlDoc+='</body></html>';
+    htmlDoc+='<\/body><\/html>';
 
     var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName+'.doc';a.click();
