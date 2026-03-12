@@ -2518,7 +2518,6 @@ function renderPatients(){
 // ═══ SISTEMA DE MODERADORES ═══
 var SUPERADMIN_EMAIL="ramongalera22@gmail.com";
 var SUPERADMIN_EMAILS=["ramongalera22@gmail.com","carlosgalera2roman@gmail.com","esther.montoro@gmail.com"];
-var SUPERADMIN_EMAILS=["ramongalera22@gmail.com","carlosgalera2roman@gmail.com","esther.montoro@gmail.com"];
 var ADMIN_EMAIL=SUPERADMIN_EMAIL; // compatibilidad hacia atrás
 var isAdminLoggedIn=false;
 var isModerador=false;
@@ -4621,6 +4620,7 @@ function gpClearAll(suffix){
     suffix=suffix||"";
     var key=suffix==="Urg"?"urg":"prof";
     GP_DATA[key]=[];gpSave();gpRender(suffix);
+}
 
 
 
