@@ -2499,6 +2499,7 @@ function renderPatients(){
 // ═══ ADMIN LOGIN - GOOGLE BASED ═══
 // ═══ SISTEMA DE MODERADORES ═══
 var SUPERADMIN_EMAIL="ramongalera22@gmail.com";
+var SUPERADMIN_EMAILS=["ramongalera22@gmail.com","carlosgalera2roman@gmail.com","esther.montoro@gmail.com"];
 var ADMIN_EMAIL=SUPERADMIN_EMAIL; // compatibilidad hacia atrás
 var isAdminLoggedIn=false;
 var isModerador=false;
@@ -2516,18 +2517,18 @@ function loadModeradoresFromFirestore(callback){
                 moderadoresCache[d.email]={nombre:d.nombre||d.email,rol:d.rol||"moderador",activo:true};
             });
             // Siempre incluir superadmin
-            moderadoresCache[SUPERADMIN_EMAIL]={nombre:"Superadmin",rol:"superadmin",activo:true};
+            SUPERADMIN_EMAILS.forEach(function(em){moderadoresCache[em]={nombre:"Admin",rol:"superadmin",activo:true};});
             console.log("Moderadores cargados:",Object.keys(moderadoresCache).length);
             if(callback)callback(moderadoresCache);
         }).catch(function(e){
             console.error("Error cargando moderadores:",e);
             moderadoresCache={};
-            moderadoresCache[SUPERADMIN_EMAIL]={nombre:"Superadmin",rol:"superadmin",activo:true};
+            SUPERADMIN_EMAILS.forEach(function(em){moderadoresCache[em]={nombre:"Admin",rol:"superadmin",activo:true};});
             if(callback)callback(moderadoresCache);
         });
     }catch(e){
         moderadoresCache={};
-        moderadoresCache[SUPERADMIN_EMAIL]={nombre:"Superadmin",rol:"superadmin",activo:true};
+        SUPERADMIN_EMAILS.forEach(function(em){moderadoresCache[em]={nombre:"Admin",rol:"superadmin",activo:true};});
         if(callback)callback(moderadoresCache);
     }
 }
@@ -2535,13 +2536,13 @@ function loadModeradoresFromFirestore(callback){
 function isAdmin(){
     var user=firebase.auth().currentUser;
     if(!user)return false;
-    if(user.email===SUPERADMIN_EMAIL)return true;
+    if(SUPERADMIN_EMAILS.indexOf(user.email)!==-1)return true;
     if(moderadoresCache&&moderadoresCache[user.email]&&moderadoresCache[user.email].activo)return true;
     return false;
 }
 function isSuperAdmin(){
     var user=firebase.auth().currentUser;
-    return user&&user.email===SUPERADMIN_EMAIL;
+    return user&&SUPERADMIN_EMAILS.indexOf(user.email)!==-1;
 }
 function getMiRol(){
     var user=firebase.auth().currentUser;
