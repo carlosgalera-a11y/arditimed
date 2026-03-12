@@ -2,7 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper: verifica si el email es superadmin
     function isSuperAdmin() {
       return request.auth != null && (
         request.auth.token.email == "ramongalera22@gmail.com" ||
@@ -11,12 +10,11 @@ service cloud.firestore {
       );
     }
 
-    // Helper: usuario autenticado
     function isAuth() {
       return request.auth != null;
     }
 
-    // === MODERADORES — solo superadmin puede escribir ===
+    // === MODERADORES ===
     match /moderadores/{docId} {
       allow read: if isAuth();
       allow write: if isSuperAdmin();
@@ -31,33 +29,42 @@ service cloud.firestore {
       allow delete: if isSuperAdmin();
     }
 
-    // === CONFIG — solo superadmin ===
+    // === CONFIG (API keys, etc.) — solo superadmin ===
     match /config/{docId} {
       allow read: if isAuth();
       allow write: if isSuperAdmin();
     }
 
-    // === ACCESOS — log de visitas profesionales ===
+    // === ACCESOS ===
     match /accesos/{docId} {
       allow create: if isAuth();
       allow read, update, delete: if isSuperAdmin();
     }
 
-    // === ACCESOS_PROFESIONALES — log de páginas visitadas ===
     match /accesos_profesionales/{docId} {
       allow create: if isAuth();
       allow read, update, delete: if isSuperAdmin();
     }
 
-    // === PROTOCOLOS — solo superadmin puede escribir ===
+    // === PROTOCOLOS ===
     match /protocolos/{docId} {
       allow read: if isAuth();
       allow write: if isSuperAdmin();
     }
 
-    // === GUARDIA_CAMBIOS — registro de cambios de guardia ===
+    // === GUARDIA_CAMBIOS ===
     match /guardia_cambios/{docId} {
       allow read, write: if isAuth();
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // === CUADERNOS PRIVADOS POR USUARIO =====================
+    // Cada usuario solo puede leer y escribir sus propios docs.
+    // Ni superadmins pueden leer los cuadernos de otro usuario.
+    // ═══════════════════════════════════════════════════════
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
     }
 
     // Bloquear todo lo demás

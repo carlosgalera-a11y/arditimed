@@ -392,6 +392,7 @@
                 </div>
                 <div class="hero-buttons" style="margin-top:20px;">
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageFilehub')" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📖</span> Cuaderno IA</a>
+                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageCuadernos')" style="background:linear-gradient(135deg,#5b21b6,#3730a3);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📓</span> Mis Cuadernos</a>
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageFilehub');setTimeout(openBlogPublisher,300)" style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🌐</span> Blog Publisher</a>
                 </div>
 
@@ -658,6 +659,12 @@
                                 <option value="qwen-max">Qwen Max</option>
                             </select>
                         </div>
+                    </div>
+                    <!-- GEMINI KEY para Traductor -->
+                    <div style="margin-top:16px;padding:12px;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:10px;border:1px solid #a5d6a7;">
+                        <h4 style="margin:0 0 6px;color:#1b5e20;font-size:.88rem;">🌍 Gemini API Key (Traductor)</h4>
+                        <p style="font-size:.76rem;color:#2e7d32;margin:0 0 8px;line-height:1.4;">Para el traductor médico en directo.<br>1. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#1565c0;">aistudio.google.com/app/apikey</a><br>2. Crea una key gratuita<br>3. Pégala aquí</p>
+                        <div class="config-row"><input type="password" id="apCfgGeminiKey" placeholder="AIzaSy..."></div>
                     </div>
                     <div style="margin-top:16px;display:flex;gap:8px">
                         <button class="btn btn-primary btn-small" onclick="apGuardarConfig()">💾 Guardar</button>
@@ -2600,6 +2607,84 @@
     </div>
 </div>
 
+<!-- ═══════ CUADERNOS PRIVADOS PAGE ═══════ -->
+<div class="page" id="pageCuadernos">
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
+    <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:28px 18px;">
+    <div style="max-width:800px;margin:0 auto;">
+
+        <!-- Cabecera -->
+        <div style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border-radius:var(--radius);padding:24px 28px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden;">
+            <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.15;">📓</div>
+            <h2 style="font-family:var(--font-display);font-size:1.7rem;margin-bottom:6px;">📓 Mis Cuadernos</h2>
+            <p style="opacity:.85;font-size:.9rem;font-weight:300;">Notas y cuadernos privados — solo visibles para ti</p>
+            <div id="cnbUserLabel" style="margin-top:8px;font-size:.78rem;opacity:.7;"></div>
+        </div>
+
+        <!-- Mensaje si no está logueado -->
+        <div id="cnbNoLogin" style="display:none;text-align:center;padding:40px 20px;background:var(--bg-card);border-radius:var(--radius);border:2px dashed var(--border);">
+            <div style="font-size:2.5rem;margin-bottom:12px;">🔐</div>
+            <p style="font-size:.95rem;color:var(--text-muted);">Inicia sesión para acceder a tus cuadernos privados.</p>
+            <button onclick="showLoginModal()" style="margin-top:14px;padding:10px 24px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-family:var(--font-body);">🔐 Iniciar sesión</button>
+        </div>
+
+        <!-- Contenido principal (cuando está logueado) -->
+        <div id="cnbMain" style="display:none;">
+
+            <!-- Lista de cuadernos + botón nuevo -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                <span style="font-size:.85rem;color:var(--text-muted);" id="cnbCount">0 cuadernos</span>
+                <button onclick="cnbNuevoCuaderno()" style="padding:8px 18px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem;font-family:var(--font-body);">+ Nuevo cuaderno</button>
+            </div>
+
+            <!-- Lista de cuadernos -->
+            <div id="cnbLista" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+
+            <!-- Editor de notas (se muestra al abrir un cuaderno) -->
+            <div id="cnbEditor" style="display:none;background:var(--bg-card);border-radius:var(--radius);border:2px solid var(--border);overflow:hidden;">
+                <div style="padding:14px 18px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+                        <span style="font-size:1.2rem;" id="cnbEditorIcon">📓</span>
+                        <span style="font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="cnbEditorTitle">Cuaderno</span>
+                    </div>
+                    <div style="display:flex;gap:6px;flex-shrink:0;">
+                        <button onclick="cnbGuardarNota()" id="cnbBtnGuardar" style="padding:6px 14px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:700;font-family:var(--font-body);">💾 Guardar</button>
+                        <button onclick="cnbCerrarEditor()" style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;cursor:pointer;font-size:.8rem;font-family:var(--font-body);">✕ Cerrar</button>
+                    </div>
+                </div>
+                <div style="padding:16px;">
+                    <textarea id="cnbTextarea" placeholder="Escribe tus notas aquí..." style="width:100%;min-height:320px;padding:14px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.92rem;resize:vertical;background:var(--bg-main);color:var(--text);line-height:1.7;box-sizing:border-box;" oninput="cnbMarcarCambios()"></textarea>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px;">
+                        <span id="cnbEditorStatus" style="font-size:.76rem;color:var(--text-muted);"></span>
+                        <span id="cnbEditorUltMod" style="font-size:.73rem;color:var(--text-muted);"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<!-- Modal: nuevo cuaderno -->
+<div id="cnbModalNuevo" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--bg-card);border-radius:16px;padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <h3 style="font-family:var(--font-display);margin:0 0 18px;font-size:1.3rem;">📓 Nuevo cuaderno</h3>
+        <label style="font-size:.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Nombre</label>
+        <input type="text" id="cnbNombreInput" placeholder="Ej: Mis pacientes, Notas urgencias..." maxlength="60" style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.95rem;box-sizing:border-box;background:var(--bg-main);color:var(--text);">
+        <label style="font-size:.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin:14px 0 6px;">Icono</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="cnbIconPicker">
+            <span>📓</span><span>📋</span><span>🩺</span><span>💊</span><span>🔬</span><span>🏥</span><span>📝</span><span>💡</span><span>⚡</span><span>🎯</span><span>📌</span><span>🗒️</span>
+        </div>
+        <input type="hidden" id="cnbIconoSelec" value="📓">
+        <div style="display:flex;gap:8px;margin-top:22px;">
+            <button onclick="cnbCrearCuaderno()" style="flex:1;padding:11px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:var(--font-body);">Crear</button>
+            <button onclick="cnbCerrarModal()" style="flex:1;padding:11px;background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-family:var(--font-body);">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+
 <script>
 // ═══ PATIENTS DATA ═══
 var patientSections=[
@@ -3148,6 +3233,7 @@ function apSyncFromConfig(){
         document.getElementById("apCfgProvider").value=CONFIG.provider;
         apCambiarProvider();
         document.getElementById("apCfgGroqKey").value=CONFIG.groqKey||"";
+        document.getElementById("apCfgGeminiKey").value=window.GEMINI_API_KEY||CONFIG.geminiKey||"";
         document.getElementById("apCfgGroqModel").value=CONFIG.groqModel;
         document.getElementById("apCfgQwenKey").value=CONFIG.qwenKey||"";
         document.getElementById("apCfgQwenModel").value=CONFIG.qwenModel;
@@ -3157,6 +3243,7 @@ function apSyncFromConfig(){
 function apGuardarConfig(){
     CONFIG.provider=document.getElementById("apCfgProvider").value;
     CONFIG.groqKey=document.getElementById("apCfgGroqKey").value.trim();
+        var gk=document.getElementById("apCfgGeminiKey").value.trim();if(gk){CONFIG.geminiKey=gk;window.GEMINI_API_KEY=gk;saveGeminiKeyToFirestore(gk);}
     CONFIG.groqModel=document.getElementById("apCfgGroqModel").value;
     CONFIG.qwenKey=document.getElementById("apCfgQwenKey").value.trim();
     CONFIG.qwenModel=document.getElementById("apCfgQwenModel").value;
@@ -3516,7 +3603,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ═══ PAGE NAVIGATION ═══
-var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
+var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA","pageCuadernos"];
 function showPage(id){
     if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
@@ -3533,7 +3620,7 @@ function showPage(id){
     }
     document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
     document.getElementById(id).classList.add("active");
-    if(id==="pageProfessionals")initProfessionals();if(id==="pageScanIA")try{scanRenderHist();}catch(e){}
+    if(id==="pageProfessionals")initProfessionals();if(id==="pageScanIA")try{scanRenderHist();}catch(e){}if(id==="pageCuadernos")cnbInit();
     if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}
     // Actualizar barra de moderación en la página activa
     try{
@@ -4008,7 +4095,255 @@ function loadGroqKeyFromFirestore(){
         }
     }).catch(function(e){console.log("No Firestore key found");});}catch(e){}
 }
+
 var SCAN_GROQ_KEY=getScanGroqKey();
+
+// ═══ GEMINI KEY — carga y guardado en Firestore ═══
+function saveGeminiKeyToFirestore(key){
+    try{
+        db.collection("config").doc("gemini_api_key").set({key:key,updatedAt:new Date(),updatedBy:(firebase.auth().currentUser||{}).email||"system"},{merge:true});
+    }catch(e){console.error("Gemini key save error:",e);}
+}
+function loadGeminiKeyFromFirestore(){
+    try{
+        db.collection("config").doc("gemini_api_key").get().then(function(doc){
+            if(doc.exists&&doc.data().key){
+                window.GEMINI_API_KEY=doc.data().key;
+                if(!CONFIG.geminiKey)CONFIG.geminiKey=doc.data().key;
+            }
+        }).catch(function(){});
+    }catch(e){}
+}
+loadGeminiKeyFromFirestore();
+
+// ═══ CUADERNOS PRIVADOS — módulo completo ═══
+var CNB_CURRENT_ID=null; // id del cuaderno abierto en el editor
+var CNB_DIRTY=false;     // cambios sin guardar
+
+function cnbInit(){
+    var user=firebase.auth().currentUser;
+    var noLogin=document.getElementById("cnbNoLogin");
+    var main=document.getElementById("cnbMain");
+    if(!user){
+        if(noLogin)noLogin.style.display="block";
+        if(main)main.style.display="none";
+        return;
+    }
+    if(noLogin)noLogin.style.display="none";
+    if(main)main.style.display="block";
+    var lbl=document.getElementById("cnbUserLabel");
+    if(lbl)lbl.textContent="👤 "+user.email;
+    cnbCargarLista();
+}
+
+function cnbColRef(){
+    var user=firebase.auth().currentUser;
+    if(!user)return null;
+    // Cada usuario tiene su propio subcolección privada: users/{uid}/cuadernos
+    return db.collection("users").doc(user.uid).collection("cuadernos");
+}
+
+function cnbCargarLista(){
+    var ref=cnbColRef();
+    if(!ref)return;
+    ref.orderBy("updatedAt","desc").get().then(function(snap){
+        var lista=document.getElementById("cnbLista");
+        var count=document.getElementById("cnbCount");
+        if(!lista)return;
+        lista.innerHTML="";
+        var total=snap.size;
+        if(count)count.textContent=total+" cuaderno"+(total!==1?"s":"");
+        if(total===0){
+            lista.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">No tienes cuadernos todavía.<br>Pulsa <strong>+ Nuevo cuaderno</strong> para crear el primero.</div>';
+            return;
+        }
+        snap.forEach(function(doc){
+            var d=doc.data();
+            var item=document.createElement("div");
+            item.style.cssText="background:var(--bg-card);border-radius:10px;border:2px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;";
+            item.onmouseenter=function(){this.style.borderColor="var(--primary)";};
+            item.onmouseleave=function(){this.style.borderColor="var(--border)";};
+            var fecha=d.updatedAt?new Date(d.updatedAt.seconds*1000).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+            var preview=(d.contenido||"").replace(/
+/g," ").substring(0,80);
+            item.innerHTML=
+                '<span style="font-size:1.6rem;flex-shrink:0;">'+( d.icono||"📓")+'</span>'+
+                '<div style="flex:1;min-width:0;">'+
+                    '<div style="font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(d.nombre||"Sin nombre")+'</div>'+
+                    '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(preview||(fecha?"Modificado "+fecha:"Vacío"))+'</div>'+
+                '</div>'+
+                '<div style="display:flex;gap:6px;flex-shrink:0;">'+
+                    '<button onclick="event.stopPropagation();cnbAbrirEditor(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'',''+( d.icono||"📓")+'')" style="padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">✏️ Abrir</button>'+
+                    '<button onclick="event.stopPropagation();cnbEliminar(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'')" style="padding:6px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🗑️</button>'+
+                '</div>';
+            item.onclick=function(){cnbAbrirEditor(doc.id,d.nombre||"Sin nombre",d.icono||"📓");};
+            lista.appendChild(item);
+        });
+    }).catch(function(e){
+        console.error("Error cargando cuadernos:",e);
+    });
+}
+
+function cnbAbrirEditor(id,nombre,icono){
+    CNB_CURRENT_ID=id;
+    CNB_DIRTY=false;
+    var ref=cnbColRef();
+    if(!ref)return;
+    document.getElementById("cnbEditorTitle").textContent=nombre;
+    document.getElementById("cnbEditorIcon").textContent=icono||"📓";
+    document.getElementById("cnbEditor").style.display="block";
+    document.getElementById("cnbEditorStatus").textContent="Cargando...";
+    document.getElementById("cnbTextarea").value="";
+    ref.doc(id).get().then(function(doc){
+        if(doc.exists){
+            var d=doc.data();
+            document.getElementById("cnbTextarea").value=d.contenido||"";
+            var fecha=d.updatedAt?new Date(d.updatedAt.seconds*1000).toLocaleString("es-ES"):"";
+            document.getElementById("cnbEditorUltMod").textContent=fecha?"Última modificación: "+fecha:"";
+        }
+        document.getElementById("cnbEditorStatus").textContent="";
+        document.getElementById("cnbTextarea").focus();
+        // Scroll al editor
+        setTimeout(function(){
+            var ed=document.getElementById("cnbEditor");
+            if(ed)ed.scrollIntoView({behavior:"smooth",block:"start"});
+        },100);
+    }).catch(function(e){
+        document.getElementById("cnbEditorStatus").textContent="⚠️ Error al cargar";
+    });
+}
+
+function cnbMarcarCambios(){
+    CNB_DIRTY=true;
+    document.getElementById("cnbEditorStatus").textContent="● Cambios sin guardar";
+    document.getElementById("cnbEditorStatus").style.color="#f59e0b";
+}
+
+function cnbGuardarNota(){
+    if(!CNB_CURRENT_ID)return;
+    var ref=cnbColRef();
+    if(!ref)return;
+    var texto=document.getElementById("cnbTextarea").value;
+    var btn=document.getElementById("cnbBtnGuardar");
+    if(btn)btn.disabled=true;
+    document.getElementById("cnbEditorStatus").textContent="Guardando...";
+    ref.doc(CNB_CURRENT_ID).update({
+        contenido:texto,
+        updatedAt:new Date(),
+        tamano:texto.length
+    }).then(function(){
+        CNB_DIRTY=false;
+        document.getElementById("cnbEditorStatus").textContent="✅ Guardado";
+        document.getElementById("cnbEditorStatus").style.color="var(--primary)";
+        document.getElementById("cnbEditorUltMod").textContent="Última modificación: "+new Date().toLocaleString("es-ES");
+        if(btn)btn.disabled=false;
+        cnbCargarLista(); // refrescar la lista (preview)
+        setTimeout(function(){
+            var s=document.getElementById("cnbEditorStatus");
+            if(s&&s.textContent==="✅ Guardado")s.textContent="";
+        },3000);
+    }).catch(function(e){
+        document.getElementById("cnbEditorStatus").textContent="⚠️ Error: "+e.message;
+        document.getElementById("cnbEditorStatus").style.color="#dc2626";
+        if(btn)btn.disabled=false;
+    });
+}
+
+// Guardado automático cada 30 segundos si hay cambios
+setInterval(function(){
+    if(CNB_DIRTY&&CNB_CURRENT_ID)cnbGuardarNota();
+},30000);
+
+function cnbCerrarEditor(){
+    if(CNB_DIRTY){
+        if(!confirm("Tienes cambios sin guardar. ¿Cerrar sin guardar?"))return;
+    }
+    document.getElementById("cnbEditor").style.display="none";
+    CNB_CURRENT_ID=null;
+    CNB_DIRTY=false;
+}
+
+function cnbNuevoCuaderno(){
+    document.getElementById("cnbNombreInput").value="";
+    document.getElementById("cnbIconoSelec").value="📓";
+    // Reset picker visual
+    document.querySelectorAll("#cnbIconPicker span").forEach(function(el){
+        el.style.cssText="cursor:pointer;font-size:1.4rem;padding:4px;border-radius:6px;transition:background .15s;";
+    });
+    var first=document.querySelector("#cnbIconPicker span");
+    if(first)first.style.background="rgba(124,58,237,.2)";
+    // Vincular clicks del picker la primera vez
+    if(!document.getElementById("cnbIconPicker").dataset.ready){
+        document.querySelectorAll("#cnbIconPicker span").forEach(function(el){
+            el.style.cssText="cursor:pointer;font-size:1.4rem;padding:4px;border-radius:6px;transition:background .15s;";
+            el.onclick=function(){
+                document.querySelectorAll("#cnbIconPicker span").forEach(function(x){x.style.background="";});
+                this.style.background="rgba(124,58,237,.2)";
+                document.getElementById("cnbIconoSelec").value=this.textContent;
+            };
+        });
+        document.getElementById("cnbIconPicker").dataset.ready="1";
+    }
+    var modal=document.getElementById("cnbModalNuevo");
+    modal.style.display="flex";
+    setTimeout(function(){document.getElementById("cnbNombreInput").focus();},100);
+}
+
+function cnbCerrarModal(){
+    document.getElementById("cnbModalNuevo").style.display="none";
+}
+
+function cnbCrearCuaderno(){
+    var nombre=(document.getElementById("cnbNombreInput").value||"").trim();
+    if(!nombre){alert("Escribe un nombre para el cuaderno.");return;}
+    var icono=document.getElementById("cnbIconoSelec").value||"📓";
+    var ref=cnbColRef();
+    if(!ref){alert("Debes iniciar sesión.");return;}
+    ref.add({
+        nombre:nombre,
+        icono:icono,
+        contenido:"",
+        createdAt:new Date(),
+        updatedAt:new Date(),
+        tamano:0
+    }).then(function(docRef){
+        cnbCerrarModal();
+        cnbCargarLista();
+        cnbAbrirEditor(docRef.id,nombre,icono);
+    }).catch(function(e){
+        alert("Error al crear cuaderno: "+e.message);
+    });
+}
+
+function cnbEliminar(id,nombre){
+    if(!confirm("¿Eliminar el cuaderno ""+nombre+""? Esta acción no se puede deshacer."))return;
+    var ref=cnbColRef();
+    if(!ref)return;
+    if(CNB_CURRENT_ID===id){
+        document.getElementById("cnbEditor").style.display="none";
+        CNB_CURRENT_ID=null;
+        CNB_DIRTY=false;
+    }
+    ref.doc(id).delete().then(function(){
+        cnbCargarLista();
+    }).catch(function(e){
+        alert("Error al eliminar: "+e.message);
+    });
+}
+
+function cnbEsc(str){
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+// Recargar cuadernos al iniciar sesión
+firebase.auth().onAuthStateChanged(function(user){
+    // Ya existe el hook en el sistema de auth original — cnbInit() se llama desde showPage
+    // Pero si el usuario ya está en pageCuadernos cuando hace login, refrescar
+    var pg=document.querySelector(".page.active");
+    if(pg&&pg.id==="pageCuadernos"&&user)cnbInit();
+    // Cargar Gemini key al autenticar
+    if(user)loadGeminiKeyFromFirestore();
+});
 var SCAN_GROQ_MODEL=SCAN_GROQ_MODEL_DEFAULT;
 var SCAN_PROMPTS={
 derma:"Eres un dermatólogo experto realizando una evaluación docente de una imagen clínica de piel.\n\nModelo de referencia: ConvNeXt-Base / Vision Transformers (ViT) preentrenados en ISIC 2019 (HuggingFace: LukeO/convnext-base-isic2019). Precisión: 85-90% diferenciando nevus, melanoma, carcinoma basocelular.\nDataset: ISIC Archive (International Skin Imaging Collaboration).\nFormato: PyTorch / ONNX.\n\nAnaliza siguiendo esta estructura:\n1. **Descripción de la lesión**: Morfología, color, bordes, distribución, simetría\n2. **Diagnóstico diferencial**: 3-5 diagnósticos más probables con probabilidad estimada (simula la salida de ConvNeXt-Base ISIC)\n3. **Hallazgos clave**: Elementos que apoyan cada diagnóstico\n4. **Signos de alarma**: Criterios ABCDE de melanoma (Asimetría, Bordes, Color, Diámetro, Evolución)\n5. **Clasificación ISIC**: Tipo de lesión según taxonomía ISIC (melanoma, nevus melanocítico, carcinoma basocelular, queratosis actínica, dermatofibroma, lesión vascular, queratosis seborreica)\n6. **Recomendación**: Siguiente paso clínico\n\nIMPORTANTE: Herramienta DOCENTE. El diagnóstico definitivo requiere valoración presencial.",
@@ -4209,27 +4544,35 @@ function tradEnviar(who){
     if(["ber","ber-kab","ber-tif"].indexOf(langFrom)!==-1)dialectNote+=" El texto original está en una variante del amazigh/bereber — interpreta con contexto médico.";
     var prompt="Eres un traductor médico experto especializado en idiomas del Mediterráneo y Norte de África. Traduce el siguiente texto de "+langFromName+" a "+langToName+" de forma clara y precisa en contexto clínico."+dialectNote+" Devuelve ÚNICAMENTE la traducción, sin explicaciones adicionales.\n\nTexto: "+texto;
 
-    fetch("https://api.anthropic.com/v1/messages",{
+    // Llamar a Gemini Flash para traducción médica en directo
+    var GEMINI_KEY=window.GEMINI_API_KEY||"";
+    if(!GEMINI_KEY){
+        tradRemoveSpinner(spinnerId);
+        tradAddBurbuja("⚠️ Configura la clave de Gemini en el panel de administración.",who,"error","");
+        return;
+    }
+    var geminiUrl="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GEMINI_KEY;
+    fetch(geminiUrl,{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-            model:"claude-haiku-4-5-20251001",
-            max_tokens:400,
-            messages:[{role:"user",content:prompt}]
+            contents:[{parts:[{text:prompt}]}],
+            generationConfig:{maxOutputTokens:400,temperature:0.1}
         })
     })
     .then(function(r){return r.json();})
     .then(function(data){
-        var traduccion=(data.content&&data.content[0]&&data.content[0].text)||"(error de traducción)";
+        var traduccion="(error de traducción)";
+        try{traduccion=data.candidates[0].content.parts[0].text||traduccion;}catch(e){}
+        traduccion=traduccion.trim();
         tradRemoveSpinner(spinnerId);
         tradAddBurbuja(traduccion,who,"traduccion",langToName);
-        // Auto-scroll al final
         var conv=document.getElementById("tradConversacion");
         if(conv)conv.scrollTop=conv.scrollHeight;
     })
     .catch(function(e){
         tradRemoveSpinner(spinnerId);
-        tradAddBurbuja("⚠️ Error: "+e.message,who,"error","");
+        tradAddBurbuja("⚠️ Error Gemini: "+e.message,who,"error","");
     });
 }
 
