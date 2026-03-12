@@ -4249,10 +4249,10 @@ function cnbGuardarNota(){
     });
 }
 
-// Guardado automático cada 30 segundos si hay cambios
+// Guardado automático cada 5 minutos si hay cambios (optimizado para Firebase free tier)
 setInterval(function(){
     if(CNB_DIRTY&&CNB_CURRENT_ID)cnbGuardarNota();
-},30000);
+},300000);
 
 function cnbCerrarEditor(){
     if(CNB_DIRTY){
