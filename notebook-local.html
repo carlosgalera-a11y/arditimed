@@ -3182,7 +3182,7 @@ function infDescargar(formato){
   }else if(formato==='pdf'){
     // Generate PDF using browser print
     var w=window.open('','_blank');
-    w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}</style></head><body>');
+    w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}<\/style><\/head><body>');
     w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>');
     w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'</div>');
     w.document.write('<\/body><\/html>');
@@ -3207,7 +3207,7 @@ function infDescargar(formato){
     // Build minimal .docx (ZIP with XML)
     // For simplicity, use HTML-based approach that Word can open
     var htmlDoc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
-    htmlDoc+='<head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}</style></head>';
+    htmlDoc+='<head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}<\/style><\/head>';
     htmlDoc+='<body>';
     htmlDoc+='<h1>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</h1>';
     htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
