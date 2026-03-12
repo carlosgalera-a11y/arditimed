@@ -4770,7 +4770,7 @@ document.addEventListener("DOMContentLoaded",function(){
 <!-- PWA Service Worker Registration & Install Logic -->
 <script>
 // Register Service Worker v4 — force update from old /Cartagenaeste/ paths
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && location.hostname === 'ramongalera22-ai.github.io') {
   window.addEventListener('load', function() {
     // First: unregister any old SW with wrong scope
     navigator.serviceWorker.getRegistrations().then(function(regs) {
