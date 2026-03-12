@@ -1567,10 +1567,11 @@
                 <p style="opacity:.85;font-size:.95rem;font-weight:300;">Análisis de imágenes médicas con IA y casos clínicos NIH para formación.</p>
             </div>
 
-            <!-- TABS: Scan IA / Quiz NIH -->
+            <!-- TABS: Scan IA / Quiz NIH / Traductor -->
             <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:3px solid var(--border);">
                 <button id="tabScanIA" onclick="switchScanTab('scanIA')" style="flex:1;padding:14px;border:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🔬 Analizar imagen</button>
                 <button id="tabNIHQuiz" onclick="switchScanTab('nihQuiz')" style="flex:1;padding:14px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧠 Quiz NIH Chest X-Ray</button>
+                <button id="tabTraductor" onclick="switchScanTab('traductor')" style="flex:1;padding:14px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🌍 Traductor</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -1696,6 +1697,83 @@
                     📖 <strong>Fuente:</strong> NIH Chest X-ray Dataset — Wang et al., "ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks", IEEE CVPR 2017. Datos proporcionados por el NIH Clinical Center. <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC" target="_blank" style="color:#0066cc;">nihcc.app.box.com</a>
                 </div>
             </div><!-- end panelNIHQuiz -->
+
+            <!-- TAB 3: TRADUCTOR EN DIRECTO -->
+            <div id="panelTraductor" style="display:none;">
+                <div style="background:#e8f5e9;border:1px solid #4caf50;border-radius:10px;padding:14px 18px;font-size:.84rem;color:#1b5e20;margin-bottom:20px;line-height:1.6;">
+                    🌍 <strong>Traductor médico en directo.</strong> Escribe lo que dice el paciente o el médico y obtén la traducción instantánea. Optimizado para contexto clínico.
+                </div>
+
+                <!-- Selector de idiomas -->
+                <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+                    <div style="flex:1;min-width:130px;">
+                        <label style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">MÉDICO habla</label>
+                        <select id="tradLangDoc" style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.9rem;background:var(--bg-card);color:var(--text);">
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="pt">🇵🇹 Português</option>
+                            <option value="ar">🇸🇦 العربية</option>
+                            <option value="zh">🇨🇳 中文</option>
+                            <option value="ro">🇷🇴 Română</option>
+                            <option value="uk">🇺🇦 Українська</option>
+                            <option value="ru">🇷🇺 Русский</option>
+                        </select>
+                    </div>
+                    <div style="font-size:1.4rem;padding-top:20px;">⇄</div>
+                    <div style="flex:1;min-width:130px;">
+                        <label style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">PACIENTE habla</label>
+                        <select id="tradLangPat" style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.9rem;background:var(--bg-card);color:var(--text);">
+                            <option value="ar">🇸🇦 العربية</option>
+                            <option value="ro">🇷🇴 Română</option>
+                            <option value="uk">🇺🇦 Українська</option>
+                            <option value="ru">🇷🇺 Русский</option>
+                            <option value="zh">🇨🇳 中文</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="pt">🇵🇹 Português</option>
+                            <option value="es">🇪🇸 Español</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Conversación -->
+                <div id="tradConversacion" style="min-height:200px;max-height:380px;overflow-y:auto;border:2px solid var(--border);border-radius:10px;padding:16px;background:var(--bg-subtle);margin-bottom:16px;display:flex;flex-direction:column;gap:12px;">
+                    <p style="text-align:center;color:var(--text-muted);font-size:.85rem;margin:auto;">La conversación aparecerá aquí</p>
+                </div>
+
+                <!-- Input área MÉDICO -->
+                <div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:10px;padding:14px;margin-bottom:10px;border:2px solid #90caf9;">
+                    <label style="font-size:.78rem;font-weight:700;color:#1565c0;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px;">🩺 MÉDICO dice (en <span id="tradLangDocLabel">Español</span>)</label>
+                    <div style="display:flex;gap:8px;">
+                        <textarea id="tradInputDoc" placeholder="Escribe lo que quieres decir al paciente..." style="flex:1;padding:10px 12px;border:1px solid #90caf9;border-radius:8px;font-family:var(--font-body);font-size:.9rem;resize:none;min-height:60px;background:#fff;color:var(--text);" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();tradEnviar('doc');}"></textarea>
+                        <button onclick="tradEnviar('doc')" style="padding:10px 16px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem;font-family:var(--font-body);align-self:flex-end;">Traducir →</button>
+                    </div>
+                </div>
+
+                <!-- Input área PACIENTE -->
+                <div style="background:linear-gradient(135deg,#f3e5f5,#e1bee7);border-radius:10px;padding:14px;margin-bottom:16px;border:2px solid #ce93d8;">
+                    <label style="font-size:.78rem;font-weight:700;color:#6a1b9a;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px;">🧑 PACIENTE dice (en <span id="tradLangPatLabel">Árabe</span>)</label>
+                    <div style="display:flex;gap:8px;">
+                        <textarea id="tradInputPat" placeholder="Escribe lo que dice el paciente en su idioma..." style="flex:1;padding:10px 12px;border:1px solid #ce93d8;border-radius:8px;font-family:var(--font-body);font-size:.9rem;resize:none;min-height:60px;background:#fff;color:var(--text);" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();tradEnviar('pat');}"></textarea>
+                        <button onclick="tradEnviar('pat')" style="padding:10px 16px;background:linear-gradient(135deg,#6a1b9a,#4a148c);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem;font-family:var(--font-body);align-self:flex-end;">Traducir →</button>
+                    </div>
+                </div>
+
+                <!-- Botón limpiar -->
+                <div style="text-align:center;">
+                    <button onclick="tradLimpiar()" style="padding:8px 20px;background:var(--bg-subtle);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.82rem;font-family:var(--font-body);">🗑️ Limpiar conversación</button>
+                </div>
+
+                <div style="margin-top:16px;padding:10px 14px;background:var(--bg-subtle);border-radius:8px;font-size:.74rem;color:var(--text-muted);text-align:center;line-height:1.5;">
+                    ⚠️ Herramienta de apoyo a la comunicación. No sustituye al intérprete profesional en situaciones complejas o de urgencia vital. Área II Cartagena — uso interno docente.
+                </div>
+            </div><!-- end panelTraductor -->
+
         </div>
     </div>
 </div>
@@ -4036,10 +4114,135 @@ document.getElementById("scanResult").innerHTML='<div style="background:var(--bg
 function switchScanTab(tab){
     document.getElementById("panelScanIA").style.display=tab==="scanIA"?"block":"none";
     document.getElementById("panelNIHQuiz").style.display=tab==="nihQuiz"?"block":"none";
+    document.getElementById("panelTraductor").style.display=tab==="traductor"?"block":"none";
     document.getElementById("tabScanIA").style.background=tab==="scanIA"?"linear-gradient(135deg,#0066cc,#004499)":"var(--bg-subtle)";
     document.getElementById("tabScanIA").style.color=tab==="scanIA"?"#fff":"var(--text)";
     document.getElementById("tabNIHQuiz").style.background=tab==="nihQuiz"?"linear-gradient(135deg,#4caf50,#2e7d32)":"var(--bg-subtle)";
     document.getElementById("tabNIHQuiz").style.color=tab==="nihQuiz"?"#fff":"var(--text)";
+    document.getElementById("tabTraductor").style.background=tab==="traductor"?"linear-gradient(135deg,#e65100,#bf360c)":"var(--bg-subtle)";
+    document.getElementById("tabTraductor").style.color=tab==="traductor"?"#fff":"var(--text)";
+}
+
+// ═══ TRADUCTOR EN DIRECTO — Módulo médico ═══
+var LANG_NAMES={es:"Español",en:"English",fr:"Français",de:"Deutsch",it:"Italiano",pt:"Português",ar:"Árabe",zh:"Chino",ro:"Română",uk:"Ucraniano",ru:"Ruso"};
+
+function tradUpdateLabels(){
+    var doc=document.getElementById("tradLangDoc").value;
+    var pat=document.getElementById("tradLangPat").value;
+    var lDoc=document.getElementById("tradLangDocLabel");
+    var lPat=document.getElementById("tradLangPatLabel");
+    if(lDoc)lDoc.textContent=LANG_NAMES[doc]||doc;
+    if(lPat)lPat.textContent=LANG_NAMES[pat]||pat;
+}
+
+// Vincular eventos de los selectores
+document.addEventListener("DOMContentLoaded",function(){
+    var sDoc=document.getElementById("tradLangDoc");
+    var sPat=document.getElementById("tradLangPat");
+    if(sDoc)sDoc.addEventListener("change",tradUpdateLabels);
+    if(sPat)sPat.addEventListener("change",tradUpdateLabels);
+});
+
+function tradEnviar(who){
+    var isDoc=(who==="doc");
+    var inputEl=document.getElementById(isDoc?"tradInputDoc":"tradInputPat");
+    var texto=(inputEl?inputEl.value:"").trim();
+    if(!texto)return;
+
+    var langFrom=document.getElementById(isDoc?"tradLangDoc":"tradLangPat").value;
+    var langTo=document.getElementById(isDoc?"tradLangPat":"tradLangDoc").value;
+    var langFromName=LANG_NAMES[langFrom]||langFrom;
+    var langToName=LANG_NAMES[langTo]||langTo;
+
+    // Mostrar burbuja original
+    tradAddBurbuja(texto,who,"original",langFromName);
+    inputEl.value="";
+
+    // Mostrar spinner mientras traduce
+    var spinnerId="trad-spin-"+Date.now();
+    tradAddSpinner(spinnerId,who);
+
+    // Llamar a la API de Claude para traducción
+    var prompt="Eres un traductor médico experto. Traduce el siguiente texto de "+langFromName+" a "+langToName+" de forma clara y precisa, adaptando el vocabulario a un contexto clínico. Devuelve ÚNICAMENTE la traducción, sin explicaciones ni notas adicionales.
+
+Texto: "+texto;
+
+    fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            model:"claude-haiku-4-5-20251001",
+            max_tokens:400,
+            messages:[{role:"user",content:prompt}]
+        })
+    })
+    .then(function(r){return r.json();})
+    .then(function(data){
+        var traduccion=(data.content&&data.content[0]&&data.content[0].text)||"(error de traducción)";
+        tradRemoveSpinner(spinnerId);
+        tradAddBurbuja(traduccion,who,"traduccion",langToName);
+        // Auto-scroll al final
+        var conv=document.getElementById("tradConversacion");
+        if(conv)conv.scrollTop=conv.scrollHeight;
+    })
+    .catch(function(e){
+        tradRemoveSpinner(spinnerId);
+        tradAddBurbuja("⚠️ Error: "+e.message,who,"error","");
+    });
+}
+
+function tradAddBurbuja(texto,who,tipo,langName){
+    var conv=document.getElementById("tradConversacion");
+    if(!conv)return;
+    // Limpiar placeholder
+    var placeholder=conv.querySelector("p");
+    if(placeholder&&placeholder.style.textAlign==="center")placeholder.remove();
+
+    var isDoc=(who==="doc");
+    var isTraduccion=(tipo==="traduccion");
+    var align=isDoc?"flex-end":"flex-start";
+    var bgColor=isTraduccion?(isDoc?"#e3f2fd":"#f3e5f5"):(isDoc?"#1565c0":"#6a1b9a");
+    var textColor=isTraduccion?"var(--text)":"#fff";
+    var border=isTraduccion?(isDoc?"1px solid #90caf9":"1px solid #ce93d8"):"none";
+    var icon=isDoc?(isTraduccion?"🔊":"🩺"):(isTraduccion?"🔊":"🧑");
+    var labelTxt=(isDoc?"Médico":"Paciente")+(langName?" — "+langName:"")+(isTraduccion?" (traducido)":"");
+
+    var div=document.createElement("div");
+    div.style.cssText="display:flex;flex-direction:column;align-items:"+align+";gap:2px;";
+    div.innerHTML='<span style="font-size:.7rem;color:var(--text-muted);font-weight:600;">'+icon+" "+labelTxt+"</span>"+
+        '<div style="max-width:85%;padding:10px 14px;border-radius:12px;background:'+bgColor+';color:'+textColor+';border:'+border+';font-size:.9rem;line-height:1.55;word-break:break-word;'+(isTraduccion?'font-style:italic;':'')+'">'+
+        texto.replace(/</g,"&lt;").replace(/>/g,"&gt;")+
+        "</div>";
+    conv.appendChild(div);
+    conv.scrollTop=conv.scrollHeight;
+}
+
+function tradAddSpinner(id,who){
+    var conv=document.getElementById("tradConversacion");
+    if(!conv)return;
+    var isDoc=(who==="doc");
+    var div=document.createElement("div");
+    div.id=id;
+    div.style.cssText="display:flex;justify-content:"+(isDoc?"flex-end":"flex-start")+";";
+    div.innerHTML='<div style="padding:8px 14px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:10px;font-size:.85rem;color:var(--text-muted);">⏳ Traduciendo...</div>';
+    conv.appendChild(div);
+    conv.scrollTop=conv.scrollHeight;
+}
+
+function tradRemoveSpinner(id){
+    var el=document.getElementById(id);
+    if(el)el.remove();
+}
+
+function tradLimpiar(){
+    var conv=document.getElementById("tradConversacion");
+    if(conv){
+        conv.innerHTML='<p style="text-align:center;color:var(--text-muted);font-size:.85rem;margin:auto;">La conversación aparecerá aquí</p>';
+    }
+    var inpDoc=document.getElementById("tradInputDoc");
+    var inpPat=document.getElementById("tradInputPat");
+    if(inpDoc)inpDoc.value="";
+    if(inpPat)inpPat.value="";
 }
 
 // ═══ NIH CHEST X-RAY QUIZ MODULE ═══
