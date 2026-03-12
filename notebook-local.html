@@ -438,12 +438,12 @@
 
 <!-- ═══════ PROFESSIONALS PAGE ═══════ -->
 <div class="page" id="pageProfessionals">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><span id="statusBadge" class="nav-status wait">⚙️ Config</span></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><span id="statusBadge" class="nav-status wait">⚙️ Config</span><button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
-    <div id="modBar_pageProfessionals" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div id="modBar_pageProfessionals" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProfessionals" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
         <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-            <button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:inline-flex;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
             <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
         </span>
     </div>
@@ -504,12 +504,12 @@
 
 <!-- ═══════ PROTOCOLOS ATENCION PRIMARIA PAGE ═══════ -->
 <div class="page" id="pageProtocolosAP">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos AP')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
-    <div id="modBar_pageProtocolosAP" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div id="modBar_pageProtocolosAP" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProtocolosAP" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
         <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-            <button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos AP')" style="display:inline-flex;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos AP')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
             <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
         </span>
     </div>
@@ -822,12 +822,12 @@
 
 <!-- ═══════ PROTOCOLOS URGENCIAS PAGE ═══════ -->
 <div class="page" id="pageProtocolosUrgencias">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos Urgencias')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
-    <div id="modBar_pageProtocolosUrgencias" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div id="modBar_pageProtocolosUrgencias" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProtocolosUrgencias" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
         <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-            <button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos Urgencias')" style="display:inline-flex;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos Urgencias')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
             <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
         </span>
     </div>
@@ -1535,12 +1535,12 @@
 
 <!-- ═══════ SCAN IA PAGE (protegido con contraseña) ═══════ -->
 <div class="page" id="pageScanIA">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('ScanIA')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
-    <div id="modBar_pageScanIA" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div id="modBar_pageScanIA" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageScanIA" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
         <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-            <button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:inline-flex;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
             <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
         </span>
     </div>
@@ -1688,12 +1688,12 @@
 <!-- ═══════ ENFERMERÍA PAGE ═══════ -->
 <div class="page" id="pageEnfermeria">
     <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('Enfermería')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
     <!-- Botones de moderación — visibles solo para usuarios logueados -->
-    <div id="modBar_pageEnfermeria" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div id="modBar_pageEnfermeria" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageEnfermeria" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
         <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-            <button class="btn-subir-contenido" onclick="abrirModalSubir('Enfermería')" style="display:inline-flex;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Enfermería')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
             <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
         </span>
     </div>
@@ -3416,13 +3416,10 @@ function showPage(id){
     // Actualizar barra de moderación en la página activa
     try{
         var modUser = firebase.auth().currentUser;
-        // Mostrar barra de usuario en la página activa si hay sesión
-        document.querySelectorAll('[id^="modBar_"]').forEach(function(b){ b.style.display="none"; });
         var barEl = document.getElementById("modBar_"+id);
-        if(barEl && modUser){
-            barEl.style.display="flex";
-            var uel=document.getElementById("modBarUser_"+id);
-            if(uel) uel.textContent=modUser.displayName||modUser.email;
+        if(barEl){
+            if(modUser){ barEl.style.display="flex"; var uel=document.getElementById("modBarUser_"+id); if(uel)uel.textContent=modUser.displayName||modUser.email; }
+            else { barEl.style.display="none"; }
         }
         if(modUser) mostrarBtnSubir();
     }catch(e){}
@@ -4655,17 +4652,10 @@ firebase.auth().onAuthStateChanged(function(user){
             document.querySelectorAll(".btn-panel-mod").forEach(function(el){
                 el.style.display=isAdminLoggedIn?"inline-flex":"none";
             });
-            // Mostrar barra de usuario en la página activa actual
-            var activePage = document.querySelector(".page.active");
-            if(activePage){
-                var bar = document.getElementById("modBar_"+activePage.id);
-                if(bar){ 
-                    bar.style.display="flex";
-                    var uel = document.getElementById("modBarUser_"+activePage.id);
-                    if(uel) uel.textContent = user.displayName||user.email;
-                }
-            }
-            mostrarBtnSubir();
+            // Mostrar botón proponer contenido a todos los logueados
+            document.querySelectorAll(".btn-subir-contenido").forEach(function(el){
+                el.style.display="inline-flex";
+            });
         });
     } else {
         // Sin sesión — restaurar botones
