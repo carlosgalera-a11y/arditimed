@@ -3840,7 +3840,7 @@ function cargarListaModeradoresPanel(){
             if(d.email !== SUPERADMIN_EMAIL){
                 var btnTxt = d.activo ? "🚫 Desactivar" : "✅ Reactivar";
                 var btnAction = d.activo ? "desactivarModerador" : "reactivarModerador";
-                html += '<button onclick="'+btnAction+'(''+doc.id+'')" style="background:#fff;border:1px solid #d1d5db;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;color:#374151;">'+btnTxt+'</button>';
+                html += '<button onclick="'+btnAction+'(\''+doc.id+'\')" style="background:#fff;border:1px solid #d1d5db;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;color:#374151;">'+btnTxt+'</button>';
             }
             html += '</div>';
         });
