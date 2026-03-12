@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v7 - limpia TODAS las cachés
-const CACHE_NAME = 'area2-cartagena-v7';
+// Service Worker - Área II Cartagena PWA v6 - limpia TODAS las cachés
+const CACHE_NAME = 'area2-cartagena-v6';
 
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
