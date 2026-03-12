@@ -2699,12 +2699,18 @@ var patientSections=[
     {icon:"💉",title:"Vacunas",desc:"Calendario y campañas",url:"vacunas.html"},
     {icon:"📅",title:"Programación del Centro",desc:"Horarios y agenda",url:"programacion.html"},
     {icon:"🚭",title:"Dejar de fumar",desc:"Programas y ayuda",url:"dejar-fumar.html"},
-    {icon:"🎙️",title:"Podcast",desc:"Audio salud comunitaria",url:"podcast.html"}
+    {icon:"🎙️",title:"Podcast",desc:"Audio salud comunitaria",url:"podcast.html"},
+    {icon:"💊",title:"Farmacias 24h",desc:"Mapa farmacias área II",url:"#",onclick:"mostrarMapaFarmacias()"}
 ];
 
 function renderPatients(){
     var g=document.getElementById("patientsGrid");
-    g.innerHTML=patientSections.map(function(s){return'<a class="patient-card" href="'+s.url+'" target="_blank"><div class="patient-card-icon">'+s.icon+'</div><div class="patient-card-title">'+s.title+'</div><div class="patient-card-desc">'+s.desc+'</div></a>'}).join("");
+    g.innerHTML=patientSections.map(function(s){
+        if(s.onclick){
+            return'<div class="patient-card" style="cursor:pointer;" onclick="'+s.onclick+'"><div class="patient-card-icon">'+s.icon+'</div><div class="patient-card-title">'+s.title+'</div><div class="patient-card-desc">'+s.desc+'</div></div>';
+        }
+        return'<a class="patient-card" href="'+s.url+'" target="_blank"><div class="patient-card-icon">'+s.icon+'</div><div class="patient-card-title">'+s.title+'</div><div class="patient-card-desc">'+s.desc+'</div></a>';
+    }).join("");
 }
 
 // ═══ ADMIN LOGIN - GOOGLE BASED ═══
@@ -3185,7 +3191,94 @@ function infDescargar(formato){
     w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}</style></head><body>');
     w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>');
     w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'</div>');
-    w.document.write('</body></html>');
+    w.document.write('
+<!-- ═══════ MODAL FARMACIAS 24H ═══════ -->
+<div id="modalFarmacias" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:var(--bg-card);border-radius:16px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <h3 style="margin:0;font-size:1.15rem;color:var(--text);">💊 Farmacias 24h — Área II Cartagena</h3>
+        <p style="margin:4px 0 0;font-size:.8rem;color:var(--text-muted);">Abiertas todos los días del año, 24 horas</p>
+      </div>
+      <button onclick="cerrarMapaFarmacias()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);padding:4px 8px;border-radius:6px;">✕</button>
+    </div>
+    <!-- Mapa OpenStreetMap via iframe -->
+    <div style="padding:16px 24px 0;">
+      <iframe
+        src="https://www.openstreetmap.org/export/embed.html?bbox=-1.0500%2C37.5900%2C-0.9400%2C37.6400&layer=mapnik&marker=37.6066%2C-0.9817"
+        style="width:100%;height:280px;border:0;border-radius:10px;"
+        loading="lazy"
+        title="Mapa farmacias 24h Cartagena">
+      </iframe>
+      <p style="font-size:.72rem;color:var(--text-muted);text-align:right;margin:4px 0 0;">© OpenStreetMap contributors</p>
+    </div>
+    <!-- Lista de farmacias -->
+    <div style="padding:16px 24px 24px;display:flex;flex-direction:column;gap:12px;" id="listaFarmacias24h"></div>
+  </div>
+</div>
+
+<script>
+var FARMACIAS_24H=[
+  {
+    nombre:"Farmacia Cano Pérez (Juan de la Cosa)",
+    direccion:"C/ Juan de la Cosa, 7 esq. Paseo Alfonso XIII, 30203 Cartagena",
+    tel:"968 50 68 83",
+    nota:"Frente a Esc. Universitarias / Radio Juventud",
+    lat:37.6066,lng:-0.9817,
+    maps:"https://maps.google.com/?q=37.6066,-0.9817",
+    stars:"★★★★★ 4.6"
+  },
+  {
+    nombre:"Farmacia Crespo Gálvez (San Antón)",
+    direccion:"Alameda de San Antón, 16, 30205 Cartagena",
+    tel:"968 50 19 36",
+    nota:"Frente al Estadio Cartagonova",
+    lat:37.6097,lng:-0.9927,
+    maps:"https://maps.google.com/?q=37.6097,-0.9927",
+    stars:"★★★★ 3.8"
+  },
+  {
+    nombre:"Farmacia 24h Nueva Cartagena",
+    direccion:"Av. Nueva Cartagena, 3, 30310 Cartagena (Los Dolores)",
+    tel:"968 31 62 42",
+    nota:"Zona norte · amplio aparcamiento",
+    lat:37.6213,lng:-1.0050,
+    maps:"https://maps.google.com/?q=37.6213,-1.0050",
+    stars:"★★★★ 3.9"
+  }
+];
+
+function mostrarMapaFarmacias(){
+  var modal=document.getElementById("modalFarmacias");
+  var lista=document.getElementById("listaFarmacias24h");
+  lista.innerHTML=FARMACIAS_24H.map(function(f){
+    return '<div style="background:var(--bg-main);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'+
+        '<div>'+
+          '<div style="font-weight:700;font-size:.95rem;color:var(--text);">💊 '+f.nombre+'</div>'+
+          '<div style="font-size:.82rem;color:var(--text-muted);margin-top:2px;">📍 '+f.direccion+'</div>'+
+          '<div style="font-size:.78rem;color:var(--text-muted);margin-top:1px;">ℹ️ '+f.nota+'</div>'+
+        '</div>'+
+        '<span style="font-size:.7rem;color:#f59e0b;white-space:nowrap;">'+f.stars+'</span>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">'+
+        '<a href="tel:'+f.tel.replace(/ /g,"")+'" style="text-decoration:none;background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;padding:6px 12px;border-radius:6px;font-size:.8rem;font-weight:600;">📞 '+f.tel+'</a>'+
+        '<a href="'+f.maps+'" target="_blank" rel="noopener" style="text-decoration:none;background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff;padding:6px 12px;border-radius:6px;font-size:.8rem;font-weight:600;">🗺️ Cómo llegar</a>'+
+      '</div>'+
+    '</div>';
+  }).join("");
+  modal.style.display="flex";
+  document.body.style.overflow="hidden";
+}
+
+function cerrarMapaFarmacias(){
+  document.getElementById("modalFarmacias").style.display="none";
+  document.body.style.overflow="";
+}
+document.addEventListener("keydown",function(e){if(e.key==="Escape")cerrarMapaFarmacias();});
+</script>
+
+</body></html>');
     w.document.close();
     setTimeout(function(){w.print();},500);
 
