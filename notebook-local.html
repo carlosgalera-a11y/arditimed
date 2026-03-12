@@ -3722,13 +3722,13 @@ function cargarPropuestas(estado){
                 // Botones de acción
                 if(d.estado==="pendiente"){
                     html += '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">';
-                    html += '<button onclick="moderarPropuesta(''+id+'','aprobado')" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">✅ Aprobar</button>';
-                    html += '<button onclick="pedirMotivo(''+id+'')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">❌ Rechazar</button>';
+                    html += '<button onclick="moderarPropuesta(\'' + id + '\',\'aprobado\')" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">✅ Aprobar</button>';
+                    html += '<button onclick="pedirMotivo(\'' + id + '\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">❌ Rechazar</button>';
                     html += '</div>';
                 } else if(d.estado==="aprobado"){
-                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta(''+id+'','rechazado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Revertir</button></div>';
+                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta('"+id+"','rechazado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Revertir</button></div>';
                 } else {
-                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta(''+id+'','aprobado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Recuperar</button></div>';
+                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta('"+id+"','aprobado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Recuperar</button></div>';
                 }
                 if(d.motivoRechazo) html += '<div style="font-size:.78rem;color:#991b1b;background:#fef2f2;padding:6px 10px;border-radius:6px;margin-top:6px;width:100%;">Motivo: '+escMod(d.motivoRechazo)+'</div>';
                 html += '</div>';
@@ -5461,7 +5461,7 @@ function trBloqueARespuesta(tieneAlerta){
   var el=document.getElementById('trAreasList');
   el.innerHTML='';
   TR_AREAS.forEach(function(a){
-    el.innerHTML+='<button onclick="trSeleccionarArea(''+a.id+'')" class="tr-opcion" style="text-align:center;padding:14px 6px;"><div style="font-size:1.4rem;margin-bottom:4px;">'+a.icon+'</div><div style="font-size:.82rem;">'+a.label+'</div></button>';
+    el.innerHTML+='<button onclick="trSeleccionarArea(\'' + a.id + '\')" class="tr-opcion" style="text-align:center;padding:14px 6px;"><div style="font-size:1.4rem;margin-bottom:4px;">'+a.icon+'</div><div style="font-size:.82rem;">'+a.label+'</div></button>';
   });
   trShow('trBloqueB');
 }
