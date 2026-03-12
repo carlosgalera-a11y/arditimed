@@ -3182,10 +3182,10 @@ function infDescargar(formato){
   }else if(formato==='pdf'){
     // Generate PDF using browser print
     var w=window.open('','_blank');
-    w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}</style></head><body>');
+    w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}<\/style><\/head><body>');
     w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>');
     w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'</div>');
-    w.document.write('</body></html>');
+    w.document.write('<\/body><\/html>');
     w.document.close();
     setTimeout(function(){w.print();},500);
 
@@ -3207,13 +3207,13 @@ function infDescargar(formato){
     // Build minimal .docx (ZIP with XML)
     // For simplicity, use HTML-based approach that Word can open
     var htmlDoc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
-    htmlDoc+='<head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}</style></head>';
+    htmlDoc+='<head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}<\/style><\/head>';
     htmlDoc+='<body>';
     htmlDoc+='<h1>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</h1>';
     htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
     htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
     htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
-    htmlDoc+='</body></html>';
+    htmlDoc+='<\/body><\/html>';
 
     var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName+'.doc';a.click();
@@ -4164,8 +4164,7 @@ function cnbCargarLista(){
             item.onmouseenter=function(){this.style.borderColor="var(--primary)";};
             item.onmouseleave=function(){this.style.borderColor="var(--border)";};
             var fecha=d.updatedAt?new Date(d.updatedAt.seconds*1000).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
-            var preview=(d.contenido||"").replace(/
-/g," ").substring(0,80);
+            var preview=(d.contenido||"").replace(/\n/g," ").substring(0,80);
             item.innerHTML=
                 '<span style="font-size:1.6rem;flex-shrink:0;">'+( d.icono||"📓")+'</span>'+
                 '<div style="flex:1;min-width:0;">'+
@@ -4173,10 +4172,12 @@ function cnbCargarLista(){
                     '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(preview||(fecha?"Modificado "+fecha:"Vacío"))+'</div>'+
                 '</div>'+
                 '<div style="display:flex;gap:6px;flex-shrink:0;">'+
-                    '<button onclick="event.stopPropagation();cnbAbrirEditor(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'',''+( d.icono||"📓")+'')" style="padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">✏️ Abrir</button>'+
-                    '<button onclick="event.stopPropagation();cnbEliminar(''+doc.id+'',''+cnbEsc(d.nombre||"Sin nombre")+'')" style="padding:6px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🗑️</button>'+
+                    '<button class="cnb-abrir" style="padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">✏️ Abrir</button>'+
+                    '<button class="cnb-eliminar" style="padding:6px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🗑️</button>'+
                 '</div>';
             item.onclick=function(){cnbAbrirEditor(doc.id,d.nombre||"Sin nombre",d.icono||"📓");};
+            var btnAbrir=item.querySelector('.cnb-abrir');if(btnAbrir)btnAbrir.onclick=function(e){e.stopPropagation();cnbAbrirEditor(doc.id,d.nombre||'Sin nombre',d.icono||'📓');};
+            var btnElim=item.querySelector('.cnb-eliminar');if(btnElim)btnElim.onclick=function(e){e.stopPropagation();cnbEliminar(doc.id,d.nombre||'Sin nombre');};
             lista.appendChild(item);
         });
     }).catch(function(e){
@@ -4316,7 +4317,7 @@ function cnbCrearCuaderno(){
 }
 
 function cnbEliminar(id,nombre){
-    if(!confirm("¿Eliminar el cuaderno ""+nombre+""? Esta acción no se puede deshacer."))return;
+    if(!confirm('¿Eliminar el cuaderno "'+nombre+'"? Esta acción no se puede deshacer.'))return;
     var ref=cnbColRef();
     if(!ref)return;
     if(CNB_CURRENT_ID===id){
@@ -5373,7 +5374,7 @@ if ('serviceWorker' in navigator && location.hostname === 'ramongalera22-ai.gith
     if ('caches' in window) {
       caches.keys().then(function(keys) {
         keys.forEach(function(k) {
-          if (k.includes('v2') || k.includes('v3')) {
+          if (!k.includes('v7')) {
             console.log('[PWA] Deleting old cache:', k);
             caches.delete(k);
           }
@@ -5383,7 +5384,7 @@ if ('serviceWorker' in navigator && location.hostname === 'ramongalera22-ai.gith
     // Register current SW
     navigator.serviceWorker.register('/Cartagenaeste/sw.js', { scope: '/Cartagenaeste/' })
       .then(function(reg) {
-        console.log('✅ SW v4 registrado:', reg.scope);
+        console.log('✅ SW v7 registrado:', reg.scope);
         // Force check for update immediately
         reg.update();
         // Auto-update when new SW is waiting
