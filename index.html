@@ -3726,9 +3726,9 @@ function cargarPropuestas(estado){
                     html += '<button onclick="pedirMotivo(\'' + id + '\')" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.8rem;white-space:nowrap;">❌ Rechazar</button>';
                     html += '</div>';
                 } else if(d.estado==="aprobado"){
-                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta('"+id+"','rechazado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Revertir</button></div>';
+                    html += '<div style="flex-shrink:0;"><button data-id="'+id+'" data-estado="rechazado" onclick="moderarPropuesta(this.dataset.id,this.dataset.estado)" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Revertir</button></div>';
                 } else {
-                    html += '<div style="flex-shrink:0;"><button onclick="moderarPropuesta('"+id+"','aprobado')" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Recuperar</button></div>';
+                    html += '<div style="flex-shrink:0;"><button data-id="'+id+'" data-estado="aprobado" onclick="moderarPropuesta(this.dataset.id,this.dataset.estado)" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;">↩️ Recuperar</button></div>';
                 }
                 if(d.motivoRechazo) html += '<div style="font-size:.78rem;color:#991b1b;background:#fef2f2;padding:6px 10px;border-radius:6px;margin-top:6px;width:100%;">Motivo: '+escMod(d.motivoRechazo)+'</div>';
                 html += '</div>';
