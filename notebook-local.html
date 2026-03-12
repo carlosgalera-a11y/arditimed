@@ -356,8 +356,23 @@
                 <div class="hero-badge">Centro de Salud Virgen de la Caridad</div>
                 <h2>Tu salud, nuestra prioridad</h2>
                 <p>Salud y formación para tu comunidad. Accede a recursos para pacientes o herramientas de docencia clínica para profesionales.</p>
+                <!-- ── TARJETA AUTOTRIAJE DESTACADA ── -->
+                <div onclick="showPage('pageTriaje')" style="cursor:pointer;background:linear-gradient(135deg,rgba(192,57,43,0.92),rgba(120,20,15,0.88));border:2px solid rgba(255,255,255,0.35);border-radius:16px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;gap:16px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(0,0,0,.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(0,0,0,.35)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'">
+                    <div style="background:rgba(255,255,255,.18);border-radius:12px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-shrink:0;">🩺</div>
+                    <div style="flex:1;">
+                        <div style="color:#fff;font-size:1.05rem;font-weight:700;margin-bottom:3px;">Autotriaje de Urgencias</div>
+                        <div style="color:rgba(255,255,255,.78);font-size:.82rem;line-height:1.45;">¿Necesito médico ahora? Descúbrelo en 2 minutos</div>
+                        <div style="margin-top:7px;display:flex;gap:5px;flex-wrap:wrap;">
+                            <span style="background:rgba(255,255,255,.18);color:#fff;font-size:.72rem;padding:2px 8px;border-radius:20px;">🔴 Emergencia</span>
+                            <span style="background:rgba(255,255,255,.18);color:#fff;font-size:.72rem;padding:2px 8px;border-radius:20px;">🟡 Urgencias</span>
+                            <span style="background:rgba(255,255,255,.18);color:#fff;font-size:.72rem;padding:2px 8px;border-radius:20px;">🟢 Médico de cabecera</span>
+                        </div>
+                    </div>
+                    <div style="color:rgba(255,255,255,.6);font-size:1.3rem;flex-shrink:0;">›</div>
+                </div>
+
+                <!-- ── GRID PRINCIPAL DE SECCIONES ── -->
                 <div class="hero-buttons">
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageTriaje')" style="background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🩺</span> Autotriaje</a>
                     <a class="hero-btn hero-btn-patients" onclick="showPage('pagePatients')"><span class="hero-btn-icon">👤</span> Pacientes</a>
                     <a class="hero-btn hero-btn-professionals" onclick="showPage('pageProfessionals')"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
@@ -1395,14 +1410,26 @@
 
 <!-- ═══════ TRIAJE PACIENTES PAGE ═══════ -->
 <div class="page" id="pageTriaje">
-    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button></div></nav>
+    <nav class="landing-nav" style="background:linear-gradient(135deg,#c0392b,#7b1a12);"><div class="brand"><div class="logo">🩺</div><h1 style="color:#fff;">Autotriaje <span style="color:rgba(255,255,255,.7);">Urgencias</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);">← Inicio</button></div></nav>
     <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:20px 16px;">
         <div style="max-width:680px;margin:0 auto;" id="triajeApp">
-        <div style="background:linear-gradient(135deg,#1a6b4a,#0f4a32);border-radius:14px;padding:24px 20px;color:#fff;margin-bottom:20px;">
-            <div style="font-size:2rem;margin-bottom:8px;">🩺</div>
-            <h2 style="font-size:1.25rem;font-weight:700;margin:0 0 6px;">Orientación de Urgencias</h2>
-            <p style="font-size:.88rem;opacity:.85;margin:0 0 12px;line-height:1.5;">Responde estas preguntas para saber qué tipo de atención necesitas.</p>
-            <div style="padding:10px 12px;background:rgba(255,255,255,.12);border-radius:8px;font-size:.8rem;line-height:1.5;">⚠️ <b>NO sustituye la valoración médica.</b> Ante cualquier duda, llama al 112.</div>
+        <!-- Banner de urgencias -->
+        <div style="background:linear-gradient(135deg,#c0392b,#7b1a12);border-radius:14px;padding:22px 20px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:-10px;right:-10px;font-size:5rem;opacity:.1;pointer-events:none;">🚨</div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                <div style="background:rgba(255,255,255,.2);border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🩺</div>
+                <div>
+                    <h2 style="font-size:1.15rem;font-weight:700;margin:0 0 2px;">Autotriaje de Urgencias</h2>
+                    <p style="font-size:.82rem;opacity:.8;margin:0;">Área II Cartagena · Hospital Santa Lucía</p>
+                </div>
+            </div>
+            <p style="font-size:.88rem;opacity:.88;margin:0 0 12px;line-height:1.5;">Responde unas preguntas para saber qué nivel de atención necesitas ahora mismo.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                <span style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:.76rem;">⏱ 2 minutos</span>
+                <span style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:.76rem;">🔒 Sin registro</span>
+                <span style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:.76rem;">📱 5 niveles de urgencia</span>
+            </div>
+            <div style="padding:10px 12px;background:rgba(0,0,0,.2);border-radius:8px;font-size:.8rem;line-height:1.5;border-left:3px solid rgba(255,255,255,.5);">⚠️ <b>NO sustituye la valoración médica.</b> Ante emergencia vital, llama siempre al <b>112</b>.</div>
         </div>
         <div id="trInicio">
             <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;">
