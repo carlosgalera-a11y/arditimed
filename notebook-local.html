@@ -1709,34 +1709,64 @@
                     <div style="flex:1;min-width:130px;">
                         <label style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">MÉDICO habla</label>
                         <select id="tradLangDoc" style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.9rem;background:var(--bg-card);color:var(--text);">
+                            <optgroup label="── Frecuentes en consulta ──">
                             <option value="es">🇪🇸 Español</option>
-                            <option value="en">🇬🇧 English</option>
+                            <option value="ar-ma">🇲🇦 Darija (árabe marroquí)</option>
+                            <option value="ber">🇲🇦 Amazigh / Tamazight</option>
+                            <option value="ar">🌍 Árabe estándar</option>
                             <option value="fr">🇫🇷 Français</option>
-                            <option value="de">🇩🇪 Deutsch</option>
-                            <option value="it">🇮🇹 Italiano</option>
-                            <option value="pt">🇵🇹 Português</option>
-                            <option value="ar">🇸🇦 العربية</option>
-                            <option value="zh">🇨🇳 中文</option>
                             <option value="ro">🇷🇴 Română</option>
                             <option value="uk">🇺🇦 Українська</option>
                             <option value="ru">🇷🇺 Русский</option>
+                            </optgroup>
+                            <optgroup label="── Norte de África ──">
+                            <option value="ar-dz">🇩🇿 Árabe argelino (Darja)</option>
+                            <option value="ar-tn">🇹🇳 Árabe tunecino</option>
+                            <option value="ar-ly">🇱🇾 Árabe libio</option>
+                            <option value="ar-mr">🇲🇷 Hassaniya (Mauritania)</option>
+                            <option value="wo">🇸🇳 Wolof</option>
+                            <option value="ber-kab">🇩🇿 Cabilio (Tamazight argelino)</option>
+                            <option value="ber-tif">🌍 Tuareg (Tamasheq)</option>
+                            </optgroup>
+                            <optgroup label="── Otros ──">
+                            <option value="en">🇬🇧 English</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="pt">🇵🇹 Português</option>
+                            <option value="zh">🇨🇳 中文</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div style="font-size:1.4rem;padding-top:20px;">⇄</div>
                     <div style="flex:1;min-width:130px;">
                         <label style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">PACIENTE habla</label>
                         <select id="tradLangPat" style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.9rem;background:var(--bg-card);color:var(--text);">
-                            <option value="ar">🇸🇦 العربية</option>
+                            <optgroup label="── Frecuentes en consulta ──">
+                            <option value="ar-ma">🇲🇦 Darija (árabe marroquí)</option>
+                            <option value="ber">🇲🇦 Amazigh / Tamazight</option>
+                            <option value="ar">🌍 Árabe estándar</option>
                             <option value="ro">🇷🇴 Română</option>
                             <option value="uk">🇺🇦 Українська</option>
                             <option value="ru">🇷🇺 Русский</option>
-                            <option value="zh">🇨🇳 中文</option>
-                            <option value="en">🇬🇧 English</option>
                             <option value="fr">🇫🇷 Français</option>
+                            </optgroup>
+                            <optgroup label="── Norte de África ──">
+                            <option value="ar-dz">🇩🇿 Árabe argelino (Darja)</option>
+                            <option value="ar-tn">🇹🇳 Árabe tunecino</option>
+                            <option value="ar-ly">🇱🇾 Árabe libio</option>
+                            <option value="ar-mr">🇲🇷 Hassaniya (Mauritania)</option>
+                            <option value="wo">🇸🇳 Wolof</option>
+                            <option value="ber-kab">🇩🇿 Cabilio (Tamazight argelino)</option>
+                            <option value="ber-tif">🌍 Tuareg (Tamasheq)</option>
+                            </optgroup>
+                            <optgroup label="── Otros ──">
+                            <option value="en">🇬🇧 English</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="zh">🇨🇳 中文</option>
                             <option value="de">🇩🇪 Deutsch</option>
                             <option value="it">🇮🇹 Italiano</option>
                             <option value="pt">🇵🇹 Português</option>
-                            <option value="es">🇪🇸 Español</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
@@ -4124,7 +4154,7 @@ function switchScanTab(tab){
 }
 
 // ═══ TRADUCTOR EN DIRECTO — Módulo médico ═══
-var LANG_NAMES={es:"Español",en:"English",fr:"Français",de:"Deutsch",it:"Italiano",pt:"Português",ar:"Árabe",zh:"Chino",ro:"Română",uk:"Ucraniano",ru:"Ruso"};
+var LANG_NAMES={es:"Español",en:"English",fr:"Français",de:"Deutsch",it:"Italiano",pt:"Português",ar:"Árabe estándar","ar-ma":"Darija (marroquí)","ar-dz":"Árabe argelino","ar-tn":"Árabe tunecino","ar-ly":"Árabe libio","ar-mr":"Hassaniya",ber:"Amazigh/Tamazight","ber-kab":"Cabilio","ber-tif":"Tamasheq (Tuareg)",wo:"Wolof",zh:"Chino",ro:"Română",uk:"Ucraniano",ru:"Ruso"};
 
 function tradUpdateLabels(){
     var doc=document.getElementById("tradLangDoc").value;
@@ -4162,10 +4192,22 @@ function tradEnviar(who){
     var spinnerId="trad-spin-"+Date.now();
     tradAddSpinner(spinnerId,who);
 
-    // Llamar a la API de Claude para traducción
-    var prompt="Eres un traductor médico experto. Traduce el siguiente texto de "+langFromName+" a "+langToName+" de forma clara y precisa, adaptando el vocabulario a un contexto clínico. Devuelve ÚNICAMENTE la traducción, sin explicaciones ni notas adicionales.
 
-Texto: "+texto;
+    // Llamar a la API de Claude para traducción
+    // Instrucciones especiales para dialectos del árabe y lenguas bereberes
+    var dialectNote="";
+    if(langTo==="ar-ma")dialectNote=" Usa el darija marroquí (dialecto árabe de Marruecos), con vocabulario cotidiano y expresiones propias del Magreb. Escribe en caracteres árabes.";
+    else if(langTo==="ar-dz")dialectNote=" Usa el darja argelino (dialecto árabe de Argelia). Escribe en caracteres árabes.";
+    else if(langTo==="ar-tn")dialectNote=" Usa el dialecto árabe tunecino. Escribe en caracteres árabes.";
+    else if(langTo==="ar-ly")dialectNote=" Usa el dialecto árabe libio. Escribe en caracteres árabes.";
+    else if(langTo==="ar-mr")dialectNote=" Usa el hassaniya, el árabe de Mauritania y el Sáhara Occidental. Escribe en caracteres árabes.";
+    else if(langTo==="ber")dialectNote=" Traduce al tamazight/amazigh estándar (bereber de Marruecos), usando escritura latina o tifinagh.";
+    else if(langTo==="ber-kab")dialectNote=" Traduce al cabilio (tamazight de Cabilia, Argelia), en escritura latina.";
+    else if(langTo==="ber-tif")dialectNote=" Traduce al tamasheq (lengua tuareg del Sahel y Sahara).";
+    else if(langTo==="wo")dialectNote=" Traduce al wolof, la lengua más hablada en Senegal y Mauritania.";
+    if(["ar-ma","ar-dz","ar-tn","ar-ly","ar-mr"].indexOf(langFrom)!==-1)dialectNote+=" El texto original está en una variante dialectal del árabe — interpreta su sentido en contexto médico.";
+    if(["ber","ber-kab","ber-tif"].indexOf(langFrom)!==-1)dialectNote+=" El texto original está en una variante del amazigh/bereber — interpreta con contexto médico.";
+    var prompt="Eres un traductor médico experto especializado en idiomas del Mediterráneo y Norte de África. Traduce el siguiente texto de "+langFromName+" a "+langToName+" de forma clara y precisa en contexto clínico."+dialectNote+" Devuelve ÚNICAMENTE la traducción, sin explicaciones adicionales.\n\nTexto: "+texto;
 
     fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",
