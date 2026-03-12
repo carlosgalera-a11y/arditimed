@@ -2,18 +2,31 @@
 <html lang="es">
 <head>
 <script>
-// KILL ALL SERVICE WORKERS AND CACHES - v1773346500
+// KILL ALL SERVICE WORKERS AND CACHES - v1773357900
 (function(){
+  var promises = [];
+  var needsReload = false;
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations().then(function(regs){
-      regs.forEach(function(r){ r.unregister(); });
-    });
+    promises.push(
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){
+          if(r.scope && r.scope.indexOf('Cartagenaeste') !== -1){ needsReload = true; }
+          r.unregister();
+        });
+      })
+    );
   }
   if('caches' in window){
-    caches.keys().then(function(keys){
-      keys.forEach(function(k){ caches.delete(k); });
-    });
+    promises.push(caches.keys().then(function(keys){
+      return Promise.all(keys.map(function(k){ return caches.delete(k); }));
+    }));
   }
+  Promise.all(promises).then(function(){
+    if(needsReload && !sessionStorage.getItem('sw_killed')){
+      sessionStorage.setItem('sw_killed','1');
+      window.location.reload(true);
+    }
+  });
 })();
 </script>
     <meta charset="UTF-8">
