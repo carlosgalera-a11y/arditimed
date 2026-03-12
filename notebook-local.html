@@ -4633,6 +4633,9 @@ firebase.auth().onAuthStateChanged(function(user){
         loadModeradoresFromFirestore(function(){
             isAdminLoggedIn=isAdmin();
             apShowAdminTab(isAdminLoggedIn);
+            // Ocultar botón de acceso/login cuando hay sesión activa
+            var btnAcceso = document.getElementById("loginBtnLanding");
+            if(btnAcceso) btnAcceso.style.display="none";
             // Mostrar botón de moderación si es admin
             if(isAdminLoggedIn){
                 document.querySelectorAll(".btn-panel-mod").forEach(function(el){
