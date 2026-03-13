@@ -347,7 +347,19 @@
 .tr-opcion{padding:14px 10px;border:2px solid var(--border);border-radius:10px;background:var(--bg-card);cursor:pointer;font-size:.9rem;font-weight:600;color:var(--text);transition:.15s;width:100%;}
 .tr-opcion:hover{border-color:#1a6b4a;background:rgba(26,107,74,.05);}
 .tr-opcion.selected{border-color:#1a6b4a;background:rgba(26,107,74,.1);color:#1a6b4a;}
-</style>
+
+        /* ── DARK MODE ── */
+        body.dark-mode{--bg-main:#0f172a;--bg-card:#1e293b;--bg-subtle:#1e293b;--text:#e2e8f0;--text-muted:#94a3b8;--border:#334155;--primary:#3b82f6;--primary-dark:#1d4ed8;--primary-light:#60a5fa;--accent:#06b6d4;}
+        body.dark-mode .landing-nav{background:rgba(15,23,42,.97)!important;border-bottom:1px solid #334155;}
+        body.dark-mode .hero-section{background:linear-gradient(160deg,#0f172a 0%,#1e3a5f 100%)!important;}
+        body.dark-mode .patient-card{background:#1e293b;border-color:#334155;color:#e2e8f0;}
+        body.dark-mode .patient-card-title{color:#93c5fd;}
+        body.dark-mode input,body.dark-mode textarea,body.dark-mode select{background:#1e293b!important;color:#e2e8f0!important;border-color:#334155!important;}
+        body.dark-mode .modal-box,body.dark-mode [style*="background:#fff"]{background:#1e293b!important;color:#e2e8f0!important;}
+        .dark-toggle{position:fixed;bottom:20px;right:20px;z-index:9999;background:#1e293b;border:1px solid #334155;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:.3s;}
+        .dark-toggle:hover{transform:scale(1.1);}
+
+        </style>
 <!-- PWA Meta Tags -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f6b4a">
@@ -362,6 +374,9 @@
 <meta name="msapplication-TileColor" content="#0f6b4a">
 </head>
 <body>
+<!-- Dark mode toggle -->
+<button class="dark-toggle" id="darkToggle" onclick="toggleDarkMode()" title="Modo oscuro">🌙</button>
+
 
 <!-- ═══════ LANDING PAGE ═══════ -->
 <div class="page active" id="pageLanding">
@@ -376,7 +391,11 @@
                 <p>Salud y formación para tu comunidad. Accede a recursos para pacientes o herramientas de docencia clínica para profesionales.</p>
                 <!-- ── GRID PRINCIPAL DE SECCIONES ── -->
                 <div class="hero-buttons">
-                    <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')"><span class="hero-btn-icon">👤</span> Pacientes</a>
+                    <div style="display:flex;gap:8px;margin-bottom:16px;justify-content:center;flex-wrap:wrap;">
+                        <button onclick="abrirBuscador()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">🔍 Buscar</button>
+                        <button onclick="abrirFavoritos()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">⭐ Favoritos</button>
+                    </div>
+                    <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')" ><span class="hero-btn-icon">👤</span> Pacientes</a>
                     <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProfessionals')"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
                 <div class="hero-buttons" style="margin-top:20px;">
@@ -1607,6 +1626,7 @@
             <!-- TABS: Scan IA / Quiz NIH -->
             <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:3px solid var(--border);">
                 <button id="tabScanIA" onclick="switchScanTab('scanIA')" style="flex:1;padding:14px;border:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🔬 Analizar imagen</button>
+                <button id="tabCalc" onclick="switchScanTab('calc')" style="flex:1;padding:14px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧮 Calculadoras</button>
                 <button id="tabNIHQuiz" onclick="switchScanTab('nihQuiz')" style="flex:1;padding:14px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧠 Quiz NIH Chest X-Ray</button>
             </div>
 
@@ -1733,6 +1753,95 @@
                     📖 <strong>Fuente:</strong> NIH Chest X-ray Dataset — Wang et al., "ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks", IEEE CVPR 2017. Datos proporcionados por el NIH Clinical Center. <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC" target="_blank" style="color:#0066cc;">nihcc.app.box.com</a>
                 </div>
             </div><!-- end panelNIHQuiz -->
+            <!-- TAB 3: CALCULADORAS MÉDICAS -->
+            <div id="panelCalc" style="display:none;">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:4px;">
+
+                <!-- CURB-65 -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 CURB-65 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Neumonía</span></h3>
+                  <div id="curb65Fields">
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> Confusión mental</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> Urea &gt;7 mmol/L</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> FR ≥30/min</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> TA sistólica &lt;90 o diastólica ≤60</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> Edad ≥65 años</label>
+                  </div>
+                  <div id="curb65Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Puntaje: 0 / 5</div>
+                </div>
+
+                <!-- qSOFA -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">⚠️ qSOFA <span style="font-size:.75rem;font-weight:400;color:#64748b;">Sepsis</span></h3>
+                  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="qsofa-chk" onchange="calcQSOFA()"> FR ≥22/min</label>
+                  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="qsofa-chk" onchange="calcQSOFA()"> Alteración del nivel de conciencia (GCS &lt;15)</label>
+                  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="qsofa-chk" onchange="calcQSOFA()"> TAS ≤100 mmHg</label>
+                  <div id="qsofaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Puntaje: 0 / 3</div>
+                </div>
+
+                <!-- Wells TVP -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🩸 Wells TVP <span style="font-size:.75rem;font-weight:400;color:#64748b;">Trombosis venosa</span></h3>
+                  <div id="wellsFields">
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Cáncer activo (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Parálisis / inmovilización de EEII (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Encamado &gt;3d o cirugía reciente (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Dolor en trayecto venoso profundo (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Edema unilateral de toda la pierna (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Edema de pantorrilla &gt;3cm vs contralateral (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Venas colaterales superficiales (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> TVP previa (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="-2" onchange="calcWells()"> Diagnóstico alternativo tan probable (-2)</label>
+                  </div>
+                  <div id="wellsResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Puntaje: 0</div>
+                </div>
+
+                <!-- Glasgow -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 Glasgow <span style="font-size:.75rem;font-weight:400;color:#64748b;">Nivel de conciencia</span></h3>
+                  <div style="margin-bottom:8px;">
+                    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Apertura ocular</label>
+                    <select id="gcsEye" onchange="calcGlasgow()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+                      <option value="4">4 – Espontánea</option><option value="3">3 – A la voz</option><option value="2">2 – Al dolor</option><option value="1">1 – Ninguna</option>
+                    </select>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Respuesta verbal</label>
+                    <select id="gcsVerbal" onchange="calcGlasgow()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+                      <option value="5">5 – Orientado</option><option value="4">4 – Confuso</option><option value="3">3 – Palabras inapropiadas</option><option value="2">2 – Sonidos inespecíficos</option><option value="1">1 – Ninguna</option>
+                    </select>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Respuesta motora</label>
+                    <select id="gcsMotor" onchange="calcGlasgow()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+                      <option value="6">6 – Obedece órdenes</option><option value="5">5 – Localiza el dolor</option><option value="4">4 – Retirada al dolor</option><option value="3">3 – Flexión anormal</option><option value="2">2 – Extensión anormal</option><option value="1">1 – Ninguna</option>
+                    </select>
+                  </div>
+                  <div id="glasgowResult" style="padding:10px;border-radius:8px;font-size:.9rem;font-weight:700;text-align:center;background:#dbeafe;color:#1e40af;">GCS: 15 / 15 — Sin deterioro</div>
+                </div>
+
+                <!-- NIHSS simplificado -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧩 NIHSS <span style="font-size:.75rem;font-weight:400;color:#64748b;">Ictus</span></h3>
+                  <p style="font-size:.75rem;color:#94a3b8;margin-bottom:10px;">Versión abreviada — suma total estimada</p>
+                  <div style="display:grid;grid-template-columns:1fr 60px;gap:6px;align-items:center;">
+                    <span style="font-size:.82rem;">Nivel de conciencia (0-3)</span><input type="number" id="nihss1" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Mirada conjugada (0-2)</span><input type="number" id="nihss2" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Campo visual (0-3)</span><input type="number" id="nihss3" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Paresia facial (0-3)</span><input type="number" id="nihss4" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Motor brazo izq (0-4)</span><input type="number" id="nihss5" min="0" max="4" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Motor brazo der (0-4)</span><input type="number" id="nihss6" min="0" max="4" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Ataxia miembros (0-2)</span><input type="number" id="nihss7" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Sensibilidad (0-2)</span><input type="number" id="nihss8" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Lenguaje (0-3)</span><input type="number" id="nihss9" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Disartria (0-2)</span><input type="number" id="nihss10" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                  </div>
+                  <div id="nihssResult" style="margin-top:12px;padding:10px;border-radius:8px;font-size:.9rem;font-weight:700;text-align:center;background:#f0fdf4;color:#166534;">NIHSS: 0 — Sin déficit</div>
+                </div>
+
+              </div>
+            </div><!-- end panelCalc -->
+
         </div>
     </div>
 </div>
@@ -3029,7 +3138,49 @@ function infDescargar(formato){
     w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}</style></head><body>');
     w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>');
     w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'</div>');
-    w.document.write('</body></html>');
+    w.document.write('
+<!-- ═══════ BUSCADOR GLOBAL MODAL ═══════ -->
+<div id="modalBuscador" onclick="if(event.target===this)cerrarBuscador()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;align-items:flex-start;justify-content:center;backdrop-filter:blur(3px);padding-top:60px;">
+  <div style="background:#fff;border-radius:16px;max-width:640px;width:94%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 80px rgba(0,0,0,.5);">
+    <div style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;">
+      <span style="font-size:1.3rem;">🔍</span>
+      <input id="buscadorInput" type="text" placeholder="Buscar en protocolos, teléfonos, PDFs..." oninput="buscarGlobal(this.value)" style="flex:1;border:none;outline:none;font-size:1rem;font-family:inherit;background:transparent;" autocomplete="off"/>
+      <button onclick="cerrarBuscador()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div id="buscadorResultados" style="overflow-y:auto;padding:12px 20px;flex:1;">
+      <p style="color:#94a3b8;font-size:.88rem;text-align:center;padding:20px 0;">Escribe para buscar en toda la plataforma</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════ QR MODAL ═══════ -->
+<div id="modalQR" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3001;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,.5);max-width:320px;width:90%;">
+    <h3 id="qrTitle" style="font-size:1rem;margin-bottom:16px;color:#1e293b;">QR Protocolo</h3>
+    <div id="qrCanvas" style="display:flex;justify-content:center;margin-bottom:16px;"></div>
+    <p id="qrUrl" style="font-size:.72rem;color:#64748b;word-break:break-all;margin-bottom:16px;"></p>
+    <button onclick="document.getElementById('modalQR').style.display='none'" style="padding:8px 20px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:.88rem;">Cerrar</button>
+  </div>
+</div>
+
+
+<!-- ═══════ FAVORITOS MODAL ═══════ -->
+<div id="modalFavoritos" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;max-width:400px;width:92%;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.5);">
+    <div style="background:linear-gradient(135deg,#7c3aed,#4f46e5);padding:20px 24px;color:#fff;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:1.5rem;">⭐</div><h2 style="margin:4px 0 0;font-size:1.1rem;">Mis secciones favoritas</h2></div>
+      <span onclick="document.getElementById('modalFavoritos').style.display='none'" style="cursor:pointer;font-size:1.5rem;opacity:.8;">✕</span>
+    </div>
+    <div style="padding:16px 20px;">
+      <p style="font-size:.82rem;color:#64748b;margin-bottom:14px;">Marca las secciones que quieres ver al inicio:</p>
+      <div id="favoritosList"></div>
+      <button onclick="guardarFavoritos()" style="width:100%;margin-top:16px;padding:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;">Guardar</button>
+    </div>
+  </div>
+</div>
+
+</body></html>');
     w.document.close();
     setTimeout(function(){w.print();},500);
 
@@ -4089,6 +4240,8 @@ function switchScanTab(tab){
     document.getElementById("tabScanIA").style.color=tab==="scanIA"?"#fff":"var(--text)";
     document.getElementById("tabNIHQuiz").style.background=tab==="nihQuiz"?"linear-gradient(135deg,#4caf50,#2e7d32)":"var(--bg-subtle)";
     document.getElementById("tabNIHQuiz").style.color=tab==="nihQuiz"?"#fff":"var(--text)";
+    var calcEl=document.getElementById("panelCalc");if(calcEl)calcEl.style.display=tab==="calc"?"block":"none";
+    var calcBtn=document.getElementById("tabCalc");if(calcBtn){calcBtn.style.background=tab==="calc"?"linear-gradient(135deg,#7c3aed,#4f46e5)":"var(--bg-subtle)";calcBtn.style.color=tab==="calc"?"#fff":"var(--text)";}
 }
 
 // ═══ NIH CHEST X-RAY QUIZ MODULE ═══
