@@ -3629,7 +3629,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ═══ PAGE NAVIGATION ═══
-var PAGES_REQUIRE_LOGIN=[];
+var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
 function showPage(id){
     if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
@@ -4455,6 +4455,10 @@ function scanGoogleLogin(){
                     errEl.style.display="block";
                     console.error("Login con SESSION persistence falló:",e2);
                 });
+            }else if(error.code==="auth/unauthorized-domain"){
+                errEl.innerHTML="❌ <strong>Dominio no autorizado en Firebase.</strong><br>El administrador debe añadir <code>ramongalera22-ai.github.io</code> en Firebase Console → Authentication → Authorized domains.";
+                errEl.style.display="block";
+                console.error("SOLUCIÓN: Firebase Console > docenciacartagenaeste > Authentication > Settings > Authorized domains > Añadir: ramongalera22-ai.github.io");
             }else{
                 errEl.innerHTML="❌ "+error.message;
                 errEl.style.display="block";
