@@ -389,15 +389,15 @@
                 <p>Salud y formación para tu comunidad. Accede a recursos para pacientes o herramientas de docencia clínica para profesionales.</p>
                 <!-- ── GRID PRINCIPAL DE SECCIONES ── -->
                 <div class="hero-buttons">
-                    <a class="hero-btn hero-btn-patients" onclick="showPage('pagePatients')"><span class="hero-btn-icon">👤</span> Pacientes</a>
-                    <a class="hero-btn hero-btn-professionals" onclick="showPage('pageProfessionals')"><span class="hero-btn-icon">🩺</span> Profesionales</a>
+                    <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')"><span class="hero-btn-icon">👤</span> Pacientes</a>
+                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProfessionals')"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
                 <div class="hero-buttons" style="margin-top:20px;">
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageEnfermeria')" style="background:linear-gradient(135deg,#e74c8b,#c2185b);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">👩‍⚕️</span> Enfermería</a>
                 </div>
                 <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn hero-btn-patients" onclick="showPage('pageProtocolosAP')" style="background:#fff;color:var(--primary-dark);"><span class="hero-btn-icon">📋</span> Protocolos Atencion Primaria</a>
-                    <a class="hero-btn hero-btn-professionals" onclick="showPage('pageProtocolosUrgencias')" style="background:transparent;border-color:rgba(255,255,255,.4);color:#fff;"><span class="hero-btn-icon">🚨</span> Protocolos Urgencias</a>
+                    <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pageProtocolosAP')" style="background:#fff;color:var(--primary-dark);"><span class="hero-btn-icon">📋</span> Protocolos Atencion Primaria</a>
+                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProtocolosUrgencias')" style="background:transparent;border-color:rgba(255,255,255,.4);color:#fff;"><span class="hero-btn-icon">🚨</span> Protocolos Urgencias</a>
                 </div>
                 <div class="hero-buttons" style="margin-top:20px;">
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageScanIA')" style="background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🛠️</span> Herramientas</a>
@@ -462,7 +462,20 @@
 <div class="page" id="pagePatients">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
     <div class="patients-header"><h2>👤 Pacientes</h2><p>Recursos e información para pacientes del Area II Cartagena</p></div>
-    <div class="patients-grid" id="patientsGrid"></div>
+    <div class="patients-grid" id="patientsGrid">
+    <a class="patient-card" href="dietas.html" target="_blank"><div class="patient-card-icon">🥗</div><div class="patient-card-title">Dietas</div><div class="patient-card-desc">Planes nutricionales</div></a>
+    <a class="patient-card" href="violencia-genero.html" target="_blank"><div class="patient-card-icon">💜</div><div class="patient-card-title">Violencia de género</div><div class="patient-card-desc">Recursos y apoyo</div></a>
+    <a class="patient-card" href="recursos-sociales.html" target="_blank"><div class="patient-card-icon">🤝</div><div class="patient-card-title">Recursos sociales</div><div class="patient-card-desc">Servicios comunitarios</div></a>
+    <a class="patient-card" href="informacion.html" target="_blank"><div class="patient-card-icon">ℹ️</div><div class="patient-card-title">Información</div><div class="patient-card-desc">Info general del centro</div></a>
+    <a class="patient-card" href="factores-riesgo.html" target="_blank"><div class="patient-card-icon">⚠️</div><div class="patient-card-title">Factores de riesgo</div><div class="patient-card-desc">Prevención y salud</div></a>
+    <a class="patient-card" href="ejercicios.html" target="_blank"><div class="patient-card-icon">🏃</div><div class="patient-card-title">Ejercicios</div><div class="patient-card-desc">Guías de actividad física</div></a>
+    <a class="patient-card" href="dentista.html" target="_blank"><div class="patient-card-icon">🦷</div><div class="patient-card-title">Dentista</div><div class="patient-card-desc">Salud bucodental</div></a>
+    <a class="patient-card" href="enlaces-interes.html" target="_blank"><div class="patient-card-icon">🔗</div><div class="patient-card-title">Enlaces de interés</div><div class="patient-card-desc">Webs y recursos útiles</div></a>
+    <a class="patient-card" href="vacunas.html" target="_blank"><div class="patient-card-icon">💉</div><div class="patient-card-title">Vacunas</div><div class="patient-card-desc">Calendario y campañas</div></a>
+    <a class="patient-card" href="programacion.html" target="_blank"><div class="patient-card-icon">📅</div><div class="patient-card-title">Programación del Centro</div><div class="patient-card-desc">Horarios y agenda</div></a>
+    <a class="patient-card" href="dejar-fumar.html" target="_blank"><div class="patient-card-icon">🚭</div><div class="patient-card-title">Dejar de fumar</div><div class="patient-card-desc">Programas y ayuda</div></a>
+    <a class="patient-card" href="podcast.html" target="_blank"><div class="patient-card-icon">🎙️</div><div class="patient-card-title">Podcast</div><div class="patient-card-desc">Audio salud comunitaria</div></a>
+</div>
 </div>
 
 <!-- ═══════ PROFESSIONALS PAGE ═══════ -->
@@ -5340,6 +5353,12 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"){var im=docu
 document.addEventListener("DOMContentLoaded",function(){
     initLoginSession();
     renderPatients();
+
+    // Recarga Firebase cada 30s
+    setInterval(function(){
+        try{ loadGroqKeyFromFirestore(); }catch(e){}
+        try{ var user=firebase.auth().currentUser; if(user){checkAdminStatus();updateModBadgeAll();} }catch(e){}
+    }, 30000);
     var p=new URLSearchParams(window.location.search);
     if(p.get("view")==="professionals"||p.get("category"))showPage("pageProfessionals");
     else if(p.get("view")==="patients")showPage("pagePatients");
