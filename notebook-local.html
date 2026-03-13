@@ -4318,6 +4318,109 @@ function cnbInit(){
     cnbCargarLista();
 }
 
+// ═══ CUADERNOS: localStorage fallback when Firestore permissions fail ═══
+var CNB_USE_LOCAL=false;
+
+function cnbGetLocal(){
+    try{return JSON.parse(localStorage.getItem("cnb_cuadernos")||"[]");}catch(e){return[];}
+}
+function cnbSaveLocal(arr){
+    try{localStorage.setItem("cnb_cuadernos",JSON.stringify(arr));}catch(e){}
+}
+function cnbGenId(){return "local_"+Date.now()+"_"+Math.random().toString(36).substr(2,6);}
+
+function cnbCrearLocal(nombre,icono){
+    var arr=cnbGetLocal();
+    var id=cnbGenId();
+    arr.unshift({id:id,nombre:nombre,icono:icono||"📓",contenido:"",updatedAt:Date.now()});
+    cnbSaveLocal(arr);
+    cnbCerrarModal();
+    cnbCargarLista();
+    cnbAbrirEditorLocal(id);
+}
+
+function cnbAbrirEditorLocal(id){
+    CNB_CURRENT_ID=id;
+    CNB_DIRTY=false;
+    CNB_USE_LOCAL=true;
+    var arr=cnbGetLocal();
+    var d=arr.find(function(x){return x.id===id;});
+    if(!d)return;
+    document.getElementById("cnbEditorTitle").textContent=d.nombre||"Sin nombre";
+    document.getElementById("cnbEditorIcon").textContent=d.icono||"📓";
+    document.getElementById("cnbEditor").style.display="block";
+    document.getElementById("cnbTextarea").value=d.contenido||"";
+    var fecha=d.updatedAt?new Date(d.updatedAt).toLocaleString("es-ES"):"";
+    document.getElementById("cnbEditorUltMod").textContent=fecha?"Última modificación: "+fecha:"";
+    document.getElementById("cnbEditorStatus").textContent="💾 Almacenamiento local";
+    document.getElementById("cnbTextarea").focus();
+    setTimeout(function(){var ed=document.getElementById("cnbEditor");if(ed)ed.scrollIntoView({behavior:"smooth",block:"start"});},100);
+}
+
+function cnbGuardarLocal(){
+    if(!CNB_CURRENT_ID)return;
+    var arr=cnbGetLocal();
+    var idx=arr.findIndex(function(x){return x.id===CNB_CURRENT_ID;});
+    if(idx===-1)return;
+    var texto=document.getElementById("cnbTextarea").value;
+    arr[idx].contenido=texto;
+    arr[idx].updatedAt=Date.now();
+    arr[idx].tamano=texto.length;
+    cnbSaveLocal(arr);
+    CNB_DIRTY=false;
+    document.getElementById("cnbEditorStatus").textContent="✅ Guardado (local)";
+    document.getElementById("cnbEditorStatus").style.color="var(--primary)";
+    document.getElementById("cnbEditorUltMod").textContent="Última modificación: "+new Date().toLocaleString("es-ES");
+    cnbCargarLista();
+    setTimeout(function(){var s=document.getElementById("cnbEditorStatus");if(s&&s.textContent.indexOf("Guardado")>-1)s.textContent="💾 Local";},3000);
+}
+
+function cnbEliminarLocal(id,nombre){
+    if(!confirm('¿Eliminar el cuaderno "'+nombre+'"?'))return;
+    var arr=cnbGetLocal().filter(function(x){return x.id!==id;});
+    cnbSaveLocal(arr);
+    if(CNB_CURRENT_ID===id){document.getElementById("cnbEditor").style.display="none";CNB_CURRENT_ID=null;CNB_DIRTY=false;}
+    cnbCargarLista();
+}
+
+function cnbRenderListaLocal(){
+    var cuadernos=cnbGetLocal();
+    var lista=document.getElementById("cnbLista");
+    var count=document.getElementById("cnbCount");
+    if(!lista)return;
+    lista.innerHTML="";
+    cuadernos.sort(function(a,b){return(b.updatedAt||0)-(a.updatedAt||0);});
+    if(count)count.textContent=cuadernos.length+" cuaderno"+(cuadernos.length!==1?"s":"")+" (local)";
+    if(cuadernos.length===0){
+        lista.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">No tienes cuadernos todavía.<br>Pulsa <strong>+ Nuevo cuaderno</strong> para crear el primero.</div>';
+        return;
+    }
+    cuadernos.forEach(function(d){
+        var item=document.createElement("div");
+        item.style.cssText="background:var(--bg-card);border-radius:10px;border:2px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;";
+        item.onmouseenter=function(){this.style.borderColor="var(--primary)";};
+        item.onmouseleave=function(){this.style.borderColor="var(--border)";};
+        var fecha=d.updatedAt?new Date(d.updatedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+        var preview=(d.contenido||"").replace(/\n/g," ").substring(0,80);
+        item.innerHTML=
+            '<span style="font-size:1.6rem;flex-shrink:0;">'+(d.icono||"\ud83d\udcd3")+'</span>'+
+            '<div style="flex:1;min-width:0;">'+
+                '<div style="font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(d.nombre||"Sin nombre")+'</div>'+
+                '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cnbEsc(preview||(fecha?"Modificado "+fecha:"Vacío"))+'</div>'+
+            '</div>'+
+            '<div style="display:flex;gap:6px;flex-shrink:0;">'+
+                '<button class="cnb-abrir" style="padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;">\u270f\ufe0f Abrir</button>'+
+                '<button class="cnb-eliminar" style="padding:6px 10px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;">\ud83d\uddd1\ufe0f</button>'+
+            '</div>';
+        (function(did,dn,di){
+            item.onclick=function(){cnbAbrirEditorLocal(did);};
+            var ba=item.querySelector('.cnb-abrir');if(ba)ba.onclick=function(e){e.stopPropagation();cnbAbrirEditorLocal(did);};
+            var be=item.querySelector('.cnb-eliminar');if(be)be.onclick=function(e){e.stopPropagation();cnbEliminarLocal(did,dn);};
+        })(d.id,d.nombre,d.icono);
+        lista.appendChild(item);
+    });
+}
+
 function cnbColRef(){
     var user=firebase.auth().currentUser;
     if(!user)return null;
@@ -4363,7 +4466,9 @@ function cnbCargarLista(){
             lista.appendChild(item);
         });
     }).catch(function(e){
-        console.error("Error cargando cuadernos:",e);
+        console.warn("Firestore load failed, using localStorage:", e.message);
+        CNB_USE_LOCAL=true;
+        cnbRenderListaLocal();
     });
 }
 
@@ -4392,7 +4497,9 @@ function cnbAbrirEditor(id,nombre,icono){
             if(ed)ed.scrollIntoView({behavior:"smooth",block:"start"});
         },100);
     }).catch(function(e){
-        document.getElementById("cnbEditorStatus").textContent="⚠️ Error al cargar";
+        console.warn("Firestore editor load failed, trying localStorage:", e.message);
+        CNB_USE_LOCAL=true;
+        cnbAbrirEditorLocal(id);
     });
 }
 
@@ -4404,6 +4511,7 @@ function cnbMarcarCambios(){
 
 function cnbGuardarNota(){
     if(!CNB_CURRENT_ID)return;
+    if(CNB_USE_LOCAL){cnbGuardarLocal();return;}
     var ref=cnbColRef();
     if(!ref)return;
     var texto=document.getElementById("cnbTextarea").value;
@@ -4494,7 +4602,9 @@ function cnbCrearCuaderno(){
         cnbCargarLista();
         cnbAbrirEditor(docRef.id,nombre,icono);
     }).catch(function(e){
-        alert("Error al crear cuaderno: "+e.message);
+        console.warn("Firestore create failed, using localStorage:", e.message);
+        CNB_USE_LOCAL=true;
+        cnbCrearLocal(nombre,icono);
     });
 }
 
@@ -4510,7 +4620,9 @@ function cnbEliminar(id,nombre){
     ref.doc(id).delete().then(function(){
         cnbCargarLista();
     }).catch(function(e){
-        alert("Error al eliminar: "+e.message);
+        console.warn("Firestore delete failed, using localStorage:", e.message);
+        CNB_USE_LOCAL=true;
+        cnbEliminarLocal(id,nombre);
     });
 }
 
