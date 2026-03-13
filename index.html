@@ -498,23 +498,24 @@
     <a class="patient-card" href="programacion.html" target="_blank"><div class="patient-card-icon">📅</div><div class="patient-card-title">Programación del Centro</div><div class="patient-card-desc">Horarios y agenda</div></a>
     <a class="patient-card" href="dejar-fumar.html" target="_blank"><div class="patient-card-icon">🚭</div><div class="patient-card-title">Dejar de fumar</div><div class="patient-card-desc">Programas y ayuda</div></a>
     <a class="patient-card" href="podcast.html" target="_blank"><div class="patient-card-icon">🎙️</div><div class="patient-card-title">Podcast</div><div class="patient-card-desc">Audio salud comunitaria</div></a>
-    <a class="patient-card" href="javascript:void(0)" onclick="showFarmacias24h()" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#1b5e20;">Farmacias 24h</div><div class="patient-card-desc" style="color:#388e3c;">Guardias en Cartagena</div></a>
+    <a class="patient-card" href="javascript:void(0)" onclick="showFarmacias24h()" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#1b5e20;">Farmacias 24h</div><div class="patient-card-desc" style="color:#388e3c;">Región de Murcia</div></a>
 </div>
 
 <!-- Modal farmacias 24h -->
 <div id="modalFarmacias" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
-  <div style="background:#fff;border-radius:16px;max-width:420px;width:92%;max-height:85vh;overflow-y:auto;box-shadow:0 25px 80px rgba(0,0,0,.4);">
+  <div style="background:#fff;border-radius:16px;max-width:520px;width:94%;max-height:88vh;overflow-y:auto;box-shadow:0 25px 80px rgba(0,0,0,.4);">
     <div style="background:linear-gradient(135deg,#2e7d32,#43a047);padding:20px 24px;border-radius:16px 16px 0 0;color:#fff;display:flex;align-items:center;justify-content:space-between;">
-      <div><div style="font-size:1.8rem;">💊</div><h2 style="margin:4px 0 0;font-size:1.2rem;font-weight:700;">Farmacias de Guardia 24h</h2><p style="margin:2px 0 0;font-size:.8rem;opacity:.85;">Área II Cartagena</p></div>
+      <div><div style="font-size:1.8rem;">💊</div><h2 style="margin:4px 0 0;font-size:1.2rem;font-weight:700;">Farmacias 24 Horas</h2><p style="margin:2px 0 0;font-size:.8rem;opacity:.85;">Región de Murcia · 18 farmacias en 9 localidades</p></div>
       <span onclick="document.getElementById('modalFarmacias').style.display='none'" style="cursor:pointer;font-size:1.6rem;opacity:.8;line-height:1;">✕</span>
     </div>
     <div style="padding:16px;">
       <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:.78rem;color:#6d4c00;">
-        ⚠️ <strong>Horario de guardia:</strong> Lunes a sábado de 22:00 a 9:30h. Domingos y festivos todo el día. Llama antes para confirmar disponibilidad.
+        ⚠️ <strong>Abiertas 24h, los 365 días del año.</strong> Llama antes de acudir para confirmar disponibilidad. Para farmacias de guardia rotatorias: <a href="https://guardias.cofrm.com" target="_blank" style="color:#6d4c00;font-weight:700;">guardias.cofrm.com</a>
       </div>
+      <div style="margin-bottom:12px;text-align:center;"><a href="farmacias-24h-region-murcia.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#2e7d32;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">📄 Descargar PDF completo</a></div>
       <div id="farmaciasList"></div>
       <div style="margin-top:14px;padding:10px;background:#f1f8e9;border-radius:8px;font-size:.78rem;color:#33691e;text-align:center;">
-        📞 Información CARM: <strong><a href="tel:012" style="color:#1b5e20;text-decoration:none;">012</a></strong> · Emergencias: <strong><a href="tel:112" style="color:#c62828;text-decoration:none;">112</a></strong>
+        📞 Información CARM: <strong><a href="tel:012" style="color:#1b5e20;text-decoration:none;">012</a></strong> · Emergencias: <strong><a href="tel:112" style="color:#c62828;text-decoration:none;">112</a></strong><br><span style="font-size:.72rem;opacity:.8;">Fuente: Colegio Oficial de Farmacéuticos de la Región de Murcia (COFRM)</span>
       </div>
     </div>
   </div>
@@ -5096,27 +5097,59 @@ firebase.auth().getRedirectResult().then(function(result){
 function showFarmacias24h(){
     var modal=document.getElementById('modalFarmacias');
     if(!modal)return;
-    var farmacias=[
-        {nombre:"Farmacia Ros García",dir:"C/ Jabonerías 13, Cartagena",tel:"968120345",zona:"Centro"},
-        {nombre:"Farmacia López Manzanera",dir:"Av. Alfonso XIII 42, Cartagena",tel:"968521103",zona:"Centro"},
-        {nombre:"Farmacia Martínez Clares",dir:"C/ Real 78, Cartagena",tel:"968500212",zona:"Centro"},
-        {nombre:"Farmacia Hernández García",dir:"C/ Jara 4, Cartagena",tel:"968120876",zona:"Barrio Peral"},
-        {nombre:"Farmacia Pérez Albaladejo",dir:"C/ Gisbert 31, Cartagena",tel:"968508034",zona:"El Ensanche"},
-        {nombre:"Farmacia García Tudela",dir:"Paseo Alfonso XIII 23, Cartagena",tel:"968122100",zona:"Puerto"},
-        {nombre:"Farmacia Sáez Díez",dir:"Av. Paco Martínez Soria 12",tel:"968551234",zona:"Cartagena Nueva"},
-        {nombre:"Farmacia Ruiz López",dir:"C/ Mayor 5, Los Dolores",tel:"968314400",zona:"Los Dolores"},
-        {nombre:"Farmacia García Moreno",dir:"C/ Concordia 3, Santa Lucía",tel:"968312000",zona:"Santa Lucía"},
-        {nombre:"Farmacia Cervantes",dir:"C/ La Palma 7, La Unión",tel:"968541100",zona:"La Unión"},
+    var localidades=[
+        {nombre:"Alhama de Murcia",n:1,farmacias:[
+            {nombre:"Farmacia Alhama 24h",dir:"Av. Juan Carlos I, 50",tel:"968630078"}
+        ]},
+        {nombre:"Cartagena",n:3,farmacias:[
+            {nombre:"Farmacia Juan de la Cosa",dir:"C/ Juan de la Cosa, 7 esq. Paseo Alfonso XIII",tel:"968520009"},
+            {nombre:"Farmacia San Antón",dir:"Alameda San Antón, 16 (frente Estadio Cartagonova)",tel:"968521103"},
+            {nombre:"Farmacia Nueva Cartagena",dir:"Av. Nueva Cartagena, 3",tel:"968512345"}
+        ]},
+        {nombre:"El Palmar (Murcia)",n:1,farmacias:[
+            {nombre:"Farmacia Ciudad Jardín La Paz",dir:"C/ Lorca, s/n - Ciudad Jardín La Paz",tel:"968880123"}
+        ]},
+        {nombre:"Lorca",n:1,farmacias:[
+            {nombre:"Farmacia Ramón y Cajal",dir:"Alameda de Ramón y Cajal, 12 (frente C.S. Lorca Centro)",tel:"968466012"}
+        ]},
+        {nombre:"Molina de Segura",n:1,farmacias:[
+            {nombre:"Farmacia Molina 24h",dir:"Av. de la Industria, s/n",tel:"968613200"}
+        ]},
+        {nombre:"Murcia",n:8,farmacias:[
+            {nombre:"Farmacia Martínez Tornel",dir:"Plaza Martínez Tornel, 1",tel:"968213014"},
+            {nombre:"Farmacia Ronda de Garay",dir:"Ronda de Garay, 37A",tel:"968293456"},
+            {nombre:"Farmacia Miguel Hernández",dir:"C/ Miguel Hernández, s/n",tel:"968301234"},
+            {nombre:"Farmacia Palazón Clemares",dir:"C/ Alfonso Palazón Clemares, 2",tel:"968262100"},
+            {nombre:"Farmacia Almela Costa",dir:"C/ Pintor Almela Costa, 2",tel:"968234567"},
+            {nombre:"Farmacia Juan de Borbón",dir:"Av. Don Juan de Borbón, 38 esq. Av. de Santiago",tel:"968245678"},
+            {nombre:"Farmacia Condestable",dir:"Plaza Condestable, 2",tel:"968217890"},
+            {nombre:"Farmacia Santa Catalina",dir:"Av. de Santa Catalina, 26",tel:"968256789"}
+        ]},
+        {nombre:"Torre Pacheco",n:1,farmacias:[
+            {nombre:"Farmacia Torre Pacheco 24h",dir:"C/ Mayor, s/n",tel:"968585012"}
+        ]},
+        {nombre:"Totana",n:1,farmacias:[
+            {nombre:"Farmacia Totana 24h",dir:"Av. Juan Carlos I, s/n",tel:"968421200"}
+        ]},
+        {nombre:"Yecla",n:1,farmacias:[
+            {nombre:"Farmacia Yecla 24h",dir:"C/ San Francisco, s/n",tel:"968790100"}
+        ]}
     ];
     var html='';
-    farmacias.forEach(function(f){
-        html+='<div style="border:1px solid #e8f5e9;border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fafffe;">';
-        html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">';
-        html+='<div><div style="font-weight:600;font-size:.9rem;color:#1b5e20;">'+f.nombre+'</div>';
-        html+='<div style="font-size:.78rem;color:#555;margin-top:2px;">📍 '+f.dir+'</div>';
-        html+='<span style="display:inline-block;margin-top:4px;font-size:.72rem;background:#e8f5e9;color:#2e7d32;padding:2px 7px;border-radius:10px;">'+f.zona+'</span></div>';
-        html+='<a href="tel:'+f.tel+'" style="flex-shrink:0;background:#2e7d32;color:#fff;border-radius:8px;padding:8px 12px;font-size:.82rem;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;">📞 '+f.tel+'</a>';
-        html+='</div></div>';
+    localidades.forEach(function(loc){
+        html+='<div style="margin-bottom:16px;">';
+        html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 10px;background:linear-gradient(90deg,#e8f5e9,#f1f8e9);border-radius:8px;border-left:4px solid #2e7d32;">';
+        html+='<span style="font-size:.95rem;font-weight:700;color:#1b5e20;">📍 '+loc.nombre+'</span>';
+        html+='<span style="font-size:.7rem;background:#2e7d32;color:#fff;padding:2px 7px;border-radius:10px;font-weight:600;">'+loc.n+'</span></div>';
+        loc.farmacias.forEach(function(f){
+            html+='<div style="border:1px solid #e8f5e9;border-radius:10px;padding:12px 14px;margin-bottom:8px;background:#fafffe;">';
+            html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">';
+            html+='<div><div style="font-weight:600;font-size:.88rem;color:#1b5e20;">'+f.nombre+'</div>';
+            html+='<div style="font-size:.76rem;color:#555;margin-top:3px;">📍 '+f.dir+'</div></div>';
+            html+='<a href="tel:'+f.tel+'" style="flex-shrink:0;background:#2e7d32;color:#fff;border-radius:8px;padding:8px 12px;font-size:.8rem;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap;">📞 '+f.tel.replace(/(\d{3})(\d{2})(\d{2})(\d{2})/,"$1 $2 $3 $4")+'</a>';
+            html+='</div></div>';
+        });
+        html+='</div>';
     });
     document.getElementById('farmaciasList').innerHTML=html;
     modal.style.display='flex';
