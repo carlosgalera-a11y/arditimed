@@ -90,17 +90,18 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
     <script>
-    // Firebase MUST be initialized immediately after SDK loads, before ANY other script uses it
-    const firebaseConfig={
-        apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
-        authDomain:"docenciacartagenaeste.firebaseapp.com",
-        projectId:"docenciacartagenaeste",
-        storageBucket:"docenciacartagenaeste.firebasestorage.app",
-        messagingSenderId:"1056320755107",
-        appId:"1:1056320755107:web:126637bf63c13bbb297616"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db=firebase.firestore();
+    // Firebase MUST init before ANY other script uses firebase.auth() or db
+    if (!firebase.apps.length) {
+        firebase.initializeApp({
+            apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
+            authDomain:"docenciacartagenaeste.firebaseapp.com",
+            projectId:"docenciacartagenaeste",
+            storageBucket:"docenciacartagenaeste.firebasestorage.app",
+            messagingSenderId:"1056320755107",
+            appId:"1:1056320755107:web:126637bf63c13bbb297616"
+        });
+    }
+    var db = firebase.firestore();
     </script>
     <style>
         :root{--primary:#1a6b4a;--primary-light:#238c62;--primary-dark:#0f4a33;--accent:#d4a853;--accent-light:#f0d68a;--bg-dark:#1a1f2e;--bg-card:#fff;--bg-main:#f4f6f8;--bg-subtle:#e9edf2;--text:#2d3748;--text-light:#64748b;--text-muted:#94a3b8;--border:#e2e8f0;--border-light:#f1f5f9;--shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 12px rgba(0,0,0,.08);--shadow-lg:0 8px 30px rgba(0,0,0,.15);--radius:12px;--radius-sm:8px;--font-display:'Playfair Display',Georgia,serif;--font-body:'Source Sans 3',-apple-system,sans-serif}
