@@ -3180,6 +3180,147 @@ function infDescargar(formato){
   </div>
 </div>
 
+
+<script>
+// ── CALCULADORAS MÉDICAS ──────────────────────────────
+function calcCURB65(){
+    var pts=[...document.querySelectorAll('.curb-chk')].filter(c=>c.checked).length;
+    var el=document.getElementById('curb65Result');
+    var info=['Bajo riesgo — ambulatorio','Bajo-moderado — valorar ingreso','Moderado — ingreso','Alto riesgo — ingreso/UCI','Alto riesgo — ingreso/UCI','Alto riesgo — ingreso/UCI'];
+    var colors=['#f0fdf4,#166534','#fefce8,#854d0e','#fff7ed,#9a3412','#fef2f2,#991b1b','#fef2f2,#991b1b','#fef2f2,#991b1b'];
+    var c=colors[pts].split(',');el.style.background=c[0];el.style.color=c[1];
+    el.textContent='CURB-65: '+pts+'/5 — '+info[pts];
+}
+function calcQSOFA(){
+    var pts=[...document.querySelectorAll('.qsofa-chk')].filter(c=>c.checked).length;
+    var el=document.getElementById('qsofaResult');
+    if(pts>=2){el.style.background='#fef2f2';el.style.color='#991b1b';el.textContent='qSOFA: '+pts+'/3 — ⚠️ Alto riesgo sepsis';}
+    else if(pts===1){el.style.background='#fefce8';el.style.color='#854d0e';el.textContent='qSOFA: '+pts+'/3 — Bajo-moderado';}
+    else{el.style.background='#f0fdf4';el.style.color='#166534';el.textContent='qSOFA: 0/3 — Sin criterios';}
+}
+function calcWells(){
+    var pts=0;document.querySelectorAll('.wells-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+    var el=document.getElementById('wellsResult');
+    if(pts<=0){el.style.background='#f0fdf4';el.style.color='#166534';el.textContent='Wells: '+pts+' — Baja probabilidad TVP';}
+    else if(pts<=2){el.style.background='#fefce8';el.style.color='#854d0e';el.textContent='Wells: '+pts+' — Probabilidad moderada';}
+    else{el.style.background='#fef2f2';el.style.color='#991b1b';el.textContent='Wells: '+pts+' — Alta probabilidad TVP';}
+}
+function calcGlasgow(){
+    var e=parseInt(document.getElementById('gcsEye').value);
+    var v=parseInt(document.getElementById('gcsVerbal').value);
+    var m=parseInt(document.getElementById('gcsMotor').value);
+    var total=e+v+m;
+    var el=document.getElementById('glasgowResult');
+    var label=total>=13?'Sin deterioro':total>=9?'Deterioro moderado':'Deterioro grave';
+    var bg=total>=13?'#dbeafe,#1e40af':total>=9?'#fefce8,#854d0e':'#fef2f2,#991b1b';
+    var c=bg.split(',');el.style.background=c[0];el.style.color=c[1];
+    el.textContent='GCS: '+total+'/15 — '+label;
+}
+function calcNIHSS(){
+    var ids=['nihss1','nihss2','nihss3','nihss4','nihss5','nihss6','nihss7','nihss8','nihss9','nihss10'];
+    var total=ids.reduce(function(s,id){return s+(parseInt(document.getElementById(id).value)||0);},0);
+    var el=document.getElementById('nihssResult');
+    var label=total===0?'Sin déficit':total<=4?'Ictus leve':total<=15?'Ictus moderado':total<=20?'Ictus moderado-grave':'Ictus grave';
+    var bg=total===0?'#f0fdf4,#166534':total<=4?'#dbeafe,#1e40af':total<=15?'#fefce8,#854d0e':'#fef2f2,#991b1b';
+    var c=bg.split(',');el.style.background=c[0];el.style.color=c[1];
+    el.textContent='NIHSS: '+total+' — '+label;
+}
+// ── MODO OSCURO ──────────────────────────────────────
+function toggleDarkMode(){
+    var dark=document.body.classList.toggle('dark-mode');
+    try{localStorage.setItem('darkMode',dark?'1':'0');}catch(e){}
+    var btn=document.getElementById('darkToggle');
+    if(btn)btn.textContent=dark?'☀️':'🌙';
+}
+document.addEventListener('DOMContentLoaded',function(){
+    try{if(localStorage.getItem('darkMode')==='1'){document.body.classList.add('dark-mode');var btn=document.getElementById('darkToggle');if(btn)btn.textContent='☀️';}}catch(e){}
+});
+// ── BUSCADOR GLOBAL ──────────────────────────────────
+var SEARCH_INDEX=[
+    {tipo:'📋 Protocolo',titulo:'Protocolo Sepsis qSOFA',tags:'sepsis qsofa shock fiebre infeccion bacteria',page:'pageProtocolosAP'},
+    {tipo:'📋 Protocolo',titulo:'Protocolo Ictus — Código ictus',tags:'ictus stroke nihss trombolisis neurologico',page:'pageProtocolosUrgencias'},
+    {tipo:'📋 Protocolo',titulo:'Protocolo Dolor torácico',tags:'dolor toracico ecg infarto iamcest troponina',page:'pageProtocolosUrgencias'},
+    {tipo:'📋 Protocolo',titulo:'Protocolo Neumonía CURB-65',tags:'neumonia curb65 antibiotico respiratorio',page:'pageProtocolosAP'},
+    {tipo:'📋 Protocolo',titulo:'Protocolo Anafilaxia',tags:'anafilaxia alergia adrenalina shock',page:'pageProtocolosUrgencias'},
+    {tipo:'📱 Pacientes',titulo:'Dietas y nutrición',tags:'dieta nutricion alimentacion peso obesidad',page:'pagePatients'},
+    {tipo:'📱 Pacientes',titulo:'Vacunas y calendario',tags:'vacunas calendario gripe covid hepatitis',page:'pagePatients'},
+    {tipo:'📱 Pacientes',titulo:'Farmacias 24h',tags:'farmacia guardia 24h noche festivo cartagena',page:'pagePatients'},
+    {tipo:'📄 PDF',titulo:'Guía dejar de fumar 2025',tags:'tabaco fumar guia pdf',url:'guia-dejar-fumar-2025.pdf'},
+    {tipo:'📄 PDF',titulo:'Vacunas — Información',tags:'vacunas informacion pdf calendario',url:'vacunas-informacion.pdf'},
+    {tipo:'🔬 Herramienta',titulo:'Calculadora CURB-65',tags:'curb65 neumonia calculadora score',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Calculadora qSOFA Sepsis',tags:'qsofa sepsis calculadora score',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Calculadora Wells TVP',tags:'wells tvp trombosis calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Glasgow',tags:'glasgow gcs conciencia neurologia',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'NIHSS Ictus',tags:'nihss ictus stroke calculadora neurologia',page:'pageScanIA',tab:'calc'},
+];
+function abrirBuscador(){
+    var m=document.getElementById('modalBuscador');if(!m)return;
+    m.style.display='flex';
+    setTimeout(function(){var i=document.getElementById('buscadorInput');if(i)i.focus();},100);
+}
+function cerrarBuscador(){var m=document.getElementById('modalBuscador');if(m)m.style.display='none';}
+function buscarGlobal(q){
+    var el=document.getElementById('buscadorResultados');if(!el)return;
+    if(!q||q.length<2){el.innerHTML='<p style="color:#94a3b8;font-size:.88rem;text-align:center;padding:20px 0;">Escribe al menos 2 caracteres</p>';return;}
+    var ql=q.toLowerCase();
+    var res=SEARCH_INDEX.filter(function(i){return(i.titulo+' '+i.tags).toLowerCase().indexOf(ql)>-1;});
+    if(!res.length){el.innerHTML='<p style="color:#94a3b8;font-size:.88rem;text-align:center;padding:20px 0;">Sin resultados</p>';return;}
+    el.innerHTML=res.map(function(r){
+        var click=r.url?'window.open("'+r.url+'","_blank")':'showPage("'+r.page+'")'+(r.tab?';setTimeout(function(){switchScanTab("'+r.tab+'")},200)':'');
+        click+=';cerrarBuscador()';
+        return '<div onclick="'+click+'" style="padding:12px 14px;border-radius:10px;margin-bottom:8px;cursor:pointer;border:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;background:#fff;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'"><div><div style="font-size:.75rem;color:#64748b;margin-bottom:2px;">'+r.tipo+'</div><div style="font-size:.9rem;font-weight:600;color:#1e293b;">'+r.titulo+'</div></div><span style="margin-left:auto;color:#94a3b8;">→</span></div>';
+    }).join('');
+}
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();abrirBuscador();}});
+// ── QR POR PROTOCOLO ─────────────────────────────────
+function mostrarQR(titulo,url){
+    var t=document.getElementById('qrTitle');var u=document.getElementById('qrUrl');var c=document.getElementById('qrCanvas');var m=document.getElementById('modalQR');
+    if(!t||!c||!m)return;
+    t.textContent=titulo;if(u)u.textContent=url;
+    c.innerHTML='';
+    var img=document.createElement('img');
+    img.src='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent(url);
+    img.style.cssText='width:180px;height:180px;border-radius:8px;';
+    c.appendChild(img);
+    m.style.display='flex';
+}
+// ── FAVORITOS ────────────────────────────────────────
+var SECCIONES_DISPONIBLES=[
+    {id:'pagePatients',label:'👤 Pacientes'},
+    {id:'pageProfessionals',label:'🩺 Profesionales'},
+    {id:'pageEnfermeria',label:'👩‍⚕️ Enfermería'},
+    {id:'pageProtocolosAP',label:'📋 Protocolos AP'},
+    {id:'pageProtocolosUrgencias',label:'🚨 Protocolos Urgencias'},
+    {id:'pageScanIA',label:'🛠️ Herramientas'},
+    {id:'pageTelefonos',label:'📞 Teléfonos Buscas'},
+    {id:'pageFilehub',label:'📖 Cuaderno IA'},
+    {id:'pageCuadernos',label:'📓 Mis Cuadernos'},
+];
+function abrirFavoritos(){
+    try{var favs=JSON.parse(localStorage.getItem('favSecciones')||'[]');}catch(e){var favs=[];}
+    var html=SECCIONES_DISPONIBLES.map(function(s){
+        var checked=favs.indexOf(s.id)>-1?'checked':'';
+        return '<label style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:.9rem;"><input type="checkbox" value="'+s.id+'" '+checked+' style="width:16px;height:16px;"> '+s.label+'</label>';
+    }).join('');
+    var fl=document.getElementById('favoritosList');if(fl)fl.innerHTML=html;
+    var mf=document.getElementById('modalFavoritos');if(mf)mf.style.display='flex';
+}
+function guardarFavoritos(){
+    var favs=[...document.querySelectorAll('#favoritosList input:checked')].map(function(c){return c.value;});
+    try{localStorage.setItem('favSecciones',JSON.stringify(favs));}catch(e){}
+    var mf=document.getElementById('modalFavoritos');if(mf)mf.style.display='none';
+    renderFavoritosBar();
+}
+function renderFavoritosBar(){
+    try{var favs=JSON.parse(localStorage.getItem('favSecciones')||'[]');}catch(e){var favs=[];}
+    var bar=document.getElementById('favoritosBar');if(!bar||!favs.length){if(bar)bar.style.display='none';return;}
+    var mapa={pagePatients:'👤 Pacientes',pageProfessionals:'🩺 Profesionales',pageEnfermeria:'👩‍⚕️ Enfermería',pageProtocolosAP:'📋 Protocolos AP',pageProtocolosUrgencias:'🚨 Urgencias',pageScanIA:'🛠️ Herramientas',pageTelefonos:'📞 Teléfonos',pageFilehub:'📖 Cuaderno IA',pageCuadernos:'📓 Cuadernos'};
+    bar.innerHTML=favs.map(function(id){return '<button onclick="showPage(''+id+'')" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.82rem;font-weight:600;white-space:nowrap;">'+( mapa[id]||id)+'</button>';}).join('');
+    bar.style.display='flex';
+}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(renderFavoritosBar,500);});
+</script>
+
 </body></html>');
     w.document.close();
     setTimeout(function(){w.print();},500);
