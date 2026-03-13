@@ -5612,9 +5612,9 @@ if ('serviceWorker' in navigator && location.hostname === 'ramongalera22-ai.gith
       });
     }
     // Register current SW
-    navigator.serviceWorker.register('/Cartagenaeste/sw2.js', { scope: '/Cartagenaeste/' })
+    navigator.serviceWorker.register('/Cartagenaeste/sw2.js', { scope: '/Cartagenaeste/', updateViaCache: 'none' })
       .then(function(reg) {
-        console.log('✅ SW v7 registrado:', reg.scope);
+        console.log('✅ SW v11 registrado:', reg.scope);
         // Force check for update immediately
         reg.update();
         // Auto-update when new SW is waiting
@@ -5622,8 +5622,9 @@ if ('serviceWorker' in navigator && location.hostname === 'ramongalera22-ai.gith
           var newSW = reg.installing;
           if (newSW) {
             newSW.addEventListener('statechange', function() {
-              if (newSW.state === 'activated') {
-                console.log('[PWA] New SW activated, reloading...');
+              if (newSW.state === 'installed' || newSW.state === 'activated') {
+                console.log('[PWA] New SW ready, reloading...');
+                newSW.postMessage({type:'SKIP_WAITING'});
                 window.location.reload();
               }
             });

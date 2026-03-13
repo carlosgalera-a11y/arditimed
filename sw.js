@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v7 - limpia TODAS las cachés
-const CACHE_NAME = 'area2-cartagena-v7';
+// Service Worker - Área II Cartagena PWA v11 - network only, sin caché
+const CACHE_NAME = 'area2-cartagena-v11';
 
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
@@ -13,7 +13,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Network only - sin caché para forzar siempre versión fresca
+// Network only — nunca cachear, siempre versión fresca del servidor
 self.addEventListener('fetch', event => {
-  // Dejar pasar todo sin interceptar
+  event.respondWith(fetch(event.request));
 });
