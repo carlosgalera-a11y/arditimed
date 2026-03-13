@@ -3138,7 +3138,37 @@ function infDescargar(formato){
     w.document.write('<html><head><title>'+fileName+'</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;line-height:1.8;font-size:12pt;color:#1a1a1a;max-width:700px;margin:0 auto;}h1{font-size:16pt;color:#0d47a1;border-bottom:2px solid #0d47a1;padding-bottom:8px;}pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}</style></head><body>');
     w.document.write('<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>');
     w.document.write('<div style="margin-top:30px;padding-top:15px;border-top:1px solid #ccc;font-size:9pt;color:#888;text-align:center;">Centro de Salud Virgen de la Caridad · Área II Cartagena · Generado: '+new Date().toLocaleDateString('es-ES')+'</div>');
-    w.document.write('
+    w.document.write('<\/body><\/html>');
+    w.document.close();
+    setTimeout(function(){w.print();},500);
+
+  }else if(formato==='docx'){
+    // Generate .docx using simple XML
+    var content='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+    content+='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">';
+    content+='<w:body>';
+    content+='<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</w:t></w:r></w:p>';
+    content+='<w:p><w:r><w:rPr><w:sz w:val="20"/><w:color w:val="888888"/></w:rPr><w:t>Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</w:t></w:r></w:p>';
+    content+='<w:p></w:p>';
+    infResultadoTexto.split('\n').forEach(function(line){
+      content+='<w:p><w:r><w:t xml:space="preserve">'+line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</w:t></w:r></w:p>';
+    });
+    content+='</w:body></w:document>';
+    var htmlDoc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
+    htmlDoc+='<head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}</style></head>';
+    htmlDoc+='<body>';
+    htmlDoc+='<h1>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</h1>';
+    htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
+    htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
+    htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
+    htmlDoc+='</body></html>';
+    var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName+'.doc';a.click();
+    URL.revokeObjectURL(a.href);
+  }
+}
+</script>
+
 <!-- ═══════ BUSCADOR GLOBAL MODAL ═══════ -->
 <div id="modalBuscador" onclick="if(event.target===this)cerrarBuscador()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;align-items:flex-start;justify-content:center;backdrop-filter:blur(3px);padding-top:60px;">
   <div style="background:#fff;border-radius:16px;max-width:640px;width:94%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 80px rgba(0,0,0,.5);">
@@ -3294,7 +3324,6 @@ var SECCIONES_DISPONIBLES=[
     {id:'pageScanIA',label:'🛠️ Herramientas'},
     {id:'pageTelefonos',label:'📞 Teléfonos Buscas'},
     {id:'pageFilehub',label:'📖 Cuaderno IA'},
-    {id:'pageCuadernos',label:'📓 Mis Cuadernos'},
 ];
 function abrirFavoritos(){
     try{var favs=JSON.parse(localStorage.getItem('favSecciones')||'[]');}catch(e){var favs=[];}
@@ -3314,48 +3343,11 @@ function guardarFavoritos(){
 function renderFavoritosBar(){
     try{var favs=JSON.parse(localStorage.getItem('favSecciones')||'[]');}catch(e){var favs=[];}
     var bar=document.getElementById('favoritosBar');if(!bar||!favs.length){if(bar)bar.style.display='none';return;}
-    var mapa={pagePatients:'👤 Pacientes',pageProfessionals:'🩺 Profesionales',pageEnfermeria:'👩‍⚕️ Enfermería',pageProtocolosAP:'📋 Protocolos AP',pageProtocolosUrgencias:'🚨 Urgencias',pageScanIA:'🛠️ Herramientas',pageTelefonos:'📞 Teléfonos',pageFilehub:'📖 Cuaderno IA',pageCuadernos:'📓 Cuadernos'};
+    var mapa={pagePatients:'👤 Pacientes',pageProfessionals:'🩺 Profesionales',pageEnfermeria:'👩‍⚕️ Enfermería',pageProtocolosAP:'📋 Protocolos AP',pageProtocolosUrgencias:'🚨 Urgencias',pageScanIA:'🛠️ Herramientas',pageTelefonos:'📞 Teléfonos',pageFilehub:'📖 Cuaderno IA'};
     bar.innerHTML=favs.map(function(id){return '<button onclick="showPage(''+id+'')" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.82rem;font-weight:600;white-space:nowrap;">'+( mapa[id]||id)+'</button>';}).join('');
     bar.style.display='flex';
 }
 document.addEventListener('DOMContentLoaded',function(){setTimeout(renderFavoritosBar,500);});
-</script>
-
-</body></html>');
-    w.document.close();
-    setTimeout(function(){w.print();},500);
-
-  }else if(formato==='docx'){
-    // Generate .docx using simple XML
-    var content='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-    content+='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">';
-    content+='<w:body>';
-    // Title
-    content+='<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/></w:rPr><w:t>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</w:t></w:r></w:p>';
-    content+='<w:p><w:r><w:rPr><w:sz w:val="20"/><w:color w:val="888888"/></w:rPr><w:t>Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</w:t></w:r></w:p>';
-    content+='<w:p></w:p>';
-    // Body paragraphs
-    infResultadoTexto.split('\n').forEach(function(line){
-      content+='<w:p><w:r><w:t xml:space="preserve">'+line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</w:t></w:r></w:p>';
-    });
-    content+='</w:body></w:document>';
-
-    // Build minimal .docx (ZIP with XML)
-    // For simplicity, use HTML-based approach that Word can open
-    var htmlDoc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
-    htmlDoc+='<head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;padding:2cm;}h1{font-size:16pt;color:#0d47a1;border-bottom:2pt solid #0d47a1;padding-bottom:6pt;}p.meta{font-size:9pt;color:#888;}pre{white-space:pre-wrap;font-family:Calibri,sans-serif;font-size:11pt;}p.footer{margin-top:2cm;padding-top:6pt;border-top:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;}</style></head>';
-    htmlDoc+='<body>';
-    htmlDoc+='<h1>'+((tipoLabels[infTipoSeleccionado]||'Informe').replace(/_/g,' '))+'</h1>';
-    htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
-    htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
-    htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
-    htmlDoc+='</body></html>';
-
-    var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
-    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName+'.doc';a.click();
-    URL.revokeObjectURL(a.href);
-  }
-}
 
 // ═══ PROTOCOLOS AP CONFIG (uses shared CONFIG, unique IDs) ═══
 function apCambiarProvider(){
@@ -3740,7 +3732,7 @@ document.addEventListener('DOMContentLoaded', function() {
 var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
 function showPage(id){
     // Páginas que requieren login (NO incluye pagePatients ni pageTriaje)
-    var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA","pageCuadernos"];
+    var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
     if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
         if(!user){
@@ -3799,7 +3791,7 @@ function ep(){return ENDPOINTS[CONFIG.provider]||ENDPOINTS.groq}
 function isReady(){var e=ep();var k=e.getKey();return k&&k.startsWith(e.prefix)}
 function updateStatus(){var el=document.getElementById("statusBadge"),b=document.getElementById("modelBadge"),i=document.getElementById("modelInfo");if(!el)return;if(isReady()){el.className="nav-status ok";el.textContent="✅ IA Conectada";b.textContent=ep().getModel().split("/").pop();i.textContent=CONFIG.provider==="groq"?"Groq · Gratuito":"Qwen · Alibaba";}else{el.className="nav-status wait";el.textContent="⚙️ Config";b.textContent="--";i.textContent="Configura API Key";}}
 function cambiarProvider(){var v=document.getElementById("cfgProvider").value;document.getElementById("groqConfig").style.display=v==="groq"?"block":"none";document.getElementById("qwenConfig").style.display=v==="qwen"?"block":"none";}
-async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){console.log("Direct failed, trying proxy...");} var proxies=["https://corsproxy.io/?url=","https://api.allorigins.win/raw?url="];for(var i=0;i<proxies.length;i++){try{return await fetch(proxies[i]+encodeURIComponent(url),options);}catch(e){}}throw new Error("No se pudo conectar.");}
+async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){if(!(e instanceof TypeError))throw e;console.log("Direct fetch failed (CORS/network), trying proxies...");var proxies=["https://corsproxy.io/?url=","https://api.allorigins.win/raw?url="];for(var i=0;i<proxies.length;i++){try{var proxyOpts=Object.assign({},options);if(proxyOpts.headers){proxyOpts.headers=Object.assign({},proxyOpts.headers);delete proxyOpts.headers["Authorization"];}return await fetch(proxies[i]+encodeURIComponent(url),proxyOpts);}catch(pe){console.log("Proxy "+i+" failed:",pe.message);}}throw new Error("No se pudo conectar. Comprueba tu conexión a internet.");}}
 async function llamarIA(up,sp){if(!isReady())return"⚠️ Configura API Key en ⚙️ Config";var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"system",content:sp||"Eres un asistente médico. Responde en español."},{role:"user",content:up}],temperature:.7,max_tokens:2048})});if(!r.ok){var err=await r.json().catch(function(){return{}});if(r.status===401)return"❌ API Key inválida";if(r.status===429)return"⏳ Límite. Espera.";return"❌ Error "+r.status+": "+(err.error&&err.error.message?err.error.message:"");}var d=await r.json();var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:"Sin respuesta";return c.replace(/<think>[\s\S]*?<\/think>/g,"").trim()||"Sin respuesta";}catch(e){return"❌ "+e.message}}
 async function hacerPregunta(){var input=document.getElementById("preguntaInput"),q=input.value.trim();if(!q||isProcessing)return;if(!isReady()){switchTab("config",document.querySelectorAll(".tab-btn")[4]);return;}isProcessing=true;document.getElementById("btnPreguntar").disabled=true;if(!preguntas[currentCategory])preguntas[currentCategory]=[];var idx=preguntas[currentCategory].length;preguntas[currentCategory].push({pregunta:q,respuesta:"⏳ Consultando...",fecha:new Date().toLocaleString("es-ES")});input.value="";actualizarUI();var docs=documents[currentCategory]||[];var dc=docs.map(function(d){return"- "+d.name}).join("\n");var sys="Eres un asistente médico especializado en "+currentCategory+". Responde en español."+(dc?"\nDocs:\n"+dc:"");var r=await llamarIA(q,sys);preguntas[currentCategory][idx].respuesta=r;guardarDatos();actualizarUI();isProcessing=false;document.getElementById("btnPreguntar").disabled=false;}
 var studioPrompts={resumen:{title:"📋 Resumen — ",prompt:"Resumen ejecutivo sobre {cat}: patologías, diagnósticos, tratamientos."},faq:{title:"❓ FAQ — ",prompt:"8 preguntas frecuentes sobre {cat} con respuestas."},guia:{title:"📖 Guía — ",prompt:"Guía de estudio {cat}: conceptos, clasificaciones, fármacos, dosis."},diagnostico:{title:"🩺 Dx — ",prompt:"Diagnóstico diferencial de {cat}: síntomas, pruebas, red flags."},farmacologia:{title:"💊 Farma — ",prompt:"Farmacología {cat}: grupos, mecanismo, dosis, efectos adversos."},emergencia:{title:"🚨 Urgencia — ",prompt:"Protocolos emergencia {cat}: reconocimiento, tratamiento, dosis."}};
@@ -3808,7 +3800,7 @@ async function studioAction(t){if(!isReady()||isProcessing)return;var c=studioPr
 function guardarStudioComoNota(){if(!lastSC)return;if(!notas[currentCategory])notas[currentCategory]=[];notas[currentCategory].push({texto:lastST+"\n\n"+lastSC,fecha:new Date().toLocaleString("es-ES")});guardarDatos();actualizarUI();alert("✅ Guardado")}
 function agregarNota(){var t=document.getElementById("noteInput").value.trim();if(!t)return;if(!notas[currentCategory])notas[currentCategory]=[];notas[currentCategory].push({texto:t,fecha:new Date().toLocaleString("es-ES")});document.getElementById("noteInput").value="";guardarDatos();actualizarUI();}
 function eliminarNota(i){if(!confirm("¿Eliminar?"))return;notas[currentCategory].splice(i,1);guardarDatos();actualizarUI();}
-function switchTab(n,b){document.querySelectorAll(".tab-content").forEach(function(t){t.classList.remove("active")});document.querySelectorAll(".tab-btn").forEach(function(x){x.classList.remove("active")});document.getElementById(n).classList.add("active");if(b)b.classList.add("active");if(n==="guardiaPacientes")gpRender("");}
+function switchTab(n,b){var page=document.getElementById("pageProfessionals");if(page){page.querySelectorAll(".tab-content").forEach(function(t){t.classList.remove("active")});page.querySelectorAll(".tab-btn").forEach(function(x){x.classList.remove("active")});}else{document.querySelectorAll("#pageProfessionals .tab-content").forEach(function(t){t.classList.remove("active")});document.querySelectorAll("#pageProfessionals .tab-btn").forEach(function(x){x.classList.remove("active")});}var el=document.getElementById(n);if(el)el.classList.add("active");if(b)b.classList.add("active");if(n==="guardiaPacientes")gpRender("");}
 function cambiarCategoria(c,b){currentCategory=c;document.querySelectorAll(".category-btn").forEach(function(x){x.classList.remove("active")});if(b)b.classList.add("active");document.getElementById("categoryTitle").textContent=c;var sc=document.getElementById("studioCategory");if(sc)sc.textContent=c;switchTab("preguntas",document.querySelector(".tab-btn"));actualizarUI();}
 function esc(t){if(!t)return"";return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function actualizarUI(){var docs=documents[currentCategory]||[];document.getElementById("documentosList").innerHTML=docs.length===0?'<div class="empty-state"><div class="empty-state-icon">📄</div><p>No hay documentos</p></div>':docs.map(function(d){return'<div class="doc-item"><div><div class="doc-name">'+d.name+'</div><div class="doc-size">'+d.size_mb+' MB · '+d.type+'</div></div><a href="'+d.url+'" target="_blank" class="doc-btn">Abrir</a></div>'}).join("");document.getElementById("docsCount").textContent=docs.length;document.getElementById("preguntasCount").textContent=(preguntas[currentCategory]||[]).length;document.getElementById("notasCount").textContent=(notas[currentCategory]||[]).length;var pa=preguntas[currentCategory]||[],pl=document.getElementById("preguntasList");pl.innerHTML=pa.length===0?'<div class="empty-state"><div class="empty-state-icon">🩺</div><p>Haz tu primera pregunta</p></div>':pa.map(function(p){return'<div class="question-box"><div class="question-text">'+esc(p.pregunta)+'</div><div class="answer-text">'+esc(p.respuesta)+'</div><div class="note-time">'+p.fecha+'</div></div>'}).join("");var na=notas[currentCategory]||[],nl=document.getElementById("notasList");nl.innerHTML=na.length===0?'<div class="empty-state"><div class="empty-state-icon">📝</div><p>Sin notas</p></div>':na.map(function(n,i){return'<div class="question-box" style="border-left-color:var(--accent)"><div style="font-size:.92rem;white-space:pre-wrap;padding-right:30px;font-weight:300;line-height:1.6">'+esc(n.texto)+'</div><div class="note-time">'+n.fecha+'</div><button onclick="eliminarNota('+i+')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;opacity:.35">🗑️</button></div>'}).join("");}
