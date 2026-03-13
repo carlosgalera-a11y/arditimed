@@ -4192,8 +4192,20 @@ function scanGoogleLogin(){
         });
     }
 
-    // Intentar primero con SESSION persistence para evitar problemas de IndexedDB
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(doLogin).catch(doLogin);
+    // Primero intentar con signInWithRedirect si hay indicios de problemas (móvil/Safari)
+    var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    var isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
+    if(isMobile || isSafari){
+        // En móvil/Safari: redirect es más fiable que popup
+        if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
+        firebase.auth().signInWithRedirect(provider).catch(function(error){
+            errEl.innerHTML="❌ "+error.message+" (código: "+error.code+")";
+            errEl.style.display="block";
+        });
+    } else {
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(doLogin).catch(doLogin);
+    }
 }
 
 function scanSetType(t,btn){scanType=t;document.querySelectorAll(".scan-mode-btn").forEach(function(b){b.style.borderColor="var(--border)";b.style.background="var(--bg-card)";b.style.color="var(--text)";});if(btn){btn.style.borderColor="#0066cc";btn.style.background="linear-gradient(135deg,#0066cc,#004499)";btn.style.color="#fff";}var m=SCAN_MODELS[t];if(m){var html="<strong>"+m.model+"</strong><br><span style='font-size:.8rem;color:var(--text-muted);'>📊 "+m.dataset+"</span>";if(m.repo)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>📦 "+m.repo+"</span>";if(m.precision)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>🎯 "+m.precision+"</span>";if(m.formato)html+="<br><span style='font-size:.78rem;color:var(--text-muted);'>⚙️ "+m.formato+"</span>";if(m.nota)html+="<br><span style='font-size:.78rem;color:"+(m.nota.indexOf("⚠️")>-1?"#d97706":"#64748b")+";font-style:italic;'>"+m.nota+"</span>";if(m.links){html+="<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;'>";if(m.links.physionet)html+="<a href='"+m.links.physionet+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#e0f2fe;color:#0369a1;border-radius:4px;text-decoration:none;font-weight:600;'>📥 PhysioNet</a>";if(m.links.github)html+="<a href='"+m.links.github+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#f0fdf4;color:#15803d;border-radius:4px;text-decoration:none;font-weight:600;'>💻 GitHub</a>";if(m.links.paper)html+="<a href='"+m.links.paper+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;text-decoration:none;font-weight:600;'>📄 Paper</a>";html+="</div>";}html+="<br><span style='font-size:.78rem;color:#0066cc;'>Análisis por Llama 4 Scout (Groq)</span>";document.getElementById("scanModelRef").innerHTML=html;}}
@@ -4922,18 +4934,27 @@ firebase.auth().onAuthStateChanged(function(user){
 
 // Handle redirect result (for mobile where popup is blocked)
 firebase.auth().getRedirectResult().then(function(result){
-    if(result.user){
+    if(result && result.user){
         console.log("Redirect login success:",result.user.email);
-        checkAdminStatus();
-        if(pendingPageAfterLogin){
-            var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;
-            logPageAccess(pg,result.user);
-            showPage(pg);
-        }else{
-            showPage("pageScanIA");scanRenderHist();
-        }
+        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+        loadModeradoresFromFirestore(function(){
+            isAdminLoggedIn=isAdmin();apShowAdminTab(isAdminLoggedIn);updateModBadgeAll();
+            if(isAdminLoggedIn) try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
+        });
+        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
+        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
+        if(pg){logPageAccess(pg,result.user);showPage(pg);}
+        else{showPage("pageScanIA");}
     }
-}).catch(function(e){console.log("No redirect result:",e);});
+}).catch(function(e){
+    if(e && e.code && e.code!=="auth/no-auth-event"){
+        console.error("Redirect result error:",e);
+        try{
+            var errEl=document.getElementById("scanLoginError");
+            if(errEl){errEl.innerHTML="❌ "+e.message+" ("+e.code+")";errEl.style.display="block";}
+        }catch(e2){}
+    }
+});
 
 // ═══ INIT ═══
 function showFarmacias24h(){
