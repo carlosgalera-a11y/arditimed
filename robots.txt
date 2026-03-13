@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ramongalera22-ai.github.io/Cartagenaeste/sitemap.xml
+Sitemap: https://carlosgalera-a11y.github.io/Cartagenaeste/sitemap.xml

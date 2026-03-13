@@ -255,7 +255,7 @@ git push origin main:gh-pages
 
 ### 8.3 Verifica en GitHub Pages
 ```
-https://ramongalera22-ai.github.io/Cartagenaeste/informacion.html
+https://carlosgalera-a11y.github.io/Cartagenaeste/informacion.html
 [📧 Acceder con Gmail]
 ```
 

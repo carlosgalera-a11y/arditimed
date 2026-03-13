@@ -2,7 +2,7 @@
 
 **App médica docente para profesionales sanitarios del Área II de Cartagena** (Servicio Murciano de Salud). Herramienta de apoyo a la docencia en el Centro de Salud Cartagena Este y centros de salud del área sanitaria.
 
-🔗 **[Acceder a la App](https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html)** · 📱 **[Descargar para Android](https://ramongalera22-ai.github.io/Cartagenaeste/descargar.html)** · 📋 **[Política de Privacidad](https://ramongalera22-ai.github.io/Cartagenaeste/privacidad.html)**
+🔗 **[Acceder a la App](https://carlosgalera-a11y.github.io/Cartagenaeste/notebook-local.html)** · 📱 **[Descargar para Android](https://carlosgalera-a11y.github.io/Cartagenaeste/descargar.html)** · 📋 **[Política de Privacidad](https://carlosgalera-a11y.github.io/Cartagenaeste/privacidad.html)**
 
 ---
 
@@ -59,12 +59,12 @@ Herramientas de cálculo clínico integradas para uso docente.
 ## 📱 Instalación
 
 ### Android (APK)
-1. Descarga el APK desde la [página de descarga](https://ramongalera22-ai.github.io/Cartagenaeste/descargar.html)
+1. Descarga el APK desde la [página de descarga](https://carlosgalera-a11y.github.io/Cartagenaeste/descargar.html)
 2. Permite la instalación desde fuentes desconocidas
 3. Instala y accede con tu cuenta Google autorizada
 
 ### PWA (cualquier dispositivo)
-1. Abre [la app](https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html) en Chrome/Safari
+1. Abre [la app](https://carlosgalera-a11y.github.io/Cartagenaeste/notebook-local.html) en Chrome/Safari
 2. **Android**: Pulsa "Instalar" en el banner o Menú → "Añadir a pantalla de inicio"
 3. **iPhone/iPad**: Pulsa Compartir ⬆️ → "Añadir a pantalla de inicio"
 
@@ -84,7 +84,7 @@ Herramientas de cálculo clínico integradas para uso docente.
 - **Cifrado**: HTTPS/TLS en todas las comunicaciones
 - **RGPD**: Cumplimiento total del Reglamento UE 2016/679
 
-📋 [Política de Privacidad](https://ramongalera22-ai.github.io/Cartagenaeste/privacidad.html) · 🗑️ [Eliminación de cuenta](https://ramongalera22-ai.github.io/Cartagenaeste/eliminar-cuenta.html)
+📋 [Política de Privacidad](https://carlosgalera-a11y.github.io/Cartagenaeste/privacidad.html) · 🗑️ [Eliminación de cuenta](https://carlosgalera-a11y.github.io/Cartagenaeste/eliminar-cuenta.html)
 
 ---
 
@@ -116,7 +116,7 @@ El Área de Salud II de Cartagena (Servicio Murciano de Salud - SMS) comprende:
 ## 📬 Contacto
 
 - **Email**: ramongalera22@gmail.com
-- **Web**: [ramongalera22-ai.github.io/Cartagenaeste](https://ramongalera22-ai.github.io/Cartagenaeste/)
+- **Web**: [carlosgalera-a11y.github.io/Cartagenaeste](https://carlosgalera-a11y.github.io/Cartagenaeste/)
 
 ---
 

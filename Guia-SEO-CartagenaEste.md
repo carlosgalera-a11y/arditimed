@@ -1,4 +1,4 @@
-# Guía SEO: Hacer que ramongalera22-ai.github.io/Cartagenaeste aparezca en Google
+# Guía SEO: Hacer que carlosgalera-a11y.github.io/Cartagenaeste aparezca en Google
 
 ## El problema
 
@@ -14,15 +14,15 @@ Este es el paso más importante. Sin esto, Google puede tardar semanas o meses e
 2. Inicia sesión con tu cuenta de Google
 3. Clic en **"Añadir propiedad"**
 4. Selecciona **"Prefijo de URL"**
-5. Escribe: `https://ramongalera22-ai.github.io/Cartagenaeste`
+5. Escribe: `https://carlosgalera-a11y.github.io/Cartagenaeste`
 6. **Verificación**: Ya tienes el archivo `google641ba37ea08a8dcb.html` en tu sitio, así que debería verificarse automáticamente. Si no, usa el método de "Etiqueta HTML" (ya tienes el meta tag `google-site-verification` en tu HTML).
 
 ### Después de verificar:
 
 7. Ve a **"Sitemaps"** en el menú izquierdo
 8. Escribe `sitemap.xml` y pulsa **"Enviar"**
-9. Ve a **"Inspección de URLs"** → pega `https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html` → pulsa **"Solicitar indexación"**
-10. Repite con `https://ramongalera22-ai.github.io/Cartagenaeste/` (la raíz)
+9. Ve a **"Inspección de URLs"** → pega `https://carlosgalera-a11y.github.io/Cartagenaeste/notebook-local.html` → pulsa **"Solicitar indexación"**
+10. Repite con `https://carlosgalera-a11y.github.io/Cartagenaeste/` (la raíz)
 
 > ⏱️ Después de hacer esto, Google suele indexar en **24-72 horas**.
 
@@ -36,85 +36,85 @@ Tu sitemap actual solo tiene 4 URLs. Debes incluir TODAS las páginas públicas.
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/notebook-local.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/protocolos-atencion.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-atencion.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/vacunas.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/vacunas.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/dietas.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/dietas.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/ejercicios.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/ejercicios.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/dejar-fumar.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/dejar-fumar.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/recursos-sociales.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/recursos-sociales.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/violencia-genero.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/violencia-genero.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/enlaces-interes.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/enlaces-interes.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/dentista.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/dentista.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/podcast.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/podcast.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/descargar.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/descargar.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://ramongalera22-ai.github.io/Cartagenaeste/privacidad.html</loc>
+        <loc>https://carlosgalera-a11y.github.io/Cartagenaeste/privacidad.html</loc>
         <lastmod>2026-02-25</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
