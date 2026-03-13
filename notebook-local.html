@@ -6937,7 +6937,7 @@ function buscarGlobal(q){
     el.innerHTML=res.map(function(r){
         var click=r.url?'window.open("'+r.url+'","_blank")':'showPage("'+r.page+'")'+(r.tab?';setTimeout(function(){switchScanTab("'+r.tab+'")},200)':'');
         click+=';cerrarBuscador()';
-        return '<div onclick="'+click+'" style="padding:12px 14px;border-radius:10px;margin-bottom:8px;cursor:pointer;border:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;background:#fff;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'"><div><div style="font-size:.75rem;color:#64748b;margin-bottom:2px;">'+r.tipo+'</div><div style="font-size:.9rem;font-weight:600;color:#1e293b;">'+r.titulo+'</div></div><span style="margin-left:auto;color:#94a3b8;">→</span></div>';
+        return '<div onclick="'+click+'" style="padding:12px 14px;border-radius:10px;margin-bottom:8px;cursor:pointer;border:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;background:#fff;transition:background .15s;" onmouseover="this.style.background=&quot;#f8fafc&quot;" onmouseout="this.style.background=&quot;#fff&quot;"><div><div style="font-size:.75rem;color:#64748b;margin-bottom:2px;">'+r.tipo+'<\/div><div style="font-size:.9rem;font-weight:600;color:#1e293b;">'+r.titulo+'<\/div><\/div><span style="margin-left:auto;color:#94a3b8;">\u2192<\/span><\/div>';
     }).join('');
 }
 document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();abrirBuscador();}});
@@ -6983,7 +6983,7 @@ function renderFavoritosBar(){
     try{var favs=JSON.parse(localStorage.getItem('favSecciones')||'[]');}catch(e){var favs=[];}
     var bar=document.getElementById('favoritosBar');if(!bar||!favs.length){if(bar)bar.style.display='none';return;}
     var mapa={pagePatients:'👤 Pacientes',pageProfessionals:'🩺 Profesionales',pageEnfermeria:'👩‍⚕️ Enfermería',pageProtocolosAP:'📋 Protocolos AP',pageProtocolosUrgencias:'🚨 Urgencias',pageScanIA:'🛠️ Herramientas',pageTelefonos:'📞 Teléfonos',pageFilehub:'📖 Cuaderno IA'};
-    bar.innerHTML=favs.map(function(id){return '<button onclick="showPage(''+id+'')" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.82rem;font-weight:600;white-space:nowrap;">'+( mapa[id]||id)+'</button>';}).join('');
+    bar.innerHTML=favs.map(function(id){return '<button onclick="showPage(&quot;'+id+'&quot;)" style="padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.82rem;font-weight:600;white-space:nowrap;">'+( mapa[id]||id)+'<\/button>';}).join('');
     bar.style.display='flex';
 }
 document.addEventListener('DOMContentLoaded',function(){setTimeout(renderFavoritosBar,500);});
