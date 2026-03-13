@@ -3631,32 +3631,27 @@ document.addEventListener('DOMContentLoaded', function() {
 // ═══ PAGE NAVIGATION ═══
 var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
 function showPage(id){
-    if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
-        var user=firebase.auth().currentUser;
-        if(!user){
-            pendingPageAfterLogin=id;
-            try{
-                document.getElementById("scanLoginModal").style.display="flex";
-                document.getElementById("scanLoginError").style.display="none";
-                resetDisclaimerCheck();
-            }catch(e){console.error(e);}
-            return;
-        }
-        logPageAccess(id,user);
-    }
-    document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
-    document.getElementById(id).classList.add("active");
-    if(id==="pageProfessionals")initProfessionals();if(id==="pageScanIA")try{scanRenderHist();}catch(e){}if(id==="pageCuadernos")cnbInit();
-    if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}
-    // Actualizar barra de moderación en la página activa
+    // Mostrar la página siempre — sin bloqueo por login
     try{
-        var modUser = firebase.auth().currentUser;
-        var barEl = document.getElementById("modBar_"+id);
+        document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
+        var pageEl=document.getElementById(id);
+        if(!pageEl){console.error("showPage: no existe elemento con id="+id);return;}
+        pageEl.classList.add("active");
+    }catch(e){console.error("showPage error:",e);return;}
+    // Inicializaciones específicas por página
+    try{if(id==="pageProfessionals")initProfessionals();}catch(e){}
+    try{if(id==="pageScanIA")scanRenderHist();}catch(e){}
+    try{if(id==="pageCuadernos")cnbInit();}catch(e){}
+    try{if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}}catch(e){}
+    // Barra de moderación (opcional, no bloquea)
+    try{
+        var modUser=firebase.auth().currentUser;
+        var barEl=document.getElementById("modBar_"+id);
         if(barEl){
-            if(modUser){ barEl.style.display="flex"; var uel=document.getElementById("modBarUser_"+id); if(uel)uel.textContent=modUser.displayName||modUser.email; }
-            else { barEl.style.display="none"; }
+            if(modUser){barEl.style.display="flex";var uel=document.getElementById("modBarUser_"+id);if(uel)uel.textContent=modUser.displayName||modUser.email;}
+            else{barEl.style.display="none";}
         }
-        if(modUser) mostrarBtnSubir();
+        if(modUser)mostrarBtnSubir();
     }catch(e){}
 }
 var pendingPageAfterLogin=null;
