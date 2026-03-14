@@ -440,36 +440,36 @@
                         <button onclick="abrirFavoritos()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">⭐ Favoritos</button>
                     </div>
                     <!-- 2 BOTONES PRINCIPALES -->
-                    <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')" ><span class="hero-btn-icon">👤</span> Pacientes</a>
-                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProfessionals')"><span class="hero-btn-icon">🩺</span> Profesionales</a>
+                    <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')" aria-label="Acceder a sección de Pacientes" ><span class="hero-btn-icon">👤</span> Pacientes</a>
+                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProfessionals')" aria-label="Acceder a sección de Profesionales"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
 
                 <!-- GRID COMPACTO DE CATEGORÍAS -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;max-width:520px;width:100%;position:relative;z-index:5;">
 
                     <!-- PROTOCOLOS Y GUÍAS -->
-                    <button onclick="toggleSubMenu('subProtocolos')" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="toggleSubMenu('subProtocolos')" aria-label="Ver protocolos clínicos" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">📋</div>
                         <div style="font-weight:700;font-size:.88rem;">Protocolos</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">AP · Urgencias · Antibióticos</div>
                     </button>
 
                     <!-- ENFERMERÍA -->
-                    <button onclick="showPage('pageEnfermeria')" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="showPage('pageEnfermeria')" aria-label="Acceder a sección de Enfermería" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">👩‍⚕️</div>
                         <div style="font-weight:700;font-size:.88rem;">Enfermería</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Protocolos · Técnicas · Vacunas</div>
                     </button>
 
                     <!-- HERRAMIENTAS CLÍNICAS -->
-                    <button onclick="toggleSubMenu('subHerramientas')" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="toggleSubMenu('subHerramientas')" aria-label="Ver herramientas clínicas" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">🛠️</div>
                         <div style="font-weight:700;font-size:.88rem;">Herramientas</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">IA · Calculadoras · Informes</div>
                     </button>
 
                     <!-- DOCENCIA -->
-                    <button onclick="toggleSubMenu('subDocencia')" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="toggleSubMenu('subDocencia')" aria-label="Ver recursos de docencia" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">📚</div>
                         <div style="font-weight:700;font-size:.88rem;">Docencia</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Casos · Cuaderno IA · Blog</div>
@@ -6590,10 +6590,13 @@ function trIAAddMsg(who,text){
     var chat=document.getElementById('trIAChat');
     if(!chat) return;
     var isBot=who==='bot';
+    var safeText=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    // Allow only <strong> and <b> tags from bot responses
+    if(isBot) safeText=safeText.replace(/&lt;strong&gt;/g,'<strong>').replace(/&lt;\/strong&gt;/g,'</strong>').replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>');
     var div=document.createElement('div');
     div.style.cssText='display:flex;gap:8px;margin-bottom:10px;'+(isBot?'':'flex-direction:row-reverse;');
     div.innerHTML='<div style="width:32px;height:32px;border-radius:50%;background:'+(isBot?'#e3f2fd':'#e8f5e9')+';display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">'+(isBot?'🤖':'👤')+'</div>'+
-        '<div style="background:'+(isBot?'#f0f4f8':'#0d47a1')+';color:'+(isBot?'#333':'#fff')+';border-radius:'+(isBot?'0 12px 12px 12px':'12px 0 12px 12px')+';padding:10px 14px;font-size:.88rem;line-height:1.6;max-width:85%;">'+text.replace(/\n/g,'<br>')+'</div>';
+        '<div style="background:'+(isBot?'#f0f4f8':'#0d47a1')+';color:'+(isBot?'#333':'#fff')+';border-radius:'+(isBot?'0 12px 12px 12px':'12px 0 12px 12px')+';padding:10px 14px;font-size:.88rem;line-height:1.6;max-width:85%;">'+safeText+'</div>';
     chat.appendChild(div);
     chat.scrollTop=chat.scrollHeight;
 }
