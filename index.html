@@ -1883,6 +1883,56 @@
             <button onclick="trCalcularResultado()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1a6b4a,#0f4a32);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;">Ver mi orientación →</button>
         </div>
         <div id="trResultado" style="display:none;"></div>
+
+        <!-- ═══ MODO IA: Triaje conversacional con voz ═══ -->
+        <div id="trModoIA" style="display:none;margin-top:16px;">
+            <div style="background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:14px;padding:20px;color:#fff;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                    <div style="font-size:1.6rem;">🤖</div>
+                    <div><h3 style="margin:0;font-size:1.05rem;font-weight:700;">TriajeSalud AI</h3>
+                    <p style="margin:0;font-size:.78rem;opacity:.8;">Asistente inteligente · Basado en SET</p></div>
+                </div>
+                <p style="font-size:.85rem;opacity:.9;line-height:1.5;margin:0;">Describe tus síntomas hablando o escribiendo. La IA te hará preguntas y te orientará según el Sistema Español de Triaje.</p>
+            </div>
+            <!-- Selector idioma voz -->
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <select id="trIALang" style="padding:8px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:var(--font-body);flex:1;">
+                    <option value="es-ES">🇪🇸 Español</option>
+                    <option value="ar-SA">🇸🇦 العربية (Árabe)</option>
+                    <option value="fr-FR">🇫🇷 Français</option>
+                    <option value="en-GB">🇬🇧 English</option>
+                    <option value="ro-RO">🇷🇴 Română</option>
+                    <option value="zh-CN">🇨🇳 中文</option>
+                    <option value="uk-UA">🇺🇦 Українська</option>
+                    <option value="ru-RU">🇷🇺 Русский</option>
+                </select>
+                <button onclick="trIAVoice()" id="trIAMicBtn" style="padding:8px 16px;background:#c62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:700;font-family:var(--font-body);">🎙️ Hablar</button>
+            </div>
+            <!-- Chat -->
+            <div id="trIAChat" style="background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:12px;min-height:200px;max-height:50vh;overflow-y:auto;margin-bottom:12px;">
+                <div style="display:flex;gap:8px;margin-bottom:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">🤖</div>
+                    <div style="background:#f0f4f8;border-radius:0 12px 12px 12px;padding:10px 14px;font-size:.88rem;line-height:1.6;color:#333;max-width:85%;">¡Hola! Soy el asistente de triaje. <strong>Describe tus síntomas</strong> y te haré unas preguntas para orientarte.<br><br>Puedes hablar o escribir. Si necesitas otro idioma, selecciónalo arriba.</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <input type="text" id="trIAInput" placeholder="Describe tus síntomas..." style="flex:1;padding:11px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:var(--font-body);" onkeydown="if(event.key==='Enter')trIASend()">
+                <button onclick="trIASend()" style="padding:10px 18px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:700;font-family:var(--font-body);">Enviar</button>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                <button onclick="trIAQuick('Tengo dolor en el pecho desde hace 2 horas')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Dolor pecho</button>
+                <button onclick="trIAQuick('Mi hijo de 3 años tiene fiebre de 39 grados')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Fiebre niño</button>
+                <button onclick="trIAQuick('Me he caído y me duele mucho la muñeca')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Caída/golpe</button>
+                <button onclick="trIAQuick('Tengo mucha dificultad para respirar')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Disnea</button>
+            </div>
+            <div style="margin-top:10px;text-align:center;"><button onclick="trIAReset()" style="padding:6px 14px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;color:#dc2626;font-family:var(--font-body);">🔄 Reiniciar consulta</button></div>
+        </div>
+
+        <!-- Botón para alternar entre modo clásico y modo IA -->
+        <div style="margin-top:14px;text-align:center;">
+            <button onclick="trToggleModoIA()" id="trToggleIABtn" style="padding:10px 20px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:700;font-family:var(--font-body);">🤖 Cambiar a Triaje con IA conversacional</button>
+        </div>
+
         <div style="margin-top:18px;padding:10px 12px;background:var(--bg-subtle);border-radius:8px;font-size:.74rem;color:var(--text-muted);line-height:1.5;text-align:center;">Herramienta de orientación del <b>Área II de Cartagena · Hospital Santa Lucía</b>. No constituye diagnóstico médico. Basada en el Sistema Español de Triaje (SET) y protocolos del SMS. En caso de emergencia llama al <b>112</b>.</div>
         </div>
     </div>
@@ -6508,6 +6558,154 @@ function trReiniciar(){
   TR_STATE={persona:null,intensidad:5,duracion:null,area:null,sintoma:null,contexto:[],nivelBase:3};
   trShow('trInicio');
   window.scrollTo(0,0);
+}
+
+/* ═══════ TRIAJE IA CONVERSACIONAL ═══════ */
+var trIAHistory=[];
+var trIAModoActivo=false;
+
+function trToggleModoIA(){
+    trIAModoActivo=!trIAModoActivo;
+    var iaDiv=document.getElementById('trModoIA');
+    var btn=document.getElementById('trToggleIABtn');
+    var clasico=document.getElementById('trInicio');
+    if(trIAModoActivo){
+        if(iaDiv) iaDiv.style.display='block';
+        if(clasico) clasico.style.display='none';
+        var res=document.getElementById('trResultado');if(res)res.style.display='none';
+        if(btn) btn.innerHTML='📋 Cambiar a Triaje clásico (cuestionario)';
+        if(btn) btn.style.background='linear-gradient(135deg,#c62828,#b71c1c)';
+    } else {
+        if(iaDiv) iaDiv.style.display='none';
+        if(clasico) clasico.style.display='block';
+        if(btn) btn.innerHTML='🤖 Cambiar a Triaje con IA conversacional';
+        if(btn) btn.style.background='linear-gradient(135deg,#1565c0,#0d47a1)';
+    }
+}
+
+function trIAAddMsg(who,text){
+    var chat=document.getElementById('trIAChat');
+    if(!chat) return;
+    var isBot=who==='bot';
+    var div=document.createElement('div');
+    div.style.cssText='display:flex;gap:8px;margin-bottom:10px;'+(isBot?'':'flex-direction:row-reverse;');
+    div.innerHTML='<div style="width:32px;height:32px;border-radius:50%;background:'+(isBot?'#e3f2fd':'#e8f5e9')+';display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">'+(isBot?'🤖':'👤')+'</div>'+
+        '<div style="background:'+(isBot?'#f0f4f8':'#0d47a1')+';color:'+(isBot?'#333':'#fff')+';border-radius:'+(isBot?'0 12px 12px 12px':'12px 0 12px 12px')+';padding:10px 14px;font-size:.88rem;line-height:1.6;max-width:85%;">'+text.replace(/\n/g,'<br>')+'</div>';
+    chat.appendChild(div);
+    chat.scrollTop=chat.scrollHeight;
+}
+
+function trIAAddTyping(){
+    var chat=document.getElementById('trIAChat');
+    var div=document.createElement('div');
+    div.id='trIATyping';
+    div.style.cssText='display:flex;gap:8px;margin-bottom:10px;';
+    div.innerHTML='<div style="width:32px;height:32px;border-radius:50%;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">🤖</div><div style="background:#f0f4f8;border-radius:0 12px 12px 12px;padding:10px 14px;font-size:.88rem;color:#999;">Analizando síntomas<span class="tr-dots">...</span></div>';
+    chat.appendChild(div);
+    chat.scrollTop=chat.scrollHeight;
+}
+
+function trIAQuick(text){document.getElementById('trIAInput').value=text;trIASend();}
+
+async function trIASend(){
+    var input=document.getElementById('trIAInput');
+    var q=input.value.trim();
+    if(!q) return;
+    input.value='';
+    trIAAddMsg('user',q);
+    trIAHistory.push({role:'user',content:q});
+    trIAAddTyping();
+
+    var key='';
+    try{var cfg=JSON.parse(localStorage.getItem('notebook_ai_cfg_v3')||'{}');key=cfg.groqKey||'';}catch(e){}
+    if(!key) key=EMBEDDED_GROQ_KEY||'';
+
+    if(!key){
+        var t=document.getElementById('trIATyping');if(t)t.remove();
+        trIAAddMsg('bot','⚠️ Para usar el triaje con IA necesitas configurar una API Key de Groq en la sección <b>Profesionales → Config</b>.\n\nMientras tanto, puedes usar el <b>triaje clásico</b> que funciona sin IA.');
+        return;
+    }
+
+    var sysPrompt='Eres un asistente de triaje médico del Área II de Cartagena (Hospital Santa Lucía, España). Tu función es evaluar síntomas y orientar al paciente según el Sistema Español de Triaje (SET) con 5 niveles:\n\n'+
+    'Nivel 1 (ROJO): Emergencia vital → 112\n'+
+    'Nivel 2 (NARANJA): Urgencia alta → Urgencias hospital inmediato\n'+
+    'Nivel 3 (AMARILLO): Urgencia media → Urgencias/PAC en 2h\n'+
+    'Nivel 4 (VERDE): Preferente → Médico de cabecera hoy/mañana\n'+
+    'Nivel 5 (AZUL): No urgente → Cita programada\n\n'+
+    'REGLAS ESTRICTAS:\n'+
+    '- Haz preguntas cortas y claras, UNA a la vez\n'+
+    '- Pregunta: localización, intensidad (1-10), duración, síntomas asociados, antecedentes relevantes\n'+
+    '- Tras 3-5 preguntas, da tu ORIENTACIÓN con el formato:\n'+
+    '  🚨 NIVEL X — [NOMBRE]\n  📋 Recomendación: [acción]\n  📞 Teléfono: [si aplica]\n'+
+    '- SIEMPRE recuerda que NO eres médico y que deben consultar\n'+
+    '- Si detectas señales de emergencia (dolor torácico, disnea severa, pérdida conciencia), INMEDIATAMENTE indica NIVEL 1 y que llamen al 112\n'+
+    '- Responde en el MISMO IDIOMA que use el paciente\n'+
+    '- Sé empático, claro y directo. Máximo 100 palabras por respuesta.';
+
+    var messages=[{role:'system',content:sysPrompt}].concat(trIAHistory.slice(-10));
+
+    try{
+        var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+            body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:messages,max_tokens:400,temperature:0.3})
+        });
+        var data=await r.json();
+        var answer=data.choices[0].message.content;
+        var t=document.getElementById('trIATyping');if(t)t.remove();
+        trIAAddMsg('bot',answer);
+        trIAHistory.push({role:'assistant',content:answer});
+
+        // Auto-speak the response
+        try{
+            var lang=document.getElementById('trIALang').value;
+            var u=new SpeechSynthesisUtterance(answer.replace(/<[^>]*>/g,'').replace(/[🚨🔴🟡🟢🔵📋📞⚠️]/g,''));
+            u.lang=lang;u.rate=0.95;
+            speechSynthesis.speak(u);
+        }catch(e){}
+
+        // Save to AI history
+        try{
+            var hist=JSON.parse(localStorage.getItem('aiHistory')||'[]');
+            hist.push({question:q.substring(0,200),answer:answer.substring(0,300),section:'triaje-ia',timestamp:Date.now()});
+            if(hist.length>200) hist=hist.slice(-200);
+            localStorage.setItem('aiHistory',JSON.stringify(hist));
+        }catch(e){}
+    }catch(err){
+        var t2=document.getElementById('trIATyping');if(t2)t2.remove();
+        trIAAddMsg('bot','❌ Error de conexión: '+err.message+'\n\nPuedes intentar de nuevo o usar el triaje clásico.');
+    }
+}
+
+function trIAVoice(){
+    if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+        alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.');return;
+    }
+    var SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+    var rec=new SpeechRec();
+    rec.lang=document.getElementById('trIALang').value;
+    rec.continuous=false;rec.interimResults=false;
+
+    var btn=document.getElementById('trIAMicBtn');
+    btn.innerHTML='⏹️ Escuchando...';btn.style.background='#b71c1c';
+
+    rec.onresult=function(e){
+        var text=e.results[0][0].transcript;
+        document.getElementById('trIAInput').value=text;
+        trIASend();
+    };
+    rec.onend=function(){btn.innerHTML='🎙️ Hablar';btn.style.background='#c62828';};
+    rec.onerror=function(e){
+        btn.innerHTML='🎙️ Hablar';btn.style.background='#c62828';
+        if(e.error==='not-allowed') alert('Permite el acceso al micrófono.');
+    };
+    rec.start();
+}
+
+function trIAReset(){
+    trIAHistory=[];
+    var chat=document.getElementById('trIAChat');
+    if(chat) chat.innerHTML='<div style="display:flex;gap:8px;margin-bottom:10px;"><div style="width:32px;height:32px;border-radius:50%;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">🤖</div><div style="background:#f0f4f8;border-radius:0 12px 12px 12px;padding:10px 14px;font-size:.88rem;line-height:1.6;color:#333;max-width:85%;">¡Hola! Soy el asistente de triaje. <strong>Describe tus síntomas</strong> y te haré unas preguntas para orientarte.<br><br>Puedes hablar o escribir. Si necesitas otro idioma, selecciónalo arriba.</div></div>';
 }
 
 // Inicializar al abrir la página
