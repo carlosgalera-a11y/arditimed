@@ -1,0 +1,11 @@
+{
+  "name": "area2-cartagena-functions",
+  "description": "Firebase Cloud Functions para Área II Cartagena",
+  "engines": {"node": "18"},
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^11.8.0",
+    "firebase-functions": "^4.3.1",
+    "nodemailer": "^6.9.8"
+  }
+}
