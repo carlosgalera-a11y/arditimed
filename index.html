@@ -427,6 +427,9 @@
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageFilehub')" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📖</span> Cuaderno IA</a>
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageFilehub');setTimeout(openBlogPublisher,300)" style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🌐</span> Blog Publisher</a>
                 </div>
+                <div class="hero-buttons" style="margin-top:20px;">
+                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageTraductor')" style="background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🌍</span> Traductor Consulta</a>
+                </div>
 
                 <!-- ── TARJETA AUTOTRIAJE AL FINAL (abajo del todo) ── -->
                 <div onclick="showPage('pageTriaje')" style="cursor:pointer;background:linear-gradient(135deg,rgba(192,57,43,0.92),rgba(120,20,15,0.88));border:2px solid rgba(255,255,255,0.35);border-radius:16px;padding:18px 20px;margin-top:20px;display:flex;align-items:center;gap:16px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(0,0,0,.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(0,0,0,.35)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'">
@@ -472,7 +475,7 @@
                 </div>
             </div>
 
-            <div class="hero-footer" id="secretTrigger">© 2026 <a href="https://sites.google.com/view/area2cartagena/inicio" target="_blank">cartagenaeste.es</a> · <a href="javascript:showPage('pagePrivacidad')" style="color:rgba(255,255,255,.7);text-decoration:underline;font-size:.75em;">Privacidad y Aviso Legal</a> · Creado con ❤️</div>
+            <div class="hero-footer" id="secretTrigger">© 2026 <a href="https://sites.google.com/view/area2cartagena/inicio" target="_blank">cartagenaeste.es</a> · <a href="javascript:showPage('pagePrivacidad')" style="color:rgba(255,255,255,.7);text-decoration:underline;font-size:.75em;">Privacidad y Aviso Legal</a> · Creado con ❤️<br><span style="font-size:.65rem;opacity:.6;">Todos los derechos reservados. Contenido protegido por derechos de autor. Prohibida su reproducción sin autorización.</span></div>
         </div>
     </div>
 </div>
@@ -498,7 +501,8 @@
     <a class="patient-card" href="programacion.html" target="_blank"><div class="patient-card-icon">📅</div><div class="patient-card-title">Programación del Centro</div><div class="patient-card-desc">Horarios y agenda</div></a>
     <a class="patient-card" href="dejar-fumar.html" target="_blank"><div class="patient-card-icon">🚭</div><div class="patient-card-title">Dejar de fumar</div><div class="patient-card-desc">Programas y ayuda</div></a>
     <a class="patient-card" href="podcast.html" target="_blank"><div class="patient-card-icon">🎙️</div><div class="patient-card-title">Podcast</div><div class="patient-card-desc">Audio salud comunitaria</div></a>
-    <a class="patient-card" href="https://notebooklm.google.com/notebook/d8b9054c-a565-4916-8667-4ff1cb9cd77f" target="_blank" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;"><div class="patient-card-icon">🤖</div><div class="patient-card-title" style="color:#0d47a1;">NotebookLM</div><div class="patient-card-desc" style="color:#1565c0;">Pregunta a la IA sobre tu salud</div></a>
+    <a class="patient-card" href="javascript:void(0)" onclick="showNotebooksModal()" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;"><div class="patient-card-icon">🤖</div><div class="patient-card-title" style="color:#0d47a1;">Cuadernos IA</div><div class="patient-card-desc" style="color:#1565c0;">5 cuadernos NotebookLM</div></a>
+    <a class="patient-card" href="javascript:void(0)" onclick="showPage('pageTraductor')" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;"><div class="patient-card-icon">🌍</div><div class="patient-card-title" style="color:#bf360c;">Traductor</div><div class="patient-card-desc" style="color:#e65100;">Traducción en consulta</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showFarmacias24h()" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#1b5e20;">Farmacias 24h</div><div class="patient-card-desc" style="color:#388e3c;">Región de Murcia</div></a>
 </div>
 
@@ -521,6 +525,156 @@
     </div>
   </div>
 </div>
+</div>
+
+<!-- Modal NotebookLM Cuadernos -->
+<div id="modalNotebooks" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+  <div style="background:#fff;border-radius:16px;max-width:520px;width:94%;max-height:88vh;overflow-y:auto;box-shadow:0 25px 80px rgba(0,0,0,.4);">
+    <div style="background:linear-gradient(135deg,#0d47a1,#1565c0);padding:20px 24px;border-radius:16px 16px 0 0;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:1.8rem;">🤖</div><h2 style="margin:4px 0 0;font-size:1.2rem;font-weight:700;">Cuadernos NotebookLM</h2><p style="margin:2px 0 0;font-size:.8rem;opacity:.85;">IA de Google para consulta médica</p></div>
+      <span onclick="document.getElementById('modalNotebooks').style.display='none'" style="cursor:pointer;font-size:1.6rem;opacity:.8;line-height:1;">✕</span>
+    </div>
+    <div style="padding:16px;">
+      <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:.78rem;color:#0d47a1;">
+        📚 Cada cuaderno contiene documentación especializada. La IA de Google puede responder preguntas basándose en el contenido.
+      </div>
+      <a href="https://notebooklm.google.com/notebook/d8b9054c-a565-4916-8667-4ff1cb9cd77f" target="_blank" style="display:block;border:1px solid #e3f2fd;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#fafffe;text-decoration:none;transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.8rem;">📋</div>
+          <div><div style="font-weight:700;font-size:.92rem;color:#0d47a1;">Cuaderno Principal — Enfermería</div><div style="font-size:.76rem;color:#555;margin-top:2px;">Vacunas, protocolos, documentación clínica</div></div>
+          <div style="margin-left:auto;font-size:1.2rem;color:#90caf9;">→</div>
+        </div>
+      </a>
+      <a href="https://notebooklm.google.com/notebook/9d377e7d-51ec-4773-acd7-fc84534a4b29" target="_blank" style="display:block;border:1px solid #e3f2fd;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#fafffe;text-decoration:none;transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.8rem;">🚨</div>
+          <div><div style="font-weight:700;font-size:.92rem;color:#0d47a1;">Protocolos de Urgencias</div><div style="font-size:.76rem;color:#555;margin-top:2px;">Trípticos, SEMFyC, hospitalarios</div></div>
+          <div style="margin-left:auto;font-size:1.2rem;color:#90caf9;">→</div>
+        </div>
+      </a>
+      <a href="https://notebooklm.google.com/notebook/10df02b6-e1f6-4e4c-b7e7-8b758e4e8d0d" target="_blank" style="display:block;border:1px solid #e3f2fd;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#fafffe;text-decoration:none;transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.8rem;">🩺</div>
+          <div><div style="font-weight:700;font-size:.92rem;color:#0d47a1;">Atención Primaria</div><div style="font-size:.76rem;color:#555;margin-top:2px;">Protocolos AP y guías clínicas</div></div>
+          <div style="margin-left:auto;font-size:1.2rem;color:#90caf9;">→</div>
+        </div>
+      </a>
+      <a href="https://notebooklm.google.com/notebook/24996c1c-e88b-4716-87f1-15df52c8dc5e" target="_blank" style="display:block;border:1px solid #e3f2fd;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#fafffe;text-decoration:none;transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.8rem;">💊</div>
+          <div><div style="font-weight:700;font-size:.92rem;color:#0d47a1;">Farmacología y Terapéutica</div><div style="font-size:.76rem;color:#555;margin-top:2px;">Fármacos, dosis, interacciones</div></div>
+          <div style="margin-left:auto;font-size:1.2rem;color:#90caf9;">→</div>
+        </div>
+      </a>
+      <a href="https://notebooklm.google.com/notebook/8a4e3e50-a33c-4bd9-821d-8ec320b74276" target="_blank" style="display:block;border:1px solid #e3f2fd;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#fafffe;text-decoration:none;transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.8rem;">📖</div>
+          <div><div style="font-weight:700;font-size:.92rem;color:#0d47a1;">Formación y Docencia</div><div style="font-size:.76rem;color:#555;margin-top:2px;">Material docente MFyC</div></div>
+          <div style="margin-left:auto;font-size:1.2rem;color:#90caf9;">→</div>
+        </div>
+      </a>
+      <div style="margin-top:10px;padding:10px;background:#f3e5f5;border-radius:8px;font-size:.76rem;color:#4a148c;text-align:center;">
+        💡 <strong>Tip:</strong> Los cuadernos usan IA de Google (NotebookLM). Puedes hacerle preguntas en español y te responderá basándose en los documentos cargados.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ TRANSLATOR PAGE ═══════ -->
+<div class="page" id="pageTraductor">
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
+    <div style="background:linear-gradient(135deg,#e65100,#bf360c);padding:24px 20px;text-align:center;color:#fff;">
+        <div style="font-size:2.2rem;margin-bottom:6px;">🌍</div>
+        <h2 style="margin:0;font-size:1.3rem;font-weight:700;">Traductor de Consulta</h2>
+        <p style="margin:4px 0 0;font-size:.85rem;opacity:.85;">Traducción y transcripción en directo para la consulta médica</p>
+    </div>
+    <div style="max-width:700px;margin:0 auto;padding:20px;">
+        <div style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:.8rem;color:#e65100;">
+            🎙️ <strong>Usa el micrófono</strong> para traducir conversaciones en directo con pacientes. La transcripción se guarda automáticamente.
+        </div>
+
+        <!-- Language selectors -->
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+            <div style="flex:1;min-width:140px;">
+                <label style="font-size:.75rem;font-weight:600;color:#555;display:block;margin-bottom:4px;">🩺 Profesional</label>
+                <select id="tradLangFrom" onchange="tradUpdateLangs()" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:var(--font-body);background:#fff;cursor:pointer;">
+                    <option value="es-ES">🇪🇸 Español</option>
+                </select>
+            </div>
+            <div style="padding-top:18px;">
+                <button onclick="tradSwapLangs()" style="background:#fff;border:2px solid #e0e0e0;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;" title="Intercambiar idiomas">⇄</button>
+            </div>
+            <div style="flex:1;min-width:140px;">
+                <label style="font-size:.75rem;font-weight:600;color:#555;display:block;margin-bottom:4px;">👤 Paciente</label>
+                <select id="tradLangTo" onchange="tradUpdateLangs()" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:var(--font-body);background:#fff;cursor:pointer;">
+                    <option value="ar-SA">🇸🇦 Árabe (العربية)</option>
+                    <option value="fr-FR">🇫🇷 Francés</option>
+                    <option value="en-GB">🇬🇧 Inglés</option>
+                    <option value="de-DE">🇩🇪 Alemán</option>
+                    <option value="ro-RO">🇷🇴 Rumano</option>
+                    <option value="zh-CN">🇨🇳 Chino mandarín</option>
+                    <option value="uk-UA">🇺🇦 Ucraniano</option>
+                    <option value="ru-RU">🇷🇺 Ruso</option>
+                    <option value="pt-PT">🇵🇹 Portugués</option>
+                    <option value="it-IT">🇮🇹 Italiano</option>
+                    <option value="pl-PL">🇵🇱 Polaco</option>
+                    <option value="bg-BG">🇧🇬 Búlgaro</option>
+                    <option value="wo-SN">🇸🇳 Wolof</option>
+                    <option value="ha-NG">🇳🇬 Hausa</option>
+                    <option value="am-ET">🇪🇹 Amárico</option>
+                    <option value="sw-KE">🇰🇪 Suajili</option>
+                    <option value="ur-PK">🇵🇰 Urdu</option>
+                    <option value="hi-IN">🇮🇳 Hindi</option>
+                    <option value="bn-BD">🇧🇩 Bengalí</option>
+                    <option value="ta-IN">🇮🇳 Tamil</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Mic buttons -->
+        <div style="display:flex;gap:12px;margin-bottom:20px;">
+            <button id="tradBtnDoc" onclick="tradStartListening('doc')" style="flex:1;padding:14px;border:2px solid #e65100;background:#fff;color:#e65100;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all .2s;">
+                🎙️ Profesional habla
+            </button>
+            <button id="tradBtnPat" onclick="tradStartListening('pat')" style="flex:1;padding:14px;border:2px solid #0d47a1;background:#fff;color:#0d47a1;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all .2s;">
+                🎙️ Paciente habla
+            </button>
+        </div>
+
+        <!-- Status -->
+        <div id="tradStatus" style="text-align:center;padding:8px;margin-bottom:14px;font-size:.82rem;color:#888;display:none;">
+            <span class="spinner" style="display:inline-block;width:14px;height:14px;border:2px solid #ddd;border-top-color:#e65100;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px;"></span>
+            Escuchando...
+        </div>
+
+        <!-- Live result -->
+        <div id="tradLiveBox" style="display:none;background:#fff;border:2px solid #e65100;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div id="tradOriginal" style="font-size:1rem;color:#333;margin-bottom:10px;line-height:1.5;"></div>
+            <hr style="border:none;border-top:1px solid #eee;margin:10px 0;">
+            <div id="tradTranslated" style="font-size:1.15rem;color:#e65100;font-weight:600;line-height:1.5;"></div>
+            <button onclick="tradSpeak()" style="margin-top:10px;padding:8px 16px;background:#e65100;color:#fff;border:none;border-radius:8px;font-size:.82rem;cursor:pointer;font-weight:600;">🔊 Reproducir traducción</button>
+        </div>
+
+        <!-- Conversation history -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <h3 style="font-size:1rem;font-weight:700;color:#333;margin:0;">💬 Conversación</h3>
+            <div style="display:flex;gap:8px;">
+                <button onclick="tradCopyAll()" style="padding:6px 12px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:600;">📋 Copiar</button>
+                <button onclick="tradClearAll()" style="padding:6px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:600;color:#dc2626;">🗑️ Borrar</button>
+            </div>
+        </div>
+        <div id="tradHistory" style="background:#fafafa;border:1px solid #e0e0e0;border-radius:12px;padding:16px;min-height:120px;max-height:50vh;overflow-y:auto;">
+            <div style="text-align:center;padding:30px;color:#aaa;">
+                <div style="font-size:2rem;margin-bottom:8px;opacity:.4;">🌍</div>
+                <p style="font-size:.88rem;">Pulsa un botón de micrófono para empezar a traducir</p>
+            </div>
+        </div>
+
+        <div style="margin-top:16px;padding:12px;background:#f1f8e9;border-radius:8px;font-size:.75rem;color:#33691e;text-align:center;">
+            🔒 Todo se procesa en tu dispositivo. No se envían datos a servidores externos.<br>
+            Compatible con Chrome, Edge y Safari. Requiere micrófono.
+        </div>
+    </div>
 </div>
 
 <!-- ═══════ PROFESSIONALS PAGE ═══════ -->
@@ -2488,6 +2642,8 @@
                     </div>
                     <div style="background:#fdf4ff;padding:12px;border-radius:8px;border-left:3px solid #d946ef;">
                         <strong>📞 Teléfonos Buscas</strong> — Directorio de buscas y teléfonos del hospital.
+                    </p><p style="margin:0 0 6px;">
+                        <strong>🌍 Traductor Consulta</strong> — Traducción en directo con micrófono para consultas con pacientes extranjeros. Árabe, francés, inglés, alemán, rumano, chino y más.
                     </div>
                 </div>
             </div>
@@ -3291,6 +3447,8 @@ var SEARCH_INDEX=[
     {tipo:'📱 Pacientes',titulo:'Dietas y nutrición',tags:'dieta nutricion alimentacion peso obesidad',page:'pagePatients'},
     {tipo:'📱 Pacientes',titulo:'Vacunas y calendario',tags:'vacunas calendario gripe covid hepatitis',page:'pagePatients'},
     {tipo:'📱 Pacientes',titulo:'Farmacias 24h',tags:'farmacia guardia 24h noche festivo cartagena',page:'pagePatients'},
+    {tipo:'📱 Pacientes',titulo:'Cuadernos NotebookLM',tags:'notebooklm cuaderno ia inteligencia artificial google notebook',page:'pagePatients'},
+    {tipo:'🌍 Traductor',titulo:'Traductor de Consulta',tags:'traductor traduccion idioma arabe frances ingles aleman rumano chino consulta interprete',page:'pageTraductor'},
     {tipo:'📱 Pacientes',titulo:'NotebookLM - Pregunta a la IA',tags:'notebooklm ia inteligencia artificial preguntas salud documentos biblioteca',page:'pagePatients'},
     {tipo:'📄 PDF',titulo:'Guía dejar de fumar 2025',tags:'tabaco fumar guia pdf',url:'guia-dejar-fumar-2025.pdf'},
     {tipo:'📄 PDF',titulo:'Vacunas — Información',tags:'vacunas informacion pdf calendario',url:'vacunas-informacion.pdf'},
@@ -5157,7 +5315,187 @@ function showFarmacias24h(){
     modal.style.display='flex';
 }
 
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){var im=document.getElementById("instruccionesModal");if(im&&im.style.display==="flex"){im.style.display="none";return;}var ap=document.getElementById("adminPanel");if(ap&&ap.style.display!=="none"){ap.style.display="none";return;}var sl=document.getElementById("scanLoginModal");if(sl&&sl.style.display==="flex"){sl.style.display="none";return;}}});
+function showNotebooksModal(){
+    var m=document.getElementById('modalNotebooks');
+    if(m) m.style.display='flex';
+}
+
+/* ═══════ TRADUCTOR DE CONSULTA ═══════ */
+var tradRecognition=null;
+var tradCurrentSpeaker='';
+var tradConversation=[];
+var tradLastTranslated='';
+var tradTargetLang='ar-SA';
+
+function tradUpdateLangs(){
+    tradTargetLang=document.getElementById('tradLangTo').value;
+}
+
+function tradSwapLangs(){
+    var from=document.getElementById('tradLangFrom');
+    var to=document.getElementById('tradLangTo');
+    var fv=from.value;
+    var tv=to.value;
+    // Find if the target lang exists as option in from, and vice versa
+    var toOpt=to.querySelector('option[value="'+fv+'"]');
+    if(!toOpt){
+        var o=document.createElement('option');o.value=fv;o.text=from.options[from.selectedIndex].text;
+        to.appendChild(o);
+    }
+    to.value=fv;
+    var fromOpt=from.querySelector('option[value="'+tv+'"]');
+    if(!fromOpt){
+        var o2=document.createElement('option');o2.value=tv;o2.text='🌐 '+tv;
+        from.appendChild(o2);
+    }
+    from.value=tv;
+    tradUpdateLangs();
+}
+
+function tradStartListening(who){
+    if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
+        alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.');return;
+    }
+    if(tradRecognition){try{tradRecognition.stop();}catch(e){}}
+
+    var SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+    tradRecognition=new SpeechRec();
+    tradRecognition.continuous=false;
+    tradRecognition.interimResults=true;
+    tradRecognition.maxAlternatives=1;
+
+    var fromLang=document.getElementById('tradLangFrom').value;
+    var toLang=document.getElementById('tradLangTo').value;
+    tradRecognition.lang=(who==='doc')?fromLang:toLang;
+    tradCurrentSpeaker=who;
+
+    var btnDoc=document.getElementById('tradBtnDoc');
+    var btnPat=document.getElementById('tradBtnPat');
+    var status=document.getElementById('tradStatus');
+
+    if(who==='doc'){
+        btnDoc.style.background='#e65100';btnDoc.style.color='#fff';btnDoc.innerHTML='⏹️ Escuchando...';
+        btnPat.style.background='#fff';btnPat.style.color='#0d47a1';btnPat.innerHTML='🎙️ Paciente habla';
+    } else {
+        btnPat.style.background='#0d47a1';btnPat.style.color='#fff';btnPat.innerHTML='⏹️ Escuchando...';
+        btnDoc.style.background='#fff';btnDoc.style.color='#e65100';btnDoc.innerHTML='🎙️ Profesional habla';
+    }
+    status.style.display='block';
+
+    tradRecognition.onresult=function(e){
+        var transcript='';
+        for(var i=e.resultIndex;i<e.results.length;i++){
+            transcript+=e.results[i][0].transcript;
+        }
+        if(e.results[e.resultIndex].isFinal){
+            tradTranslateText(transcript,who);
+        } else {
+            document.getElementById('tradLiveBox').style.display='block';
+            document.getElementById('tradOriginal').textContent=transcript;
+            document.getElementById('tradTranslated').innerHTML='<span style="opacity:.5;">Traduciendo...</span>';
+        }
+    };
+
+    tradRecognition.onerror=function(e){
+        console.error('Speech error:',e.error);
+        tradStopUI();
+        if(e.error==='not-allowed') alert('Permite el acceso al micrófono para usar el traductor.');
+    };
+    tradRecognition.onend=function(){tradStopUI();};
+    tradRecognition.start();
+}
+
+function tradStopUI(){
+    var btnDoc=document.getElementById('tradBtnDoc');
+    var btnPat=document.getElementById('tradBtnPat');
+    var status=document.getElementById('tradStatus');
+    btnDoc.style.background='#fff';btnDoc.style.color='#e65100';btnDoc.innerHTML='🎙️ Profesional habla';
+    btnPat.style.background='#fff';btnPat.style.color='#0d47a1';btnPat.innerHTML='🎙️ Paciente habla';
+    status.style.display='none';
+}
+
+function tradTranslateText(text,who){
+    var fromLang=document.getElementById('tradLangFrom').value.split('-')[0];
+    var toLang=document.getElementById('tradLangTo').value.split('-')[0];
+    var srcLang=(who==='doc')?fromLang:toLang;
+    var tgtLang=(who==='doc')?toLang:fromLang;
+
+    // Use free translation API (MyMemory or LibreTranslate fallback)
+    var url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(text)+'&langpair='+srcLang+'|'+tgtLang;
+
+    fetch(url).then(function(r){return r.json();}).then(function(data){
+        var translated=(data.responseData&&data.responseData.translatedText)?data.responseData.translatedText:text;
+        tradLastTranslated=translated;
+
+        document.getElementById('tradLiveBox').style.display='block';
+        document.getElementById('tradOriginal').textContent=text;
+        document.getElementById('tradTranslated').textContent=translated;
+
+        var entry={who:who,original:text,translated:translated,srcLang:srcLang,tgtLang:tgtLang,time:new Date().toLocaleTimeString()};
+        tradConversation.push(entry);
+        tradRenderHistory();
+    }).catch(function(err){
+        console.error('Translation error:',err);
+        document.getElementById('tradTranslated').textContent='[Error de traducción] '+text;
+    });
+}
+
+function tradSpeak(){
+    if(!tradLastTranslated) return;
+    var u=new SpeechSynthesisUtterance(tradLastTranslated);
+    var tgtLang=(tradCurrentSpeaker==='doc')?document.getElementById('tradLangTo').value:document.getElementById('tradLangFrom').value;
+    u.lang=tgtLang;
+    u.rate=0.9;
+    speechSynthesis.speak(u);
+}
+
+function tradRenderHistory(){
+    var el=document.getElementById('tradHistory');
+    if(tradConversation.length===0){
+        el.innerHTML='<div style="text-align:center;padding:30px;color:#aaa;"><div style="font-size:2rem;margin-bottom:8px;opacity:.4;">🌍</div><p style="font-size:.88rem;">Pulsa un botón de micrófono para empezar a traducir</p></div>';
+        return;
+    }
+    var h='';
+    tradConversation.forEach(function(e){
+        var isDoc=e.who==='doc';
+        var align=isDoc?'flex-start':'flex-end';
+        var bg=isDoc?'#fff3e0':'#e3f2fd';
+        var border=isDoc?'#e65100':'#0d47a1';
+        var icon=isDoc?'🩺':'👤';
+        var label=isDoc?'Profesional':'Paciente';
+        h+='<div style="display:flex;justify-content:'+align+';margin-bottom:10px;">';
+        h+='<div style="max-width:85%;background:'+bg+';border-left:3px solid '+border+';border-radius:0 10px 10px 0;padding:10px 14px;">';
+        h+='<div style="font-size:.7rem;color:#888;margin-bottom:4px;">'+icon+' '+label+' · '+e.time+'</div>';
+        h+='<div style="font-size:.88rem;color:#333;margin-bottom:4px;">'+e.original+'</div>';
+        h+='<div style="font-size:.95rem;color:'+border+';font-weight:600;">'+e.translated+'</div>';
+        h+='</div></div>';
+    });
+    el.innerHTML=h;
+    el.scrollTop=el.scrollHeight;
+}
+
+function tradCopyAll(){
+    if(tradConversation.length===0) return;
+    var txt='TRANSCRIPCIÓN CONSULTA MÉDICA — '+new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString()+'\n';
+    txt+='═══════════════════════════════════\n\n';
+    tradConversation.forEach(function(e){
+        var label=e.who==='doc'?'PROFESIONAL':'PACIENTE';
+        txt+='['+e.time+'] '+label+':\n';
+        txt+='  Original ('+e.srcLang+'): '+e.original+'\n';
+        txt+='  Traducción ('+e.tgtLang+'): '+e.translated+'\n\n';
+    });
+    navigator.clipboard.writeText(txt).then(function(){alert('✅ Conversación copiada al portapapeles');});
+}
+
+function tradClearAll(){
+    if(!confirm('¿Borrar toda la conversación?')) return;
+    tradConversation=[];
+    tradLastTranslated='';
+    document.getElementById('tradLiveBox').style.display='none';
+    tradRenderHistory();
+}
+
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){var im=document.getElementById("instruccionesModal");if(im&&im.style.display==="flex"){im.style.display="none";return;}var ap=document.getElementById("adminPanel");if(ap&&ap.style.display!=="none"){ap.style.display="none";return;}var sl=document.getElementById("scanLoginModal");if(sl&&sl.style.display==="flex"){sl.style.display="none";return;}var mn=document.getElementById("modalNotebooks");if(mn&&mn.style.display==="flex"){mn.style.display="none";return;}}});
 document.addEventListener("DOMContentLoaded",function(){
     initLoginSession();
     renderPatients();
