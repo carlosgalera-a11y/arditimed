@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TriajeSalud · Plataforma Médica Digital para Hospitales</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#1a6b4a;--gd:#0f4a32;--gl:#e8f5e9;--b:#0d47a1;--bd:#08306b;--bl:#e3f2fd;--r:#c62828;--text:#1e293b;--muted:#64748b;--bg:#f8fafc;--card:#fff;--border:#e2e8f0;--font:'Inter',system-ui,sans-serif;--radius:16px}
+body{font-family:var(--font);background:var(--bg);color:var(--text)}
+a{text-decoration:none;color:inherit}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:8px}
+.nav-logo span{font-size:1.4rem}
+.nav-logo h1{font-size:1rem;font-weight:800;color:var(--g)}
+.nav-logo h1 b{color:var(--b)}
+.nav-links{display:flex;gap:8px}
+.nav-btn{padding:8px 16px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:.2s}
+.nav-btn-outline{background:none;color:var(--g);border:1.5px solid var(--g)}
+.nav-btn-solid{background:var(--g);color:#fff}
+.nav-btn:hover{opacity:.85;transform:translateY(-1px)}
+
+/* Hero */
+.hero{padding:80px 24px 60px;text-align:center;background:linear-gradient(160deg,#f0fdf4 0%,#e0f2fe 50%,#f0fdf4 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:500px;height:500px;background:radial-gradient(circle,rgba(26,107,74,.06),transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#fff;border:1px solid var(--border);border-radius:20px;font-size:.72rem;font-weight:700;color:var(--g);margin-bottom:16px;letter-spacing:.5px;text-transform:uppercase}
+.hero h2{font-size:2.6rem;font-weight:900;line-height:1.1;letter-spacing:-.04em;max-width:700px;margin:0 auto 16px}
+.hero h2 span{background:linear-gradient(135deg,var(--g),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.1rem;color:var(--muted);max-width:540px;margin:0 auto 28px;line-height:1.6}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{padding:14px 28px;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;border:none;font-family:var(--font);transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.btn-green{background:var(--g);color:#fff}
+.btn-white{background:#fff;color:var(--text);border:1.5px solid var(--border)}
+.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:40px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:2rem;font-weight:900;color:var(--g)}
+.stat-label{font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+/* Sections */
+section{padding:60px 24px}
+.section-title{text-align:center;margin-bottom:40px}
+.section-title h3{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.section-title p{font-size:1rem;color:var(--muted);max-width:500px;margin:0 auto}
+
+/* Modules grid */
+.modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:1000px;margin:0 auto}
+.mod{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:.25s;position:relative;overflow:hidden}
+.mod:hover{box-shadow:0 12px 40px rgba(0,0,0,.06);transform:translateY(-3px)}
+.mod-icon{font-size:2rem;margin-bottom:12px}
+.mod h4{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+.mod p{font-size:.82rem;color:var(--muted);line-height:1.5}
+.mod-tag{position:absolute;top:12px;right:12px;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+.mod-tag-free{background:var(--gl);color:var(--g)}
+.mod-tag-pro{background:var(--bl);color:var(--b)}
+.mod-tag-new{background:#fef2f2;color:var(--r)}
+
+/* Pricing */
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:900px;margin:0 auto}
+.price-card{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:28px;text-align:center;transition:.2s}
+.price-card.featured{border-color:var(--g);box-shadow:0 8px 30px rgba(26,107,74,.12)}
+.price-name{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.price-amount{font-size:2.4rem;font-weight:900;color:var(--text);margin-bottom:4px}
+.price-amount small{font-size:.9rem;font-weight:500;color:var(--muted)}
+.price-desc{font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.price-features{text-align:left;margin-bottom:20px}
+.price-feat{padding:6px 0;font-size:.82rem;color:var(--text);display:flex;align-items:flex-start;gap:8px}
+.price-feat::before{content:'✓';color:var(--g);font-weight:800;flex-shrink:0}
+.price-btn{display:block;width:100%;padding:12px;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;border:none;font-family:var(--font);transition:.2s}
+
+/* Security */
+.security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;max-width:800px;margin:0 auto}
+.sec-item{padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center}
+.sec-item span{font-size:1.5rem;display:block;margin-bottom:6px}
+.sec-item h5{font-size:.82rem;font-weight:700;margin-bottom:2px}
+.sec-item p{font-size:.7rem;color:var(--muted)}
+
+/* Footer */
+footer{padding:40px 24px;border-top:1px solid var(--border);text-align:center;background:var(--card)}
+footer p{font-size:.75rem;color:var(--muted)}
+footer a{color:var(--g)}
+
+@media(max-width:600px){
+    .hero h2{font-size:1.8rem}
+    .hero-stats{gap:20px}
+    .stat-num{font-size:1.5rem}
+    section{padding:40px 16px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-logo"><span>🏥</span><h1>TriajeSalud <b>AI</b></h1></div>
+    <div class="nav-links">
+        <a href="index.html" class="nav-btn nav-btn-outline">Ver Demo</a>
+        <a href="mailto:cartagenaeste.docencia@gmail.com" class="nav-btn nav-btn-solid">Contactar</a>
+    </div>
+</nav>
+
+<div class="hero">
+    <div class="hero-badge">🛡️ Servicio Murciano de Salud · Área II Cartagena</div>
+    <h2>La plataforma médica digital <span>que tu hospital necesita</span></h2>
+    <p>Autotriaje con IA por voz, protocolos clínicos, calculadoras, enfermería y docencia. Todo en una sola webapp. Sin instalación.</p>
+    <div class="hero-btns">
+        <a href="index.html" class="btn btn-green">🚀 Ver Demo en Vivo</a>
+        <a href="triaje-ai.html" class="btn btn-white">🩺 Probar Autotriaje IA</a>
+    </div>
+    <div class="hero-stats">
+        <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Módulos</div></div>
+        <div class="stat"><div class="stat-num">157</div><div class="stat-label">Protocolos</div></div>
+        <div class="stat"><div class="stat-num">11</div><div class="stat-label">Idiomas</div></div>
+        <div class="stat"><div class="stat-num">0€</div><div class="stat-label">Infra actual</div></div>
+    </div>
+</div>
+
+<section>
+    <div class="section-title">
+        <h3>Módulos incluidos</h3>
+        <p>Cada módulo funciona de forma independiente o integrado en la plataforma.</p>
+    </div>
+    <div class="modules">
+        <div class="mod"><span class="mod-tag mod-tag-new">NUEVO</span><div class="mod-icon">🎙️</div><h4>Autotriaje IA por Voz</h4><p>Triaje SET conversacional en 11 idiomas. Reconocimiento de voz. FarmaCribado. Código QR para admisión.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-pro">PRO</span><div class="mod-icon">📋</div><h4>77 Protocolos Urgencias</h4><p>Trípticos, guías SEMFyC, protocolos hospitalarios. Integrados con IA para consultas rápidas.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-pro">PRO</span><div class="mod-icon">🦠</div><h4>Guía Antibióticos SMS 2025</h4><p>299 páginas del Hospital Santa Lucía. Índice por síndrome con enlace directo.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-pro">PRO</span><div class="mod-icon">🧮</div><h4>10 Calculadoras Médicas</h4><p>Glasgow, CURB-65, Wells TEP, CHA₂DS₂-VASc, qSOFA, dosis pediátricas, quemaduras, IMC, ClCr, goteo IV.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-pro">PRO</span><div class="mod-icon">👩‍⚕️</div><h4>Enfermería Completa</h4><p>70+ documentos: vacunación, técnicas, escalas, protocolos de enfermería comunitaria.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-free">GRATIS</span><div class="mod-icon">👤</div><h4>Portal Pacientes</h4><p>Dietas, ejercicios, vacunas, citas, chatbot de medicación, info multiidioma en 7 lenguas.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-pro">PRO</span><div class="mod-icon">📖</div><h4>Cuaderno IA Docente</h4><p>Resúmenes por especialidad, preguntas a la IA, notas clínicas, blog publisher.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-new">NUEVO</span><div class="mod-icon">🧠</div><h4>Casos Clínicos</h4><p>10+ casos interactivos por especialidad con puntuación y explicaciones detalladas.</p></div>
+        <div class="mod"><span class="mod-tag mod-tag-pro">PRO</span><div class="mod-icon">📄</div><h4>Plantillas Informes</h4><p>8 tipos: alta, derivación, IT, seguimiento, urgencia, enfermería, certificado. Generación con IA.</p></div>
+        <div class="mod"><div class="mod-icon">🗺️</div><h4>Mapa + Farmacias 24h</h4><p>Hospitales, centros de salud, farmacias 24h de la Región de Murcia con GPS.</p></div>
+        <div class="mod"><div class="mod-icon">📱</div><h4>QR Paciente</h4><p>Generador de QR con instrucciones para pacientes: dieta, medicación, cita, ejercicios.</p></div>
+        <div class="mod"><div class="mod-icon">📊</div><h4>Dashboard</h4><p>Estadísticas de uso, historial de consultas IA, actividad semanal.</p></div>
+    </div>
+</section>
+
+<section style="background:linear-gradient(160deg,#f0fdf4,#e8f5e9);">
+    <div class="section-title">
+        <h3>Planes y precios</h3>
+        <p>Flexible: desde gratuito hasta plataforma completa para hospitales.</p>
+    </div>
+    <div class="pricing">
+        <div class="price-card">
+            <div class="price-name">Pacientes</div>
+            <div class="price-amount">Gratis</div>
+            <div class="price-desc">Portal público para ciudadanos</div>
+            <div class="price-features">
+                <div class="price-feat">Autotriaje con IA y voz</div>
+                <div class="price-feat">Chatbot de medicación</div>
+                <div class="price-feat">Info multiidioma (7 lenguas)</div>
+                <div class="price-feat">Mapa + Farmacias 24h</div>
+                <div class="price-feat">Dietas, ejercicios, vacunas</div>
+            </div>
+            <a href="pacientes.html" class="price-btn" style="background:var(--gl);color:var(--g);">Ver portal pacientes</a>
+        </div>
+        <div class="price-card featured">
+            <div class="price-name">Hospital / Área</div>
+            <div class="price-amount">Consultar <small>/año</small></div>
+            <div class="price-desc">Plataforma completa personalizada</div>
+            <div class="price-features">
+                <div class="price-feat">Todo del plan Pacientes</div>
+                <div class="price-feat">157 protocolos clínicos</div>
+                <div class="price-feat">Guía antibióticos del centro</div>
+                <div class="price-feat">10 calculadoras médicas</div>
+                <div class="price-feat">Enfermería completa (70+ docs)</div>
+                <div class="price-feat">Cuaderno IA docente</div>
+                <div class="price-feat">Plantillas de informes + IA</div>
+                <div class="price-feat">Personalización: logo, teléfonos, protocolos</div>
+                <div class="price-feat">Formación del personal</div>
+                <div class="price-feat">Soporte técnico 12 meses</div>
+            </div>
+            <a href="mailto:cartagenaeste.docencia@gmail.com?subject=Solicitud%20de%20información%20TriajeSalud%20AI" class="price-btn" style="background:var(--g);color:#fff;">Solicitar información</a>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="section-title">
+        <h3>Seguridad y cumplimiento</h3>
+        <p>Diseñado con los estándares del sector sanitario español.</p>
+    </div>
+    <div class="security-grid">
+        <div class="sec-item"><span>🔒</span><h5>HTTPS</h5><p>Cifrado en tránsito</p></div>
+        <div class="sec-item"><span>📱</span><h5>Datos locales</h5><p>Procesado en dispositivo</p></div>
+        <div class="sec-item"><span>⚖️</span><h5>Ley 41/2002</h5><p>Autonomía del paciente</p></div>
+        <div class="sec-item"><span>🇪🇺</span><h5>RGPD</h5><p>Protección de datos UE</p></div>
+        <div class="sec-item"><span>🤖</span><h5>EU AI Act</h5><p>Reglamento IA 2024/1689</p></div>
+        <div class="sec-item"><span>🛡️</span><h5>OWASP</h5><p>Auditoría Top 10 pasada</p></div>
+        <div class="sec-item"><span>🔐</span><h5>Firebase Auth</h5><p>Google OAuth profesional</p></div>
+        <div class="sec-item"><span>📋</span><h5>PWA</h5><p>Instalable sin app store</p></div>
+    </div>
+</section>
+
+<section style="background:var(--card);text-align:center;padding:60px 24px;">
+    <h3 style="font-size:1.6rem;font-weight:800;margin-bottom:8px;">¿Quieres verlo en acción?</h3>
+    <p style="color:var(--muted);margin-bottom:24px;font-size:.95rem;">Prueba la demo completa ahora mismo. Sin registro, sin instalar nada.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="index.html" class="btn btn-green">🚀 Abrir Demo Completa</a>
+        <a href="triaje-ai.html" class="btn btn-white">🩺 Probar Autotriaje</a>
+        <a href="mailto:cartagenaeste.docencia@gmail.com?subject=Demo%20TriajeSalud" class="btn btn-white">📧 Contactar</a>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 TriajeSalud AI · Área II Cartagena · Hospital Santa Lucía · Servicio Murciano de Salud</p>
+    <p style="margin-top:4px;"><a href="index.html">Demo</a> · <a href="privacidad.html">Privacidad</a> · <a href="mailto:cartagenaeste.docencia@gmail.com">Contacto</a></p>
+</footer>
+
+</body>
+</html>
