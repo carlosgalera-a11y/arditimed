@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>TriajeSalud AI | Área II Cartagena</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--blue:#023E8A;--blue-l:#e3f2fd;--red:#dc2626;--orange:#ea580c;--yellow:#ca8a04;--green:#16a34a;--emerald:#059669;--slate:#64748b;--bg:#f8fafc;--card:#fff;--r:1.5rem;--font:'Inter',system-ui,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:#0f172a;min-height:100vh}
+.header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid #e2e8f0;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;max-width:100%}
+.logo{display:flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none}
+.logo-icon{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem}
+.logo-text{font-weight:800;font-size:1.05rem;color:var(--blue)}
+.logo-text span{color:#2563eb}
+.badge-secure{display:flex;align-items:center;gap:5px;padding:4px 10px;background:#ecfdf5;color:#047857;border-radius:20px;font-size:.7rem;font-weight:700;border:1px solid #a7f3d0}
+main{max-width:860px;margin:0 auto;padding:24px 16px 60px}
+.view{display:none;animation:fadeIn .3s}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* Home */
+.home-title{text-align:center;margin-bottom:32px}
+.home-title h1{font-size:2rem;font-weight:800;color:#0c4a6e;line-height:1.15;margin-bottom:8px}
+.home-title h1 span{color:var(--blue)}
+.home-title p{font-size:1rem;color:var(--slate);line-height:1.6;max-width:520px;margin:0 auto}
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.cards-grid{grid-template-columns:1fr}}
+.card{position:relative;padding:28px 24px;background:var(--card);border-radius:var(--r);border:1px solid #e2e8f0;cursor:pointer;text-align:left;overflow:hidden;transition:all .25s;font-family:var(--font)}
+.card:hover{box-shadow:0 12px 40px rgba(0,0,0,.08);transform:translateY(-3px)}
+.card-full{grid-column:1/-1}
+.card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;margin-bottom:14px}
+.card h3{font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:4px}
+.card p{font-size:.88rem;color:var(--slate);line-height:1.5}
+.card-link{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;margin-top:12px}
+.warn-box{display:flex;gap:12px;padding:16px;background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);margin-top:24px;align-items:flex-start;max-width:640px;margin-left:auto;margin-right:auto}
+.warn-box p{font-size:.78rem;color:#78350f;line-height:1.5}
+/* Back button */
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 0;color:var(--slate);font-size:.85rem;font-weight:500;cursor:pointer;border:none;background:none;margin-bottom:16px;font-family:var(--font)}
+.back-btn:hover{color:#0f172a}
+/* Manual triage */
+.triage-box{background:var(--card);border-radius:var(--r);border:1px solid #e2e8f0;overflow:hidden}
+.triage-header{padding:18px 24px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center}
+.triage-header h2{font-size:1.15rem;font-weight:600}
+.step-badge{font-size:.7rem;font-weight:700;color:#2563eb;background:#eff6ff;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.triage-body{padding:24px}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:420px;overflow-y:auto}
+@media(max-width:500px){.cat-grid{grid-template-columns:1fr}}
+.cat-btn{padding:12px 14px;border:2px solid #e2e8f0;border-radius:14px;cursor:pointer;text-align:left;font-size:.88rem;font-weight:500;background:var(--card);transition:all .2s;font-family:var(--font);color:#334155;display:flex;align-items:center;justify-content:space-between}
+.cat-btn:hover{border-color:#93c5fd;background:#f8fafc}
+.cat-btn.sel{background:#2563eb;border-color:#2563eb;color:#fff}
+.pain-slider{width:100%;height:10px;border-radius:8px;appearance:none;background:#e2e8f0;cursor:pointer;accent-color:#2563eb;margin:16px 0}
+.triage-footer{padding:18px 24px;background:#f8fafc;border-top:1px solid #f1f5f9;display:flex;gap:10px}
+.btn{padding:12px 20px;border-radius:14px;font-weight:600;cursor:pointer;font-family:var(--font);font-size:.88rem;border:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;flex:1}
+.btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#1d4ed8}
+.btn-primary:disabled{background:#cbd5e1;cursor:not-allowed}
+.btn-secondary{background:var(--card);color:#475569;border:1px solid #e2e8f0}.btn-secondary:hover{background:#f8fafc}
+.btn-danger{background:#dc2626;color:#fff;font-size:1rem}.btn-danger:hover{background:#b91c1c}
+.btn-emerald{background:#059669;color:#fff}.btn-emerald:hover{background:#047857}
+/* Disc questions */
+.disc-q{padding:12px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:.85rem;color:#7f1d1d}
+.disc-q span{font-size:1rem}
+/* Result */
+.result-card{border-radius:var(--r);overflow:hidden;background:var(--card);border:1px solid rgba(0,0,0,.05);box-shadow:0 10px 40px rgba(0,0,0,.08)}
+.result-header{padding:32px;text-align:center;color:#fff}
+.result-header h2{font-size:1.6rem;font-weight:800;margin-top:10px}
+.result-header p{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;opacity:.7;margin-top:4px}
+.result-body{padding:24px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:500px){.result-grid{grid-template-columns:1fr}}
+.result-stat{padding:16px;background:#f8fafc;border-radius:14px;border:1px solid #f1f5f9}
+.result-stat .label{font-size:.65rem;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.result-stat .value{font-size:1.15rem;font-weight:700;color:#0f172a}
+.result-reason{padding:16px;background:#f8fafc;border-radius:14px;border:1px solid #f1f5f9;font-style:italic;color:#475569;line-height:1.6;font-size:.88rem;margin-bottom:20px}
+.qr-section{text-align:center;padding:20px;background:#f8fafc;border-radius:var(--r);border:1px solid #f1f5f9;margin-bottom:20px}
+.qr-section canvas{border:6px solid var(--card);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.qr-section p{font-size:.65rem;color:var(--slate);margin-top:8px}
+/* Voice */
+.voice-box{text-align:center;padding:32px 24px;background:var(--card);border-radius:var(--r);border:1px solid #e2e8f0}
+.mic-btn{width:100px;height:100px;border-radius:50%;border:none;cursor:pointer;font-size:2.4rem;transition:all .3s;display:flex;align-items:center;justify-content:center;margin:20px auto}
+.mic-btn.off{background:#2563eb;color:#fff;box-shadow:0 8px 30px rgba(37,99,235,.3)}
+.mic-btn.off:hover{background:#1d4ed8;transform:scale(1.05)}
+.mic-btn.on{background:#fef2f2;color:#dc2626;border:3px solid #fecaca;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.3)}50%{box-shadow:0 0 0 16px rgba(220,38,38,0)}}
+.chat-box{background:#f8fafc;border:1px solid #f1f5f9;border-radius:14px;padding:12px;min-height:140px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;justify-content:flex-end;margin-top:16px;text-align:left}
+.chat-msg{font-size:.85rem;padding:8px 12px;border-radius:12px;max-width:85%;line-height:1.5}
+.chat-user{background:#dbeafe;color:#1e3a8a;align-self:flex-end;border-top-right-radius:4px}
+.chat-bot{background:var(--card);color:#334155;align-self:flex-start;border-top-left-radius:4px;border:1px solid #e2e8f0}
+.voice-input{display:flex;gap:8px;margin-top:12px}
+.voice-input input{flex:1;padding:10px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:.88rem;font-family:var(--font)}
+.voice-input input:focus{outline:none;border-color:#2563eb}
+.voice-input button{padding:10px 16px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:var(--font)}
+.quick-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;justify-content:center}
+.quick-btn{padding:5px 10px;border:1px solid #e2e8f0;border-radius:20px;font-size:.72rem;cursor:pointer;background:var(--card);font-family:var(--font);color:#475569}
+.quick-btn:hover{background:#f1f5f9;border-color:#93c5fd}
+.lang-sel{padding:8px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:.82rem;font-family:var(--font);margin-bottom:12px}
+/* Footer */
+footer{padding:32px 24px;border-top:1px solid #e2e8f0;background:var(--card);text-align:center;margin-top:40px}
+footer p{font-size:.72rem;color:var(--slate)}
+</style>
+</head>
+<body>
+<div class="header">
+    <a class="logo" onclick="goHome()">
+        <div class="logo-icon">❤️</div>
+        <div class="logo-text">TriajeSalud <span>AI</span></div>
+    </a>
+    <div style="display:flex;gap:12px;align-items:center;">
+        <a href="index.html" style="font-size:.82rem;color:var(--slate);text-decoration:none;font-weight:500;">← Área II</a>
+        <div class="badge-secure">🛡️ SISTEMA SEGURO</div>
+    </div>
+</div>
+
+<main>
+    <!-- HOME -->
+    <div class="view active" id="vHome">
+        <div class="home-title">
+            <h1>Autotriaje Digital<br><span>Inteligente y Multiidioma</span></h1>
+            <p>Sistema basado en el SET del Servicio Murciano de Salud. Evaluación inmediata mediante IA conversacional, cribado farmacéutico o cuestionario clínico.</p>
+        </div>
+        <div class="cards-grid">
+            <div class="card" onclick="startVoice('set')">
+                <div class="card-icon" style="background:#2563eb;">🎙️</div>
+                <h3>Triaje por Voz SET</h3>
+                <p>Hable en cualquier idioma. La IA analizará sus síntomas según el protocolo SET.</p>
+                <div class="card-link" style="color:#2563eb;">Comenzar triaje IA →</div>
+            </div>
+            <div class="card" onclick="startVoice('farma')">
+                <div class="card-icon" style="background:var(--emerald);">💊</div>
+                <h3>FarmaCribado Voz</h3>
+                <p>Cribado farmacéutico por voz. ¿Farmacia, teleconsulta o urgencias?</p>
+                <div class="card-link" style="color:var(--emerald);">Iniciar cribado IA →</div>
+            </div>
+            <div class="card card-full" onclick="startManual()">
+                <div style="display:flex;align-items:center;gap:16px;">
+                    <div class="card-icon" style="background:#0f172a;flex-shrink:0;">📋</div>
+                    <div style="flex:1;">
+                        <h3>Cuestionario Manual SET</h3>
+                        <p>19 motivos de consulta con discriminadores clínicos y escala de dolor.</p>
+                    </div>
+                    <div class="card-link" style="color:#0f172a;white-space:nowrap;">Iniciar →</div>
+                </div>
+            </div>
+        </div>
+        <div class="warn-box">
+            <span style="font-size:1.2rem;flex-shrink:0;">⚠️</span>
+            <div>
+                <p><strong style="color:#92400e;">Aviso Importante</strong></p>
+                <p>Esta herramienta es orientativa y NO sustituye la valoración de un profesional sanitario. Ante emergencia vital, llame al <strong>112</strong>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUAL TRIAGE -->
+    <div class="view" id="vManual">
+        <button class="back-btn" onclick="goHome()">← Volver al inicio</button>
+        <div class="triage-box">
+            <div class="triage-header"><h2>Triaje Manual SET</h2><span class="step-badge" id="manualStep">Paso 1 de 3</span></div>
+            <div class="triage-body" id="manualBody"></div>
+            <div class="triage-footer" id="manualFooter"></div>
+        </div>
+    </div>
+
+    <!-- VOICE TRIAGE -->
+    <div class="view" id="vVoice">
+        <button class="back-btn" onclick="goHome()">← Volver al inicio</button>
+        <div class="voice-box">
+            <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:4px;" id="voiceTitle">Triaje por Voz SET</h2>
+            <p style="font-size:.85rem;color:var(--slate);margin-bottom:8px;">Hable con nuestra IA en cualquier idioma para evaluar su urgencia.</p>
+            <select class="lang-sel" id="voiceLang">
+                <option value="es-ES">🇪🇸 Español</option><option value="en-US">🇬🇧 English</option><option value="fr-FR">🇫🇷 Français</option>
+                <option value="ar-SA">🇸🇦 العربية</option><option value="de-DE">🇩🇪 Deutsch</option><option value="zh-CN">🇨🇳 中文</option>
+                <option value="ro-RO">🇷🇴 Română</option><option value="uk-UA">🇺🇦 Українська</option><option value="ru-RU">🇷🇺 Русский</option>
+                <option value="pt-BR">🇵🇹 Português</option><option value="it-IT">🇮🇹 Italiano</option>
+            </select>
+            <button class="mic-btn off" id="micBtn" onclick="toggleMic()">🎙️</button>
+            <p style="font-size:.78rem;color:var(--slate);margin-top:4px;" id="micStatus">Pulse el micrófono para empezar</p>
+            <div class="chat-box" id="voiceChat">
+                <div class="chat-msg chat-bot">¡Hola! Soy el asistente de triaje. <strong>Describa sus síntomas</strong> y le haré preguntas para orientarle.</div>
+            </div>
+            <div class="voice-input">
+                <input type="text" id="voiceInput" placeholder="O escriba sus síntomas..." onkeydown="if(event.key==='Enter')sendVoiceText()">
+                <button onclick="sendVoiceText()">Enviar</button>
+            </div>
+            <div class="quick-btns">
+                <button class="quick-btn" onclick="voiceQuick('Tengo dolor en el pecho desde hace 2 horas')">💬 Dolor pecho</button>
+                <button class="quick-btn" onclick="voiceQuick('Mi hijo tiene fiebre de 39 grados')">💬 Fiebre niño</button>
+                <button class="quick-btn" onclick="voiceQuick('Me he caído y me duele mucho la muñeca')">💬 Caída</button>
+                <button class="quick-btn" onclick="voiceQuick('Tengo mucha dificultad para respirar')">💬 Disnea</button>
+                <button class="quick-btn" onclick="voiceQuick('Me pica mucho la piel y tengo ronchas')">💬 Alergia</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="view" id="vResult"></div>
+</main>
+
+<footer>
+    <p>© 2026 TriajeSalud AI · Área II Cartagena — Servicio Murciano de Salud</p>
+    <p style="margin-top:4px;">Sistema basado en el SET. No sustituye valoración médica profesional.</p>
+</footer>
+
+<script>
+/* ═══ CONSTANTS (from constants.ts) ═══ */
+var LEVELS={
+    1:{name:'Nivel 1: Resucitación',color:'#dc2626',bg:'#fef2f2',wait:'Inmediato',action:'¡LLAME AL 112 INMEDIATAMENTE!',desc:'Riesgo vital inmediato.'},
+    2:{name:'Nivel 2: Emergencia',color:'#ea580c',bg:'#fff7ed',wait:'10 minutos',action:'Acuda a urgencias hospitalarias de inmediato.',desc:'Riesgo potencial o dolor extremo.'},
+    3:{name:'Nivel 3: Urgente',color:'#ca8a04',bg:'#fefce8',wait:'60 minutos',action:'Acuda a un servicio de urgencias.',desc:'Requiere exploraciones diagnósticas.'},
+    4:{name:'Nivel 4: Menos Urgente',color:'#2563eb',bg:'#eff6ff',wait:'120 minutos',action:'Puede acudir a su centro de salud o SUAP.',desc:'Menor complejidad o riesgo.'},
+    5:{name:'Nivel 5: No Urgente',color:'#059669',bg:'#ecfdf5',wait:'240 minutos',action:'Pida cita con su médico de cabecera.',desc:'Problemas no urgentes o administrativos.'}
+};
+
+var CATS=[
+    {id:'dolor_toracico',es:'Dolor torácico',pri:2},{id:'disnea',es:'Dificultad respiratoria',pri:2},
+    {id:'dolor_abdominal',es:'Dolor abdominal',pri:3},{id:'cefalea',es:'Dolor de cabeza',pri:3},
+    {id:'fiebre',es:'Fiebre',pri:4},{id:'traumatismo_ext',es:'Traumatismo extremidades',pri:4},
+    {id:'dolor_lumbar',es:'Dolor de espalda',pri:5},{id:'mareo_vertigo',es:'Mareo / Vértigo',pri:3},
+    {id:'odinofagia',es:'Dolor de garganta',pri:5},{id:'disuria',es:'Molestias al orinar',pri:5},
+    {id:'erupcion_cutanea',es:'Problemas en la piel',pri:5},{id:'vomitos',es:'Náuseas / Vómitos',pri:4},
+    {id:'ojo_rojo',es:'Problema ocular',pri:5},{id:'ansiedad',es:'Ansiedad / Crisis',pri:4},
+    {id:'herida',es:'Herida / Corte',pri:4},{id:'sincope',es:'Desmayo',pri:2},
+    {id:'palpitaciones',es:'Palpitaciones',pri:3},{id:'tos',es:'Tos persistente',pri:5},
+    {id:'otros',es:'Otro motivo',pri:5}
+];
+
+var DISC={
+    dolor_toracico:['¿Dolor opresivo que irradia a brazo/mandíbula?','¿Sudoración fría o sensación de muerte?','¿Aparición súbita (minutos)?','¿Antecedentes cardíacos?'],
+    disnea:['¿Labios/dedos azulados?','¿No puede hablar frases completas?','¿Aparición brusca?','¿Sibilancias intensas?'],
+    dolor_abdominal:['¿Abdomen en tabla (muy duro)?','¿Vómitos con sangre o heces negras?','¿Dolor insoportable que no cede?','¿Embarazo conocido o posible?'],
+    cefalea:['¿Peor dolor de cabeza de su vida, súbito?','¿Rigidez de nuca o fiebre alta?','¿Confusión o dificultad para hablar?','¿Pérdida de fuerza en un lado?'],
+    fiebre:['¿Manchas rojas que no desaparecen al presionar?','¿Confusión o desorientación?','¿Dificultad para respirar?','¿Rigidez de nuca?'],
+    sincope:['¿Pérdida de conciencia prolongada?','¿Dolor torácico previo al desmayo?','¿Palpitaciones antes del episodio?','¿Antecedentes cardíacos?']
+};
+
+/* ═══ NAVIGATION ═══ */
+function showView(id){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function goHome(){showView('vHome');}
+
+/* ═══ MANUAL TRIAGE (from ManualTriage.tsx) ═══ */
+var mStep=1,mCat=null,mPain=0,mDiscYes=0;
+
+function startManual(){mStep=1;mCat=null;mPain=0;mDiscYes=0;renderManual();showView('vManual');}
+
+function renderManual(){
+    var body=document.getElementById('manualBody');
+    var footer=document.getElementById('manualFooter');
+    document.getElementById('manualStep').textContent='Paso '+mStep+' de 3';
+
+    if(mStep===1){
+        var h='<div style="display:flex;gap:8px;padding:12px;background:#eff6ff;border-radius:14px;margin-bottom:14px;font-size:.85rem;color:#1e40af;align-items:flex-start;"><span style="flex-shrink:0;">ℹ️</span>Seleccione el motivo de consulta que mejor describa su problema principal.</div>';
+        h+='<div class="cat-grid">';
+        CATS.forEach(function(c){
+            h+='<button class="cat-btn'+(mCat===c.id?' sel':'')+'" onclick="mCat=\''+c.id+'\';renderManual()">'+c.es+(mCat===c.id?' ✓':'')+'</button>';
+        });
+        h+='</div>';
+        body.innerHTML=h;
+        footer.innerHTML='<button class="btn btn-primary" onclick="mStep=2;renderManual()"'+(mCat?'':' disabled')+'>Siguiente →</button>';
+    } else if(mStep===2){
+        var disc=DISC[mCat]||[];
+        var h='<h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;">🚨 Señales de alarma — ¿Tiene alguna de estas?</h3>';
+        if(disc.length>0){
+            disc.forEach(function(d){h+='<div class="disc-q"><span>⚠️</span>'+d+'</div>';});
+            h+='<div style="display:flex;gap:10px;margin-top:16px;">';
+            h+='<button class="btn btn-danger" style="flex:1;" onclick="mDiscYes=1;mStep=3;renderManual()">🚨 SÍ, tengo alguna</button>';
+            h+='<button class="btn btn-secondary" style="flex:1;" onclick="mDiscYes=0;mStep=3;renderManual()">✅ NO, ninguna</button>';
+            h+='</div>';
+        } else {
+            h+='<p style="color:var(--slate);font-size:.88rem;margin-bottom:16px;">No hay discriminadores específicos para este motivo. Pase a la escala de dolor.</p>';
+            h+='<button class="btn btn-primary" onclick="mStep=3;renderManual()">Siguiente →</button>';
+        }
+        body.innerHTML=h;
+        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=1;renderManual()">← Atrás</button>';
+    } else if(mStep===3){
+        var h='<div style="text-align:center;margin-bottom:16px;"><h3 style="font-size:1.05rem;">¿Cuál es su nivel de dolor?</h3><p style="font-size:.82rem;color:var(--slate);">0 = sin dolor, 10 = insoportable</p></div>';
+        h+='<div style="display:flex;justify-content:space-between;font-size:1.4rem;font-weight:800;padding:0 8px;"><span style="color:'+(mPain===0?'#0f172a':'#cbd5e1')+'">0</span><span style="color:#2563eb;font-size:2rem;">'+mPain+'</span><span style="color:'+(mPain===10?'#dc2626':'#cbd5e1')+'">10</span></div>';
+        h+='<input type="range" class="pain-slider" min="0" max="10" value="'+mPain+'" oninput="mPain=+this.value;document.getElementById(\'painVal\').textContent=this.value">';
+        h+='<div style="display:flex;justify-content:space-between;font-size:.65rem;text-transform:uppercase;font-weight:700;color:var(--slate);letter-spacing:1px;"><span>Sin dolor</span><span>Moderado</span><span>Insoportable</span></div>';
+        h+='<div id="painVal" style="display:none;"></div>';
+        if(mCat==='dolor_toracico'||mCat==='disnea'){
+            h+='<div style="display:flex;gap:8px;padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:14px;margin-top:16px;font-size:.78rem;color:#991b1b;align-items:flex-start;"><span>⚠️</span>Si siente dolor opresivo en el pecho irradiado al brazo o mandíbula, llame al 112 ahora.</div>';
+        }
+        body.innerHTML=h;
+        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=2;renderManual()">← Atrás</button><button class="btn btn-primary" style="flex:2;" onclick="calcManualResult()">Finalizar Triaje →</button>';
+    }
+}
+
+function calcManualResult(){
+    var cat=CATS.find(function(c){return c.id===mCat});
+    var level=cat?cat.pri:4;
+    var reason='Motivo: '+(cat?cat.es:'Desconocido')+'. Dolor: '+mPain+'/10.';
+
+    if(mDiscYes){level=Math.min(level,2);reason+=' Discriminador de alarma positivo.';}
+    if(mPain>=9){level=Math.min(level,2);reason+=' Dolor extremo.';}
+    else if(mPain>=7){level=Math.min(level,3);reason+=' Dolor severo.';}
+
+    showResult(level,reason,'SET Manual');
+}
+
+/* ═══ VOICE TRIAGE (from VoiceTriage.tsx) ═══ */
+var voiceMode='set',voiceHistory=[],voiceListening=false,voiceRec=null;
+
+function startVoice(mode){
+    voiceMode=mode;voiceHistory=[];
+    document.getElementById('voiceTitle').textContent=mode==='set'?'Triaje por Voz SET':'FarmaCribado por Voz';
+    document.getElementById('voiceChat').innerHTML='<div class="chat-msg chat-bot">'+(mode==='set'?'¡Hola! Describa sus síntomas y le orientaré según el protocolo SET.':'¡Hola! Describa sus síntomas. Determinaré si puede ir a la farmacia, necesita teleconsulta o urgencias.')+'</div>';
+    showView('vVoice');
+}
+
+function voiceAddMsg(who,text){
+    var chat=document.getElementById('voiceChat');
+    var div=document.createElement('div');
+    div.className='chat-msg '+(who==='user'?'chat-user':'chat-bot');
+    div.innerHTML=text.replace(/\n/g,'<br>');
+    chat.appendChild(div);
+    chat.scrollTop=chat.scrollHeight;
+}
+
+function voiceQuick(t){document.getElementById('voiceInput').value=t;sendVoiceText();}
+
+function toggleMic(){
+    if(voiceListening){stopMic();return;}
+    if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){alert('Tu navegador no soporta reconocimiento de voz.');return;}
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    voiceRec=new SR();
+    voiceRec.lang=document.getElementById('voiceLang').value;
+    voiceRec.continuous=false;voiceRec.interimResults=false;
+    var btn=document.getElementById('micBtn');
+    btn.className='mic-btn on';btn.innerHTML='⏹️';
+    document.getElementById('micStatus').textContent='Escuchando...';
+    voiceListening=true;
+    voiceRec.onresult=function(e){var t=e.results[0][0].transcript;document.getElementById('voiceInput').value=t;sendVoiceText();};
+    voiceRec.onend=function(){stopMic();};
+    voiceRec.onerror=function(e){stopMic();if(e.error==='not-allowed')alert('Permita el micrófono.');};
+    voiceRec.start();
+}
+
+function stopMic(){
+    voiceListening=false;
+    var btn=document.getElementById('micBtn');
+    btn.className='mic-btn off';btn.innerHTML='🎙️';
+    document.getElementById('micStatus').textContent='Pulse el micrófono para hablar';
+    if(voiceRec){try{voiceRec.stop();}catch(e){}}
+}
+
+async function sendVoiceText(){
+    var input=document.getElementById('voiceInput');
+    var q=input.value.trim();if(!q)return;
+    input.value='';
+    voiceAddMsg('user',q);
+    voiceHistory.push({role:'user',content:q});
+
+    var key='';
+    try{var cfg=JSON.parse(localStorage.getItem('notebook_ai_cfg_v3')||'{}');key=cfg.groqKey||'';}catch(e){}
+    if(!key){try{key=EMBEDDED_GROQ_KEY||'';}catch(e){}}
+    if(!key){voiceAddMsg('bot','⚠️ Configura tu API Key de Groq en <b>Profesionales → Config</b> de la app principal.');return;}
+
+    voiceAddMsg('bot','<span style="color:#94a3b8;">Analizando...</span>');
+
+    var sysPrompt=voiceMode==='set'?
+        'Eres un asistente de triaje médico SET del Área II Cartagena. Evalúa síntomas y clasifica en 5 niveles (1=Resucitación/rojo, 2=Emergencia/naranja, 3=Urgente/amarillo, 4=Menos urgente/verde, 5=No urgente/azul). Haz preguntas cortas UNA a la vez. Tras 3-5 preguntas da resultado con formato: 🚨 NIVEL X — [nombre]. Si detectas emergencia, indica NIVEL 1 y que llamen al 112. Responde en el idioma del paciente. Máx 80 palabras.':
+        'Eres un asistente de FarmaCribado del Área II Cartagena. Determina si el paciente: (a) puede ser tratado en FARMACIA, (b) necesita TELECONSULTA, o (c) debe ir a URGENCIAS. Haz preguntas cortas. Identifica sistema afectado. Busca signos de alarma. Tras 3-5 preguntas da resultado con formato: 💊 NIVEL: [farmacia/teleconsulta/urgencias]. Responde en el idioma del paciente. Máx 80 palabras.';
+
+    try{
+        var msgs=[{role:'system',content:sysPrompt}].concat(voiceHistory.slice(-10));
+        var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+            method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+            body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,max_tokens:300,temperature:0.3})
+        });
+        var data=await r.json();
+        var answer=data.choices[0].message.content;
+        // Remove the "analyzing" message
+        var chat=document.getElementById('voiceChat');
+        if(chat.lastChild)chat.removeChild(chat.lastChild);
+        voiceAddMsg('bot',answer);
+        voiceHistory.push({role:'assistant',content:answer});
+        // Speak response
+        try{var u=new SpeechSynthesisUtterance(answer.replace(/[🚨🔴🟡🟢🔵💊📋📞⚠️*#]/g,''));u.lang=document.getElementById('voiceLang').value;u.rate=0.95;speechSynthesis.speak(u);}catch(e){}
+        // Check if result given
+        var nivelMatch=answer.match(/NIVEL\s*(\d)/i);
+        if(nivelMatch){
+            var lvl=parseInt(nivelMatch[1]);
+            if(lvl>=1&&lvl<=5) setTimeout(function(){showResult(lvl,answer,voiceMode==='set'?'SET Voz IA':'FarmaCribado IA');},2000);
+        }
+    }catch(err){
+        var chat2=document.getElementById('voiceChat');
+        if(chat2.lastChild)chat2.removeChild(chat2.lastChild);
+        voiceAddMsg('bot','❌ Error: '+err.message);
+    }
+}
+
+/* ═══ RESULT (from TriageResult.tsx + FarmaResult.tsx) ═══ */
+function showResult(level,reason,system){
+    var info=LEVELS[level]||LEVELS[4];
+    var h='<div class="result-card">';
+    h+='<div class="result-header" style="background:'+info.color+';">';
+    h+='<div style="display:inline-flex;padding:10px;background:rgba(255,255,255,.2);border-radius:14px;font-size:2rem;">⚠️</div>';
+    h+='<h2>'+info.name+'</h2>';
+    h+='<p>Resultado del Triaje — '+system+'</p>';
+    h+='</div>';
+    h+='<div class="result-body">';
+    h+='<div class="result-grid">';
+    h+='<div class="result-stat"><div class="label">⏱️ Tiempo espera estimado</div><div class="value">'+info.wait+'</div></div>';
+    h+='<div class="result-stat"><div class="label">📍 Recomendación</div><div class="value" style="font-size:1rem;">'+info.action+'</div></div>';
+    h+='</div>';
+
+    // QR Code
+    h+='<div class="qr-section"><div style="font-size:.65rem;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📱 Código QR para Admisión</div>';
+    h+='<canvas id="qrCanvas" width="160" height="160"></canvas>';
+    h+='<p>Muestre este código al personal de triaje.</p></div>';
+
+    h+='<div class="result-reason">"'+reason.replace(/</g,'&lt;')+'"</div>';
+
+    if(level<=2){
+        h+='<a href="tel:112" class="btn btn-danger" style="width:100%;margin-bottom:10px;text-decoration:none;font-size:1.1rem;">📞 Llamar al 112</a>';
+    }
+    h+='<button class="btn btn-secondary" style="width:100%;" onclick="goHome()">🔄 Nuevo Triaje</button>';
+
+    h+='<div style="margin-top:20px;padding:12px;background:#f8fafc;border-radius:14px;border:1px solid #f1f5f9;font-size:.72rem;color:var(--slate);line-height:1.5;">';
+    h+='<strong>AVISO MÉDICO:</strong> Este sistema es orientativo. No sustituye el juicio clínico profesional. Si su vida corre peligro, llame al 112.</div>';
+    h+='</div></div>';
+
+    document.getElementById('vResult').innerHTML=h;
+    showView('vResult');
+
+    // Draw simple QR pattern
+    setTimeout(function(){
+        var c=document.getElementById('qrCanvas');
+        if(!c)return;
+        var ctx=c.getContext('2d');
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,160,160);
+        ctx.fillStyle=info.color;
+        // Simple pattern based on level
+        var data=JSON.stringify({type:'TRIAGE',level:level,system:system,time:new Date().toISOString()});
+        for(var r=0;r<20;r++){for(var col=0;col<20;col++){
+            if((r<4&&col<4)||(r<4&&col>=16)||(r>=16&&col<4)){
+                var inner=(r===0||r===3||col===0||col===3||(r>=1&&r<=2&&col>=1&&col<=2))||(r<4&&col>=16&&(r===0||r===3||col===16||col===19||(r>=1&&r<=2&&col>=17&&col<=18)))||(r>=16&&col<4&&(r===16||r===19||col===0||col===3||(r>=17&&r<=18&&col>=1&&col<=2)));
+                if(inner)ctx.fillRect(col*8,r*8,8,8);
+            } else {
+                var hash=(data.charCodeAt(r%data.length)+data.charCodeAt(col%data.length)+r*col)%3;
+                if(hash===0)ctx.fillRect(col*8,r*8,8,8);
+            }
+        }}
+    },100);
+
+    // Save to history
+    try{
+        var hist=JSON.parse(localStorage.getItem('aiHistory')||'[]');
+        hist.push({question:'Triaje: '+system,answer:'Nivel '+level+': '+reason.substring(0,200),section:'triaje-ai',timestamp:Date.now()});
+        if(hist.length>200)hist=hist.slice(-200);
+        localStorage.setItem('aiHistory',JSON.stringify(hist));
+    }catch(e){}
+}
+</script>
+</body>
+</html>
