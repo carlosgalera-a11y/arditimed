@@ -1856,101 +1856,63 @@
 
 <!-- ═══════ TRIAJE PACIENTES PAGE ═══════ -->
 <div class="page" id="pageTriaje">
-    <nav class="landing-nav" style="background:linear-gradient(135deg,#c0392b,#7b1a12);"><div class="brand"><div class="logo">🩺</div><h1 style="color:#fff;">Autotriaje <span style="color:rgba(255,255,255,.7);">Urgencias</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
+    <nav class="landing-nav" style="background:linear-gradient(135deg,#c0392b,#7b1a12);"><div class="brand"><div class="logo">🩺</div><h1 style="color:#fff;">Autotriaje <span style="color:rgba(255,255,255,.7);">Urgencias</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);">← Inicio</button></div></nav>
     <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:20px 16px;">
         <div style="max-width:680px;margin:0 auto;" id="triajeApp">
-        <!-- Banner de urgencias -->
-        <div style="background:linear-gradient(135deg,#c0392b,#7b1a12);border-radius:14px;padding:22px 20px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;">
-            <div style="position:absolute;top:-10px;right:-10px;font-size:5rem;opacity:.1;pointer-events:none;">🚨</div>
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                <div style="background:rgba(255,255,255,.2);border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🩺</div>
-                <div>
-                    <h2 style="font-size:1.15rem;font-weight:700;margin:0 0 2px;">Autotriaje de Urgencias</h2>
-                    <p style="font-size:.82rem;opacity:.8;margin:0;">Área II Cartagena · Hospital Santa Lucía</p>
-                </div>
-            </div>
-            <p style="font-size:.88rem;opacity:.88;margin:0 0 12px;line-height:1.5;">Responde unas preguntas para saber qué nivel de atención necesitas ahora mismo.</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-                <span style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:.76rem;">⏱ 2 minutos</span>
-                <span style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:.76rem;">🔒 Sin registro</span>
-                <span style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:.76rem;">📱 5 niveles de urgencia</span>
-            </div>
-            <div style="padding:10px 12px;background:rgba(0,0,0,.2);border-radius:8px;font-size:.8rem;line-height:1.5;border-left:3px solid rgba(255,255,255,.5);">⚠️ <b>NO sustituye la valoración médica.</b> Ante emergencia vital, llama siempre al <b>112</b>.</div>
-        </div>
-        <div id="trInicio">
-            <!-- AVISO LEY 41/2002 — debe aceptarse antes de iniciar -->
-            <div id="trAvisoLegal" style="background:#fff3cd;border:2px solid #f59e0b;border-radius:12px;padding:18px;margin-bottom:14px;">
-                <p style="font-size:.92rem;font-weight:700;color:#7c4a03;margin:0 0 10px;">⚖️ Aviso legal obligatorio — Ley 41/2002</p>
-                <p style="font-size:.8rem;color:#7c4a03;line-height:1.55;margin:0 0 10px;">Esta herramienta es un <strong>sistema de orientación informativa</strong> y NO constituye un acto médico, diagnóstico clínico ni prescripción terapéutica. Su uso está regulado por la Ley 41/2002, de 14 de noviembre, básica reguladora de la autonomía del paciente.</p>
-                <ul style="font-size:.78rem;color:#7c4a03;line-height:1.55;margin:0 0 12px;padding-left:16px;">
-                    <li>El resultado es <strong>orientativo</strong> y puede contener errores.</li>
-                    <li>No sustituye la valoración presencial de un profesional sanitario.</li>
-                    <li>Ante cualquier duda, consulte con su médico o enfermera de referencia.</li>
-                    <li>En emergencias vitales, llame siempre al <strong>112</strong> sin esperar el resultado.</li>
-                </ul>
-                <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.8rem;color:#7c4a03;line-height:1.45;margin-bottom:12px;">
-                    <input type="checkbox" id="trAvisoCheck" onchange="document.getElementById('trBotonesPersona').style.display=this.checked?'block':'none'" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#d97706;">
-                    <span><strong>He leído y acepto</strong> que este resultado es orientativo y no sustituye la atención médica profesional.</span>
-                </label>
-                <div id="trBotonesPersona" style="display:none;">
-                    <p style="font-size:.88rem;font-weight:600;color:var(--text);margin:0 0 8px;">¿Para quién es la consulta?</p>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <button onclick="trSetPersona('yo')" class="tr-opcion">👤 Para mí</button>
-                        <button onclick="trSetPersona('otro')" class="tr-opcion">👥 Para otra persona</button>
-                    </div>
-                </div>
-            </div>
-            <div style="background:#fef3e2;border:1px solid #f59e0b;border-radius:10px;padding:12px 14px;font-size:.82rem;color:#7c4a03;line-height:1.5;">🔒 <b>Privacidad:</b> Esta herramienta no guarda ningún dato en ningún servidor. Todo se procesa en tu dispositivo.</div>
-        </div>
-        <div id="trBloqueA" style="display:none;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-                <div style="background:#c0392b;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;">!</div>
-                <div><p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0;">Señales de emergencia</p><p style="font-size:.82rem;color:var(--text-muted);margin:0;">¿Tienes alguno de estos síntomas AHORA MISMO?</p></div>
-            </div>
-            <div id="trAlertasList" style="display:grid;gap:7px;margin-bottom:14px;"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <button onclick="trBloqueARespuesta(false)" style="padding:13px;border:2px solid #1a6b4a;border-radius:10px;background:var(--bg-card);cursor:pointer;font-size:.9rem;font-weight:600;color:#1a6b4a;">✅ No, ninguno</button>
-                <button onclick="trBloqueARespuesta(true)" style="padding:13px;border:2px solid #c0392b;border-radius:10px;background:#fdecea;cursor:pointer;font-size:.9rem;font-weight:600;color:#c0392b;">🚨 Sí, tengo uno</button>
-            </div>
-        </div>
-        <div id="trBloqueB" style="display:none;">
-            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 12px;">¿Qué zona o problema principal te preocupa?</p>
-            <div id="trAreasList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
-        </div>
-        <div id="trBloqueC" style="display:none;">
-            <button onclick="trVolverAreas()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;">← Volver</button>
-            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 12px;" id="trSintomaLabel">¿Cuál es el síntoma principal?</p>
-            <div id="trSintomasList" style="display:grid;gap:7px;"></div>
-        </div>
-        <div id="trBloqueD" style="display:none;">
-            <button onclick="trVolverSintomas()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;">← Volver</button>
-            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 6px;">¿Cómo de intenso es? <span id="trIntensidadVal" style="color:#1a6b4a;font-weight:700;">5</span>/10</p>
-            <input type="range" min="1" max="10" value="5" id="trIntensidad" style="width:100%;margin-bottom:16px;" oninput="document.getElementById('trIntensidadVal').textContent=this.value">
-            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 10px;">¿Cuánto tiempo llevas así?</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="trDuracionList"></div>
-        </div>
-        <div id="trBloqueE" style="display:none;">
-            <p style="font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 8px;">¿Tienes alguna de estas condiciones? <span style="font-weight:400;font-size:.82rem;color:var(--text-muted)">(Selecciona las que apliquen)</span></p>
-            <div id="trContextoList" style="display:grid;gap:6px;margin-bottom:14px;"></div>
-            <button onclick="trCalcularResultado()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1a6b4a,#0f4a32);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;">Ver mi orientación →</button>
-        </div>
-        <div id="trResultado" style="display:none;"></div>
 
-        <!-- ═══ MODO IA: Triaje conversacional con voz ═══ -->
-        <div id="trModoIA" style="display:none;margin-top:16px;">
-            <div style="background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:14px;padding:20px;color:#fff;margin-bottom:16px;">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                    <div style="font-size:1.6rem;">🤖</div>
-                    <div><h3 style="margin:0;font-size:1.05rem;font-weight:700;">TriajeSalud AI</h3>
-                    <p style="margin:0;font-size:.78rem;opacity:.8;">Asistente inteligente · Basado en SET</p></div>
-                </div>
-                <p style="font-size:.85rem;opacity:.9;line-height:1.5;margin:0;">Describe tus síntomas hablando o escribiendo. La IA te hará preguntas y te orientará según el Sistema Español de Triaje.</p>
+        <!-- ═══ SELECTOR DE MODO: Voz o Cuestionario ═══ -->
+        <div id="trModeSelector">
+            <!-- Banner -->
+            <div style="background:linear-gradient(135deg,#c0392b,#7b1a12);border-radius:16px;padding:24px 20px;color:#fff;margin-bottom:18px;text-align:center;">
+                <div style="font-size:2.5rem;margin-bottom:8px;">🩺</div>
+                <h2 style="font-size:1.3rem;font-weight:800;margin:0 0 6px;">¿Necesitas atención médica?</h2>
+                <p style="font-size:.92rem;opacity:.85;margin:0;line-height:1.5;">Te ayudamos a saber qué hacer. Elige cómo prefieres contarnos:</p>
             </div>
-            <!-- Selector idioma voz -->
+
+            <!-- Opción VOZ — grande y destacada -->
+            <button onclick="trSelectMode('voz')" style="width:100%;padding:22px 20px;background:linear-gradient(135deg,#1565c0,#0d47a1);border:3px solid #1976d2;border-radius:16px;cursor:pointer;color:#fff;text-align:left;display:flex;align-items:center;gap:16px;margin-bottom:12px;font-family:var(--font-body);transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(13,71,161,.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div style="width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;">🎙️</div>
+                <div>
+                    <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px;">Hablar con la IA</div>
+                    <div style="font-size:.82rem;opacity:.8;line-height:1.4;">Cuéntanos qué te pasa hablando o escribiendo. La IA te hará preguntas sencillas. Disponible en 8 idiomas.</div>
+                </div>
+                <div style="font-size:1.5rem;opacity:.6;flex-shrink:0;">→</div>
+            </button>
+
+            <!-- Opción CUESTIONARIO -->
+            <button onclick="trSelectMode('clasico')" style="width:100%;padding:18px 20px;background:var(--bg-card);border:2px solid var(--border);border-radius:16px;cursor:pointer;color:var(--text);text-align:left;display:flex;align-items:center;gap:16px;margin-bottom:18px;font-family:var(--font-body);transition:transform .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+                <div style="width:60px;height:60px;background:#f0f9f4;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;">📋</div>
+                <div>
+                    <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px;">Cuestionario paso a paso</div>
+                    <div style="font-size:.82rem;color:var(--text-muted);line-height:1.4;">Selecciona síntomas tocando botones. Sin escribir nada.</div>
+                </div>
+                <div style="font-size:1.5rem;color:var(--text-muted);flex-shrink:0;">→</div>
+            </button>
+
+            <!-- Info -->
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;">
+                <span style="background:#f0f9f4;color:#1a6b4a;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;">⏱ 2 minutos</span>
+                <span style="background:#f0f9f4;color:#1a6b4a;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;">🔒 Sin registro</span>
+                <span style="background:#f0f9f4;color:#1a6b4a;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;">📱 Totalmente gratuito</span>
+            </div>
+            <div style="padding:12px 14px;background:#fff3cd;border:1px solid #fcd34d;border-radius:10px;font-size:.8rem;color:#7c4a03;line-height:1.5;text-align:center;">⚠️ <b>Esto NO es un diagnóstico.</b> Ante emergencia vital, llama al <b style="font-size:1.1rem;">112</b></div>
+        </div>
+
+        <!-- ═══ MODO VOZ ═══ -->
+        <div id="trModoIA" style="display:none;">
+            <button onclick="trSelectMode('selector')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.88rem;margin-bottom:14px;padding:0;font-family:var(--font-body);">← Volver a elegir modo</button>
+
+            <div style="background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:16px;padding:20px;color:#fff;margin-bottom:14px;text-align:center;">
+                <div style="font-size:2rem;margin-bottom:6px;">🤖</div>
+                <h3 style="margin:0 0 4px;font-size:1.1rem;font-weight:800;">Cuéntame qué te pasa</h3>
+                <p style="margin:0;font-size:.82rem;opacity:.8;">Habla o escribe. Te haré preguntas para orientarte.</p>
+            </div>
+
+            <!-- Selector idioma -->
             <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-                <select id="trIALang" style="padding:8px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:var(--font-body);flex:1;">
+                <select id="trIALang" style="padding:10px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:.88rem;font-family:var(--font-body);flex:1;background:var(--bg-card);color:var(--text);">
                     <option value="es-ES">🇪🇸 Español</option>
-                    <option value="ar-SA">🇸🇦 العربية (Árabe)</option>
+                    <option value="ar-SA">🇸🇦 العربية</option>
                     <option value="fr-FR">🇫🇷 Français</option>
                     <option value="en-GB">🇬🇧 English</option>
                     <option value="ro-RO">🇷🇴 Română</option>
@@ -1958,35 +1920,96 @@
                     <option value="uk-UA">🇺🇦 Українська</option>
                     <option value="ru-RU">🇷🇺 Русский</option>
                 </select>
-                <button onclick="trIAVoice()" id="trIAMicBtn" style="padding:8px 16px;background:#c62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:700;font-family:var(--font-body);">🎙️ Hablar</button>
+                <button onclick="trIAVoice()" id="trIAMicBtn" style="padding:10px 22px;background:#c62828;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:800;font-family:var(--font-body);display:flex;align-items:center;gap:6px;">🎙️ Hablar</button>
             </div>
+
             <!-- Chat -->
-            <div id="trIAChat" style="background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:12px;min-height:200px;max-height:50vh;overflow-y:auto;margin-bottom:12px;">
+            <div id="trIAChat" style="background:var(--bg-card);border:2px solid var(--border);border-radius:14px;padding:14px;min-height:180px;max-height:50vh;overflow-y:auto;margin-bottom:12px;">
                 <div style="display:flex;gap:8px;margin-bottom:10px;">
-                    <div style="width:32px;height:32px;border-radius:50%;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">🤖</div>
-                    <div style="background:#f0f4f8;border-radius:0 12px 12px 12px;padding:10px 14px;font-size:.88rem;line-height:1.6;color:#333;max-width:85%;">¡Hola! Soy el asistente de triaje. <strong>Describe tus síntomas</strong> y te haré unas preguntas para orientarte.<br><br>Puedes hablar o escribir. Si necesitas otro idioma, selecciónalo arriba.</div>
+                    <div style="width:36px;height:36px;border-radius:50%;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🤖</div>
+                    <div style="background:#f0f4f8;border-radius:0 14px 14px 14px;padding:12px 16px;font-size:.9rem;line-height:1.6;color:#333;max-width:85%;">¡Hola! Soy tu asistente de triaje. <strong>¿Qué te ocurre?</strong><br><br>Puedes hablar pulsando el botón rojo o escribir abajo.</div>
                 </div>
             </div>
+
+            <!-- Input -->
             <div style="display:flex;gap:8px;">
-                <input type="text" id="trIAInput" placeholder="Describe tus síntomas..." style="flex:1;padding:11px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:var(--font-body);" onkeydown="if(event.key==='Enter')trIASend()">
-                <button onclick="trIASend()" style="padding:10px 18px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:700;font-family:var(--font-body);">Enviar</button>
+                <input type="text" id="trIAInput" placeholder="Escribe aquí lo que sientes..." style="flex:1;padding:13px 16px;border:2px solid var(--border);border-radius:10px;font-size:.92rem;font-family:var(--font-body);background:var(--bg-card);color:var(--text);" onkeydown="if(event.key==='Enter')trIASend()">
+                <button onclick="trIASend()" style="padding:12px 20px;background:#0d47a1;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:.95rem;font-weight:800;font-family:var(--font-body);">Enviar</button>
             </div>
-            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-                <button onclick="trIAQuick('Tengo dolor en el pecho desde hace 2 horas')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Dolor pecho</button>
-                <button onclick="trIAQuick('Mi hijo de 3 años tiene fiebre de 39 grados')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Fiebre niño</button>
-                <button onclick="trIAQuick('Me he caído y me duele mucho la muñeca')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Caída/golpe</button>
-                <button onclick="trIAQuick('Tengo mucha dificultad para respirar')" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:20px;font-size:.72rem;cursor:pointer;background:#fff;font-family:var(--font-body);">💬 Disnea</button>
+
+            <!-- Sugerencias rápidas -->
+            <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+                <button onclick="trIAQuick('Tengo dolor en el pecho')" style="padding:7px 12px;border:1px solid #e0e0e0;border-radius:20px;font-size:.78rem;cursor:pointer;background:var(--bg-card);font-family:var(--font-body);color:var(--text);">💬 Dolor pecho</button>
+                <button onclick="trIAQuick('Mi hijo tiene fiebre alta')" style="padding:7px 12px;border:1px solid #e0e0e0;border-radius:20px;font-size:.78rem;cursor:pointer;background:var(--bg-card);font-family:var(--font-body);color:var(--text);">💬 Fiebre niño</button>
+                <button onclick="trIAQuick('Me cuesta respirar')" style="padding:7px 12px;border:1px solid #e0e0e0;border-radius:20px;font-size:.78rem;cursor:pointer;background:var(--bg-card);font-family:var(--font-body);color:var(--text);">💬 Dificultad respirar</button>
+                <button onclick="trIAQuick('Me he caído y me duele mucho')" style="padding:7px 12px;border:1px solid #e0e0e0;border-radius:20px;font-size:.78rem;cursor:pointer;background:var(--bg-card);font-family:var(--font-body);color:var(--text);">💬 Caída/golpe</button>
             </div>
-            <div style="margin-top:10px;text-align:center;"><button onclick="trIAReset()" style="padding:6px 14px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.78rem;color:#dc2626;font-family:var(--font-body);">🔄 Reiniciar consulta</button></div>
+            <div style="margin-top:12px;text-align:center;"><button onclick="trIAReset()" style="padding:8px 16px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;cursor:pointer;font-size:.82rem;color:#dc2626;font-family:var(--font-body);font-weight:600;">🔄 Empezar de nuevo</button></div>
         </div>
 
-        <!-- Botón para alternar entre modo clásico y modo IA -->
-        <div style="margin-top:14px;text-align:center;">
-            <button onclick="trToggleModoIA()" id="trToggleIABtn" style="padding:10px 20px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:700;font-family:var(--font-body);">🤖 Cambiar a Triaje con IA conversacional</button>
-            <div style="margin-top:8px;"><a href="triaje-ai.html" target="_blank" style="font-size:.8rem;color:#2563eb;font-weight:600;">🚀 Abrir TriajeSalud AI completo (SET + FarmaCribado + Voz)</a></div>
+        <!-- ═══ MODO CLÁSICO (cuestionario) ═══ -->
+        <div id="trInicio" style="display:none;">
+            <button onclick="trSelectMode('selector')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.88rem;margin-bottom:14px;padding:0;font-family:var(--font-body);">← Volver a elegir modo</button>
+
+            <!-- AVISO LEY 41/2002 -->
+            <div id="trAvisoLegal" style="background:#fff3cd;border:2px solid #f59e0b;border-radius:14px;padding:18px;margin-bottom:14px;">
+                <p style="font-size:.95rem;font-weight:700;color:#7c4a03;margin:0 0 10px;">⚖️ Aviso legal — Ley 41/2002</p>
+                <p style="font-size:.82rem;color:#7c4a03;line-height:1.55;margin:0 0 12px;">Esta herramienta es <strong>orientativa</strong> y NO es un diagnóstico médico. No sustituye la valoración de un profesional. En emergencias, llama al <strong>112</strong>.</p>
+                <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.84rem;color:#7c4a03;line-height:1.45;margin-bottom:12px;">
+                    <input type="checkbox" id="trAvisoCheck" onchange="document.getElementById('trBotonesPersona').style.display=this.checked?'block':'none'" style="margin-top:2px;min-width:20px;height:20px;cursor:pointer;accent-color:#d97706;">
+                    <span><strong>Acepto</strong> que el resultado es orientativo.</span>
+                </label>
+                <div id="trBotonesPersona" style="display:none;">
+                    <p style="font-size:.92rem;font-weight:600;color:var(--text);margin:0 0 8px;">¿Para quién es?</p>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <button onclick="trSetPersona('yo')" class="tr-opcion" style="padding:16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;font-size:1rem;font-weight:700;background:var(--bg-card);color:var(--text);font-family:var(--font-body);">👤 Para mí</button>
+                        <button onclick="trSetPersona('otro')" class="tr-opcion" style="padding:16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;font-size:1rem;font-weight:700;background:var(--bg-card);color:var(--text);font-family:var(--font-body);">👥 Otra persona</button>
+                    </div>
+                </div>
+            </div>
+            <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 14px;font-size:.82rem;color:#166534;line-height:1.5;">🔒 <b>Privacidad:</b> No guardamos ningún dato. Todo se procesa en tu móvil.</div>
         </div>
 
-        <div style="margin-top:18px;padding:10px 12px;background:var(--bg-subtle);border-radius:8px;font-size:.74rem;color:var(--text-muted);line-height:1.5;text-align:center;">Herramienta de orientación del <b>Área II de Cartagena · Hospital Santa Lucía</b>. No constituye diagnóstico médico. Basada en el Sistema Español de Triaje (SET) y protocolos del SMS. En caso de emergencia llama al <b>112</b>.</div>
+        <!-- Bloques del cuestionario clásico -->
+        <div id="trBloqueA" style="display:none;">
+            <button onclick="trSelectMode('selector')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;padding:0;margin-bottom:12px;font-family:var(--font-body);">← Volver</button>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                <div style="background:#c0392b;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0;">!</div>
+                <div><p style="font-size:1rem;font-weight:700;color:var(--text);margin:0;">Señales de emergencia</p><p style="font-size:.85rem;color:var(--text-muted);margin:0;">¿Tienes alguno de estos síntomas AHORA?</p></div>
+            </div>
+            <div id="trAlertasList" style="display:grid;gap:8px;margin-bottom:14px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <button onclick="trBloqueARespuesta(false)" style="padding:16px;border:2px solid #1a6b4a;border-radius:12px;background:var(--bg-card);cursor:pointer;font-size:1rem;font-weight:700;color:#1a6b4a;font-family:var(--font-body);">✅ No, ninguno</button>
+                <button onclick="trBloqueARespuesta(true)" style="padding:16px;border:2px solid #c0392b;border-radius:12px;background:#fdecea;cursor:pointer;font-size:1rem;font-weight:700;color:#c0392b;font-family:var(--font-body);">🚨 Sí, tengo</button>
+            </div>
+        </div>
+        <div id="trBloqueB" style="display:none;">
+            <button onclick="trShow('trBloqueA')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;padding:0;margin-bottom:12px;font-family:var(--font-body);">← Volver</button>
+            <p style="font-size:1rem;font-weight:700;color:var(--text);margin:0 0 12px;">¿Qué zona te preocupa?</p>
+            <div id="trAreasList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+        </div>
+        <div id="trBloqueC" style="display:none;">
+            <button onclick="trVolverAreas()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;font-family:var(--font-body);">← Volver</button>
+            <p style="font-size:1rem;font-weight:700;color:var(--text);margin:0 0 12px;" id="trSintomaLabel">¿Cuál es el síntoma principal?</p>
+            <div id="trSintomasList" style="display:grid;gap:8px;"></div>
+        </div>
+        <div id="trBloqueD" style="display:none;">
+            <button onclick="trVolverSintomas()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;margin-bottom:12px;padding:0;font-family:var(--font-body);">← Volver</button>
+            <p style="font-size:1rem;font-weight:700;color:var(--text);margin:0 0 6px;">¿Cómo de intenso es? <span id="trIntensidadVal" style="color:#1a6b4a;font-weight:800;font-size:1.2rem;">5</span>/10</p>
+            <input type="range" min="1" max="10" value="5" id="trIntensidad" style="width:100%;margin-bottom:16px;height:8px;accent-color:#1a6b4a;" oninput="document.getElementById('trIntensidadVal').textContent=this.value">
+            <p style="font-size:1rem;font-weight:700;color:var(--text);margin:0 0 10px;">¿Cuánto tiempo llevas así?</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="trDuracionList"></div>
+        </div>
+        <div id="trBloqueE" style="display:none;">
+            <p style="font-size:1rem;font-weight:700;color:var(--text);margin:0 0 8px;">¿Tienes alguna de estas condiciones?</p>
+            <p style="font-size:.82rem;color:var(--text-muted);margin:0 0 10px;">Marca las que tengas</p>
+            <div id="trContextoList" style="display:grid;gap:6px;margin-bottom:14px;"></div>
+            <button onclick="trCalcularResultado()" style="width:100%;padding:16px;background:linear-gradient(135deg,#1a6b4a,#0f4a32);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:1.05rem;font-weight:800;font-family:var(--font-body);">Ver mi orientación →</button>
+        </div>
+        <div id="trResultado" style="display:none;"></div>
+
+        <!-- Footer -->
+        <div style="margin-top:18px;padding:12px 14px;background:var(--bg-subtle);border-radius:10px;font-size:.76rem;color:var(--text-muted);line-height:1.5;text-align:center;">Herramienta de orientación del <b>Área II de Cartagena · Hospital Santa Lucía</b>. No constituye diagnóstico médico. Basada en el Sistema Español de Triaje (SET). En emergencia llama al <b>112</b>.</div>
         </div>
     </div>
 </div>
@@ -6616,24 +6639,29 @@ function trReiniciar(){
 var trIAHistory=[];
 var trIAModoActivo=false;
 
-function trToggleModoIA(){
-    trIAModoActivo=!trIAModoActivo;
+function trSelectMode(mode){
+    var selector=document.getElementById('trModeSelector');
     var iaDiv=document.getElementById('trModoIA');
-    var btn=document.getElementById('trToggleIABtn');
     var clasico=document.getElementById('trInicio');
-    if(trIAModoActivo){
+    var bloques=['trBloqueA','trBloqueB','trBloqueC','trBloqueD','trBloqueE','trResultado'];
+    // Hide all
+    if(selector) selector.style.display='none';
+    if(iaDiv) iaDiv.style.display='none';
+    if(clasico) clasico.style.display='none';
+    bloques.forEach(function(b){var el=document.getElementById(b);if(el)el.style.display='none';});
+    // Show selected
+    if(mode==='voz'){
         if(iaDiv) iaDiv.style.display='block';
-        if(clasico) clasico.style.display='none';
-        var res=document.getElementById('trResultado');if(res)res.style.display='none';
-        if(btn) btn.innerHTML='📋 Cambiar a Triaje clásico (cuestionario)';
-        if(btn) btn.style.background='linear-gradient(135deg,#c62828,#b71c1c)';
-    } else {
-        if(iaDiv) iaDiv.style.display='none';
+        trIAModoActivo=true;
+    } else if(mode==='clasico'){
         if(clasico) clasico.style.display='block';
-        if(btn) btn.innerHTML='🤖 Cambiar a Triaje con IA conversacional';
-        if(btn) btn.style.background='linear-gradient(135deg,#1565c0,#0d47a1)';
+        trIAModoActivo=false;
+    } else {
+        if(selector) selector.style.display='block';
     }
+    window.scrollTo(0,0);
 }
+function trToggleModoIA(){trSelectMode(trIAModoActivo?'clasico':'voz');}
 
 function trIAAddMsg(who,text){
     var chat=document.getElementById('trIAChat');
