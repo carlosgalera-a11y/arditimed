@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Mapa Sanitario | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:12px 16px;color:#fff;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:1000}
+.nav h1{font-size:1rem;font-weight:700}.nav a{color:#86efac;text-decoration:none;font-size:.82rem}
+.filters{background:#fff;padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #e0e0e0;position:sticky;top:44px;z-index:999}
+.filter-btn{padding:6px 12px;border:1px solid #e0e0e0;border-radius:20px;font-size:.76rem;font-weight:600;cursor:pointer;background:#fff;font-family:inherit;transition:all .2s}
+.filter-btn.active{background:#1a6b4a;color:#fff;border-color:#1a6b4a}
+#map{flex:1;min-height:calc(100vh - 100px)}
+.popup{font-family:'Segoe UI',sans-serif;max-width:250px}
+.popup h3{font-size:.9rem;color:#1a6b4a;margin-bottom:4px}
+.popup p{font-size:.78rem;color:#555;margin:2px 0;line-height:1.4}
+.popup a{color:#1a6b4a;font-weight:600;font-size:.78rem}
+.list-panel{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.15);max-height:50vh;overflow-y:auto;z-index:1001;padding:16px}
+.list-panel.show{display:block}
+.list-item{display:flex;gap:10px;padding:10px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.list-item:hover{background:#f8f8f8}
+.list-item .li-icon{font-size:1.4rem;flex-shrink:0}
+.list-item .li-name{font-weight:600;font-size:.85rem;color:#333}
+.list-item .li-addr{font-size:.76rem;color:#888}
+.toggle-list{position:fixed;bottom:16px;right:16px;z-index:1002;background:#1a6b4a;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>🗺️ Mapa Sanitario Área II</h1></div>
+<div class="filters">
+    <button class="filter-btn active" onclick="toggleFilter('all',this)">📍 Todo</button>
+    <button class="filter-btn" onclick="toggleFilter('hospital',this)">🏥 Hospitales</button>
+    <button class="filter-btn" onclick="toggleFilter('centro',this)">🩺 C. Salud</button>
+    <button class="filter-btn" onclick="toggleFilter('farmacia',this)">💊 Farmacias 24h</button>
+    <button class="filter-btn" onclick="toggleFilter('urgencias',this)">🚨 Urgencias</button>
+</div>
+<div id="map"></div>
+<button class="toggle-list" onclick="toggleListPanel()">📋</button>
+<div class="list-panel" id="listPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="font-size:1rem;color:#1a6b4a;">📍 Puntos de interés</h3>
+        <span onclick="document.getElementById('listPanel').classList.remove('show')" style="cursor:pointer;font-size:1.2rem;color:#888;">✕</span>
+    </div>
+    <div id="listContent"></div>
+</div>
+
+<script>
+// We'll use inline Leaflet to avoid CDN issues
+var places=[
+    // Hospitales
+    {name:"Hospital Santa Lucía",type:"hospital",icon:"🏥",lat:37.6131,lng:-0.9873,addr:"C/ Mezquita, s/n",tel:"968 12 86 00",desc:"Hospital General Universitario"},
+    {name:"Hospital Naval",type:"hospital",icon:"🏥",lat:37.6005,lng:-0.9856,addr:"C/ San Leandro, s/n",tel:"968 50 81 00",desc:"Hospital del Mar Menor"},
+    // Centros de salud
+    {name:"CS Virgen de la Caridad",type:"centro",icon:"🩺",lat:37.6173,lng:-0.9778,addr:"C/ Sor Francisca Armendáriz",tel:"968 32 66 00",desc:"Centro de Salud - Cartagena Este"},
+    {name:"CS Cartagena Oeste",type:"centro",icon:"🩺",lat:37.6042,lng:-1.0012,addr:"C/ San Fernando",tel:"968 32 86 00",desc:"Centro de Salud"},
+    {name:"CS Barrio Peral",type:"centro",icon:"🩺",lat:37.6101,lng:-0.9932,addr:"Barrio Peral",tel:"968 51 20 00",desc:"Centro de Salud"},
+    {name:"CS Isaac Peral",type:"centro",icon:"🩺",lat:37.6055,lng:-0.9989,addr:"C/ Isaac Peral",tel:"968 12 50 00",desc:"Consultorio"},
+    {name:"CS La Unión",type:"centro",icon:"🩺",lat:37.6198,lng:-0.8893,addr:"La Unión",tel:"968 54 00 61",desc:"Centro de Salud"},
+    {name:"CS Los Dolores",type:"centro",icon:"🩺",lat:37.6208,lng:-0.9624,addr:"Los Dolores",tel:"968 31 22 00",desc:"Centro de Salud"},
+    {name:"CS Mar Menor",type:"centro",icon:"🩺",lat:37.6498,lng:-0.8478,addr:"Los Alcázares",tel:"968 17 50 00",desc:"Centro de Salud"},
+    // Farmacias 24h Cartagena
+    {name:"Farmacia Juan de la Cosa",type:"farmacia",icon:"💊",lat:37.6008,lng:-0.9862,addr:"C/ Juan de la Cosa, 7",tel:"968 52 00 09",desc:"24h · Frente al puerto"},
+    {name:"Farmacia San Antón",type:"farmacia",icon:"💊",lat:37.6035,lng:-0.9891,addr:"Alameda San Antón, 16",tel:"968 52 11 03",desc:"24h · Frente Cartagonova"},
+    {name:"Farmacia Nueva Cartagena",type:"farmacia",icon:"💊",lat:37.6112,lng:-0.9945,addr:"Av. Nueva Cartagena, 3",tel:"968 51 23 45",desc:"24h"},
+    // Urgencias
+    {name:"Urgencias H. Santa Lucía",type:"urgencias",icon:"🚨",lat:37.6134,lng:-0.9868,addr:"C/ Mezquita, s/n",tel:"968 12 86 00",desc:"Urgencias hospitalarias 24h"},
+    {name:"SUAP Cartagena",type:"urgencias",icon:"🚨",lat:37.6050,lng:-0.9862,addr:"Cartagena Centro",tel:"968 12 86 00",desc:"Servicio Urgencias Atención Primaria"},
+    {name:"061 CICU",type:"urgencias",icon:"🚨",lat:37.6131,lng:-0.9875,addr:"Coordinación",tel:"061",desc:"Emergencias sanitarias"}
+];
+
+var activeFilter='all';
+var markers=[];
+var map;
+
+function initMap(){
+    // Create a simple map without external CDN
+    var mapDiv=document.getElementById('map');
+    mapDiv.style.background='#e8f5e9';
+    mapDiv.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;padding:20px;text-align:center;">';
+    mapDiv.innerHTML+='<div style="font-size:3rem;">🗺️</div>';
+    mapDiv.innerHTML+='<h2 style="color:#1a6b4a;font-size:1.1rem;">Mapa Sanitario Área II Cartagena</h2>';
+    mapDiv.innerHTML+='<p style="color:#64748b;font-size:.85rem;">'+places.length+' puntos de interés</p>';
+
+    // Render as a visual list since Leaflet CDN may not be available
+    var h='<div style="max-width:600px;margin:20px auto;display:grid;gap:8px;padding:0 16px;">';
+    places.forEach(function(p,i){
+        if(activeFilter!=='all'&&p.type!==activeFilter) return;
+        h+='<div style="background:#fff;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;" onclick="openNav('+p.lat+','+p.lng+')">';
+        h+='<div style="font-size:1.5rem;">'+p.icon+'</div>';
+        h+='<div style="flex:1;"><div style="font-weight:600;font-size:.88rem;color:#1a6b4a;">'+p.name+'</div>';
+        h+='<div style="font-size:.76rem;color:#888;">'+p.addr+'</div>';
+        h+='<div style="font-size:.76rem;color:#555;">'+p.desc+'</div></div>';
+        h+='<a href="tel:'+p.tel.replace(/\s/g,'')+'" style="flex-shrink:0;background:#1a6b4a;color:#fff;border-radius:8px;padding:6px 10px;font-size:.76rem;font-weight:600;text-decoration:none;">📞</a>';
+        h+='<a href="https://www.google.com/maps/dir/?api=1&destination='+p.lat+','+p.lng+'" target="_blank" style="flex-shrink:0;background:#1565c0;color:#fff;border-radius:8px;padding:6px 10px;font-size:.76rem;font-weight:600;text-decoration:none;">🧭</a>';
+        h+='</div>';
+    });
+    h+='</div>';
+    mapDiv.innerHTML+=h+'</div>';
+}
+
+function toggleFilter(type,btn){
+    activeFilter=type;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    initMap();
+}
+
+function openNav(lat,lng){
+    window.open('https://www.google.com/maps/dir/?api=1&destination='+lat+','+lng,'_blank');
+}
+
+function toggleListPanel(){
+    var el=document.getElementById('listPanel');
+    el.classList.toggle('show');
+    if(el.classList.contains('show')){
+        var h='';
+        places.forEach(function(p){
+            h+='<div class="list-item" onclick="openNav('+p.lat+','+p.lng+')">';
+            h+='<div class="li-icon">'+p.icon+'</div>';
+            h+='<div><div class="li-name">'+p.name+'</div><div class="li-addr">'+p.addr+' · '+p.tel+'</div></div>';
+            h+='</div>';
+        });
+        document.getElementById('listContent').innerHTML=h;
+    }
+}
+
+initMap();
+</script>
+</body>
+</html>

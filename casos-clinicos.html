@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casos Clínicos | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.nav{background:rgba(15,23,42,.9);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.1)}
+.nav h1{font-size:1.05rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
+.container{max-width:700px;margin:0 auto;padding:20px}
+.score-bar{display:flex;gap:16px;justify-content:center;padding:14px;background:rgba(255,255,255,.05);border-radius:12px;margin-bottom:20px}
+.score-item{text-align:center}.score-item .num{font-size:1.4rem;font-weight:800}.score-item .lbl{font-size:.7rem;color:#94a3b8}
+.case-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px;margin-bottom:16px}
+.case-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.case-header .badge{padding:4px 10px;border-radius:8px;font-size:.72rem;font-weight:700;text-transform:uppercase}
+.badge-easy{background:#22c55e20;color:#22c55e}.badge-med{background:#f59e0b20;color:#f59e0b}.badge-hard{background:#ef444420;color:#ef4444}
+.case-header h2{font-size:1.1rem;flex:1}
+.case-body{font-size:.9rem;line-height:1.7;color:#cbd5e1;margin-bottom:16px}
+.case-body strong{color:#e2e8f0}
+.vitals{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin:12px 0;padding:12px;background:rgba(0,0,0,.2);border-radius:8px}
+.vital{text-align:center;padding:6px}.vital .val{font-size:1.1rem;font-weight:800;color:#60a5fa}.vital .name{font-size:.68rem;color:#94a3b8}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{padding:14px 16px;border:2px solid rgba(255,255,255,.1);border-radius:10px;cursor:pointer;transition:all .2s;font-size:.88rem;display:flex;align-items:center;gap:10px}
+.option:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.05)}
+.option .letter{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0}
+.option.correct{border-color:#22c55e;background:#22c55e15}.option.correct .letter{background:#22c55e;color:#fff}
+.option.wrong{border-color:#ef4444;background:#ef444415}.option.wrong .letter{background:#ef4444;color:#fff}
+.option.disabled{cursor:default;opacity:.6}
+.explanation{display:none;margin-top:14px;padding:14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;font-size:.85rem;line-height:1.6}
+.explanation.show{display:block}
+.btn-next{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:13px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;margin-top:14px;font-family:inherit;display:none}
+.btn-next.show{display:block}
+.category-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.cat-btn{padding:14px 10px;border:2px solid rgba(255,255,255,.1);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03)}
+.cat-btn:hover{border-color:#22c55e;background:rgba(34,197,94,.1);transform:translateY(-2px)}
+.cat-btn .ico{font-size:1.6rem;margin-bottom:4px}.cat-btn .lbl{font-size:.78rem;font-weight:600}
+.finish{text-align:center;padding:40px;display:none}
+.finish .trophy{font-size:4rem;margin-bottom:12px}
+.progress{height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin-bottom:20px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#22c55e,#60a5fa);border-radius:4px;transition:width .3s}
+</style>
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>🧠 Casos Clínicos Interactivos</h1></div>
+<div class="container">
+    <div class="score-bar">
+        <div class="score-item"><div class="num" id="scoreCorrect" style="color:#22c55e;">0</div><div class="lbl">Aciertos</div></div>
+        <div class="score-item"><div class="num" id="scoreWrong" style="color:#ef4444;">0</div><div class="lbl">Fallos</div></div>
+        <div class="score-item"><div class="num" id="scoreTotal">0</div><div class="lbl">Total</div></div>
+        <div class="score-item"><div class="num" id="scoreStreak" style="color:#f59e0b;">0</div><div class="lbl">Racha</div></div>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+    <div id="categorySelect">
+        <h2 style="text-align:center;margin-bottom:16px;font-size:1.1rem;">Selecciona especialidad</h2>
+        <div class="category-grid">
+            <div class="cat-btn" onclick="startCategory('cardio')"><div class="ico">❤️</div><div class="lbl">Cardiología</div></div>
+            <div class="cat-btn" onclick="startCategory('neumo')"><div class="ico">🫁</div><div class="lbl">Neumología</div></div>
+            <div class="cat-btn" onclick="startCategory('neuro')"><div class="ico">🧠</div><div class="lbl">Neurología</div></div>
+            <div class="cat-btn" onclick="startCategory('digest')"><div class="ico">🍽️</div><div class="lbl">Digestivo</div></div>
+            <div class="cat-btn" onclick="startCategory('uro')"><div class="ico">💧</div><div class="lbl">Urología</div></div>
+            <div class="cat-btn" onclick="startCategory('infec')"><div class="ico">🦠</div><div class="lbl">Infecciosas</div></div>
+            <div class="cat-btn" onclick="startCategory('endo')"><div class="ico">🧬</div><div class="lbl">Endocrino</div></div>
+            <div class="cat-btn" onclick="startCategory('all')"><div class="ico">🎲</div><div class="lbl">Aleatorio</div></div>
+        </div>
+    </div>
+
+    <div id="caseArea" style="display:none;"></div>
+
+    <div class="finish" id="finishScreen">
+        <div class="trophy">🏆</div>
+        <h2 style="color:#22c55e;margin-bottom:8px;">¡Sesión completada!</h2>
+        <p style="color:#94a3b8;margin-bottom:16px;" id="finishMsg"></p>
+        <button class="btn-next show" onclick="resetGame()" style="max-width:300px;margin:0 auto;">🔄 Nueva sesión</button>
+    </div>
+</div>
+
+<script>
+var cases=[
+    // CARDIO
+    {cat:'cardio',diff:'easy',title:'Dolor torácico típico',body:'Varón de 62 años, HTA, DM2, fumador. Acude a urgencias por dolor opresivo retroesternal de 2h de evolución, irradiado a brazo izquierdo, sudoración profusa.',vitals:{FC:'105',PA:'90/60',SatO2:'94%',Tª:'36.5°C'},question:'¿Cuál es la primera medida?',options:['ECG en menos de 10 minutos','Rx tórax urgente','Analítica con troponinas','Ecocardiograma'],correct:0,explain:'El ECG debe realizarse en <10 min ante sospecha de SCA. Si hay elevación del ST → activar Código Infarto. La troponina se solicita simultáneamente pero no debe retrasar el ECG.'},
+    {cat:'cardio',diff:'med',title:'Fibrilación auricular rápida',body:'Mujer de 78 años con palpitaciones de 6h. FA conocida, en tratamiento con Digoxina 0.25mg/día. Hoy FC 145 lpm irregular.',vitals:{FC:'145',PA:'110/70',SatO2:'96%',Tª:'36.8°C'},question:'¿Qué fármaco para control de frecuencia?',options:['Amiodarona IV','Diltiazem IV','Flecainida IV','Cardioversión eléctrica'],correct:1,explain:'En FA con respuesta ventricular rápida y paciente estable, los calcioantagonistas (Diltiazem/Verapamilo) o betabloqueantes son primera línea para control de frecuencia. Amiodarona se reserva para control de ritmo. Flecainida está contraindicada en cardiopatía estructural.'},
+    // NEUMO
+    {cat:'neumo',diff:'easy',title:'Neumonía comunitaria',body:'Varón de 45 años, previamente sano. Fiebre 38.8°C, tos productiva 5 días, dolor pleurítico derecho. Rx: condensación en LID.',vitals:{FC:'92',PA:'125/75',SatO2:'95%',Tª:'38.8°C'},question:'CURB-65 = 0. ¿Tratamiento?',options:['Amoxicilina 1g/8h VO 7 días','Levofloxacino 500mg/24h VO','Ceftriaxona 2g IV + Azitromicina','Ingreso y hemocultivos'],correct:0,explain:'NAC con CURB-65 = 0: bajo riesgo, tratamiento ambulatorio. Primera línea: Amoxicilina 1g/8h VO 5-7 días. Si alergia a penicilina: Azitromicina o Doxiciclina. Quinolonas reservar para 2ª línea (PROA).'},
+    {cat:'neumo',diff:'hard',title:'EPOC agudizado grave',body:'Varón 72 años, EPOC GOLD IV, oxigenoterapia domiciliaria. Disnea progresiva, esputo purulento. Uso de musculatura accesoria.',vitals:{FC:'110',PA:'150/90',SatO2:'82%',Tª:'37.9°C'},question:'¿Primera medida?',options:['Antibiótico IV urgente','VMNI (BiPAP)','IOT y ventilación mecánica','Corticoides IV'],correct:1,explain:'La VMNI (BiPAP) es primera línea en EPOC agudizado con acidosis respiratoria/hipoxemia grave. Reduce la necesidad de IOT y la mortalidad. Simultáneamente: broncodilatadores nebulizados + corticoides + antibiótico si Anthonisen.'},
+    // NEURO
+    {cat:'neuro',diff:'med',title:'Ictus isquémico agudo',body:'Mujer 68 años, HTA. Inicio brusco hace 2h de hemiparesia derecha y afasia. NIHSS 14.',vitals:{FC:'88',PA:'180/100',SatO2:'97%',Tª:'36.6°C'},question:'¿Cuál es el siguiente paso?',options:['TC craneal urgente SIN contraste','Iniciar anticoagulación con heparina','RM cerebral','Bajar TA a <140/90 inmediatamente'],correct:0,explain:'Ante sospecha de ictus agudo: TC craneal SIN contraste para descartar hemorragia. Si isquémico y <4.5h: fibrinolisis IV (alteplasa). La TA solo se baja si >185/110 pre-fibrinolisis. NO anticoagular en fase aguda.'},
+    // DIGEST
+    {cat:'digest',diff:'easy',title:'Dolor abdominal en FID',body:'Varón 25 años. Dolor periumbilical migrado a FID, 12h evolución. Anorexia, náuseas. McBurney positivo, Blumberg positivo.',vitals:{FC:'95',PA:'120/75',SatO2:'99%',Tª:'37.8°C'},question:'¿Diagnóstico más probable?',options:['Apendicitis aguda','Adenitis mesentérica','Cólico renal derecho','Diverticulitis'],correct:0,explain:'Cuadro clásico de apendicitis aguda: dolor periumbilical migrado a FID + signos de irritación peritoneal (McBurney, Blumberg). En joven varón es el diagnóstico más frecuente. Confirmar con ECO/TC y valoración quirúrgica urgente.'},
+    {cat:'digest',diff:'med',title:'Hemorragia digestiva alta',body:'Varón 60 años, cirrosis hepática Child B, toma AINEs. Hematemesis roja con coágulos x2. Palidez, taquicardia.',vitals:{FC:'120',PA:'85/55',SatO2:'93%',Tª:'36.2°C'},question:'¿Primera medida?',options:['Endoscopia urgente inmediata','Reposición de volumen con cristaloides','Somatostatina/Octreótido IV','SNG para lavado gástrico'],correct:1,explain:'La prioridad en HDA con inestabilidad hemodinámica es la reposición de volumen (ABCDE). 2 vías periféricas gruesas + cristaloides + cruzar y reservar sangre. En cirrótico: añadir Terlipresina/Octreótido + ATB profilaxis + IPP IV. Endoscopia en <12h una vez estabilizado.'},
+    // URO
+    {cat:'uro',diff:'easy',title:'Cólico renal',body:'Mujer 35 años. Dolor intenso en fosa renal derecha, irradiado a genitales. Inquietud. Puñopercusión positiva. Orina: hematuria microscópica.',vitals:{FC:'100',PA:'140/85',SatO2:'99%',Tª:'36.5°C'},question:'¿Analgesia de primera línea?',options:['Dexketoprofeno 50mg IV','Metamizol 2g IV','Morfina 5mg SC','Paracetamol 1g IV'],correct:0,explain:'Los AINEs (Dexketoprofeno, Diclofenaco) son primera línea en cólico renal. Reducen el edema ureteral además de la analgesia. Metamizol es alternativa. Opioides solo si refractario. Paracetamol es insuficiente como monoterapia.'},
+    // INFECCIOSAS
+    {cat:'infec',diff:'hard',title:'Sepsis urinaria',body:'Varón 80 años, sondado, DM2. Fiebre 39.5°C, confusión, oliguria. Orina turbia. Sospecha de ITU complicada/urosepsis.',vitals:{FC:'115',PA:'80/50',SatO2:'91%',Tª:'39.5°C'},question:'Antibiótico empírico según Guía HSL 2025:',options:['Ceftriaxona 2g/24h IV','Meropenem 1g/8h IV','Piperacilina-Tazobactam 4.5g/8h IV','Ciprofloxacino 400mg/12h IV'],correct:2,explain:'En urosepsis con shock, factores de riesgo para MDR (sondado, institucionalizado): Piperacilina-Tazobactam o Meropenem. La Guía HSL 2025 recomienda Piperacilina-Tazobactam como primera línea empírica en ITU complicada grave. Ajustar según antibiograma en 48-72h.'},
+    // ENDO
+    {cat:'endo',diff:'med',title:'Cetoacidosis diabética',body:'Mujer 22 años, DM1 conocida. Náuseas, vómitos, dolor abdominal, poliuria. Aliento cetonémico. Glucemia 450 mg/dL, pH 7.15, HCO3 8.',vitals:{FC:'120',PA:'95/60',SatO2:'98%',Tª:'36.0°C'},question:'¿Prioridad en el tratamiento?',options:['Insulina rápida IV en bolo','Reposición de volumen con SSF 0.9%','Bicarbonato IV','Potasio IV'],correct:1,explain:'La prioridad en CAD es la REPOSICIÓN DE VOLUMEN con SSF 0.9% (1-1.5L primera hora). La insulina se inicia DESPUÉS de confirmar K >3.3 mEq/L. El bicarbonato solo si pH <6.9. El potasio se repone simultáneamente si <5.3 mEq/L.'}
+];
+
+var currentCases=[];var caseIndex=0;var score={correct:0,wrong:0,streak:0};
+var answered=false;
+
+function startCategory(cat){
+    currentCases=cat==='all'?shuffle([...cases]):shuffle(cases.filter(c=>c.cat===cat));
+    if(currentCases.length===0){alert('No hay casos para esta categoría');return;}
+    caseIndex=0;score={correct:0,wrong:0,streak:0};
+    document.getElementById('categorySelect').style.display='none';
+    document.getElementById('caseArea').style.display='block';
+    document.getElementById('finishScreen').style.display='none';
+    showCase();
+}
+
+function shuffle(arr){for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+function showCase(){
+    if(caseIndex>=currentCases.length){finishGame();return;}
+    answered=false;
+    var c=currentCases[caseIndex];
+    var diffBadge={easy:'badge-easy',med:'badge-med',hard:'badge-hard'};
+    var diffLabel={easy:'FÁCIL',med:'MEDIO',hard:'DIFÍCIL'};
+    var h='<div class="case-card">';
+    h+='<div class="case-header"><span class="badge '+diffBadge[c.diff]+'">'+diffLabel[c.diff]+'</span><h2>'+c.title+'</h2><span style="font-size:.8rem;color:#94a3b8;">'+(caseIndex+1)+'/'+currentCases.length+'</span></div>';
+    h+='<div class="case-body">'+c.body+'</div>';
+    if(c.vitals){
+        h+='<div class="vitals">';
+        for(var k in c.vitals) h+='<div class="vital"><div class="val">'+c.vitals[k]+'</div><div class="name">'+k+'</div></div>';
+        h+='</div>';
+    }
+    h+='<h3 style="font-size:.92rem;margin:14px 0 10px;color:#60a5fa;">❓ '+c.question+'</h3>';
+    h+='<div class="options">';
+    var letters='ABCD';
+    c.options.forEach(function(opt,i){
+        h+='<div class="option" onclick="answer('+i+','+c.correct+')" id="opt'+i+'">';
+        h+='<div class="letter">'+letters[i]+'</div><span>'+opt+'</span></div>';
+    });
+    h+='</div>';
+    h+='<div class="explanation" id="explanation">💡 '+c.explain+'</div>';
+    h+='<button class="btn-next" id="btnNext" onclick="nextCase()">Siguiente caso →</button>';
+    h+='</div>';
+    document.getElementById('caseArea').innerHTML=h;
+    updateScore();
+    document.getElementById('progressBar').style.width=((caseIndex/currentCases.length)*100)+'%';
+}
+
+function answer(selected,correct){
+    if(answered)return;
+    answered=true;
+    document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+    document.getElementById('opt'+correct).classList.add('correct');
+    if(selected===correct){
+        score.correct++;score.streak++;
+    } else {
+        document.getElementById('opt'+selected).classList.add('wrong');
+        score.wrong++;score.streak=0;
+    }
+    document.getElementById('explanation').classList.add('show');
+    document.getElementById('btnNext').classList.add('show');
+    updateScore();
+}
+
+function nextCase(){caseIndex++;showCase();}
+
+function updateScore(){
+    document.getElementById('scoreCorrect').textContent=score.correct;
+    document.getElementById('scoreWrong').textContent=score.wrong;
+    document.getElementById('scoreTotal').textContent=score.correct+score.wrong;
+    document.getElementById('scoreStreak').textContent=score.streak;
+}
+
+function finishGame(){
+    document.getElementById('caseArea').style.display='none';
+    document.getElementById('finishScreen').style.display='block';
+    var pct=Math.round((score.correct/(score.correct+score.wrong))*100);
+    document.getElementById('finishMsg').innerHTML='Aciertos: <strong style="color:#22c55e;">'+score.correct+'</strong> / '+(score.correct+score.wrong)+' ('+pct+'%)<br>Mejor racha: '+score.streak;
+    document.getElementById('progressBar').style.width='100%';
+}
+
+function resetGame(){
+    document.getElementById('categorySelect').style.display='block';
+    document.getElementById('finishScreen').style.display='none';
+    document.getElementById('caseArea').style.display='none';
+    score={correct:0,wrong:0,streak:0};updateScore();
+    document.getElementById('progressBar').style.width='0%';
+}
+</script>
+</body>
+</html>

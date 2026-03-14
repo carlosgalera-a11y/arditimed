@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Agenda de Guardia | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#1a6b4a;--green-l:#e8f5e9;--bg:#f0f2f5;--card:#fff;--text:#1a1a2e;--muted:#64748b;--r:12px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.nav{background:linear-gradient(135deg,#1a237e,#283593);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1.05rem;font-weight:700}.nav a{color:#90caf9;text-decoration:none;font-size:.85rem}
+.container{max-width:700px;margin:0 auto;padding:16px}
+.today-bar{background:linear-gradient(135deg,#1a237e,#3949ab);color:#fff;border-radius:var(--r);padding:16px 20px;margin-bottom:16px;text-align:center}
+.today-bar .date{font-size:1.1rem;font-weight:700}.today-bar .sub{font-size:.82rem;opacity:.8;margin-top:2px}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:12px}
+.card h3{font-size:.95rem;color:#1a237e;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.guard-form{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.guard-form input,.guard-form select{padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit;flex:1;min-width:120px}
+.guard-form input:focus,.guard-form select:focus{outline:none;border-color:#1a237e}
+.btn-add{background:#1a237e;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.guard-list{display:flex;flex-direction:column;gap:8px}
+.guard-item{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #e8eaf6;border-radius:8px;background:#f5f5ff;transition:all .2s}
+.guard-item:hover{background:#e8eaf6}
+.guard-item .avatar{width:36px;height:36px;border-radius:50%;background:#c5cae9;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#1a237e;flex-shrink:0}
+.guard-item .info{flex:1}
+.guard-item .name{font-weight:600;font-size:.88rem;color:#1a237e}
+.guard-item .role{font-size:.76rem;color:var(--muted)}
+.guard-item .time{font-size:.78rem;color:#3949ab;font-weight:600;background:#e8eaf6;padding:4px 8px;border-radius:6px}
+.guard-item .actions{display:flex;gap:4px}
+.guard-item .actions button{background:none;border:none;font-size:1rem;cursor:pointer;padding:4px;border-radius:4px}
+.guard-item .actions button:hover{background:#e8eaf6}
+.tab-bar{display:flex;gap:4px;margin-bottom:14px;background:#e8eaf6;border-radius:8px;padding:3px}
+.tab-bar button{flex:1;padding:8px;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:inherit;background:transparent;color:var(--muted)}
+.tab-bar button.active{background:#1a237e;color:#fff}
+.notes-area{min-height:100px;border:2px solid #e0e0e0;border-radius:8px;padding:12px;font-family:inherit;font-size:.88rem;width:100%;resize:vertical}
+.notes-area:focus{outline:none;border-color:#1a237e}
+.empty{text-align:center;padding:30px;color:#aaa;font-size:.85rem}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700}
+.badge-r1{background:#e8f5e9;color:#1b5e20}.badge-r2{background:#e3f2fd;color:#0d47a1}.badge-r3{background:#fce4ec;color:#880e4f}.badge-r4{background:#fff3e0;color:#e65100}.badge-adj{background:#f3e5f5;color:#4a148c}
+</style>
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>📋 Agenda de Guardia</h1></div>
+<div class="container">
+    <div class="today-bar">
+        <div class="date" id="todayDate"></div>
+        <div class="sub">Hospital Santa Lucía · Área II Cartagena</div>
+    </div>
+
+    <div class="tab-bar">
+        <button class="active" onclick="showGuardTab('hoy',this)">📅 Hoy</button>
+        <button onclick="showGuardTab('semana',this)">📆 Semana</button>
+        <button onclick="showGuardTab('notas',this)">📝 Notas</button>
+    </div>
+
+    <div id="tab-hoy">
+        <div class="card">
+            <h3>➕ Añadir al turno de hoy</h3>
+            <div class="guard-form">
+                <input type="text" id="guardNombre" placeholder="Nombre">
+                <select id="guardRol">
+                    <option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option>
+                    <option value="Adjunto">Adjunto</option><option value="Enfermería">Enfermería</option><option value="MIR otro">MIR otro</option>
+                </select>
+                <select id="guardTurno">
+                    <option value="08:00-15:00">☀️ Mañana</option><option value="15:00-22:00">🌆 Tarde</option><option value="22:00-08:00">🌙 Noche</option><option value="08:00-08:00">🔄 24h</option>
+                </select>
+                <button class="btn-add" onclick="addGuard()">+ Añadir</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🩺 Equipo de guardia hoy</h3>
+            <div class="guard-list" id="guardList">
+                <div class="empty">No hay personal registrado para hoy.<br>Pulsa "Añadir" para empezar.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-semana" style="display:none;">
+        <div class="card">
+            <h3>📆 Guardias esta semana</h3>
+            <div id="weekView"></div>
+        </div>
+    </div>
+
+    <div id="tab-notas" style="display:none;">
+        <div class="card">
+            <h3>📝 Notas de guardia</h3>
+            <p style="font-size:.8rem;color:var(--muted);margin-bottom:8px;">Apuntes generales, cambios de turno, avisos importantes...</p>
+            <textarea class="notes-area" id="guardNotas" placeholder="Escribe notas para el equipo de guardia..." oninput="saveNotes()"></textarea>
+            <div style="margin-top:8px;display:flex;gap:8px;">
+                <button onclick="copyNotes()" style="padding:8px 14px;background:#e8eaf6;border:1px solid #c5cae9;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;color:#1a237e;font-family:inherit;">📋 Copiar</button>
+                <button onclick="if(confirm('¿Borrar notas?')){document.getElementById('guardNotas').value='';saveNotes();}" style="padding:8px 14px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;color:#dc2626;font-family:inherit;">🗑️ Borrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var guards=JSON.parse(localStorage.getItem('guardias_hoy')||'[]');
+var today=new Date();
+var opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+document.getElementById('todayDate').textContent=today.toLocaleDateString('es-ES',opts);
+
+// Check if stored date is today, otherwise clear
+var storedDate=localStorage.getItem('guardias_fecha');
+var todayStr=today.toISOString().split('T')[0];
+if(storedDate!==todayStr){
+    guards=[];
+    localStorage.setItem('guardias_hoy','[]');
+    localStorage.setItem('guardias_fecha',todayStr);
+}
+
+function addGuard(){
+    var nombre=document.getElementById('guardNombre').value.trim();
+    if(!nombre){alert('Escribe un nombre');return;}
+    var rol=document.getElementById('guardRol').value;
+    var turno=document.getElementById('guardTurno').value;
+    guards.push({nombre:nombre,rol:rol,turno:turno,id:Date.now()});
+    localStorage.setItem('guardias_hoy',JSON.stringify(guards));
+    localStorage.setItem('guardias_fecha',todayStr);
+    document.getElementById('guardNombre').value='';
+    renderGuards();
+    // Save to week
+    var week=JSON.parse(localStorage.getItem('guardias_semana')||'{}');
+    if(!week[todayStr]) week[todayStr]=[];
+    week[todayStr]=guards;
+    localStorage.setItem('guardias_semana',JSON.stringify(week));
+}
+
+function removeGuard(id){
+    guards=guards.filter(g=>g.id!==id);
+    localStorage.setItem('guardias_hoy',JSON.stringify(guards));
+    renderGuards();
+}
+
+function renderGuards(){
+    var el=document.getElementById('guardList');
+    if(guards.length===0){
+        el.innerHTML='<div class="empty">No hay personal registrado para hoy.<br>Pulsa "Añadir" para empezar.</div>';
+        return;
+    }
+    var badgeClass={'R1':'badge-r1','R2':'badge-r2','R3':'badge-r3','R4':'badge-r4','Adjunto':'badge-adj','Enfermería':'badge-r2','MIR otro':'badge-r1'};
+    var h='';
+    guards.forEach(function(g){
+        var initials=g.nombre.split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
+        h+='<div class="guard-item">';
+        h+='<div class="avatar">'+initials+'</div>';
+        h+='<div class="info"><div class="name">'+g.nombre+' <span class="badge '+(badgeClass[g.rol]||'badge-r1')+'">'+g.rol+'</span></div>';
+        h+='<div class="role">'+g.turno+'</div></div>';
+        h+='<div class="actions"><button onclick="removeGuard('+g.id+')" title="Eliminar">🗑️</button></div>';
+        h+='</div>';
+    });
+    el.innerHTML=h;
+}
+
+function showGuardTab(tab,btn){
+    document.querySelectorAll('.tab-bar button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-hoy').style.display=tab==='hoy'?'block':'none';
+    document.getElementById('tab-semana').style.display=tab==='semana'?'block':'none';
+    document.getElementById('tab-notas').style.display=tab==='notas'?'block':'none';
+    if(tab==='semana') renderWeek();
+}
+
+function renderWeek(){
+    var week=JSON.parse(localStorage.getItem('guardias_semana')||'{}');
+    var el=document.getElementById('weekView');
+    var h='';
+    var d=new Date();d.setDate(d.getDate()-d.getDay()+1);
+    for(var i=0;i<7;i++){
+        var ds=d.toISOString().split('T')[0];
+        var dayName=d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'});
+        var isToday=ds===todayStr;
+        var dayGuards=week[ds]||[];
+        h+='<div style="padding:10px;border-bottom:1px solid #e8eaf6;'+(isToday?'background:#e8eaf6;border-radius:8px;':'')+'margin-bottom:4px;">';
+        h+='<div style="font-weight:700;font-size:.85rem;color:'+(isToday?'#1a237e':'#666')+';">'+dayName+(isToday?' (hoy)':'')+'</div>';
+        if(dayGuards.length>0){
+            dayGuards.forEach(function(g){
+                h+='<div style="font-size:.8rem;color:#555;margin-top:2px;">• '+g.nombre+' <span class="badge '+(({'R1':'badge-r1','R2':'badge-r2','R3':'badge-r3','R4':'badge-r4','Adjunto':'badge-adj'})[g.rol]||'badge-r1')+'">'+g.rol+'</span> '+g.turno+'</div>';
+            });
+        } else {
+            h+='<div style="font-size:.78rem;color:#ccc;">Sin registros</div>';
+        }
+        h+='</div>';
+        d.setDate(d.getDate()+1);
+    }
+    el.innerHTML=h;
+}
+
+function saveNotes(){localStorage.setItem('guardias_notas',document.getElementById('guardNotas').value);}
+function copyNotes(){navigator.clipboard.writeText(document.getElementById('guardNotas').value).then(()=>alert('✅ Notas copiadas'));}
+
+// Init
+renderGuards();
+document.getElementById('guardNotas').value=localStorage.getItem('guardias_notas')||'';
+</script>
+</body>
+</html>

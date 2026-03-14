@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Solicitar Cita | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#1a6b4a;--green-l:#e8f5e9;--bg:#f7f8fa;--card:#fff;--text:#1a1a2e;--muted:#64748b;--r:12px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1.05rem;font-weight:700}.nav a{color:#86efac;text-decoration:none;font-size:.85rem;font-weight:600}
+.container{max-width:600px;margin:0 auto;padding:20px}
+.header{text-align:center;padding:24px 0 16px}
+.header .icon{font-size:2.8rem;margin-bottom:8px}
+.header h2{font-size:1.3rem;color:var(--green)}
+.header p{font-size:.88rem;color:var(--muted);margin-top:4px}
+.card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:16px}
+.card h3{font-size:1rem;color:var(--green);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--green-l)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:11px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff;transition:border .2s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green)}
+.field textarea{resize:vertical;min-height:80px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px}
+.slot{padding:10px;border:2px solid #e0e0e0;border-radius:8px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s;background:#fff}
+.slot:hover{border-color:var(--green);background:var(--green-l)}
+.slot.selected{border-color:var(--green);background:var(--green);color:#fff}
+.slot.disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.btn{background:var(--green);color:#fff;border:none;padding:14px 24px;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;font-family:inherit;transition:opacity .2s}
+.btn:hover{opacity:.9}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.info{background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px 12px;font-size:.78rem;color:#0d47a1;margin-bottom:14px}
+.warn{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px 12px;font-size:.78rem;color:#6d4c00;margin-bottom:14px}
+.success{display:none;text-align:center;padding:40px 20px}
+.success .check{font-size:4rem;margin-bottom:12px}
+.success h2{color:var(--green);margin-bottom:8px}
+.success p{color:var(--muted);font-size:.9rem;line-height:1.6}
+.step{display:none}.step.active{display:block}
+.steps-bar{display:flex;gap:4px;margin-bottom:20px}
+.steps-bar .s{flex:1;height:4px;background:#e0e0e0;border-radius:4px;transition:background .3s}
+.steps-bar .s.done{background:var(--green)}
+.phone-list{margin-top:12px;font-size:.85rem;line-height:1.8}
+.phone-list a{color:var(--green);font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>📅 Solicitar Cita</h1></div>
+<div class="container">
+    <div class="header">
+        <div class="icon">📅</div>
+        <h2>Solicitar Cita Médica</h2>
+        <p>Centro de Salud Virgen de la Caridad · Área II Cartagena</p>
+    </div>
+
+    <div class="warn">
+        ⚠️ <strong>Importante:</strong> Este formulario envía una solicitud de cita. La confirmación definitiva la recibirás por teléfono o SMS del centro de salud. Para urgencias, llama al <strong>112</strong>.
+    </div>
+
+    <div class="steps-bar"><div class="s done" id="s1"></div><div class="s" id="s2"></div><div class="s" id="s3"></div></div>
+
+    <!-- STEP 1: Datos personales -->
+    <div class="step active" id="step1">
+        <div class="card">
+            <h3>1️⃣ Datos del paciente</h3>
+            <div class="row">
+                <div class="field"><label>Nombre *</label><input type="text" id="citaNombre" placeholder="Tu nombre"></div>
+                <div class="field"><label>Apellidos *</label><input type="text" id="citaApellidos" placeholder="Tus apellidos"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Teléfono *</label><input type="tel" id="citaTel" placeholder="600 123 456"></div>
+                <div class="field"><label>Nº Tarjeta Sanitaria</label><input type="text" id="citaTarjeta" placeholder="Opcional"></div>
+            </div>
+            <div class="field"><label>Fecha de nacimiento</label><input type="date" id="citaNacimiento"></div>
+            <button class="btn" onclick="citaStep(2)">Siguiente →</button>
+        </div>
+    </div>
+
+    <!-- STEP 2: Tipo de cita -->
+    <div class="step" id="step2">
+        <div class="card">
+            <h3>2️⃣ Tipo de consulta</h3>
+            <div class="field"><label>Profesional</label>
+                <select id="citaProfesional">
+                    <option value="">— Selecciona —</option>
+                    <option value="medico">👨‍⚕️ Médico de familia</option>
+                    <option value="enfermeria">👩‍⚕️ Enfermería</option>
+                    <option value="matrona">🤰 Matrona</option>
+                    <option value="pediatra">👶 Pediatría</option>
+                    <option value="trabajo-social">🤝 Trabajo social</option>
+                </select>
+            </div>
+            <div class="field"><label>Motivo de la consulta *</label>
+                <select id="citaMotivo">
+                    <option value="">— Selecciona —</option>
+                    <option value="revision">📋 Revisión / Control periódico</option>
+                    <option value="recetas">💊 Renovación de recetas</option>
+                    <option value="resultados">🔬 Resultados de analítica</option>
+                    <option value="sintomas">🤒 Síntomas nuevos</option>
+                    <option value="derivacion">📄 Derivación a especialista</option>
+                    <option value="vacunacion">💉 Vacunación</option>
+                    <option value="curas">🩹 Curas / Enfermería</option>
+                    <option value="certificado">📝 Certificado médico</option>
+                    <option value="otro">📌 Otro</option>
+                </select>
+            </div>
+            <div class="field"><label>Observaciones (opcional)</label><textarea id="citaObs" placeholder="Describe brevemente tu consulta..."></textarea></div>
+            <div class="field"><label>Preferencia horaria</label>
+                <select id="citaHorario">
+                    <option value="manana">☀️ Mañana (8:00-14:00)</option>
+                    <option value="tarde">🌙 Tarde (14:00-20:00)</option>
+                    <option value="indiferente">🔄 Indiferente</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn" onclick="citaStep(1)" style="background:#e0e0e0;color:#333;flex:.4">← Atrás</button>
+                <button class="btn" onclick="citaStep(3)" style="flex:.6">Siguiente →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: Fecha y hora -->
+    <div class="step" id="step3">
+        <div class="card">
+            <h3>3️⃣ Fecha preferida</h3>
+            <div class="field"><label>Selecciona día *</label><input type="date" id="citaFecha" min="" onchange="generarHuecos()"></div>
+            <div class="field">
+                <label>Horarios disponibles</label>
+                <div class="slots" id="citaSlots">
+                    <div style="text-align:center;padding:20px;color:#aaa;grid-column:1/-1;font-size:.85rem;">Selecciona una fecha para ver horarios</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;">
+                <button class="btn" onclick="citaStep(2)" style="background:#e0e0e0;color:#333;flex:.4">← Atrás</button>
+                <button class="btn" id="btnEnviar" onclick="enviarCita()" style="flex:.6" disabled>📅 Enviar solicitud</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success" id="citaSuccess">
+        <div class="check">✅</div>
+        <h2>Solicitud enviada</h2>
+        <p>Tu solicitud de cita ha sido registrada correctamente.<br>
+        Recibirás confirmación por <strong>teléfono o SMS</strong> en las próximas 24-48 horas hábiles.</p>
+        <div style="margin-top:20px;padding:14px;background:var(--green-l);border-radius:8px;font-size:.85rem;color:#1b5e20;">
+            <strong>📋 Resumen:</strong><br>
+            <span id="resumenCita"></span>
+        </div>
+        <button class="btn" onclick="location.reload()" style="margin-top:16px;">Nueva solicitud</button>
+    </div>
+
+    <!-- Teléfonos directos -->
+    <div class="card">
+        <h3>📞 Contacto directo</h3>
+        <div class="info">Si prefieres llamar directamente, estos son los teléfonos del centro:</div>
+        <div class="phone-list">
+            📞 <a href="tel:968121234">968 12 12 34</a> — Cita previa general<br>
+            📞 <a href="tel:968128600">968 12 86 00</a> — Centralita Hospital Santa Lucía<br>
+            📱 <a href="tel:900100500">900 100 500</a> — Cita previa SMS (gratuito)<br>
+            🌐 <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a> — Cita online oficial SMS
+        </div>
+    </div>
+</div>
+
+<script>
+var selectedSlot='';
+
+// Set min date to today
+document.getElementById('citaFecha').min=new Date().toISOString().split('T')[0];
+
+function citaStep(n){
+    // Validate
+    if(n===2){
+        if(!document.getElementById('citaNombre').value.trim()||!document.getElementById('citaApellidos').value.trim()||!document.getElementById('citaTel').value.trim()){
+            alert('Por favor, completa nombre, apellidos y teléfono.');return;
+        }
+    }
+    if(n===3){
+        if(!document.getElementById('citaProfesional').value||!document.getElementById('citaMotivo').value){
+            alert('Selecciona profesional y motivo.');return;
+        }
+    }
+    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    document.getElementById('step'+n).classList.add('active');
+    for(var i=1;i<=3;i++){
+        document.getElementById('s'+i).classList.toggle('done',i<=n);
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function generarHuecos(){
+    var fecha=document.getElementById('citaFecha').value;
+    if(!fecha)return;
+    var d=new Date(fecha);
+    var dow=d.getDay();
+    if(dow===0||dow===6){
+        document.getElementById('citaSlots').innerHTML='<div style="text-align:center;padding:20px;color:#e65100;grid-column:1/-1;font-size:.85rem;">⚠️ Fin de semana. Selecciona un día laborable.</div>';
+        return;
+    }
+    var pref=document.getElementById('citaHorario').value;
+    var horas=[];
+    if(pref==='manana'||pref==='indiferente'){
+        horas.push('08:00','08:15','08:30','08:45','09:00','09:15','09:30','09:45','10:00','10:15','10:30','10:45','11:00','11:15','11:30','11:45','12:00','12:30','13:00','13:30');
+    }
+    if(pref==='tarde'||pref==='indiferente'){
+        horas.push('14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30');
+    }
+    // Randomly disable some slots to simulate availability
+    var seed=fecha.split('-').reduce((a,b)=>a+parseInt(b),0);
+    var html='';
+    horas.forEach(function(h,i){
+        var dis=(seed+i)%3===0;
+        html+='<div class="slot'+(dis?' disabled':'')+'" onclick="'+(dis?'':'selectSlot(this,\''+h+'\')')+'">'+h+'</div>';
+    });
+    document.getElementById('citaSlots').innerHTML=html;
+    selectedSlot='';
+    document.getElementById('btnEnviar').disabled=true;
+}
+
+function selectSlot(el,hora){
+    document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedSlot=hora;
+    document.getElementById('btnEnviar').disabled=false;
+}
+
+function enviarCita(){
+    if(!selectedSlot||!document.getElementById('citaFecha').value){
+        alert('Selecciona fecha y hora.');return;
+    }
+    var nombre=document.getElementById('citaNombre').value+' '+document.getElementById('citaApellidos').value;
+    var tel=document.getElementById('citaTel').value;
+    var prof=document.getElementById('citaProfesional').options[document.getElementById('citaProfesional').selectedIndex].text;
+    var motivo=document.getElementById('citaMotivo').options[document.getElementById('citaMotivo').selectedIndex].text;
+    var fecha=document.getElementById('citaFecha').value;
+    var obs=document.getElementById('citaObs').value;
+
+    // Show success
+    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    document.getElementById('citaSuccess').style.display='block';
+    document.getElementById('resumenCita').innerHTML=
+        '👤 '+nombre+'<br>📞 '+tel+'<br>👨‍⚕️ '+prof+'<br>📋 '+motivo+'<br>📅 '+fecha+' a las '+selectedSlot+(obs?'<br>💬 '+obs:'');
+
+    // Try to save locally
+    try{
+        var citas=JSON.parse(localStorage.getItem('citasPendientes')||'[]');
+        citas.push({nombre:nombre,tel:tel,prof:prof,motivo:motivo,fecha:fecha,hora:selectedSlot,obs:obs,timestamp:Date.now()});
+        localStorage.setItem('citasPendientes',JSON.stringify(citas));
+    }catch(e){}
+}
+</script>
+</body>
+</html>

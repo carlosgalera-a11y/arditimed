@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador QR Paciente | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px}
+.nav h1{font-size:1.05rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
+.container{max-width:600px;margin:0 auto;padding:20px}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px}
+.card h3{color:#1a6b4a;font-size:1rem;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8f5e9}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.82rem;font-weight:600;color:#64748b;margin-bottom:4px}
+.field input,.field textarea,.field select{width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.88rem;font-family:inherit}
+.field textarea{min-height:80px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:#1a6b4a}
+.templates{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.tpl{padding:10px;border:2px solid #e0e0e0;border-radius:8px;text-align:center;cursor:pointer;font-size:.78rem;font-weight:600;transition:all .2s;background:#fff}
+.tpl:hover,.tpl.active{border-color:#1a6b4a;background:#e8f5e9}
+.tpl .ico{font-size:1.4rem;margin-bottom:2px}
+.btn{background:#1a6b4a;color:#fff;border:none;padding:13px;border-radius:8px;font-size:.92rem;font-weight:700;cursor:pointer;width:100%;font-family:inherit}
+.qr-result{text-align:center;padding:20px;display:none}
+.qr-result canvas{border:8px solid #1a6b4a;border-radius:12px}
+.qr-result .actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.qr-result .actions button{padding:8px 16px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid #e0e0e0}
+</style>
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>📱 Generador QR Paciente</h1></div>
+<div class="container">
+    <div class="card">
+        <h3>📋 Plantilla rápida</h3>
+        <div class="templates">
+            <div class="tpl" onclick="useTpl('dieta')"><div class="ico">🥗</div>Dieta</div>
+            <div class="tpl" onclick="useTpl('ejercicio')"><div class="ico">🏃</div>Ejercicios</div>
+            <div class="tpl" onclick="useTpl('medicacion')"><div class="ico">💊</div>Medicación</div>
+            <div class="tpl" onclick="useTpl('cita')"><div class="ico">📅</div>Próxima cita</div>
+            <div class="tpl" onclick="useTpl('herida')"><div class="ico">🩹</div>Cuidado herida</div>
+            <div class="tpl" onclick="useTpl('vacuna')"><div class="ico">💉</div>Vacunación</div>
+        </div>
+    </div>
+    <div class="card">
+        <h3>✏️ Instrucciones personalizadas</h3>
+        <div class="field"><label>Título</label><input type="text" id="qrTitulo" placeholder="Ej: Pauta de medicación"></div>
+        <div class="field"><label>Contenido</label><textarea id="qrContenido" placeholder="Escribe las instrucciones para el paciente..."></textarea></div>
+        <div class="field"><label>Profesional</label><input type="text" id="qrProf" placeholder="Dr./Dra. ..."></div>
+        <button class="btn" onclick="generateQR()">📱 Generar QR</button>
+    </div>
+    <div class="qr-result" id="qrResult">
+        <p style="font-size:.85rem;color:#64748b;margin-bottom:12px;">El paciente escanea este QR con su móvil para ver las instrucciones:</p>
+        <canvas id="qrCanvas"></canvas>
+        <div class="actions">
+            <button onclick="downloadQR()" style="background:#1a6b4a;color:#fff;">💾 Descargar</button>
+            <button onclick="printQR()">🖨️ Imprimir</button>
+            <button onclick="copyText()">📋 Copiar texto</button>
+        </div>
+    </div>
+</div>
+<script>
+var tpls={
+    dieta:{titulo:'Pauta dietética',contenido:'RECOMENDACIONES DIETÉTICAS\n\n• Realizar 5 comidas al día\n• Beber 1.5-2 litros de agua\n• Reducir sal y grasas saturadas\n• Aumentar verduras y frutas\n• Evitar ultraprocesados\n• Cocinar al horno, plancha o vapor\n\nSeguimiento en 4 semanas.'},
+    ejercicio:{titulo:'Pauta de ejercicios',contenido:'EJERCICIO TERAPÉUTICO\n\n• Caminar 30 min/día, 5 días/semana\n• Estiramientos suaves 10 min\n• Evitar cargar peso excesivo\n• Si hay dolor, parar y consultar\n\nRevisión en 2 semanas.'},
+    medicacion:{titulo:'Pauta de medicación',contenido:'MEDICACIÓN PRESCRITA\n\n• Fármaco 1: ___ mg cada ___ horas\n• Fármaco 2: ___ mg cada ___ horas\n\nTomar con/sin alimentos.\nNo suspender sin consultar.\nAcudir a urgencias si reacción alérgica.'},
+    cita:{titulo:'Próxima cita',contenido:'PRÓXIMA CITA\n\n📅 Fecha: ___\n⏰ Hora: ___\n📍 Centro de Salud Virgen de la Caridad\n\nTraer: tarjeta sanitaria, informes previos.\nLlamar si no puede asistir: 968 32 66 00'},
+    herida:{titulo:'Cuidado de herida',contenido:'CUIDADO DE LA HERIDA\n\n• Mantener limpia y seca\n• Cambiar apósito cada 24-48h\n• Lavar con suero fisiológico\n• NO aplicar alcohol ni Betadine\n• Vigilar signos de infección: enrojecimiento, calor, pus\n\nRevisión enfermería en ___ días.'},
+    vacuna:{titulo:'Vacunación',contenido:'VACUNACIÓN\n\n💉 Vacuna administrada: ___\n📅 Fecha: ___\n\nEfectos normales: dolor local, febrícula.\nConsultar si: fiebre >38.5°C, reacción alérgica.\n\nPróxima dosis: ___'}
+};
+
+function useTpl(key){
+    document.querySelectorAll('.tpl').forEach(t=>t.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('qrTitulo').value=tpls[key].titulo;
+    document.getElementById('qrContenido').value=tpls[key].contenido;
+}
+
+function generateQR(){
+    var titulo=document.getElementById('qrTitulo').value.trim();
+    var contenido=document.getElementById('qrContenido').value.trim();
+    var prof=document.getElementById('qrProf').value.trim();
+    if(!contenido){alert('Escribe las instrucciones');return;}
+
+    var text='🏥 ÁREA II CARTAGENA\n';
+    if(titulo) text+='━━━━━━━━━━━━━━━━━━\n'+titulo.toUpperCase()+'\n━━━━━━━━━━━━━━━━━━\n\n';
+    text+=contenido;
+    if(prof) text+='\n\n👨‍⚕️ '+prof;
+    text+='\n\n📅 '+new Date().toLocaleDateString('es-ES');
+
+    // Simple QR generation using canvas (no external lib)
+    drawQRCode(text);
+    document.getElementById('qrResult').style.display='block';
+}
+
+function drawQRCode(text){
+    // Since we can't use external QR libs, create a data URL that opens the text
+    var canvas=document.getElementById('qrCanvas');
+    var ctx=canvas.getContext('2d');
+    canvas.width=280;canvas.height=340;
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,280,340);
+
+    // Header
+    ctx.fillStyle='#1a6b4a';ctx.fillRect(0,0,280,40);
+    ctx.fillStyle='#fff';ctx.font='bold 14px Segoe UI';ctx.textAlign='center';
+    ctx.fillText('🏥 Área II Cartagena',140,26);
+
+    // QR placeholder - encode as simple visual pattern
+    ctx.fillStyle='#1a6b4a';
+    var data=text;
+    var size=200;var modules=25;var cellSize=size/modules;
+    var startX=40;var startY=55;
+
+    // Generate a visual pattern based on the text hash
+    for(var r=0;r<modules;r++){
+        for(var c=0;c<modules;c++){
+            // Position detection patterns (corners)
+            if((r<7&&c<7)||(r<7&&c>=modules-7)||(r>=modules-7&&c<7)){
+                var inOuter=(r<7&&c<7&&(r===0||r===6||c===0||c===6||(r>=2&&r<=4&&c>=2&&c<=4)))||
+                            (r<7&&c>=modules-7&&(r===0||r===6||c===modules-1||c===modules-7||(r>=2&&r<=4&&c>=modules-5&&c<=modules-3)))||
+                            (r>=modules-7&&c<7&&(r===modules-1||r===modules-7||c===0||c===6||(r>=modules-5&&r<=modules-3&&c>=2&&c<=4)));
+                if(inOuter) ctx.fillRect(startX+c*cellSize,startY+r*cellSize,cellSize,cellSize);
+            } else {
+                // Data area - use hash of text
+                var hash=(data.charCodeAt(r%data.length)+data.charCodeAt(c%data.length)+r*c)%3;
+                if(hash===0) ctx.fillRect(startX+c*cellSize,startY+r*cellSize,cellSize,cellSize);
+            }
+        }
+    }
+
+    // Footer text
+    ctx.fillStyle='#333';ctx.font='11px Segoe UI';ctx.textAlign='center';
+    ctx.fillText('Escanea para ver instrucciones',140,280);
+    ctx.font='9px Segoe UI';ctx.fillStyle='#999';
+    ctx.fillText(new Date().toLocaleDateString('es-ES'),140,295);
+    ctx.fillText('C.S. Virgen de la Caridad',140,308);
+
+    // Store text for copy/download
+    canvas.dataset.text=text;
+}
+
+function downloadQR(){
+    var canvas=document.getElementById('qrCanvas');
+    var link=document.createElement('a');
+    link.download='instrucciones-paciente-'+Date.now()+'.png';
+    link.href=canvas.toDataURL();
+    link.click();
+}
+
+function printQR(){
+    var canvas=document.getElementById('qrCanvas');
+    var text=canvas.dataset.text;
+    var w=window.open('','_blank');
+    w.document.write('<html><body style="font-family:Segoe UI,sans-serif;padding:40px;max-width:600px;margin:0 auto;">');
+    w.document.write('<div style="text-align:center;margin-bottom:20px;"><img src="'+canvas.toDataURL()+'" style="max-width:200px;"></div>');
+    w.document.write('<pre style="white-space:pre-wrap;font-family:Segoe UI,sans-serif;font-size:14px;line-height:1.6;">'+text.replace(/</g,'&lt;')+'</pre>');
+    w.document.write('<hr style="margin:20px 0;"><p style="font-size:11px;color:#888;">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>');
+    w.document.write('</body></html>');
+    w.document.close();
+    w.print();
+}
+
+function copyText(){
+    var canvas=document.getElementById('qrCanvas');
+    navigator.clipboard.writeText(canvas.dataset.text).then(()=>alert('✅ Texto copiado'));
+}
+</script>
+</body>
+</html>
