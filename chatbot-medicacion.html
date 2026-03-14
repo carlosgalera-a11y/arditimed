@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Consulta sobre tu Medicación | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;min-height:100vh;display:flex;flex-direction:column}
+.nav{background:linear-gradient(135deg,#0d47a1,#1565c0);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1rem;font-weight:700}.nav a{color:#90caf9;text-decoration:none;font-size:.85rem;font-weight:600}
+.chat-area{flex:1;max-width:700px;width:100%;margin:0 auto;padding:16px;overflow-y:auto}
+.msg{margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.msg.bot{flex-direction:row}.msg.user{flex-direction:row-reverse}
+.msg .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.msg.bot .avatar{background:#e3f2fd}.msg.user .avatar{background:#e8f5e9}
+.msg .bubble{max-width:80%;padding:12px 16px;border-radius:16px;font-size:.9rem;line-height:1.6}
+.msg.bot .bubble{background:#fff;border:1px solid #e0e0e0;border-top-left-radius:4px;color:#333}
+.msg.user .bubble{background:#1565c0;color:#fff;border-top-right-radius:4px}
+.bubble strong{color:#0d47a1}.msg.user .bubble strong{color:#90caf9}
+.input-area{background:#fff;border-top:1px solid #e0e0e0;padding:12px 16px;position:sticky;bottom:0}
+.input-wrap{max-width:700px;margin:0 auto;display:flex;gap:8px}
+.input-wrap input{flex:1;padding:12px 16px;border:2px solid #e0e0e0;border-radius:24px;font-size:.9rem;font-family:inherit;outline:none}
+.input-wrap input:focus{border-color:#1565c0}
+.input-wrap button{background:#1565c0;color:#fff;border:none;border-radius:50%;width:44px;height:44px;cursor:pointer;font-size:1.2rem;flex-shrink:0}
+.input-wrap button:hover{background:#0d47a1}
+.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-width:700px;margin-left:auto;margin-right:auto}
+.quick-btn{padding:6px 14px;border:1px solid #90caf9;background:#e3f2fd;border-radius:20px;cursor:pointer;font-size:.78rem;font-weight:600;color:#0d47a1;font-family:inherit}
+.quick-btn:hover{background:#bbdefb}
+.warning{background:#fff3e0;border:1px solid #ffe0b2;border-radius:10px;padding:10px;font-size:.78rem;color:#e65100;text-align:center;margin:8px 16px}
+.typing{display:flex;gap:4px;padding:8px 16px}.typing span{width:8px;height:8px;background:#90caf9;border-radius:50%;animation:bounce .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{to{transform:translateY(-6px);opacity:.4}}
+</style>
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>💊 Consulta sobre tu Medicación</h1></div>
+<div class="warning">⚠️ Esta herramienta es <strong>orientativa</strong>. No sustituye la consulta con tu médico o farmacéutico. Ante cualquier duda, consulta a un profesional.</div>
+<div class="chat-area" id="chatArea">
+    <div class="msg bot">
+        <div class="avatar">💊</div>
+        <div class="bubble">¡Hola! Soy tu asistente de medicación. Puedo ayudarte con:<br><br>
+        • <strong>Información</strong> sobre tus medicamentos<br>
+        • <strong>Interacciones</strong> entre fármacos<br>
+        • <strong>Horarios</strong> de toma recomendados<br>
+        • <strong>Efectos secundarios</strong> frecuentes<br><br>
+        Escribe el nombre de tu medicamento o pregúntame lo que necesites.</div>
+    </div>
+</div>
+<div class="input-area">
+    <div class="input-wrap">
+        <input type="text" id="chatInput" placeholder="Escribe tu pregunta sobre medicación..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button onclick="sendChat()">➤</button>
+    </div>
+    <div class="quick-btns">
+        <button class="quick-btn" onclick="quickAsk('¿Para qué sirve el Omeprazol?')">Omeprazol</button>
+        <button class="quick-btn" onclick="quickAsk('¿Puedo tomar Ibuprofeno con Sintrom?')">Ibuprofeno + Sintrom</button>
+        <button class="quick-btn" onclick="quickAsk('¿Cuándo debo tomar el Enalapril?')">Horario Enalapril</button>
+        <button class="quick-btn" onclick="quickAsk('Efectos secundarios de la Metformina')">Metformina</button>
+        <button class="quick-btn" onclick="quickAsk('¿Puedo tomar alcohol con antibióticos?')">Alcohol + ATB</button>
+    </div>
+</div>
+<script>
+var GROQ_KEY=localStorage.getItem('groqApiKey')||'';
+var chatHistory=[];
+
+function addMessage(who,text){
+    var area=document.getElementById('chatArea');
+    var div=document.createElement('div');
+    div.className='msg '+who;
+    div.innerHTML='<div class="avatar">'+(who==='bot'?'💊':'👤')+'</div><div class="bubble">'+text.replace(/\n/g,'<br>')+'</div>';
+    area.appendChild(div);
+    area.scrollTop=area.scrollHeight;
+}
+
+function addTyping(){
+    var area=document.getElementById('chatArea');
+    var div=document.createElement('div');
+    div.className='msg bot';div.id='typing';
+    div.innerHTML='<div class="avatar">💊</div><div class="typing"><span></span><span></span><span></span></div>';
+    area.appendChild(div);
+    area.scrollTop=area.scrollHeight;
+}
+
+function removeTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
+function quickAsk(q){document.getElementById('chatInput').value=q;sendChat();}
+
+async function sendChat(){
+    var input=document.getElementById('chatInput');
+    var q=input.value.trim();
+    if(!q)return;
+    input.value='';
+    addMessage('user',q);
+    chatHistory.push({role:'user',content:q});
+    addTyping();
+
+    // Try Groq first, fallback to local knowledge
+    if(GROQ_KEY){
+        try{
+            var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+                method:'POST',
+                headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
+                body:JSON.stringify({
+                    model:'llama-3.3-70b-versatile',
+                    messages:[{role:'system',content:'Eres un asistente farmacéutico para pacientes del Área II de Cartagena (España). Respondes en español, de forma clara y sencilla, adaptada a pacientes sin formación médica. Tus respuestas deben ser:\n- Concisas (máx 200 palabras)\n- Con lenguaje sencillo, evitando tecnicismos\n- Con emojis para claridad visual\n- SIEMPRE recuerda al paciente que consulte con su médico o farmacéutico ante dudas\n- Si preguntan sobre interacciones peligrosas, advierte claramente\n- Incluye horarios de toma recomendados cuando sea relevante\n- No diagnostiques ni prescribas. Solo informa sobre los fármacos que pregunten.\n- Responde SOLO sobre medicamentos y salud. Para otros temas, redirige amablemente.'}].concat(chatHistory.slice(-8)),
+                    max_tokens:500,temperature:0.3
+                })
+            });
+            var data=await res.json();
+            removeTyping();
+            var answer=data.choices[0].message.content;
+            addMessage('bot',answer);
+            chatHistory.push({role:'assistant',content:answer});
+            return;
+        }catch(e){console.error(e);}
+    }
+
+    // Fallback: basic local responses
+    removeTyping();
+    var answer=localAnswer(q);
+    addMessage('bot',answer);
+    chatHistory.push({role:'assistant',content:answer});
+}
+
+function localAnswer(q){
+    q=q.toLowerCase();
+    if(q.includes('omeprazol'))return '💊 <strong>Omeprazol</strong> es un protector de estómago (inhibidor de bomba de protones).\n\n⏰ <strong>Tomar en ayunas</strong>, 30 min antes del desayuno.\n⚠️ No se recomienda uso prolongado sin supervisión médica.\n\nConsulta con tu médico si llevas más de 8 semanas tomándolo.';
+    if(q.includes('ibuprofeno')&&q.includes('sintrom'))return '🚨 <strong>¡Precaución!</strong> Ibuprofeno + Sintrom es una combinación de RIESGO.\n\nEl ibuprofeno aumenta el riesgo de sangrado cuando se toma con anticoagulantes como Sintrom.\n\n✅ Alternativa: <strong>Paracetamol</strong> (hasta 1g cada 8h).\n\n⚠️ Consulta SIEMPRE con tu médico antes de tomar antiinflamatorios si llevas Sintrom.';
+    if(q.includes('metformina'))return '💊 <strong>Metformina</strong> se usa para la diabetes tipo 2.\n\n⏰ Tomar <strong>con las comidas</strong> (reduce molestias digestivas).\n⚠️ Efectos frecuentes: diarrea, náuseas, dolor abdominal (suelen mejorar con el tiempo).\n🚫 No tomar con alcohol en exceso.\n\nConsulta a tu médico si tienes síntomas persistentes.';
+    if(q.includes('enalapril'))return '💊 <strong>Enalapril</strong> es para la tensión arterial alta.\n\n⏰ Tomar <strong>siempre a la misma hora</strong>, preferiblemente por la mañana.\n⚠️ Puede causar tos seca (efecto frecuente). Si es muy molesta, consulta con tu médico.\n🍌 Evita el exceso de potasio en la dieta.';
+    if(q.includes('alcohol')&&(q.includes('antibio')||q.includes('atb')))return '🍺❌ <strong>Alcohol + Antibióticos:</strong>\n\nEn general, es mejor evitar el alcohol durante el tratamiento antibiótico.\n\n🚨 Con <strong>Metronidazol</strong> (Flagyl) está PROHIBIDO (efecto antabús grave).\n⚠️ Con otros antibióticos, el alcohol puede reducir la eficacia y aumentar efectos secundarios.\n\n✅ Espera al menos 48-72h después de terminar el tratamiento.';
+    return '🤔 No tengo información específica sobre eso en mi base local.\n\n📌 Te recomiendo:\n1. Consultar con tu <strong>farmacéutico</strong>\n2. Llamar al teléfono de <strong>información CARM: 012</strong>\n3. Preguntar a tu <strong>médico de cabecera</strong>\n\n💡 <em>Tip: Para respuestas más completas, el profesional sanitario puede activar la IA avanzada desde la configuración.</em>';
+}
+
+// Check if Groq key is stored from main app
+try{
+    var stored=localStorage.getItem('groqApiKey');
+    if(stored) GROQ_KEY=stored;
+}catch(e){}
+</script>
+</body>
+</html>

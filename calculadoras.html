@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Calculadoras Médicas | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#1a6b4a;--green-light:#e8f5e9;--bg:#f7f8fa;--card:#fff;--text:#1a1a2e;--muted:#64748b;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1.1rem;font-weight:700}
+.nav a{color:#86efac;text-decoration:none;font-size:.85rem;font-weight:600}
+.container{max-width:700px;margin:0 auto;padding:16px}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px}
+.calc-btn{background:var(--card);border:2px solid #e0e0e0;border-radius:var(--radius);padding:14px 10px;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit}
+.calc-btn:hover,.calc-btn.active{border-color:var(--green);background:var(--green-light);transform:translateY(-2px);box-shadow:var(--shadow)}
+.calc-btn .icon{font-size:1.6rem;margin-bottom:4px}
+.calc-btn .label{font-size:.78rem;font-weight:700;color:var(--text)}
+.calc-panel{display:none;background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px}
+.calc-panel.active{display:block}
+.calc-panel h2{font-size:1.1rem;color:var(--green);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--green-light)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field select,.field input{width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff}
+.field select:focus,.field input:focus{outline:none;border-color:var(--green)}
+.radio-group{display:flex;flex-wrap:wrap;gap:6px}
+.radio-group label{padding:8px 14px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s}
+.radio-group input{display:none}
+.radio-group input:checked+span{background:var(--green);color:#fff;border-color:var(--green)}
+.radio-group label:has(input:checked){background:var(--green);color:#fff;border-color:var(--green)}
+.btn-calc{background:var(--green);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;margin-top:8px;font-family:inherit}
+.btn-calc:hover{opacity:.9}
+.result-box{margin-top:14px;padding:16px;border-radius:var(--radius);font-size:.95rem;line-height:1.6;display:none}
+.result-box.show{display:block}
+.result-box.green{background:#e8f5e9;border:2px solid #66bb6a;color:#1b5e20}
+.result-box.yellow{background:#fff8e1;border:2px solid #ffc107;color:#6d4c00}
+.result-box.orange{background:#fff3e0;border:2px solid #ff9800;color:#e65100}
+.result-box.red{background:#fef2f2;border:2px solid #ef5350;color:#b71c1c}
+.result-box .score{font-size:2rem;font-weight:800;text-align:center;margin-bottom:6px}
+.result-box .interpret{font-weight:600;text-align:center;margin-bottom:8px}
+.info-box{background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px;font-size:.78rem;color:#0d47a1;margin-bottom:14px}
+.gcs-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.gcs-row .gcs-label{width:80px;font-size:.8rem;font-weight:700;color:var(--muted);flex-shrink:0}
+.gcs-row select{flex:1}
+</style>
+</head>
+<body>
+<div class="nav">
+    <a href="javascript:history.back()">← Volver</a>
+    <h1>🧮 Calculadoras Médicas</h1>
+</div>
+<div class="container">
+    <div class="calc-grid">
+        <div class="calc-btn active" onclick="showCalc('glasgow')"><div class="icon">🧠</div><div class="label">Glasgow (GCS)</div></div>
+        <div class="calc-btn" onclick="showCalc('curb65')"><div class="icon">🫁</div><div class="label">CURB-65</div></div>
+        <div class="calc-btn" onclick="showCalc('wells')"><div class="icon">🩸</div><div class="label">Wells (TEP)</div></div>
+        <div class="calc-btn" onclick="showCalc('chads')"><div class="icon">❤️</div><div class="label">CHA2DS2-VASc</div></div>
+        <div class="calc-btn" onclick="showCalc('pedia')"><div class="icon">👶</div><div class="label">Dosis pediátrica</div></div>
+        <div class="calc-btn" onclick="showCalc('goteo')"><div class="icon">💧</div><div class="label">Goteo IV</div></div>
+        <div class="calc-btn" onclick="showCalc('quemadura')"><div class="icon">🔥</div><div class="label">Quemaduras</div></div>
+        <div class="calc-btn" onclick="showCalc('imc')"><div class="icon">⚖️</div><div class="label">IMC</div></div>
+        <div class="calc-btn" onclick="showCalc('aclaramiento')"><div class="icon">🫘</div><div class="label">ClCr (Cockroft)</div></div>
+        <div class="calc-btn" onclick="showCalc('sofa')"><div class="icon">🏥</div><div class="label">qSOFA</div></div>
+    </div>
+
+    <!-- GLASGOW -->
+    <div class="calc-panel active" id="calc-glasgow">
+        <h2>🧠 Escala de Glasgow (GCS)</h2>
+        <div class="info-box">Valoración del nivel de conciencia. Rango: 3-15. TCE leve ≥13, moderado 9-12, grave ≤8 (intubar).</div>
+        <div class="gcs-row"><div class="gcs-label">👁️ Ocular</div><select id="gcs-eye"><option value="4">4 — Espontánea</option><option value="3">3 — A la voz</option><option value="2">2 — Al dolor</option><option value="1">1 — Ninguna</option></select></div>
+        <div class="gcs-row"><div class="gcs-label">💬 Verbal</div><select id="gcs-verbal"><option value="5">5 — Orientada</option><option value="4">4 — Confusa</option><option value="3">3 — Inapropiada</option><option value="2">2 — Incomprensible</option><option value="1">1 — Ninguna</option></select></div>
+        <div class="gcs-row"><div class="gcs-label">💪 Motora</div><select id="gcs-motor"><option value="6">6 — Obedece</option><option value="5">5 — Localiza</option><option value="4">4 — Retira</option><option value="3">3 — Flexión anormal</option><option value="2">2 — Extensión</option><option value="1">1 — Ninguna</option></select></div>
+        <button class="btn-calc" onclick="calcGlasgow()">Calcular GCS</button>
+        <div class="result-box" id="res-glasgow"></div>
+    </div>
+
+    <!-- CURB-65 -->
+    <div class="calc-panel" id="calc-curb65">
+        <h2>🫁 CURB-65 — Neumonía</h2>
+        <div class="info-box">Gravedad de la neumonía adquirida en comunidad. Decide manejo ambulatorio vs hospitalario.</div>
+        <div class="field"><label><input type="checkbox" id="curb-c"> <strong>C</strong>onfusión mental (desorientación temporo-espacial)</label></div>
+        <div class="field"><label><input type="checkbox" id="curb-u"> <strong>U</strong>rea > 44 mg/dL (BUN > 20)</label></div>
+        <div class="field"><label><input type="checkbox" id="curb-r"> <strong>R</strong>espiración ≥ 30 rpm</label></div>
+        <div class="field"><label><input type="checkbox" id="curb-b"> <strong>B</strong>lood pressure: PAS < 90 o PAD ≤ 60 mmHg</label></div>
+        <div class="field"><label><input type="checkbox" id="curb-65"> Edad ≥ <strong>65</strong> años</label></div>
+        <button class="btn-calc" onclick="calcCURB65()">Calcular CURB-65</button>
+        <div class="result-box" id="res-curb65"></div>
+    </div>
+
+    <!-- WELLS TEP -->
+    <div class="calc-panel" id="calc-wells">
+        <h2>🩸 Wells — TEP</h2>
+        <div class="info-box">Probabilidad clínica de tromboembolismo pulmonar. Determina necesidad de angioTAC / Dímero-D.</div>
+        <div class="field"><label><input type="checkbox" id="wells-1"> Signos/síntomas de TVP (+3)</label></div>
+        <div class="field"><label><input type="checkbox" id="wells-2"> Diagnóstico alternativo menos probable que TEP (+3)</label></div>
+        <div class="field"><label><input type="checkbox" id="wells-3"> FC > 100 lpm (+1.5)</label></div>
+        <div class="field"><label><input type="checkbox" id="wells-4"> Inmovilización ≥3 días o cirugía en 4 semanas (+1.5)</label></div>
+        <div class="field"><label><input type="checkbox" id="wells-5"> TEP o TVP previos (+1.5)</label></div>
+        <div class="field"><label><input type="checkbox" id="wells-6"> Hemoptisis (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="wells-7"> Cáncer activo (tratamiento en 6 meses) (+1)</label></div>
+        <button class="btn-calc" onclick="calcWells()">Calcular Wells</button>
+        <div class="result-box" id="res-wells"></div>
+    </div>
+
+    <!-- CHA2DS2-VASc -->
+    <div class="calc-panel" id="calc-chads">
+        <h2>❤️ CHA2DS2-VASc</h2>
+        <div class="info-box">Riesgo de ictus en fibrilación auricular. Indica necesidad de anticoagulación.</div>
+        <div class="field"><label><input type="checkbox" id="chads-c"> <strong>C</strong> — Insuficiencia cardíaca / FEVI ≤40% (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="chads-h"> <strong>H</strong> — Hipertensión (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="chads-a2"> <strong>A2</strong> — Edad ≥ 75 años (+2)</label></div>
+        <div class="field"><label><input type="checkbox" id="chads-d"> <strong>D</strong> — Diabetes mellitus (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="chads-s2"> <strong>S2</strong> — Ictus / AIT / tromboembolia previa (+2)</label></div>
+        <div class="field"><label><input type="checkbox" id="chads-v"> <strong>V</strong> — Enfermedad vascular (IAM, arteriopatía, placa aórtica) (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="chads-a"> <strong>A</strong> — Edad 65-74 años (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="chads-sc"> <strong>Sc</strong> — Sexo femenino (+1)</label></div>
+        <button class="btn-calc" onclick="calcCHADS()">Calcular CHA2DS2-VASc</button>
+        <div class="result-box" id="res-chads"></div>
+    </div>
+
+    <!-- DOSIS PEDIATRICA -->
+    <div class="calc-panel" id="calc-pedia">
+        <h2>👶 Dosis Pediátrica por Peso</h2>
+        <div class="info-box">Calcula la dosis según el peso del niño. Verifica siempre con el vademécum la dosis máxima.</div>
+        <div class="field"><label>Peso del niño (kg)</label><input type="number" id="pedia-peso" placeholder="ej: 12" step="0.1"></div>
+        <div class="field"><label>Fármaco</label>
+            <select id="pedia-farmaco">
+                <option value="10,40,8">Amoxicilina (40-80 mg/kg/día, c/8h)</option>
+                <option value="10,50,8">Amoxi-clavulánico (50-80 mg/kg/día, c/8h)</option>
+                <option value="7.5,15,12">Ibuprofeno (20-40 mg/kg/día, c/6-8h)</option>
+                <option value="10,15,6">Paracetamol (40-60 mg/kg/día, c/4-6h)</option>
+                <option value="5,10,12">Azitromicina (10 mg/kg/día, c/24h x 3d)</option>
+                <option value="3,6,12">Cefalexina (25-50 mg/kg/día, c/6-8h)</option>
+                <option value="7,14,12">Cefuroxima (20-30 mg/kg/día, c/12h)</option>
+                <option value="0.1,0.3,8">Dexametasona (0.15-0.6 mg/kg, dosis única)</option>
+                <option value="0.5,1,6">Prednisolona (1-2 mg/kg/día, c/12-24h)</option>
+                <option value="0.01,0.01,0">Adrenalina IM (0.01 mg/kg, máx 0.5mg)</option>
+            </select>
+        </div>
+        <button class="btn-calc" onclick="calcPedia()">Calcular Dosis</button>
+        <div class="result-box" id="res-pedia"></div>
+    </div>
+
+    <!-- GOTEO IV -->
+    <div class="calc-panel" id="calc-goteo">
+        <h2>💧 Cálculo de Goteo IV</h2>
+        <div class="info-box">Velocidad de perfusión intravenosa. 1 mL = 20 gotas (sistema estándar) o 60 microgotas.</div>
+        <div class="field"><label>Volumen a infundir (mL)</label><input type="number" id="goteo-vol" placeholder="ej: 500"></div>
+        <div class="field"><label>Tiempo de infusión (horas)</label><input type="number" id="goteo-horas" placeholder="ej: 8" step="0.5"></div>
+        <div class="field"><label>Sistema</label><select id="goteo-sistema"><option value="20">Macrogotero (20 gtas/mL)</option><option value="60">Microgotero (60 μgtas/mL)</option></select></div>
+        <button class="btn-calc" onclick="calcGoteo()">Calcular Goteo</button>
+        <div class="result-box" id="res-goteo"></div>
+    </div>
+
+    <!-- QUEMADURAS -->
+    <div class="calc-panel" id="calc-quemadura">
+        <h2>🔥 Superficie Corporal Quemada (SCQ)</h2>
+        <div class="info-box">Regla de los 9 de Wallace + Fórmula de Parkland para reposición hídrica en las primeras 24h.</div>
+        <div class="field"><label>Peso del paciente (kg)</label><input type="number" id="burn-peso" placeholder="ej: 70"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="field"><label>Cabeza (%)</label><input type="number" id="burn-head" value="0" max="9"></div>
+            <div class="field"><label>Tronco anterior (%)</label><input type="number" id="burn-chestf" value="0" max="18"></div>
+            <div class="field"><label>Tronco posterior (%)</label><input type="number" id="burn-chestb" value="0" max="18"></div>
+            <div class="field"><label>Brazo dcho (%)</label><input type="number" id="burn-armr" value="0" max="9"></div>
+            <div class="field"><label>Brazo izdo (%)</label><input type="number" id="burn-arml" value="0" max="9"></div>
+            <div class="field"><label>Pierna dcha (%)</label><input type="number" id="burn-legr" value="0" max="18"></div>
+            <div class="field"><label>Pierna izda (%)</label><input type="number" id="burn-legl" value="0" max="18"></div>
+            <div class="field"><label>Genitales (%)</label><input type="number" id="burn-gen" value="0" max="1"></div>
+        </div>
+        <button class="btn-calc" onclick="calcBurn()">Calcular SCQ + Parkland</button>
+        <div class="result-box" id="res-quemadura"></div>
+    </div>
+
+    <!-- IMC -->
+    <div class="calc-panel" id="calc-imc">
+        <h2>⚖️ Índice de Masa Corporal</h2>
+        <div class="field"><label>Peso (kg)</label><input type="number" id="imc-peso" placeholder="ej: 75" step="0.1"></div>
+        <div class="field"><label>Altura (cm)</label><input type="number" id="imc-altura" placeholder="ej: 170"></div>
+        <button class="btn-calc" onclick="calcIMC()">Calcular IMC</button>
+        <div class="result-box" id="res-imc"></div>
+    </div>
+
+    <!-- ACLARAMIENTO CREATININA -->
+    <div class="calc-panel" id="calc-aclaramiento">
+        <h2>🫘 Aclaramiento de Creatinina (Cockroft-Gault)</h2>
+        <div class="info-box">ClCr (mL/min) = [(140-edad) × peso] / (72 × Cr). ×0.85 si mujer.</div>
+        <div class="field"><label>Edad (años)</label><input type="number" id="clcr-edad" placeholder="ej: 65"></div>
+        <div class="field"><label>Peso (kg)</label><input type="number" id="clcr-peso" placeholder="ej: 70"></div>
+        <div class="field"><label>Creatinina sérica (mg/dL)</label><input type="number" id="clcr-cr" placeholder="ej: 1.2" step="0.01"></div>
+        <div class="field"><label>Sexo</label><select id="clcr-sexo"><option value="1">Hombre</option><option value="0.85">Mujer</option></select></div>
+        <button class="btn-calc" onclick="calcClCr()">Calcular ClCr</button>
+        <div class="result-box" id="res-aclaramiento"></div>
+    </div>
+
+    <!-- qSOFA -->
+    <div class="calc-panel" id="calc-sofa">
+        <h2>🏥 qSOFA — Quick SOFA</h2>
+        <div class="info-box">Cribado de sepsis fuera de UCI. ≥2 puntos: alto riesgo de mortalidad. Valorar ingreso UCI.</div>
+        <div class="field"><label><input type="checkbox" id="sofa-1"> PAS ≤ 100 mmHg (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="sofa-2"> FR ≥ 22 rpm (+1)</label></div>
+        <div class="field"><label><input type="checkbox" id="sofa-3"> Alteración del nivel de conciencia — Glasgow < 15 (+1)</label></div>
+        <button class="btn-calc" onclick="calcSOFA()">Calcular qSOFA</button>
+        <div class="result-box" id="res-sofa"></div>
+    </div>
+</div>
+
+<script>
+function showCalc(id){
+    document.querySelectorAll('.calc-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.calc-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('calc-'+id).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+function showResult(el,cls,html){
+    el.className='result-box show '+cls;
+    el.innerHTML=html;
+}
+
+function calcGlasgow(){
+    var e=+document.getElementById('gcs-eye').value;
+    var v=+document.getElementById('gcs-verbal').value;
+    var m=+document.getElementById('gcs-motor').value;
+    var t=e+v+m;
+    var cls,txt;
+    if(t>=13){cls='green';txt='TCE LEVE';}
+    else if(t>=9){cls='yellow';txt='TCE MODERADO';}
+    else{cls='red';txt='TCE GRAVE — Valorar IOT';}
+    showResult(document.getElementById('res-glasgow'),cls,
+        '<div class="score">GCS: '+t+'/15</div><div class="interpret">'+txt+'</div>'+
+        '<div style="font-size:.82rem;">Ocular: E'+e+' · Verbal: V'+v+' · Motora: M'+m+'</div>'+
+        (t<=8?'<div style="margin-top:8px;font-weight:700;color:#b71c1c;">⚠️ GCS ≤8: Considerar intubación orotraqueal</div>':''));
+}
+
+function calcCURB65(){
+    var s=(document.getElementById('curb-c').checked?1:0)+(document.getElementById('curb-u').checked?1:0)+
+          (document.getElementById('curb-r').checked?1:0)+(document.getElementById('curb-b').checked?1:0)+
+          (document.getElementById('curb-65').checked?1:0);
+    var cls,txt;
+    if(s<=1){cls='green';txt='Bajo riesgo — Tratamiento AMBULATORIO';}
+    else if(s===2){cls='yellow';txt='Riesgo intermedio — Considerar INGRESO u observación';}
+    else{cls='red';txt='Alto riesgo — INGRESO hospitalario (≥4: valorar UCI)';}
+    var mort=['<1%','~3%','~9%','~17%','~42%','~57%'];
+    showResult(document.getElementById('res-curb65'),cls,
+        '<div class="score">CURB-65: '+s+'/5</div><div class="interpret">'+txt+'</div>'+
+        '<div style="font-size:.82rem;">Mortalidad estimada a 30 días: '+mort[s]+'</div>');
+}
+
+function calcWells(){
+    var pts=[3,3,1.5,1.5,1.5,1,1];
+    var s=0;
+    for(var i=0;i<7;i++) if(document.getElementById('wells-'+(i+1)).checked) s+=pts[i];
+    var cls,txt;
+    if(s<=4){cls='green';txt='Probabilidad BAJA/INTERMEDIA — Solicitar Dímero-D';}
+    else{cls='red';txt='Probabilidad ALTA — AngioTAC directo (no esperar Dímero-D)';}
+    showResult(document.getElementById('res-wells'),cls,
+        '<div class="score">Wells: '+s+' pts</div><div class="interpret">'+txt+'</div>'+
+        '<div style="font-size:.82rem;">'+(s<=1?'Baja (<2%)':s<=4?'Intermedia (2-6%)':'Alta (>6%)')+ ' probabilidad de TEP</div>');
+}
+
+function calcCHADS(){
+    var pts=[1,1,2,1,2,1,1,1];
+    var ids=['c','h','a2','d','s2','v','a','sc'];
+    var s=0;
+    for(var i=0;i<8;i++) if(document.getElementById('chads-'+ids[i]).checked) s+=pts[i];
+    var cls,txt;
+    if(s===0){cls='green';txt='Bajo riesgo — No anticoagulación (considerar si factores de riesgo)';}
+    else if(s===1){cls='yellow';txt='Bajo-intermedio — Considerar anticoagulación (ACOD preferible)';}
+    else{cls='red';txt='Alto riesgo — ANTICOAGULACIÓN indicada (ACOD o AVK)';}
+    var riesgo=['0%','1.3%','2.2%','3.2%','4%','6.7%','9.8%','9.6%','6.7%','15.2%'];
+    showResult(document.getElementById('res-chads'),cls,
+        '<div class="score">CHA₂DS₂-VASc: '+s+'/9</div><div class="interpret">'+txt+'</div>'+
+        '<div style="font-size:.82rem;">Riesgo anual de ictus: ~'+(riesgo[s]||'>15%')+'</div>');
+}
+
+function calcPedia(){
+    var peso=+document.getElementById('pedia-peso').value;
+    if(!peso||peso<=0){alert('Introduce el peso');return;}
+    var v=document.getElementById('pedia-farmaco').value.split(',');
+    var dMin=+v[0],dMax=+v[1],intervalo=+v[2];
+    var dosisMin=(dMin*peso).toFixed(1);
+    var dosisMax=(dMax*peso).toFixed(1);
+    var nombre=document.getElementById('pedia-farmaco').options[document.getElementById('pedia-farmaco').selectedIndex].text;
+    showResult(document.getElementById('res-pedia'),'green',
+        '<div class="score">'+dosisMin+' — '+dosisMax+' mg/dosis</div>'+
+        '<div class="interpret">'+nombre+'</div>'+
+        '<div style="font-size:.82rem;">Peso: '+peso+' kg'+(intervalo?' · Cada '+intervalo+' horas':'')+'<br>Dosis diaria: '+(dosisMin*(intervalo?24/intervalo:1)).toFixed(0)+' — '+(dosisMax*(intervalo?24/intervalo:1)).toFixed(0)+' mg/día</div>'+
+        '<div style="margin-top:8px;font-size:.78rem;color:#b71c1c;">⚠️ Verificar dosis máxima absoluta según vademécum</div>');
+}
+
+function calcGoteo(){
+    var vol=+document.getElementById('goteo-vol').value;
+    var hrs=+document.getElementById('goteo-horas').value;
+    var factor=+document.getElementById('goteo-sistema').value;
+    if(!vol||!hrs){alert('Introduce volumen y tiempo');return;}
+    var mlh=(vol/hrs).toFixed(1);
+    var gtsMin=((vol*factor)/(hrs*60)).toFixed(1);
+    showResult(document.getElementById('res-goteo'),'green',
+        '<div class="score">'+gtsMin+(factor===20?' gotas/min':' μgotas/min')+'</div>'+
+        '<div class="interpret">'+mlh+' mL/hora</div>'+
+        '<div style="font-size:.82rem;">'+vol+' mL en '+hrs+' horas · Sistema de '+factor+(factor===20?' gotas':' microgotas')+'/mL</div>');
+}
+
+function calcBurn(){
+    var peso=+document.getElementById('burn-peso').value;
+    var ids=['head','chestf','chestb','armr','arml','legr','legl','gen'];
+    var scq=0;
+    ids.forEach(function(id){scq+=+(document.getElementById('burn-'+id).value||0);});
+    if(!peso){alert('Introduce el peso');return;}
+    var parkland=4*peso*scq;
+    var primera=parkland/2;
+    var segunda=parkland/2;
+    var cls=scq<15?'yellow':scq<30?'orange':'red';
+    showResult(document.getElementById('res-quemadura'),cls,
+        '<div class="score">SCQ: '+scq+'%</div>'+
+        '<div class="interpret">'+(scq<10?'Quemadura menor':scq<20?'Quemadura moderada':'Quemadura GRAVE')+'</div>'+
+        '<div style="font-size:.85rem;margin-top:8px;"><strong>Fórmula de Parkland (primeras 24h):</strong><br>'+
+        'Total: <strong>'+parkland+' mL</strong> de Ringer Lactato<br>'+
+        '→ 1ª mitad (0-8h): <strong>'+primera+' mL</strong> = '+(primera/8).toFixed(0)+' mL/h<br>'+
+        '→ 2ª mitad (8-24h): <strong>'+segunda+' mL</strong> = '+(segunda/16).toFixed(0)+' mL/h</div>'+
+        (scq>=20?'<div style="margin-top:8px;font-weight:700;color:#b71c1c;">⚠️ SCQ ≥20%: Derivar a Unidad de Quemados</div>':''));
+}
+
+function calcIMC(){
+    var peso=+document.getElementById('imc-peso').value;
+    var alt=+document.getElementById('imc-altura').value/100;
+    if(!peso||!alt){alert('Introduce peso y altura');return;}
+    var imc=(peso/(alt*alt)).toFixed(1);
+    var cls,txt;
+    if(imc<18.5){cls='yellow';txt='Bajo peso';}
+    else if(imc<25){cls='green';txt='Normopeso';}
+    else if(imc<30){cls='yellow';txt='Sobrepeso';}
+    else if(imc<35){cls='orange';txt='Obesidad grado I';}
+    else if(imc<40){cls='red';txt='Obesidad grado II';}
+    else{cls='red';txt='Obesidad mórbida (grado III)';}
+    showResult(document.getElementById('res-imc'),cls,
+        '<div class="score">IMC: '+imc+'</div><div class="interpret">'+txt+'</div>');
+}
+
+function calcClCr(){
+    var edad=+document.getElementById('clcr-edad').value;
+    var peso=+document.getElementById('clcr-peso').value;
+    var cr=+document.getElementById('clcr-cr').value;
+    var sexo=+document.getElementById('clcr-sexo').value;
+    if(!edad||!peso||!cr){alert('Completa todos los campos');return;}
+    var clcr=(((140-edad)*peso)/(72*cr)*sexo).toFixed(1);
+    var cls,txt;
+    if(clcr>=90){cls='green';txt='Función renal normal';}
+    else if(clcr>=60){cls='yellow';txt='ERC estadio 2 — Leve';}
+    else if(clcr>=30){cls='orange';txt='ERC estadio 3 — Moderada. Ajustar dosis.';}
+    else if(clcr>=15){cls='red';txt='ERC estadio 4 — Grave. Ajustar dosis.';}
+    else{cls='red';txt='ERC estadio 5 — Terminal. Diálisis.';}
+    showResult(document.getElementById('res-aclaramiento'),cls,
+        '<div class="score">ClCr: '+clcr+' mL/min</div><div class="interpret">'+txt+'</div>'+
+        '<div style="font-size:.82rem;">Cockroft-Gault · Sexo: '+(sexo===1?'Hombre':'Mujer')+' · Edad: '+edad+' · Peso: '+peso+' kg · Cr: '+cr+' mg/dL</div>');
+}
+
+function calcSOFA(){
+    var s=(document.getElementById('sofa-1').checked?1:0)+(document.getElementById('sofa-2').checked?1:0)+(document.getElementById('sofa-3').checked?1:0);
+    var cls,txt;
+    if(s<2){cls='green';txt='Bajo riesgo — Continuar valoración clínica';}
+    else{cls='red';txt='ALTO RIESGO de mortalidad — Valorar ingreso UCI. Iniciar protocolo SEPSIS.';}
+    showResult(document.getElementById('res-sofa'),cls,
+        '<div class="score">qSOFA: '+s+'/3</div><div class="interpret">'+txt+'</div>'+
+        (s>=2?'<div style="font-size:.82rem;">qSOFA ≥2: Mortalidad ≥10%. Activar Código Sepsis si sospecha infección.</div>':''));
+}
+</script>
+</body>
+</html>

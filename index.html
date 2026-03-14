@@ -430,6 +430,10 @@
                 <div class="hero-buttons" style="margin-top:20px;">
                     <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageTraductor')" style="background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🌍</span> Traductor Consulta</a>
                 </div>
+                <div class="hero-buttons" style="margin-top:20px;">
+                    <a class="hero-btn" href="calculadoras.html" target="_blank" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🧮</span> Calculadoras Médicas</a>
+                    <a class="hero-btn" href="javascript:void(0)" onclick="showAntibioticos()" style="background:linear-gradient(135deg,#c62828,#b71c1c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🦠</span> Guía Antibióticos HSL</a>
+                </div>
 
                 <!-- ── TARJETA AUTOTRIAJE AL FINAL (abajo del todo) ── -->
                 <div onclick="showPage('pageTriaje')" style="cursor:pointer;background:linear-gradient(135deg,rgba(192,57,43,0.92),rgba(120,20,15,0.88));border:2px solid rgba(255,255,255,0.35);border-radius:16px;padding:18px 20px;margin-top:20px;display:flex;align-items:center;gap:16px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(0,0,0,.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(0,0,0,.35)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'">
@@ -502,6 +506,7 @@
     <a class="patient-card" href="dejar-fumar.html" target="_blank"><div class="patient-card-icon">🚭</div><div class="patient-card-title">Dejar de fumar</div><div class="patient-card-desc">Programas y ayuda</div></a>
     <a class="patient-card" href="podcast.html" target="_blank"><div class="patient-card-icon">🎙️</div><div class="patient-card-title">Podcast</div><div class="patient-card-desc">Audio salud comunitaria</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showNotebooksModal()" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;"><div class="patient-card-icon">🤖</div><div class="patient-card-title" style="color:#0d47a1;">Cuadernos IA</div><div class="patient-card-desc" style="color:#1565c0;">5 cuadernos NotebookLM</div></a>
+    <a class="patient-card" href="chatbot-medicacion.html" target="_blank" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#0d47a1;">Mi Medicación</div><div class="patient-card-desc" style="color:#1565c0;">Pregunta sobre tus fármacos</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showPage('pageTraductor')" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;"><div class="patient-card-icon">🌍</div><div class="patient-card-title" style="color:#bf360c;">Traductor</div><div class="patient-card-desc" style="color:#e65100;">Traducción en consulta</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showFarmacias24h()" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#1b5e20;">Farmacias 24h</div><div class="patient-card-desc" style="color:#388e3c;">Región de Murcia</div></a>
 </div>
@@ -575,6 +580,41 @@
       </a>
       <div style="margin-top:10px;padding:10px;background:#f3e5f5;border-radius:8px;font-size:.76rem;color:#4a148c;text-align:center;">
         💡 <strong>Tip:</strong> Los cuadernos usan IA de Google (NotebookLM). Puedes hacerle preguntas en español y te responderá basándose en los documentos cargados.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Guía Antibióticos -->
+<div id="modalAntibioticos" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+  <div style="background:#fff;border-radius:16px;max-width:560px;width:94%;max-height:88vh;overflow-y:auto;box-shadow:0 25px 80px rgba(0,0,0,.4);">
+    <div style="background:linear-gradient(135deg,#c62828,#b71c1c);padding:20px 24px;border-radius:16px 16px 0 0;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:1.8rem;">🦠</div><h2 style="margin:4px 0 0;font-size:1.15rem;font-weight:700;">Guía Antibióticos HSL 2025</h2><p style="margin:2px 0 0;font-size:.78rem;opacity:.85;">Terapéutica Antimicrobiana en Adultos · 4ª edición · SMS</p></div>
+      <span onclick="document.getElementById('modalAntibioticos').style.display='none'" style="cursor:pointer;font-size:1.6rem;opacity:.8;line-height:1;">✕</span>
+    </div>
+    <div style="padding:16px;">
+      <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:.78rem;color:#b71c1c;">
+        📋 Guía PROA del Servicio Murciano de Salud. 299 páginas. Actualizada abril 2025.
+      </div>
+      <div style="margin-bottom:14px;text-align:center;"><a href="guia-antibioticos-hsl-2025.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#c62828;color:#fff;padding:12px 22px;border-radius:8px;font-size:.9rem;font-weight:700;text-decoration:none;">📄 Abrir Guía Completa (PDF)</a></div>
+      <h3 style="font-size:.9rem;font-weight:700;color:#b71c1c;margin:14px 0 10px;padding-bottom:6px;border-bottom:2px solid #fef2f2;">📖 Índice por Síndromes Infecciosos</h3>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="guia-antibioticos-hsl-2025.pdf#page=55" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🫁</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Infecciones Respiratorias</div><div style="font-size:.72rem;color:#888;">Bronquitis, NAC, nosocomial, bronquiectasias</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=80" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🧠</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Meningitis e Infecciones SNC</div><div style="font-size:.72rem;color:#888;">Meningitis bacteriana, encefalitis, absceso</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=97" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🦴</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Infecciones Osteoarticulares</div><div style="font-size:.72rem;color:#888;">Artritis séptica, osteomielitis, prótesis</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=112" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">💧</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Infecciones Urinarias</div><div style="font-size:.72rem;color:#888;">Cistitis, pielonefritis, prostatitis, ITU en sondado</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=132" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🔬</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Infecciones de Transmisión Sexual</div><div style="font-size:.72rem;color:#888;">Sífilis, gonorrea, clamidiasis, herpes</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=148" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🩹</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Piel y Partes Blandas</div><div style="font-size:.72rem;color:#888;">Celulitis, erisipela, fascitis, pie diabético</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=167" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🍽️</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Infecciones Intraabdominales</div><div style="font-size:.72rem;color:#888;">Peritonitis, diverticulitis, colecistitis, colangitis</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=200" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🦠</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Clostridioides difficile</div><div style="font-size:.72rem;color:#888;">Diagnóstico, tratamiento, recurrencias</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=230" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">❤️</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Endocarditis Infecciosa</div><div style="font-size:.72rem;color:#888;">Válvula nativa, protésica, profilaxis</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=260" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">👂</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Infecciones Profundas del Cuello</div><div style="font-size:.72rem;color:#888;">Absceso periamigdalino, angina de Ludwig</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=263" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🤱</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Infecciones de la Mama</div><div style="font-size:.72rem;color:#888;">Mastitis puerperal, no puerperal, prótesis</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=272" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">🔥</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Sepsis y Shock Séptico</div><div style="font-size:.72rem;color:#888;">Fiebre sin foco, tratamiento empírico</div></div></a>
+        <a href="guia-antibioticos-hsl-2025.pdf#page=280" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #fef2f2;border-radius:8px;text-decoration:none;background:#fffafa;transition:background .2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fffafa'"><span style="font-size:1.3rem;">⚡</span><div><div style="font-weight:600;font-size:.85rem;color:#b71c1c;">Neutropenia Febril</div><div style="font-size:.72rem;color:#888;">Paciente oncológico, tratamiento empírico</div></div></a>
+      </div>
+      <div style="margin-top:14px;padding:10px;background:#f3e5f5;border-radius:8px;font-size:.76rem;color:#4a148c;text-align:center;">
+        📚 Fuente: Comisión PROA — Subdirección General de Calidad Asistencial, SMS. Autores: Jimeno Almazán A., Alcaraz Vidal B., Blázquez Garrido R. et al.
       </div>
     </div>
   </div>
@@ -3449,6 +3489,9 @@ var SEARCH_INDEX=[
     {tipo:'📱 Pacientes',titulo:'Farmacias 24h',tags:'farmacia guardia 24h noche festivo cartagena',page:'pagePatients'},
     {tipo:'📱 Pacientes',titulo:'Cuadernos NotebookLM',tags:'notebooklm cuaderno ia inteligencia artificial google notebook',page:'pagePatients'},
     {tipo:'🌍 Traductor',titulo:'Traductor de Consulta',tags:'traductor traduccion idioma arabe frances ingles aleman rumano chino consulta interprete',page:'pageTraductor'},
+    {tipo:'🧮 Calculadoras',titulo:'Calculadoras Médicas',tags:'calculadora glasgow curb wells chads goteo quemadura imc creatinina sofa dosis pediatrica',page:''},
+    {tipo:'🦠 Antibióticos',titulo:'Guía Antibióticos HSL 2025',tags:'antibiotico antimicrobiano infeccion amoxicilina ceftriaxona meropenem ciprofloxacino piperacilina resistencia antibiograma proa',page:''},
+    {tipo:'💊 Pacientes',titulo:'Chatbot Medicación',tags:'medicacion farmaco pastilla efecto secundario interaccion horario dosis',page:'pagePatients'},
     {tipo:'📱 Pacientes',titulo:'NotebookLM - Pregunta a la IA',tags:'notebooklm ia inteligencia artificial preguntas salud documentos biblioteca',page:'pagePatients'},
     {tipo:'📄 PDF',titulo:'Guía dejar de fumar 2025',tags:'tabaco fumar guia pdf',url:'guia-dejar-fumar-2025.pdf'},
     {tipo:'📄 PDF',titulo:'Vacunas — Información',tags:'vacunas informacion pdf calendario',url:'vacunas-informacion.pdf'},
@@ -5317,6 +5360,11 @@ function showFarmacias24h(){
 
 function showNotebooksModal(){
     var m=document.getElementById('modalNotebooks');
+    if(m) m.style.display='flex';
+}
+
+function showAntibioticos(){
+    var m=document.getElementById('modalAntibioticos');
     if(m) m.style.display='flex';
 }
 
