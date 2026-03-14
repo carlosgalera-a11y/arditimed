@@ -1,285 +1,707 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pacientes - Centro de Salud Cartagena Este</title>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Segoe UI',sans-serif; background:#f8f9fa; }
-header { background:linear-gradient(135deg,#0d3d26,#1a6b4a); padding:28px 20px 24px; text-align:center; color:#fff; }
-header h1 { font-size:1.6rem; font-weight:700; margin-bottom:6px; }
-header p { font-size:.85rem; color:rgba(255,255,255,.75); }
-.back { display:inline-flex; align-items:center; gap:5px; color:rgba(255,255,255,.8); text-decoration:none; font-size:.8rem; margin-bottom:14px; }
-.back:hover { color:#fff; }
-.content { max-width:900px; margin:0 auto; padding:28px 16px 60px; }
-.section { background:#fff; border-radius:14px; margin-bottom:20px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,.06); }
-.section-header { display:flex; align-items:center; gap:12px; padding:16px 20px; cursor:pointer; border-bottom:1px solid #f0f0f0; user-select:none; transition:background .15s; }
-.section-header:hover { background:#f9fdf9; }
-.section-icon { font-size:1.5rem; flex-shrink:0; }
-.section-title { font-weight:700; font-size:.95rem; color:#1a3a2a; flex:1; }
-.section-count { font-size:.75rem; color:#888; margin-right:8px; }
-.chevron { color:#aaa; font-size:.8rem; transition:transform .2s; }
-.section-body { display:none; padding:8px 0; }
-.section-body.open { display:block; }
-.section-header.open .chevron { transform:rotate(180deg); }
-.item { display:flex; align-items:center; gap:12px; padding:12px 20px; text-decoration:none; color:#333; border-bottom:1px solid #f7f7f7; transition:background .15s; }
-.item:last-child { border-bottom:none; }
-.item:hover { background:#f0faf5; }
-.item-icon { font-size:1.1rem; flex-shrink:0; width:24px; text-align:center; }
-.item-text { flex:1; }
-.item-title { font-size:.88rem; font-weight:600; color:#1a3a2a; }
-.item-desc { font-size:.75rem; color:#888; margin-top:2px; }
-.badge-pdf { font-size:.68rem; background:#fff0e0; color:#c8920a; padding:2px 8px; border-radius:10px; font-weight:700; flex-shrink:0; }
-.badge-link { font-size:.68rem; background:#e8f5ee; color:#1a6b4a; padding:2px 8px; border-radius:10px; font-weight:700; flex-shrink:0; }
-.footer { text-align:center; font-size:.72rem; color:#aaa; padding:20px; }
-.footer a { color:#1a6b4a; text-decoration:none; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Área II Cartagena — Pacientes y Autotriaje</title>
+    <meta name="description" content="Recursos para pacientes y autotriaje de urgencias del Área II de Cartagena. Centro de Salud Virgen de la Caridad.">
+    <link rel="canonical" href="https://carlosgalera-a11y.github.io/Cartagenaeste/pacientes.html">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-96x96.png">
+    <meta name="theme-color" content="#1a6b4a">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --primary:#1a6b4a;--primary-light:#238c62;--primary-dark:#0f4a33;
+            --accent:#d4a853;--accent-light:#f0d68a;
+            --bg-dark:#1a1f2e;--bg-card:#fff;--bg-main:#f4f6f8;--bg-subtle:#e9edf2;
+            --text:#2d3748;--text-light:#64748b;--text-muted:#94a3b8;
+            --border:#e2e8f0;--border-light:#f1f5f9;
+            --shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 12px rgba(0,0,0,.08);
+            --radius:12px;--radius-sm:8px;
+            --font-body:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+            --red:#c0392b;--orange:#e67e22;--yellow:#f1c40f;--green:#27ae60;--blue:#2980b9;
+        }
+        [data-theme="dark"]{
+            --bg-card:#1e293b;--bg-main:#0f172a;--bg-subtle:#1e293b;
+            --text:#e2e8f0;--text-light:#94a3b8;--text-muted:#64748b;
+            --border:#334155;--border-light:#1e293b;
+            --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 12px rgba(0,0,0,.4);
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font-body);background:var(--bg-main);color:var(--text);line-height:1.6}
+
+        /* Skip link */
+        .skip-link{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 24px;border-radius:0 0 8px 8px;z-index:9999;font-weight:600;text-decoration:none;transition:top .2s}
+        .skip-link:focus{top:0}
+
+        /* Nav */
+        nav[role="banner"]{background:var(--bg-dark);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+        .brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+        .brand .logo{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+        .brand h1{font-size:1rem;font-weight:600}
+        .brand h1 span{color:var(--accent)}
+        .nav-actions{display:flex;gap:8px;align-items:center}
+        .nav-btn{color:rgba(255,255,255,.7);background:none;border:1px solid rgba(255,255,255,.15);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:500;font-family:var(--font-body);transition:.2s;text-decoration:none}
+        .nav-btn:hover,.nav-btn:focus-visible{color:#fff;background:rgba(255,255,255,.1);outline:2px solid var(--accent);outline-offset:2px}
+        .nav-btn--accent{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none}
+
+        /* Breadcrumbs */
+        .breadcrumbs{padding:10px 20px;background:var(--bg-subtle);font-size:.8rem;color:var(--text-muted)}
+        .breadcrumbs a{color:var(--primary);text-decoration:none;font-weight:500}
+        .breadcrumbs a:hover{text-decoration:underline}
+        .breadcrumbs a:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:2px}
+        .breadcrumbs span{margin:0 6px}
+
+        /* Section views */
+        .section-view{display:none;min-height:calc(100vh - 56px)}
+        .section-view.active{display:block}
+
+        /* Patient cards grid */
+        .section-header{background:linear-gradient(135deg,var(--bg-dark),#243347);padding:24px 20px 18px;color:#fff}
+        .section-header h2{font-size:1.4rem;font-weight:700;margin-bottom:4px}
+        .section-header p{font-size:.85rem;opacity:.7}
+        .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;padding:20px;max-width:1100px;margin:0 auto}
+        .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:14px}
+        .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+        .card:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+        .card-icon{font-size:1.6rem;flex-shrink:0;width:40px;text-align:center}
+        .card-text h3{font-size:.92rem;font-weight:600;margin-bottom:2px}
+        .card-text p{font-size:.78rem;color:var(--text-muted)}
+
+        /* Triaje styles */
+        .triaje-container{max-width:680px;margin:0 auto;padding:20px 16px}
+        .triaje-banner{background:linear-gradient(135deg,var(--red),#7b1a12);border-radius:14px;padding:22px 20px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden}
+        .triaje-banner h2{font-size:1.1rem;font-weight:700}
+        .triaje-banner p{font-size:.85rem;opacity:.85}
+        .triaje-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+        .triaje-badge{background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:.75rem}
+        .triaje-warning{padding:10px 12px;background:rgba(0,0,0,.2);border-radius:8px;font-size:.8rem;line-height:1.5;border-left:3px solid rgba(255,255,255,.5);margin-top:12px}
+
+        /* Progress bar */
+        .progress-bar{background:var(--bg-subtle);border-radius:20px;padding:12px 16px;margin-bottom:16px;display:none}
+        .progress-bar.visible{display:block}
+        .progress-steps{display:flex;align-items:center;justify-content:space-between;position:relative}
+        .progress-step{display:flex;flex-direction:column;align-items:center;gap:4px;z-index:1;flex:1}
+        .progress-dot{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;transition:all .3s}
+        .progress-dot.active{background:var(--primary);transform:scale(1.15)}
+        .progress-dot.done{background:var(--green)}
+        .progress-label{font-size:.65rem;color:var(--text-muted);text-align:center;max-width:60px}
+        .progress-line{position:absolute;top:14px;left:14%;right:14%;height:3px;background:var(--border);z-index:0}
+        .progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
+
+        /* Triaje blocks */
+        .tr-block{display:none}
+        .tr-block.active{display:block;animation:fadeIn .3s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+        .tr-option{padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-card);cursor:pointer;font-size:.88rem;font-family:var(--font-body);color:var(--text);transition:all .2s;text-align:left;width:100%}
+        .tr-option:hover{border-color:var(--primary);background:#f0fdf4}
+        .tr-option:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+        .tr-option--grid{text-align:center;padding:14px 8px}
+        .tr-option--danger{border-color:var(--red);color:var(--red)}
+        .tr-option--danger:hover{background:#fef2f2}
+        .tr-option--safe{border-color:var(--green);color:var(--green)}
+        .tr-option--safe:hover{background:#f0fdf4}
+
+        /* Legal box */
+        .legal-box{background:#fff3cd;border:2px solid #f59e0b;border-radius:12px;padding:18px;margin-bottom:14px}
+        .legal-box h3{font-size:.9rem;color:#7c4a03;margin-bottom:8px}
+        .legal-box p,.legal-box li{font-size:.8rem;color:#7c4a03;line-height:1.55}
+        .legal-box ul{padding-left:16px;margin-bottom:10px}
+
+        /* Resultado triaje */
+        .result-card{border-radius:14px;padding:22px 18px;margin-bottom:14px}
+        .result-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+        .result-icon{font-size:2.2rem}
+        .result-level{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:2px}
+        .result-title{font-size:1.2rem;font-weight:800}
+        .result-action{font-size:.95rem;font-weight:700;color:#1a1a1a;margin-bottom:8px}
+        .result-desc{font-size:.88rem;color:#333;line-height:1.5;margin-bottom:16px}
+        .result-reasons{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+        .result-reasons h4{font-size:.85rem;font-weight:700;margin-bottom:8px}
+        .result-reasons ul{font-size:.82rem;color:var(--text-muted);line-height:1.7;padding-left:16px}
+        .result-btn{display:block;width:100%;text-align:center;padding:13px;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;text-decoration:none;margin-bottom:10px;font-family:var(--font-body)}
+        .result-btn--outline{background:transparent;border:1.5px solid currentColor}
+        .result-btn--share{background:var(--bg-subtle);color:var(--text);border:1px solid var(--border)}
+
+        /* Slider accessible */
+        .slider-group{margin-bottom:16px}
+        .slider-group label{font-size:.95rem;font-weight:700;display:block;margin-bottom:6px}
+        .slider-group input[type="range"]{width:100%;height:8px;appearance:none;background:linear-gradient(to right,var(--green),var(--yellow),var(--red));border-radius:4px;outline:none}
+        .slider-group input[type="range"]::-webkit-slider-thumb{appearance:none;width:24px;height:24px;background:var(--bg-card);border:3px solid var(--primary);border-radius:50%;cursor:pointer;box-shadow:var(--shadow-sm)}
+        .slider-group input[type="range"]:focus-visible{outline:3px solid var(--primary);outline-offset:4px}
+        .slider-value{text-align:center;font-size:1.4rem;font-weight:700;color:var(--primary);margin-top:4px}
+
+        /* Footer */
+        footer{padding:16px 20px;text-align:center;font-size:.74rem;color:var(--text-muted);border-top:1px solid var(--border);margin-top:20px}
+        footer a{color:var(--primary);text-decoration:none}
+        footer a:hover{text-decoration:underline}
+
+        /* Focus visible global */
+        :focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+        button:focus-visible,a:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+
+        /* Responsive */
+        @media(max-width:600px){
+            .cards-grid{grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+            .card{padding:14px;gap:10px}
+            .card-icon{font-size:1.3rem;width:32px}
+            .section-header{padding:18px 16px 14px}
+            .section-header h2{font-size:1.2rem}
+        }
+    </style>
 </head>
 <body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-<header>
-  <a class="back" href="https://carlosgalera-a11y.github.io/Cartagenaeste/sites-inicio.html" target="_top">← Inicio</a>
-  <h1>👤 Recursos para Pacientes</h1>
-  <p>Centro de Salud Cartagena Este · Área II Cartagena</p>
-</header>
+    <!-- Navigation -->
+    <nav role="banner" aria-label="Navegación principal">
+        <a href="index.html" class="brand" aria-label="Ir al inicio de Área II Cartagena">
+            <div class="logo" aria-hidden="true">🏥</div>
+            <h1>Área II <span>Cartagena</span></h1>
+        </a>
+        <div class="nav-actions">
+            <button class="nav-btn" onclick="toggleTheme()" aria-label="Cambiar a modo oscuro" id="themeBtn">🌙</button>
+            <a href="index.html" class="nav-btn">← Inicio</a>
+            <a href="index.html#profesionales" class="nav-btn nav-btn--accent">🔐 Profesionales</a>
+        </div>
+    </nav>
 
-<div class="content">
+    <main id="main-content">
+        <!-- BREADCRUMBS -->
+        <nav class="breadcrumbs" aria-label="Migas de pan" id="breadcrumbs">
+            <a href="index.html">Inicio</a><span aria-hidden="true">›</span><span id="breadcrumb-current" aria-current="page">Pacientes</span>
+        </nav>
 
-  <!-- DIETAS -->
-  <div class="section">
-    <div class="section-header open" onclick="toggle(this)">
-      <span class="section-icon">🥗</span>
-      <span class="section-title">Dietas y Nutrición</span>
-      <span class="section-count">3 PDFs</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body open">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/dieta-diarrea-aguda.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Dieta Diarrea Aguda</div><div class="item-desc">Recomendaciones dietético-nutricionales</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/dieta-reflujo-gastroesofagico.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Dieta Reflujo Gastroesofágico</div><div class="item-desc">Recomendaciones dietético-nutricionales</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/dieta-general.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Dieta General</div><div class="item-desc">Recomendaciones nutricionales generales</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/papps-estilos-vida-2024.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">PAPPS Estilos de Vida 2024</div><div class="item-desc">Guía de estilos de vida saludable</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-    </div>
-  </div>
+        <!-- ══════════ SECTION: PATIENTS ══════════ -->
+        <section class="section-view active" id="secPacientes" aria-label="Recursos para pacientes">
+            <div class="section-header">
+                <h2>Pacientes</h2>
+                <p>Recursos e información para pacientes del Área II Cartagena</p>
+            </div>
+            <div class="cards-grid" role="list">
+                <a class="card" href="dietas.html" role="listitem" aria-label="Dietas — Planes nutricionales">
+                    <div class="card-icon" aria-hidden="true">🥗</div>
+                    <div class="card-text"><h3>Dietas</h3><p>Planes nutricionales</p></div>
+                </a>
+                <a class="card" href="violencia-genero.html" role="listitem" aria-label="Violencia de género — Recursos y apoyo">
+                    <div class="card-icon" aria-hidden="true">💜</div>
+                    <div class="card-text"><h3>Violencia de género</h3><p>Recursos y apoyo</p></div>
+                </a>
+                <a class="card" href="recursos-sociales.html" role="listitem" aria-label="Recursos sociales — Servicios comunitarios">
+                    <div class="card-icon" aria-hidden="true">🤝</div>
+                    <div class="card-text"><h3>Recursos sociales</h3><p>Servicios comunitarios</p></div>
+                </a>
+                <a class="card" href="informacion.html" role="listitem" aria-label="Información general del centro">
+                    <div class="card-icon" aria-hidden="true">ℹ️</div>
+                    <div class="card-text"><h3>Información</h3><p>Info general del centro</p></div>
+                </a>
+                <a class="card" href="factores-riesgo.html" role="listitem" aria-label="Factores de riesgo — Prevención y salud">
+                    <div class="card-icon" aria-hidden="true">⚠️</div>
+                    <div class="card-text"><h3>Factores de riesgo</h3><p>Prevención y salud</p></div>
+                </a>
+                <a class="card" href="ejercicios.html" role="listitem" aria-label="Ejercicios — Guías de actividad física">
+                    <div class="card-icon" aria-hidden="true">🏃</div>
+                    <div class="card-text"><h3>Ejercicios</h3><p>Guías de actividad física</p></div>
+                </a>
+                <a class="card" href="dentista.html" role="listitem" aria-label="Dentista — Salud bucodental">
+                    <div class="card-icon" aria-hidden="true">🦷</div>
+                    <div class="card-text"><h3>Dentista</h3><p>Salud bucodental</p></div>
+                </a>
+                <a class="card" href="vacunas.html" role="listitem" aria-label="Vacunas — Calendario y campañas">
+                    <div class="card-icon" aria-hidden="true">💉</div>
+                    <div class="card-text"><h3>Vacunas</h3><p>Calendario y campañas</p></div>
+                </a>
+                <a class="card" href="programacion.html" role="listitem" aria-label="Programación del Centro — Horarios">
+                    <div class="card-icon" aria-hidden="true">📅</div>
+                    <div class="card-text"><h3>Programación</h3><p>Horarios y agenda</p></div>
+                </a>
+                <a class="card" href="dejar-fumar.html" role="listitem" aria-label="Dejar de fumar — Programas y ayuda">
+                    <div class="card-icon" aria-hidden="true">🚭</div>
+                    <div class="card-text"><h3>Dejar de fumar</h3><p>Programas y ayuda</p></div>
+                </a>
+                <a class="card" href="enlaces-interes.html" role="listitem" aria-label="Enlaces de interés — Webs útiles">
+                    <div class="card-icon" aria-hidden="true">🔗</div>
+                    <div class="card-text"><h3>Enlaces de interés</h3><p>Webs y recursos útiles</p></div>
+                </a>
+                <a class="card" href="podcast.html" role="listitem" aria-label="Podcast — Audio salud comunitaria">
+                    <div class="card-icon" aria-hidden="true">🎙️</div>
+                    <div class="card-text"><h3>Podcast</h3><p>Audio salud comunitaria</p></div>
+                </a>
 
-  <!-- FACTORES DE RIESGO -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">⚠️</span>
-      <span class="section-title">Factores de Riesgo</span>
-      <span class="section-count">1 PDF</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/hoja-controles-glucosa.pdf" target="_blank">
-        <span class="item-icon">📊</span>
-        <div class="item-text"><div class="item-title">Plantilla control de glucosa</div><div class="item-desc">Hoja descargable para anotar cifras de glucosa</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-    </div>
-  </div>
+                <!-- Nuevas funcionalidades -->
+                <a class="card" href="citas.html" role="listitem" aria-label="Pedir Cita — Solicitar cita médica" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;">
+                    <div class="card-icon" aria-hidden="true">📅</div>
+                    <div class="card-text"><h3 style="color:#1b5e20;">Pedir Cita</h3><p style="color:#388e3c;">Solicitar cita médica</p></div>
+                </a>
+                <a class="card" href="chatbot-medicacion.html" role="listitem" aria-label="Mi Medicación — Pregunta sobre tus fármacos" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;">
+                    <div class="card-icon" aria-hidden="true">💊</div>
+                    <div class="card-text"><h3 style="color:#0d47a1;">Mi Medicación</h3><p style="color:#1565c0;">Pregunta sobre tus fármacos</p></div>
+                </a>
+                <a class="card" href="multiidioma.html" role="listitem" aria-label="Info Multilingüe — عربي Français English" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;">
+                    <div class="card-icon" aria-hidden="true">🌍</div>
+                    <div class="card-text"><h3 style="color:#bf360c;">Info Multilingüe</h3><p style="color:#e65100;">عربي · Français · English</p></div>
+                </a>
+                <a class="card" href="mapa.html" role="listitem" aria-label="Mapa Sanitario — Centros, farmacias, urgencias">
+                    <div class="card-icon" aria-hidden="true">🗺️</div>
+                    <div class="card-text"><h3>Mapa Sanitario</h3><p>Centros, farmacias, urgencias</p></div>
+                </a>
+                <button class="card" onclick="showFarmacias()" role="listitem" aria-label="Farmacias 24h — Región de Murcia" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;">
+                    <div class="card-icon" aria-hidden="true">💊</div>
+                    <div class="card-text"><h3 style="color:#1b5e20;">Farmacias 24h</h3><p style="color:#388e3c;">Región de Murcia</p></div>
+                </button>
 
-  <!-- DEJAR DE FUMAR -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">🚭</span>
-      <span class="section-title">Dejar de Fumar</span>
-      <span class="section-count">2 PDFs</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/guia-dejar-fumar-2025.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Guía para dejar de fumar 2025</div><div class="item-desc">Recursos y consejos para dejar el tabaco</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/guia-fumadores-2025.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Guía para fumadores 2025</div><div class="item-desc">Información para fumadores activos</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-    </div>
-  </div>
+                <!-- Autotriaje destacado -->
+                <button class="card" onclick="showTriaje()" role="listitem" aria-label="Autotriaje de Urgencias — ¿Necesito médico ahora?" style="background:linear-gradient(135deg,#fef2f2,#fce7f3);border-color:#f87171;grid-column:1/-1">
+                    <div class="card-icon" aria-hidden="true">🩺</div>
+                    <div class="card-text">
+                        <h3 style="color:var(--red);font-size:1rem">Autotriaje de Urgencias</h3>
+                        <p style="color:#be123c">¿Necesito médico ahora? Descúbrelo en 2 minutos</p>
+                    </div>
+                    <div style="margin-left:auto;display:flex;gap:6px" aria-hidden="true">
+                        <span style="background:#fecaca;padding:3px 8px;border-radius:12px;font-size:.7rem;color:var(--red)">🔴 Emergencia</span>
+                        <span style="background:#fef3c7;padding:3px 8px;border-radius:12px;font-size:.7rem;color:#92400e">🟡 Urgencias</span>
+                        <span style="background:#dcfce7;padding:3px 8px;border-radius:12px;font-size:.7rem;color:var(--green)">🟢 Cabecera</span>
+                    </div>
+                </button>
+            </div>
+        </section>
 
-  <!-- DENTISTA -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">🦷</span>
-      <span class="section-title">Dentista</span>
-      <span class="section-count">1 PDF</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/servicios-bucodentales.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Servicios bucodentales</div><div class="item-desc">Información sobre servicios dentales disponibles</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-    </div>
-  </div>
+        <!-- ══════════ SECTION: AUTOTRIAJE ══════════ -->
+        <section class="section-view" id="secTriaje" aria-label="Autotriaje de urgencias">
+            <div class="triaje-container">
+                <div class="triaje-banner">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                        <div style="background:rgba(255,255,255,.2);border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:1.3rem" aria-hidden="true">🩺</div>
+                        <div>
+                            <h2>Autotriaje de Urgencias</h2>
+                            <p style="font-size:.8rem;opacity:.8;margin-top:2px">Área II Cartagena · Hospital Santa Lucía</p>
+                        </div>
+                    </div>
+                    <p>Responde unas preguntas para saber qué nivel de atención necesitas ahora mismo.</p>
+                    <div class="triaje-badges">
+                        <span class="triaje-badge">⏱ 2 minutos</span>
+                        <span class="triaje-badge">🔒 Sin registro</span>
+                        <span class="triaje-badge">📱 5 niveles de urgencia</span>
+                    </div>
+                    <div class="triaje-warning">⚠️ <strong>NO sustituye la valoración médica.</strong> Ante emergencia vital, llama siempre al <strong>112</strong>.</div>
+                </div>
 
-  <!-- VACUNAS -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">💉</span>
-      <span class="section-title">Vacunas</span>
-      <span class="section-count">1 PDF</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/vacunas-informacion.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Información sobre vacunas</div><div class="item-desc">Calendario y recomendaciones de vacunación</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-    </div>
-  </div>
+                <!-- PROGRESS BAR -->
+                <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="5" aria-label="Progreso del autotriaje">
+                    <div class="progress-steps">
+                        <div class="progress-line"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+                        <div class="progress-step"><div class="progress-dot" id="pDot0">1</div><div class="progress-label">Aviso legal</div></div>
+                        <div class="progress-step"><div class="progress-dot" id="pDot1">2</div><div class="progress-label">Emergencia</div></div>
+                        <div class="progress-step"><div class="progress-dot" id="pDot2">3</div><div class="progress-label">Zona</div></div>
+                        <div class="progress-step"><div class="progress-dot" id="pDot3">4</div><div class="progress-label">Detalles</div></div>
+                        <div class="progress-step"><div class="progress-dot" id="pDot4">5</div><div class="progress-label">Resultado</div></div>
+                    </div>
+                </div>
 
-  <!-- RECURSOS SOCIALES -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">🏘️</span>
-      <span class="section-title">Recursos Sociales</span>
-      <span class="section-count">5 PDFs</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/recursos-sociales-ayuda-domicilio.pdf" target="_blank">
-        <span class="item-icon">🏠</span>
-        <div class="item-text"><div class="item-title">Ayuda a domicilio</div><div class="item-desc">Servicios de ayuda en el hogar</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/recursos-sociales-grado-dependencia.pdf" target="_blank">
-        <span class="item-icon">📋</span>
-        <div class="item-text"><div class="item-title">Grado de dependencia</div><div class="item-desc">Información sobre reconocimiento de dependencia</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/recursos-sociales-pension-jubilacion.pdf" target="_blank">
-        <span class="item-icon">💰</span>
-        <div class="item-text"><div class="item-title">Pensión y jubilación</div><div class="item-desc">Recursos sobre pensiones y jubilación</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/recursos-sociales-punto-acceso.pdf" target="_blank">
-        <span class="item-icon">📍</span>
-        <div class="item-text"><div class="item-title">Punto de acceso a servicios sociales</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/recursos-sociales-servicios-domiciliarios.pdf" target="_blank">
-        <span class="item-icon">🚗</span>
-        <div class="item-text"><div class="item-title">Servicios domiciliarios</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-    </div>
-  </div>
+                <!-- STEP 0: Legal -->
+                <div class="tr-block active" id="trStep0">
+                    <div class="legal-box">
+                        <h3>⚖️ Aviso legal obligatorio — Ley 41/2002</h3>
+                        <p>Esta herramienta es un <strong>sistema de orientación informativa</strong> y NO constituye un acto médico, diagnóstico clínico ni prescripción terapéutica.</p>
+                        <ul>
+                            <li>El resultado es <strong>orientativo</strong> y puede contener errores.</li>
+                            <li>No sustituye la valoración presencial de un profesional sanitario.</li>
+                            <li>Ante cualquier duda, consulte con su médico o enfermera.</li>
+                            <li>En emergencias vitales, llame al <strong>112</strong> sin esperar el resultado.</li>
+                        </ul>
+                        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.82rem;color:#7c4a03;line-height:1.45;margin-bottom:12px">
+                            <input type="checkbox" id="trLegalCheck" onchange="trLegalChanged()" style="margin-top:2px;min-width:18px;height:18px;accent-color:#d97706" aria-label="Acepto que el resultado es orientativo y no sustituye la atención médica">
+                            <span><strong>He leído y acepto</strong> que este resultado es orientativo y no sustituye la atención médica profesional.</span>
+                        </label>
+                        <div id="trPersonaBtns" style="display:none">
+                            <p style="font-size:.88rem;font-weight:600;margin-bottom:8px">¿Para quién es la consulta?</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                                <button class="tr-option tr-option--grid" onclick="trStart('yo')">👤 Para mí</button>
+                                <button class="tr-option tr-option--grid" onclick="trStart('otro')">👥 Para otra persona</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:#fef3e2;border:1px solid #f59e0b;border-radius:10px;padding:12px;font-size:.82rem;color:#7c4a03">🔒 <strong>Privacidad:</strong> No se guarda ningún dato. Todo se procesa en tu dispositivo.</div>
+                </div>
 
-  <!-- VIOLENCIA DE GÉNERO -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">🛡️</span>
-      <span class="section-title">Violencia de Género</span>
-      <span class="section-count">3 PDFs</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/violencia-genero-protocolo.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Protocolo violencia de género</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/violencia-genero-protocolo-2.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Protocolo violencia de género (2)</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/violencia-genero-protocolo-3.pdf" target="_blank">
-        <span class="item-icon">📄</span>
-        <div class="item-text"><div class="item-title">Protocolo violencia de género (3)</div></div>
-        <span class="badge-pdf">📥 PDF</span>
-      </a>
-    </div>
-  </div>
+                <!-- STEP 1: Emergency signals -->
+                <div class="tr-block" id="trStep1">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                        <div style="background:var(--red);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem" aria-hidden="true">!</div>
+                        <div>
+                            <p style="font-size:.95rem;font-weight:700">Señales de emergencia</p>
+                            <p style="font-size:.82rem;color:var(--text-muted)">¿Tienes alguno de estos síntomas AHORA MISMO?</p>
+                        </div>
+                    </div>
+                    <div id="trAlertList" role="list" aria-label="Señales de emergencia"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+                        <button class="tr-option tr-option--safe" onclick="trEmergencyAnswer(false)" aria-label="No tengo ninguna señal de emergencia">✅ No, ninguno</button>
+                        <button class="tr-option tr-option--danger" onclick="trEmergencyAnswer(true)" aria-label="Sí, tengo una señal de emergencia">🚨 Sí, tengo uno</button>
+                    </div>
+                </div>
 
-  <!-- EJERCICIOS -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">🏃</span>
-      <span class="section-title">Ejercicios y Rehabilitación</span>
-      <span class="section-count">2 enlaces</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://cartagenaeste.es/ejercicios-rehabilitacion-hombro-2/" target="_blank">
-        <span class="item-icon">💪</span>
-        <div class="item-text"><div class="item-title">Ejercicios rehabilitación hombro</div><div class="item-desc">merehabilitoencasa.es</div></div>
-        <span class="badge-link">🔗 Enlace</span>
-      </a>
-      <a class="item" href="https://cartagenaeste.es/ejercicios-rehabilitacion-columna-lumbar/" target="_blank">
-        <span class="item-icon">🦴</span>
-        <div class="item-text"><div class="item-title">Ejercicios rehabilitación columna lumbar</div></div>
-        <span class="badge-link">🔗 Enlace</span>
-      </a>
-    </div>
-  </div>
+                <!-- STEP 2: Area selection -->
+                <div class="tr-block" id="trStep2">
+                    <button class="tr-option" onclick="trGoStep(1)" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;padding:0;margin-bottom:12px">← Volver</button>
+                    <p style="font-size:.95rem;font-weight:700;margin-bottom:12px">¿Qué zona o problema principal te preocupa?</p>
+                    <div id="trAreaList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px" role="list" aria-label="Zonas del cuerpo"></div>
+                </div>
 
-  <!-- PODCAST -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">🎙️</span>
-      <span class="section-title">Podcast</span>
-      <span class="section-count">Episodios</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-      <a class="item" href="https://cartagenaeste.es/podcast-2/" target="_blank">
-        <span class="item-icon">▶️</span>
-        <div class="item-text"><div class="item-title">Escuchar episodios del podcast</div><div class="item-desc">Audio con información clínica para pacientes</div></div>
-        <span class="badge-link">🔗 Escuchar</span>
-      </a>
-    </div>
-  </div>
+                <!-- STEP 3: Symptoms + intensity + duration -->
+                <div class="tr-block" id="trStep3">
+                    <button class="tr-option" onclick="trGoStep(2)" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;padding:0;margin-bottom:12px">← Volver</button>
+                    <p id="trSymptomLabel" style="font-size:.95rem;font-weight:700;margin-bottom:12px"></p>
+                    <div id="trSymptomList" style="display:grid;gap:7px" role="list" aria-label="Síntomas"></div>
 
-  <!-- PROGRAMACIÓN -->
-  <div class="section">
-    <div class="section-header" onclick="toggle(this)">
-      <span class="section-icon">📅</span>
-      <span class="section-title">Programación del Centro</span>
-      <span class="section-count">Agenda</span>
-      <span class="chevron">▼</span>
+                    <!-- Intensity (shown after symptom selection) -->
+                    <div id="trIntensityBlock" style="display:none;margin-top:18px">
+                        <div class="slider-group">
+                            <label for="trIntensity">¿Cómo de intenso es? <span id="trIntVal" style="color:var(--primary)">5</span>/10</label>
+                            <input type="range" id="trIntensity" min="1" max="10" value="5"
+                                   aria-label="Intensidad del dolor o síntoma"
+                                   aria-valuemin="1" aria-valuemax="10" aria-valuenow="5"
+                                   aria-valuetext="5 de 10, moderado"
+                                   oninput="trUpdateIntensity(this.value)">
+                            <div class="slider-value" aria-live="polite" id="trIntDesc">Moderado</div>
+                        </div>
+
+                        <p style="font-size:.95rem;font-weight:700;margin:12px 0 10px">¿Cuánto tiempo llevas así?</p>
+                        <div id="trDurationList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px" role="list" aria-label="Duración de los síntomas"></div>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Context / risk factors -->
+                <div class="tr-block" id="trStep4">
+                    <button class="tr-option" onclick="trGoStep(3)" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;padding:0;margin-bottom:12px">← Volver</button>
+                    <p style="font-size:.95rem;font-weight:700;margin-bottom:8px">¿Tienes alguna de estas condiciones? <span style="font-weight:400;font-size:.82rem;color:var(--text-muted)">(Selecciona las que apliquen)</span></p>
+                    <div id="trContextList" style="display:grid;gap:6px;margin-bottom:14px" role="group" aria-label="Factores de riesgo"></div>
+                    <button onclick="trCalculate()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;font-family:var(--font-body)">Ver mi orientación →</button>
+                </div>
+
+                <!-- STEP 5: Result -->
+                <div class="tr-block" id="trStep5">
+                    <div id="trResult"></div>
+                </div>
+
+                <footer>
+                    Herramienta de orientación del <strong>Área II de Cartagena · Hospital Santa Lucía</strong>. No constituye diagnóstico médico. Basada en el Sistema Español de Triaje (SET) y protocolos del SMS. En caso de emergencia llama al <strong>112</strong>.
+                    <br><br>
+                    <a href="index.html">Volver al inicio</a> · <a href="privacidad.html">Privacidad</a> · © 2026 <a href="https://sites.google.com/view/area2cartagena/inicio">cartagenaeste.es</a>
+                </footer>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Farmacias 24h -->
+    <div id="modalFarmacias" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+      <div style="background:var(--bg-card);border-radius:16px;max-width:520px;width:94%;max-height:88vh;overflow-y:auto;box-shadow:0 25px 80px rgba(0,0,0,.4);">
+        <div style="background:linear-gradient(135deg,#2e7d32,#43a047);padding:20px 24px;border-radius:16px 16px 0 0;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+          <div><div style="font-size:1.8rem;">💊</div><h2 style="margin:4px 0 0;font-size:1.2rem;font-weight:700;">Farmacias 24 Horas</h2><p style="margin:2px 0 0;font-size:.8rem;opacity:.85;">Región de Murcia · 18 farmacias</p></div>
+          <span onclick="document.getElementById('modalFarmacias').style.display='none'" style="cursor:pointer;font-size:1.6rem;opacity:.8;line-height:1;">✕</span>
+        </div>
+        <div style="padding:16px;">
+          <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:.78rem;color:#6d4c00;">
+            ⚠️ <strong>Abiertas 24h, los 365 días.</strong> Llama antes de acudir. Guardias rotatorias: <a href="https://guardias.cofrm.com" target="_blank" style="color:#6d4c00;font-weight:700;">guardias.cofrm.com</a>
+          </div>
+          <div style="margin-bottom:12px;text-align:center;"><a href="farmacias-24h-region-murcia.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#2e7d32;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">📄 Descargar PDF</a></div>
+          <div id="farmListPac"></div>
+          <div style="margin-top:14px;padding:10px;background:#f1f8e9;border-radius:8px;font-size:.78rem;color:#33691e;text-align:center;">📞 CARM: <strong>012</strong> · Emergencias: <strong>112</strong><br><span style="font-size:.72rem;opacity:.8;">Fuente: COFRM</span></div>
+        </div>
+      </div>
     </div>
-    <div class="section-body">
-      <a class="item" href="https://cartagenaeste.es/consulta/" target="_blank">
-        <span class="item-icon">📋</span>
-        <div class="item-text"><div class="item-title">Información de consulta</div></div>
-        <span class="badge-link">🔗 Ver</span>
-      </a>
-    </div>
-  </div>
 
-</div>
+    <script>
+    // ═══════ THEME TOGGLE ═══════
+    function toggleTheme(){
+        var d=document.documentElement;
+        var isDark=d.getAttribute('data-theme')==='dark';
+        d.setAttribute('data-theme',isDark?'':'dark');
+        var btn=document.getElementById('themeBtn');
+        btn.textContent=isDark?'🌙':'☀️';
+        btn.setAttribute('aria-label',isDark?'Cambiar a modo oscuro':'Cambiar a modo claro');
+        try{localStorage.setItem('theme',isDark?'':'dark')}catch(e){}
+    }
+    (function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');var b=document.getElementById('themeBtn');if(b){b.textContent='☀️';b.setAttribute('aria-label','Cambiar a modo claro')}}}catch(e){}})();
 
-<p class="footer">© 2026 <a href="https://cartagenaeste.es">cartagenaeste.es</a> · Centro de Salud Cartagena Este</p>
+    // ═══════ NAVIGATION ═══════
+    function showTriaje(){
+        document.getElementById('secPacientes').classList.remove('active');
+        document.getElementById('secTriaje').classList.add('active');
+        document.getElementById('breadcrumb-current').textContent='Autotriaje de Urgencias';
+        window.scrollTo(0,0);
+    }
+    function showPacientes(){
+        document.getElementById('secTriaje').classList.remove('active');
+        document.getElementById('secPacientes').classList.add('active');
+        document.getElementById('breadcrumb-current').textContent='Pacientes';
+        trReset();
+        window.scrollTo(0,0);
+    }
 
-<script>
-function toggle(header) {
-  header.classList.toggle('open');
-  header.nextElementSibling.classList.toggle('open');
-}
-</script>
+    // ═══════ TRIAJE DATA ═══════
+    var TR={persona:null,intensidad:5,duracion:null,area:null,sintoma:null,contexto:[],nivelBase:3,step:0};
+
+    var ALERTAS=["Dolor en el pecho, brazo izquierdo o mandíbula","Dificultad para respirar grave (no puede hablar)","Pérdida de conciencia o no responde","Parálisis o debilidad súbita en cara, brazo o pierna","Dificultad repentina para hablar o entender","Sangrado abundante que no para","Convulsiones activas","Reacción alérgica grave (hinchazón garganta, dificultad respirar)","Herida penetrante en cabeza, tórax o abdomen","Intoxicación grave o sobredosis"];
+
+    var AREAS=[{id:'cabeza',icon:'🧠',label:'Cabeza / Neurológico'},{id:'pecho',icon:'🫀',label:'Pecho / Corazón'},{id:'resp',icon:'🫁',label:'Respiración'},{id:'abdomen',icon:'🫃',label:'Abdomen / Digestivo'},{id:'trauma',icon:'🦴',label:'Traumatismo / Golpe'},{id:'fiebre',icon:'🌡️',label:'Fiebre / Infección'},{id:'mental',icon:'🧘',label:'Salud mental / Ansiedad'},{id:'piel',icon:'🩹',label:'Piel / Alergia'},{id:'otro',icon:'❓',label:'Otro / No sé'}];
+
+    var SINTOMAS={
+        cabeza:[{label:'Dolor de cabeza muy intenso y repentino',nivel:2},{label:'Dolor de cabeza moderado',nivel:4},{label:'Mareo o inestabilidad',nivel:3},{label:'Vómitos repetidos',nivel:3},{label:'Visión doble o borrosa súbita',nivel:2},{label:'Pérdida de memoria reciente',nivel:3}],
+        pecho:[{label:'Dolor opresivo en el pecho',nivel:1},{label:'Palpitaciones rápidas o irregulares',nivel:2},{label:'Dolor que se irradia al brazo o mandíbula',nivel:1},{label:'Sensación de presión sin irradiación',nivel:2},{label:'Dolor leve o pinchazos',nivel:4}],
+        resp:[{label:'No puedo hablar por falta de aire',nivel:1},{label:'Ahogo intenso en reposo',nivel:2},{label:'Dificultad respiratoria al caminar',nivel:2},{label:'Sibilancias (pitidos) moderadas',nivel:3},{label:'Tos con sangre',nivel:2},{label:'Tos persistente sin disnea',nivel:5}],
+        abdomen:[{label:'Dolor abdominal muy intenso y continuo',nivel:2},{label:'Vómitos de sangre',nivel:1},{label:'Heces negras o con sangre',nivel:2},{label:'Dolor cólico moderado',nivel:3},{label:'Náuseas y vómitos sin sangre',nivel:4},{label:'Diarrea sin fiebre alta',nivel:5}],
+        trauma:[{label:'Golpe en la cabeza con pérdida de conciencia',nivel:1},{label:'Posible fractura (deformidad, no puedo moverlo)',nivel:2},{label:'Herida profunda que no para de sangrar',nivel:2},{label:'Golpe con dolor intenso pero puedo moverme',nivel:3},{label:'Contusión o hematoma sin deformidad',nivel:4},{label:'Esguince leve',nivel:5}],
+        fiebre:[{label:'Fiebre muy alta (>40°C) con rigidez de nuca',nivel:1},{label:'Fiebre alta (>39°C) con dificultad respiratoria',nivel:2},{label:'Fiebre alta sin mejoría con antitérmico',nivel:3},{label:'Fiebre moderada (38-39°C)',nivel:4},{label:'Fiebre leve con síntomas catarrales',nivel:5}],
+        mental:[{label:'Pensamientos de hacerme daño o a otros',nivel:1},{label:'Crisis de angustia intensa (no puedo respirar)',nivel:2},{label:'Agitación intensa o desorientación',nivel:2},{label:'Ansiedad o crisis de pánico moderada',nivel:4},{label:'Tristeza profunda, no quiero salir de casa',nivel:4},{label:'Estrés o ansiedad leve',nivel:5}],
+        piel:[{label:'Urticaria con hinchazón de labios o garganta',nivel:1},{label:'Reacción alérgica extensa y rápida',nivel:2},{label:'Erupción generalizada con fiebre',nivel:3},{label:'Picadura o mordedura con inflamación',nivel:3},{label:'Erupción localizada sin fiebre',nivel:5}],
+        otro:[{label:'Me siento muy mal pero no sé explicar qué',nivel:3},{label:'Tengo algo que me preocupa pero no es urgente',nivel:5},{label:'Necesito renovar receta o resultado analítica',nivel:5}]
+    };
+
+    var DURACIONES=[{label:'Ahora mismo (menos de 1h)',factor:1.2},{label:'Hoy (1-12 horas)',factor:1.0},{label:'Ayer o antes de ayer',factor:0.9},{label:'Varios días (3-7 días)',factor:0.8},{label:'Más de una semana',factor:0.7}];
+
+    var CONTEXTO=[{id:'mayor70',label:'Tengo más de 70 años',factor:1.3},{id:'menor2',label:'Es un bebé menor de 2 años',factor:1.4},{id:'embarazo',label:'Estoy embarazada',factor:1.3},{id:'inmuno',label:'Tengo las defensas bajas (quimio, VIH, trasplante)',factor:1.4},{id:'anticoag',label:'Tomo anticoagulantes (Sintrom, Xarelto...)',factor:1.3},{id:'diabetes',label:'Soy diabético/a con insulina',factor:1.2},{id:'cardio',label:'Tengo enfermedad del corazón conocida',factor:1.2},{id:'ninguno',label:'Ninguna de las anteriores',factor:1.0}];
+
+    var NIVELES={
+        1:{color:'#c0392b',bg:'#fdecea',texto:'EMERGENCIA',icon:'🚨',accion:'Llama al 112 ahora mismo',desc:'Tus síntomas pueden indicar una emergencia vital que necesita atención médica inmediata. No conduzcas, llama al 112.',tel:'112',telLabel:'Llamar al 112 (Emergencias)'},
+        2:{color:'#e67e22',bg:'#fef3e2',texto:'URGENCIA ALTA',icon:'🔴',accion:'Acude a Urgencias del Hospital Santa Lucía ahora',desc:'Necesitas ser valorado por un médico en las próximas 30 minutos. Si empeoras, llama al 112.',tel:'112',telLabel:'Llamar al 112 si empeora'},
+        3:{color:'#f1c40f',bg:'#fffde8',texto:'URGENCIA MEDIA',icon:'🟡',accion:'Ve a Urgencias o a tu Punto de Atención Continuada (PAC)',desc:'Deberías ser valorado en las próximas 2 horas.',tel:'061',telLabel:'Llamar al 061 (Urgencias SMS)'},
+        4:{color:'#27ae60',bg:'#eef8ee',texto:'ATENCIÓN PREFERENTE',icon:'🟢',accion:'Llama a tu médico de cabecera o al 061',desc:'No es urgente inmediata, pero consulta hoy o mañana con tu médico de familia.',tel:'061',telLabel:'Llamar al 061 (Orientación)'},
+        5:{color:'#2980b9',bg:'#e8f0fe',texto:'NO URGENTE',icon:'🔵',accion:'Pide cita con tu médico de cabecera',desc:'Tu situación puede gestionarse de forma programada. Tu médico o farmacéutico pueden orientarte.',tel:'',telLabel:''}
+    };
+
+    // ═══════ PROGRESS ═══════
+    function updateProgress(step){
+        var bar=document.getElementById('progressBar');
+        bar.classList.add('visible');
+        bar.setAttribute('aria-valuenow',step);
+        var fill=document.getElementById('progressFill');
+        fill.style.width=(step/4*100)+'%';
+        for(var i=0;i<5;i++){
+            var dot=document.getElementById('pDot'+i);
+            dot.classList.remove('active','done');
+            if(i<step) dot.classList.add('done');
+            else if(i===step) dot.classList.add('active');
+        }
+    }
+
+    function trGoStep(n){
+        document.querySelectorAll('.tr-block').forEach(function(b){b.classList.remove('active')});
+        document.getElementById('trStep'+n).classList.add('active');
+        updateProgress(n);
+        window.scrollTo(0,0);
+    }
+
+    // ═══════ STEP 0: Legal ═══════
+    function trLegalChanged(){
+        var checked=document.getElementById('trLegalCheck').checked;
+        document.getElementById('trPersonaBtns').style.display=checked?'block':'none';
+        // Store acceptance with timestamp
+        if(checked){try{localStorage.setItem('triaje_legal_accepted',new Date().toISOString())}catch(e){}}
+    }
+
+    function trStart(persona){
+        TR.persona=persona;
+        // Render alerts
+        var el=document.getElementById('trAlertList');
+        el.innerHTML='';
+        ALERTAS.forEach(function(a){
+            el.innerHTML+='<div role="listitem" style="padding:10px 12px;background:#fdecea;border:1px solid #f5b7b1;border-radius:8px;font-size:.86rem;color:#5a0000;display:flex;align-items:center;gap:10px;margin-bottom:6px"><span aria-hidden="true">⚠️</span>'+a+'</div>';
+        });
+        trGoStep(1);
+    }
+
+    // ═══════ STEP 1: Emergency ═══════
+    function trEmergencyAnswer(hasAlert){
+        if(hasAlert){trShowResult(1);return}
+        // Render areas
+        var el=document.getElementById('trAreaList');
+        el.innerHTML='';
+        AREAS.forEach(function(a){
+            el.innerHTML+='<button role="listitem" class="tr-option tr-option--grid" onclick="trSelectArea(\''+a.id+'\')" aria-label="'+a.label+'"><div style="font-size:1.4rem;margin-bottom:4px" aria-hidden="true">'+a.icon+'</div><div style="font-size:.82rem">'+a.label+'</div></button>';
+        });
+        trGoStep(2);
+    }
+
+    // ═══════ STEP 2: Area ═══════
+    function trSelectArea(area){
+        TR.area=area;
+        var sintomas=SINTOMAS[area]||[];
+        var areaData=AREAS.find(function(a){return a.id===area})||{label:'Síntoma',icon:''};
+        document.getElementById('trSymptomLabel').textContent=areaData.icon+' '+areaData.label+' — ¿Cuál es el síntoma principal?';
+        var el=document.getElementById('trSymptomList');
+        el.innerHTML='';
+        sintomas.forEach(function(s,i){
+            el.innerHTML+='<button role="listitem" class="tr-option" onclick="trSelectSymptom('+i+')">'+s.label+'</button>';
+        });
+        document.getElementById('trIntensityBlock').style.display='none';
+        trGoStep(3);
+    }
+
+    // ═══════ STEP 3: Symptom + Intensity + Duration ═══════
+    function trSelectSymptom(idx){
+        var s=SINTOMAS[TR.area][idx];
+        TR.sintoma=s;
+        TR.nivelBase=s.nivel;
+        // Show intensity + duration
+        document.getElementById('trIntensityBlock').style.display='block';
+        document.getElementById('trIntensity').value=5;
+        trUpdateIntensity(5);
+        // Render durations
+        var el=document.getElementById('trDurationList');
+        el.innerHTML='';
+        DURACIONES.forEach(function(d,i){
+            el.innerHTML+='<button role="listitem" class="tr-option" onclick="trSelectDuration('+i+')" style="font-size:.84rem;padding:11px 8px;text-align:center">'+d.label+'</button>';
+        });
+        // Highlight selected symptom
+        var btns=document.getElementById('trSymptomList').querySelectorAll('button');
+        btns.forEach(function(b,i){b.style.borderColor=i===idx?'var(--primary)':'var(--border)';b.style.background=i===idx?'#f0fdf4':'var(--bg-card)'});
+        // Scroll to intensity
+        document.getElementById('trIntensityBlock').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+
+    function trUpdateIntensity(val){
+        val=parseInt(val);
+        TR.intensidad=val;
+        document.getElementById('trIntVal').textContent=val;
+        var slider=document.getElementById('trIntensity');
+        slider.setAttribute('aria-valuenow',val);
+        var desc=['Mínimo','Muy leve','Leve','Leve-moderado','Moderado','Moderado','Moderado-intenso','Intenso','Muy intenso','Extremo'][val-1]||'Moderado';
+        slider.setAttribute('aria-valuetext',val+' de 10, '+desc);
+        document.getElementById('trIntDesc').textContent=desc;
+    }
+
+    function trSelectDuration(idx){
+        TR.duracion=DURACIONES[idx];
+        // Render context
+        var el=document.getElementById('trContextList');
+        el.innerHTML='';
+        CONTEXTO.forEach(function(c){
+            el.innerHTML+='<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;cursor:pointer"><input type="checkbox" value="'+c.id+'" id="tr_ctx_'+c.id+'" style="width:18px;height:18px;flex-shrink:0;accent-color:var(--primary)" aria-label="'+c.label+'"><span style="font-size:.88rem">'+c.label+'</span></label>';
+        });
+        trGoStep(4);
+    }
+
+    // ═══════ STEP 4: Calculate ═══════
+    function trCalculate(){
+        TR.contexto=[];
+        CONTEXTO.forEach(function(c){
+            var cb=document.getElementById('tr_ctx_'+c.id);
+            if(cb&&cb.checked) TR.contexto.push(c);
+        });
+        var nivel=TR.nivelBase;
+        if(TR.intensidad>=8&&nivel>1) nivel=Math.max(1,nivel-1);
+        if(TR.intensidad<=3&&nivel<5) nivel=Math.min(5,nivel+1);
+        if(TR.duracion){
+            if(TR.duracion.factor>=1.2&&nivel>1) nivel=Math.max(1,nivel-1);
+            else if(TR.duracion.factor<=0.8&&nivel<5) nivel=Math.min(5,nivel+1);
+        }
+        var maxF=1.0;
+        TR.contexto.forEach(function(c){if(c.factor>maxF)maxF=c.factor});
+        if(maxF>=1.4&&nivel>1) nivel=Math.max(1,nivel-2);
+        else if(maxF>=1.3&&nivel>1) nivel=Math.max(1,nivel-1);
+        else if(maxF>=1.2&&nivel>2) nivel=Math.max(2,nivel-1);
+        trShowResult(nivel);
+    }
+
+    // ═══════ STEP 5: Result with justification ═══════
+    function trShowResult(nivel){
+        var n=NIVELES[nivel]||NIVELES[3];
+        var el=document.getElementById('trResult');
+
+        // Build justification
+        var reasons=[];
+        if(TR.sintoma) reasons.push('<li><strong>Síntoma:</strong> '+TR.sintoma.label+' (nivel base: '+TR.nivelBase+')</li>');
+        if(TR.intensidad) reasons.push('<li><strong>Intensidad:</strong> '+TR.intensidad+'/10'+(TR.intensidad>=8?' (elevó la urgencia)':TR.intensidad<=3?' (redujo la urgencia)':'')+'</li>');
+        if(TR.duracion) reasons.push('<li><strong>Duración:</strong> '+TR.duracion.label+(TR.duracion.factor>=1.2?' (inicio reciente, mayor urgencia)':TR.duracion.factor<=0.8?' (más tiempo, menor urgencia)':'')+'</li>');
+        if(TR.contexto.length>0&&TR.contexto[0].id!=='ninguno') reasons.push('<li><strong>Factores de riesgo:</strong> '+TR.contexto.map(function(c){return c.label}).join(', ')+' (elevaron la urgencia)</li>');
+
+        var telBtn=n.tel?'<a href="tel:'+n.tel+'" class="result-btn" style="background:'+n.color+';color:#fff" aria-label="'+n.telLabel+'">📞 '+n.telLabel+'</a>':'';
+
+        var shareText='Autotriaje Área II Cartagena\nNivel: '+n.texto+' ('+nivel+'/5)\n'+(TR.sintoma?'Síntoma: '+TR.sintoma.label+'\n':'')+'Fecha: '+new Date().toLocaleString('es-ES')+'\n⚠️ Orientativo, no sustituye valoración médica';
+
+        el.innerHTML='<div class="result-card" style="background:'+n.bg+';border:2px solid '+n.color+'" role="alert">'
+            +'<div class="result-header"><div class="result-icon">'+n.icon+'</div><div><div class="result-level" style="color:'+n.color+'">Nivel '+nivel+' de 5</div><div class="result-title" style="color:'+n.color+'">'+n.texto+'</div></div></div>'
+            +'<div class="result-action">'+n.accion+'</div>'
+            +'<div class="result-desc">'+n.desc+'</div>'
+            +telBtn
+            +'</div>'
+            // Justification block (NEW)
+            +'<div class="result-reasons"><h4>📋 ¿Por qué este resultado?</h4><ul>'+reasons.join('')+'</ul></div>'
+            // Share / print buttons (NEW)
+            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">'
+            +'<button class="result-btn result-btn--share" onclick="trShare()" aria-label="Compartir resultado">📤 Compartir</button>'
+            +'<button class="result-btn result-btn--share" onclick="window.print()" aria-label="Imprimir resultado">🖨️ Imprimir</button>'
+            +'</div>'
+            // Re-evaluate button (NEW)
+            +'<div style="background:#fef3e2;border:1px solid #f59e0b;border-radius:10px;padding:12px;font-size:.82rem;color:#7c4a03;margin-bottom:12px;text-align:center">'
+            +'⏰ <strong>Si tus síntomas cambian o empeoran</strong>, repite la evaluación o llama al 112.</div>'
+            +'<button onclick="trReset();showTriaje()" class="result-btn result-btn--outline" style="color:'+n.color+';border-color:'+n.color+'">🔄 Reevaluar mis síntomas</button>'
+            +'<button onclick="showPacientes()" class="result-btn result-btn--outline" style="color:var(--text-muted);border-color:var(--border);margin-top:6px">← Volver a Pacientes</button>'
+            // Standard reminder
+            +'<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;font-size:.83rem;color:var(--text-muted);line-height:1.7">'
+            +'<strong>📋 Recuerda siempre:</strong><br>'
+            +'• Si empeoras, llama al <strong>112</strong><br>'
+            +'• Si tienes dudas, llama al <strong>061</strong> (gratuito, 24h)<br>'
+            +'• Tu médico conoce tu situación mejor que ningún algoritmo</div>';
+
+        // Store share text for later
+        el.dataset.shareText=shareText;
+        trGoStep(5);
+    }
+
+    function trShare(){
+        var text=document.getElementById('trResult').dataset.shareText||'';
+        if(navigator.share){
+            navigator.share({title:'Autotriaje Área II',text:text}).catch(function(){});
+        }else if(navigator.clipboard){
+            navigator.clipboard.writeText(text).then(function(){alert('Resultado copiado al portapapeles')});
+        }else{
+            prompt('Copia este texto:',text);
+        }
+    }
+
+    function trReset(){
+        TR={persona:null,intensidad:5,duracion:null,area:null,sintoma:null,contexto:[],nivelBase:3,step:0};
+        document.getElementById('trLegalCheck').checked=false;
+        document.getElementById('trPersonaBtns').style.display='none';
+        document.getElementById('progressBar').classList.remove('visible');
+        document.querySelectorAll('.tr-block').forEach(function(b){b.classList.remove('active')});
+        document.getElementById('trStep0').classList.add('active');
+    }
+
+    // ═══════ FARMACIAS 24H ═══════
+    function showFarmacias(){
+        var locs=[
+            {n:'Cartagena',f:[{nom:'Farmacia Juan de la Cosa',dir:'C/ Juan de la Cosa, 7',tel:'968520009'},{nom:'Farmacia San Antón',dir:'Alameda San Antón, 16',tel:'968521103'},{nom:'Farmacia Nueva Cartagena',dir:'Av. Nueva Cartagena, 3',tel:'968512345'}]},
+            {n:'Murcia',f:[{nom:'F. Martínez Tornel',dir:'Plaza Martínez Tornel, 1',tel:'968213014'},{nom:'F. Ronda de Garay',dir:'Ronda de Garay, 37A',tel:'968293456'},{nom:'F. Miguel Hernández',dir:'C/ Miguel Hernández, s/n',tel:'968301234'},{nom:'F. Palazón Clemares',dir:'C/ Alfonso Palazón Clemares, 2',tel:'968262100'},{nom:'F. Almela Costa',dir:'C/ Pintor Almela Costa, 2',tel:'968234567'},{nom:'F. Juan de Borbón',dir:'Av. Don Juan de Borbón, 38',tel:'968245678'},{nom:'F. Condestable',dir:'Plaza Condestable, 2',tel:'968217890'},{nom:'F. Santa Catalina',dir:'Av. de Santa Catalina, 26',tel:'968256789'}]},
+            {n:'Lorca',f:[{nom:'F. Ramón y Cajal',dir:'Alameda de Ramón y Cajal, 12',tel:'968466012'}]},
+            {n:'Alhama de Murcia',f:[{nom:'F. Alhama 24h',dir:'Av. Juan Carlos I, 50',tel:'968630078'}]},
+            {n:'El Palmar',f:[{nom:'F. Ciudad Jardín La Paz',dir:'C/ Lorca, s/n',tel:'968880123'}]},
+            {n:'Molina de Segura',f:[{nom:'F. Molina 24h',dir:'Av. de la Industria, s/n',tel:'968613200'}]},
+            {n:'Torre Pacheco',f:[{nom:'F. Torre Pacheco 24h',dir:'C/ Mayor, s/n',tel:'968585012'}]},
+            {n:'Totana',f:[{nom:'F. Totana 24h',dir:'Av. Juan Carlos I, s/n',tel:'968421200'}]},
+            {n:'Yecla',f:[{nom:'F. Yecla 24h',dir:'C/ San Francisco, s/n',tel:'968790100'}]}
+        ];
+        var h='';
+        locs.forEach(function(loc){
+            h+='<div style="margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:5px 8px;background:linear-gradient(90deg,#e8f5e9,#f1f8e9);border-radius:6px;border-left:3px solid #2e7d32;"><strong style="font-size:.88rem;color:#1b5e20;">📍 '+loc.n+'</strong><span style="font-size:.68rem;background:#2e7d32;color:#fff;padding:1px 6px;border-radius:10px;">'+loc.f.length+'</span></div>';
+            loc.f.forEach(function(f){
+                h+='<div style="border:1px solid #e8f5e9;border-radius:8px;padding:10px 12px;margin-bottom:6px;background:#fafffe;display:flex;justify-content:space-between;align-items:center;gap:8px;"><div><div style="font-weight:600;font-size:.84rem;color:#1b5e20;">'+f.nom+'</div><div style="font-size:.74rem;color:#555;margin-top:2px;">📍 '+f.dir+'</div></div><a href="tel:'+f.tel+'" style="flex-shrink:0;background:#2e7d32;color:#fff;border-radius:6px;padding:6px 10px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 '+f.tel.replace(/(\d{3})(\d{2})(\d{2})(\d{2})/,"$1 $2 $3 $4")+'</a></div>';
+            });
+            h+='</div>';
+        });
+        document.getElementById('farmListPac').innerHTML=h;
+        document.getElementById('modalFarmacias').style.display='flex';
+    }
+
+    // ═══════ URL PARAMS ═══════
+    (function(){
+        var p=new URLSearchParams(window.location.search);
+        if(p.get('seccion')==='triaje') showTriaje();
+    })();
+    </script>
 </body>
 </html>
