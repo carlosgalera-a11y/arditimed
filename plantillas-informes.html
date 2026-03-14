@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plantillas de Informes | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1.05rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
+.container{max-width:750px;margin:0 auto;padding:16px}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px}
+.tpl-card{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s}
+.tpl-card:hover,.tpl-card.active{border-color:#1a6b4a;background:#e8f5e9;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.tpl-card .icon{font-size:1.8rem;margin-bottom:6px}
+.tpl-card .label{font-size:.82rem;font-weight:700;color:#333}
+.tpl-card .desc{font-size:.7rem;color:#888;margin-top:2px}
+.editor{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px;display:none}
+.editor.show{display:block}
+.editor h3{color:#1a6b4a;font-size:1rem;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #e8f5e9}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.88rem;font-family:inherit}
+.field textarea{min-height:100px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:#1a6b4a}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.output{background:#fafafa;border:2px solid #e0e0e0;border-radius:12px;padding:20px;margin-top:16px;font-family:'Courier New',monospace;font-size:.85rem;line-height:1.7;white-space:pre-wrap;min-height:200px;display:none}
+.output.show{display:block}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;border:none}
+.btn-green{background:#1a6b4a;color:#fff}.btn-blue{background:#1565c0;color:#fff}
+.btn-gray{background:#e0e0e0;color:#333}.btn-red{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+.warn{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px;font-size:.78rem;color:#6d4c00;margin-bottom:14px}
+.chip{display:inline-block;padding:4px 10px;background:#e8f5e9;border-radius:20px;font-size:.72rem;font-weight:600;color:#1a6b4a;cursor:pointer;margin:2px}
+.chip:hover{background:#c8e6c9}
+</style>
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>📄 Plantillas de Informes</h1></div>
+<div class="container">
+    <div class="warn">⚠️ <strong>Sin datos personales.</strong> No incluyas nombre, DNI ni datos identificativos. Usa iniciales o número de cama. RGPD/LOPD.</div>
+
+    <div class="tpl-grid">
+        <div class="tpl-card" onclick="selectTpl('alta')"><div class="icon">✅</div><div class="label">Alta médica</div><div class="desc">Informe de alta</div></div>
+        <div class="tpl-card" onclick="selectTpl('derivacion')"><div class="icon">📨</div><div class="label">Derivación</div><div class="desc">Interconsulta</div></div>
+        <div class="tpl-card" onclick="selectTpl('it')"><div class="icon">📋</div><div class="label">IT / Baja</div><div class="desc">Incapacidad temporal</div></div>
+        <div class="tpl-card" onclick="selectTpl('seguimiento')"><div class="icon">🔄</div><div class="label">Seguimiento</div><div class="desc">Control evolutivo</div></div>
+        <div class="tpl-card" onclick="selectTpl('urgencia')"><div class="icon">🚨</div><div class="label">Urgencia</div><div class="desc">Atención urgente</div></div>
+        <div class="tpl-card" onclick="selectTpl('enfermeria')"><div class="icon">👩‍⚕️</div><div class="label">Enfermería</div><div class="desc">Informe cuidados</div></div>
+        <div class="tpl-card" onclick="selectTpl('certificado')"><div class="icon">📝</div><div class="label">Certificado</div><div class="desc">Certificado médico</div></div>
+        <div class="tpl-card" onclick="selectTpl('receta')"><div class="icon">💊</div><div class="label">Receta</div><div class="desc">Prescripción</div></div>
+    </div>
+
+    <div class="editor" id="editor">
+        <h3 id="editorTitle">📄 Informe</h3>
+        <div id="editorFields"></div>
+        <div class="actions">
+            <button class="btn btn-green" onclick="generateReport()">📄 Generar informe</button>
+            <button class="btn btn-blue" onclick="generateWithAI()">🤖 Generar con IA</button>
+            <button class="btn btn-gray" onclick="clearEditor()">🗑️ Limpiar</button>
+        </div>
+    </div>
+
+    <div class="output" id="output"></div>
+    <div class="actions" id="outputActions" style="display:none;">
+        <button class="btn btn-green" onclick="copyReport()">📋 Copiar</button>
+        <button class="btn btn-blue" onclick="printReport()">🖨️ Imprimir</button>
+        <button class="btn btn-gray" onclick="document.getElementById('output').classList.remove('show');document.getElementById('outputActions').style.display='none';">✕ Cerrar</button>
+    </div>
+</div>
+
+<script>
+var templates={
+    alta:{title:'✅ Informe de Alta',fields:[
+        {id:'fecha',label:'Fecha',type:'date'},
+        {id:'servicio',label:'Servicio',type:'select',options:['Medicina Interna','Urgencias','Cirugía','Cardiología','Neumología','Digestivo','Neurología','Traumatología','Pediatría','Otro']},
+        {id:'motivo',label:'Motivo de ingreso',type:'textarea',placeholder:'Motivo del ingreso hospitalario...'},
+        {id:'antecedentes',label:'Antecedentes personales',type:'textarea',placeholder:'AP relevantes...'},
+        {id:'evolucion',label:'Evolución durante ingreso',type:'textarea',placeholder:'Resumen de la evolución clínica...'},
+        {id:'exploracion',label:'Exploración al alta',type:'textarea',placeholder:'Exploración física al alta...'},
+        {id:'pruebas',label:'Pruebas complementarias',type:'textarea',placeholder:'Analítica, Rx, ECG, etc...'},
+        {id:'diagnostico',label:'Diagnóstico al alta',type:'textarea',placeholder:'Diagnósticos principal y secundarios...'},
+        {id:'tratamiento',label:'Tratamiento al alta',type:'textarea',placeholder:'Pauta farmacológica...'},
+        {id:'recomendaciones',label:'Recomendaciones',type:'textarea',placeholder:'Indicaciones al paciente...'}
+    ]},
+    derivacion:{title:'📨 Informe de Derivación',fields:[
+        {id:'fecha',label:'Fecha',type:'date'},
+        {id:'destino',label:'Especialidad destino',type:'select',options:['Cardiología','Neumología','Digestivo','Neurología','Traumatología','Dermatología','Oftalmología','ORL','Urología','Ginecología','Psiquiatría','Endocrinología','Reumatología','Cirugía General','Otro']},
+        {id:'preferente',label:'Carácter',type:'select',options:['Normal','Preferente','Urgente']},
+        {id:'motivo',label:'Motivo de derivación',type:'textarea',placeholder:'Motivo de la interconsulta...'},
+        {id:'antecedentes',label:'Antecedentes relevantes',type:'textarea'},
+        {id:'clinica',label:'Clínica actual',type:'textarea'},
+        {id:'exploracion',label:'Exploración',type:'textarea'},
+        {id:'pruebas',label:'Pruebas realizadas',type:'textarea'},
+        {id:'tratamiento',label:'Tratamiento actual',type:'textarea'}
+    ]},
+    it:{title:'📋 Informe IT / Baja',fields:[
+        {id:'fecha',label:'Fecha inicio IT',type:'date'},
+        {id:'diagnostico',label:'Diagnóstico (CIE-10)',type:'text',placeholder:'Ej: M54.5 - Lumbalgia'},
+        {id:'contingencia',label:'Contingencia',type:'select',options:['Enfermedad común','Accidente no laboral','Accidente de trabajo','Enfermedad profesional']},
+        {id:'clinica',label:'Situación clínica',type:'textarea',placeholder:'Estado actual del paciente...'},
+        {id:'limitaciones',label:'Limitaciones funcionales',type:'textarea',placeholder:'Actividades que no puede realizar...'},
+        {id:'tratamiento',label:'Tratamiento',type:'textarea'},
+        {id:'prevision',label:'Previsión de duración',type:'text',placeholder:'Ej: 2-3 semanas'}
+    ]},
+    seguimiento:{title:'🔄 Informe de Seguimiento',fields:[
+        {id:'fecha',label:'Fecha',type:'date'},
+        {id:'motivo',label:'Motivo de seguimiento',type:'textarea'},
+        {id:'evolucion',label:'Evolución desde última visita',type:'textarea'},
+        {id:'exploracion',label:'Exploración actual',type:'textarea'},
+        {id:'pruebas',label:'Pruebas solicitadas/resultados',type:'textarea'},
+        {id:'plan',label:'Plan terapéutico',type:'textarea'},
+        {id:'proxima',label:'Próxima cita',type:'text',placeholder:'Ej: 3 meses'}
+    ]},
+    urgencia:{title:'🚨 Informe de Urgencias',fields:[
+        {id:'fecha',label:'Fecha/Hora llegada',type:'text',placeholder:'DD/MM/AAAA HH:MM'},
+        {id:'motivo',label:'Motivo de consulta',type:'textarea'},
+        {id:'anamnesis',label:'Anamnesis',type:'textarea'},
+        {id:'exploracion',label:'Exploración física',type:'textarea'},
+        {id:'pruebas',label:'Pruebas complementarias',type:'textarea'},
+        {id:'diagnostico',label:'Diagnóstico',type:'textarea'},
+        {id:'tratamiento',label:'Tratamiento en urgencias',type:'textarea'},
+        {id:'destino',label:'Destino',type:'select',options:['Alta a domicilio','Observación','Ingreso hospitalario','Derivación a otro centro','Alta voluntaria']},
+        {id:'recomendaciones',label:'Recomendaciones al alta',type:'textarea'}
+    ]},
+    enfermeria:{title:'👩‍⚕️ Informe de Enfermería',fields:[
+        {id:'fecha',label:'Fecha',type:'date'},
+        {id:'motivo',label:'Motivo de la consulta',type:'textarea'},
+        {id:'valoracion',label:'Valoración enfermera',type:'textarea',placeholder:'Constantes, estado general, valoración por patrones...'},
+        {id:'diagnosticos',label:'Diagnósticos enfermeros (NANDA)',type:'textarea'},
+        {id:'intervenciones',label:'Intervenciones (NIC)',type:'textarea'},
+        {id:'resultados',label:'Resultados esperados (NOC)',type:'textarea'},
+        {id:'cuidados',label:'Plan de cuidados',type:'textarea'},
+        {id:'proxima',label:'Próxima revisión',type:'text'}
+    ]},
+    certificado:{title:'📝 Certificado Médico',fields:[
+        {id:'fecha',label:'Fecha',type:'date'},
+        {id:'tipo',label:'Tipo de certificado',type:'select',options:['Certificado de salud','Apto para actividad deportiva','Certificado de defunción','Certificado para oposiciones','Otro']},
+        {id:'contenido',label:'Contenido del certificado',type:'textarea',placeholder:'Que el paciente presenta...'},
+        {id:'observaciones',label:'Observaciones',type:'textarea'}
+    ]},
+    receta:{title:'💊 Prescripción',fields:[
+        {id:'fecha',label:'Fecha',type:'date'},
+        {id:'farmacos',label:'Fármacos (uno por línea)',type:'textarea',placeholder:'Fármaco - dosis - pauta - duración\nEj: Amoxicilina 500mg - 1 comp/8h - 7 días'},
+        {id:'instrucciones',label:'Instrucciones al paciente',type:'textarea',placeholder:'Tomar con alimentos, evitar alcohol, etc.'},
+        {id:'alergias',label:'Alergias conocidas',type:'text',placeholder:'NKDA / Penicilina / etc.'}
+    ]}
+};
+
+var currentTpl='';
+
+function selectTpl(key){
+    currentTpl=key;
+    var tpl=templates[key];
+    document.querySelectorAll('.tpl-card').forEach(function(c){c.classList.remove('active');});
+    event.currentTarget.classList.add('active');
+    document.getElementById('editorTitle').textContent=tpl.title;
+    var h='';
+    tpl.fields.forEach(function(f){
+        h+='<div class="field"><label>'+f.label+'</label>';
+        if(f.type==='textarea') h+='<textarea id="f_'+f.id+'" placeholder="'+(f.placeholder||'')+'"></textarea>';
+        else if(f.type==='select'){
+            h+='<select id="f_'+f.id+'"><option value="">— Selecciona —</option>';
+            f.options.forEach(function(o){h+='<option value="'+o+'">'+o+'</option>';});
+            h+='</select>';
+        }
+        else if(f.type==='date') h+='<input type="date" id="f_'+f.id+'" value="'+new Date().toISOString().split('T')[0]+'">';
+        else h+='<input type="text" id="f_'+f.id+'" placeholder="'+(f.placeholder||'')+'">';
+        h+='</div>';
+    });
+    document.getElementById('editorFields').innerHTML=h;
+    document.getElementById('editor').classList.add('show');
+    document.getElementById('output').classList.remove('show');
+    document.getElementById('outputActions').style.display='none';
+}
+
+function getFieldValues(){
+    var tpl=templates[currentTpl];
+    var vals={};
+    tpl.fields.forEach(function(f){
+        var el=document.getElementById('f_'+f.id);
+        vals[f.id]={label:f.label,value:el?el.value.trim():''};
+    });
+    return vals;
+}
+
+function generateReport(){
+    var vals=getFieldValues();
+    var tpl=templates[currentTpl];
+    var txt='════════════════════════════════════════\n';
+    txt+=tpl.title.replace(/[^\w\sáéíóúñÁÉÍÓÚÑ]/g,'').trim().toUpperCase()+'\n';
+    txt+='Centro de Salud Virgen de la Caridad\nÁrea II Cartagena — SMS\n';
+    txt+='════════════════════════════════════════\n\n';
+    for(var k in vals){
+        if(vals[k].value){
+            txt+=vals[k].label.toUpperCase()+':\n'+vals[k].value+'\n\n';
+        }
+    }
+    txt+='────────────────────────────────────────\n';
+    txt+='Firma del profesional:\n\n\n\n';
+    txt+='Fecha: '+new Date().toLocaleDateString('es-ES')+'\n';
+    txt+='C.S. Virgen de la Caridad · Área II Cartagena\n';
+
+    document.getElementById('output').textContent=txt;
+    document.getElementById('output').classList.add('show');
+    document.getElementById('outputActions').style.display='flex';
+}
+
+async function generateWithAI(){
+    var vals=getFieldValues();
+    var tpl=templates[currentTpl];
+    var prompt='Genera un informe médico profesional de tipo "'+tpl.title+'" con estos datos:\n\n';
+    for(var k in vals){
+        if(vals[k].value) prompt+=vals[k].label+': '+vals[k].value+'\n';
+    }
+    prompt+='\nFormato: informe clínico profesional en español, estructurado, conciso. No inventes datos que no se proporcionan. Usa lenguaje médico apropiado.';
+
+    var key=localStorage.getItem('groqApiKey')||'';
+    if(!key){
+        try{var cfg=JSON.parse(localStorage.getItem('notebook_ai_cfg_v3')||'{}');key=cfg.groqKey||'';}catch(e){}
+    }
+    if(!key){alert('Configura la API Key de Groq en la sección Profesionales > Config');return;}
+
+    document.getElementById('output').textContent='⏳ Generando informe con IA...';
+    document.getElementById('output').classList.add('show');
+
+    try{
+        var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+            body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[
+                {role:'system',content:'Eres un médico redactando informes clínicos del Centro de Salud Virgen de la Caridad, Área II Cartagena, SMS. Redacta informes profesionales, estructurados, en español médico. No incluyas datos personales inventados.'},
+                {role:'user',content:prompt}
+            ],max_tokens:1500,temperature:0.3})
+        });
+        var d=await r.json();
+        var txt=d.choices[0].message.content;
+        document.getElementById('output').textContent=txt;
+        document.getElementById('outputActions').style.display='flex';
+    }catch(e){
+        document.getElementById('output').textContent='❌ Error: '+e.message;
+    }
+}
+
+function clearEditor(){
+    document.querySelectorAll('#editorFields input, #editorFields textarea, #editorFields select').forEach(function(el){
+        if(el.type==='date') el.value=new Date().toISOString().split('T')[0];
+        else el.value='';
+    });
+}
+
+function copyReport(){
+    navigator.clipboard.writeText(document.getElementById('output').textContent).then(function(){alert('✅ Informe copiado');});
+}
+
+function printReport(){
+    var w=window.open('','_blank');
+    w.document.write('<html><body style="font-family:Courier New,monospace;padding:40px;font-size:13px;line-height:1.7;white-space:pre-wrap;">');
+    w.document.write(document.getElementById('output').textContent.replace(/</g,'&lt;'));
+    w.document.write('</body></html>');
+    w.document.close();
+    w.print();
+}
+</script>
+</body>
+</html>

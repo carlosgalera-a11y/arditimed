@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Info Multilingüe | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
+.container{max-width:700px;margin:0 auto;padding:16px}
+.lang-bar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;padding:12px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lang-btn{padding:8px 14px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;background:#fff;transition:all .2s;font-family:inherit}
+.lang-btn.active{border-color:#1a6b4a;background:#e8f5e9;color:#1a6b4a}
+.section{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:14px}
+.section h2{font-size:1.1rem;color:#1a6b4a;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8f5e9}
+.section h3{font-size:.95rem;color:#333;margin:12px 0 6px}
+.section p,.section li{font-size:.88rem;line-height:1.7;color:#444}
+.section ul{padding-left:20px;margin:6px 0}
+.emergency{background:#fef2f2;border:2px solid #ef5350;border-radius:12px;padding:16px;text-align:center;margin-bottom:14px}
+.emergency .num{font-size:2rem;font-weight:900;color:#c62828}
+.emergency p{color:#b71c1c;font-weight:600;font-size:.9rem}
+.contact-card{display:flex;gap:10px;padding:12px;background:#f8f8f8;border-radius:8px;margin:8px 0;align-items:center}
+.contact-card .icon{font-size:1.4rem;flex-shrink:0}
+.contact-card .info{flex:1;font-size:.85rem}
+.contact-card a{color:#1a6b4a;font-weight:600;text-decoration:none}
+[dir="rtl"]{direction:rtl;text-align:right}
+[dir="rtl"] ul{padding-right:20px;padding-left:0}
+</style>
+</head>
+<body>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>🌍 Información Multilingüe</h1></div>
+<div class="container">
+    <div class="lang-bar">
+        <button class="lang-btn active" onclick="setLang('es',this)">🇪🇸 Español</button>
+        <button class="lang-btn" onclick="setLang('ar',this)">🇸🇦 العربية</button>
+        <button class="lang-btn" onclick="setLang('fr',this)">🇫🇷 Français</button>
+        <button class="lang-btn" onclick="setLang('en',this)">🇬🇧 English</button>
+        <button class="lang-btn" onclick="setLang('ro',this)">🇷🇴 Română</button>
+        <button class="lang-btn" onclick="setLang('zh',this)">🇨🇳 中文</button>
+        <button class="lang-btn" onclick="setLang('uk',this)">🇺🇦 Українська</button>
+    </div>
+
+    <div class="emergency">
+        <div class="num" data-i18n="emergency_num">112</div>
+        <p data-i18n="emergency_text">Emergencias — Llama si es urgente</p>
+    </div>
+
+    <div id="content"></div>
+</div>
+
+<script>
+var i18n={
+es:{dir:'ltr',emergency_num:'112',emergency_text:'Emergencias — Llama si es urgente',content:`
+<div class="section"><h2>🏥 Centro de Salud Virgen de la Caridad</h2>
+<p>Bienvenido al Centro de Salud del Área II de Cartagena. Aquí tienes la información más importante:</p>
+<div class="contact-card"><div class="icon">📍</div><div class="info">C/ Sor Francisca Armendáriz, s/n · Cartagena</div></div>
+<div class="contact-card"><div class="icon">📞</div><div class="info">Cita previa: <a href="tel:968326600">968 32 66 00</a></div></div>
+<div class="contact-card"><div class="icon">🌐</div><div class="info">Cita online: <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></div></div>
+<div class="contact-card"><div class="icon">⏰</div><div class="info">Horario: Lunes a Viernes 8:00 - 20:00</div></div>
+</div>
+<div class="section"><h2>📋 Cómo pedir cita</h2>
+<ul><li>Por teléfono: <strong>968 32 66 00</strong> o <strong>900 100 500</strong> (gratuito)</li>
+<li>Por internet: <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></li>
+<li>Presencialmente: en el mostrador de Admisión</li>
+<li>Urgencias: sin cita, acude directamente</li></ul></div>
+<div class="section"><h2>📄 Documentos necesarios</h2>
+<ul><li>Tarjeta sanitaria (SIP)</li><li>DNI/NIE/Pasaporte</li><li>Tarjeta Sanitaria Europea (si procede)</li></ul></div>
+<div class="section"><h2>💊 Farmacia de guardia</h2>
+<p>Consulta farmacias 24h en la app principal o llama al <strong>012</strong> (Información CARM).</p></div>
+<div class="section"><h2>🚨 Cuándo ir a Urgencias</h2>
+<ul><li>Dolor torácico intenso</li><li>Dificultad respiratoria grave</li><li>Pérdida de conocimiento</li><li>Sangrado abundante</li><li>Traumatismo grave</li><li>Fiebre muy alta que no baja</li></ul>
+<p>🏥 Urgencias Hospital Santa Lucía: <a href="tel:968128600">968 12 86 00</a></p></div>`},
+
+ar:{dir:'rtl',emergency_num:'112',emergency_text:'حالات الطوارئ — اتصل إذا كانت حالة طارئة',content:`
+<div class="section"><h2>🏥 المركز الصحي فيرخن دي لا كاريداد</h2>
+<p>مرحباً بك في المركز الصحي بمنطقة كارتاخينا الثانية. هذه أهم المعلومات:</p>
+<div class="contact-card"><div class="icon">📍</div><div class="info">شارع سور فرانسيسكا أرمنداريث، بدون رقم · كارتاخينا</div></div>
+<div class="contact-card"><div class="icon">📞</div><div class="info">حجز موعد: <a href="tel:968326600" dir="ltr">968 32 66 00</a></div></div>
+<div class="contact-card"><div class="icon">⏰</div><div class="info">ساعات العمل: الاثنين إلى الجمعة 8:00 - 20:00</div></div>
+</div>
+<div class="section"><h2>📋 كيفية حجز موعد</h2>
+<ul><li>بالهاتف: <strong dir="ltr">968 32 66 00</strong> أو <strong dir="ltr">900 100 500</strong> (مجاني)</li>
+<li>عبر الإنترنت: <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></li>
+<li>شخصياً: في مكتب الاستقبال</li>
+<li>الطوارئ: اذهب مباشرة بدون موعد</li></ul></div>
+<div class="section"><h2>📄 الوثائق المطلوبة</h2>
+<ul><li>البطاقة الصحية (SIP)</li><li>بطاقة الهوية / الإقامة / جواز السفر</li><li>البطاقة الصحية الأوروبية (إن وجدت)</li></ul></div>
+<div class="section"><h2>🚨 متى تذهب إلى الطوارئ</h2>
+<ul><li>ألم شديد في الصدر</li><li>صعوبة شديدة في التنفس</li><li>فقدان الوعي</li><li>نزيف حاد</li><li>إصابة خطيرة</li><li>حمى شديدة جداً لا تنخفض</li></ul>
+<p>🏥 طوارئ مستشفى سانتا لوثيا: <a href="tel:968128600" dir="ltr">968 12 86 00</a></p></div>`},
+
+fr:{dir:'ltr',emergency_num:'112',emergency_text:'Urgences — Appelez en cas d\'urgence',content:`
+<div class="section"><h2>🏥 Centre de Santé Virgen de la Caridad</h2>
+<p>Bienvenue au Centre de Santé de la Zone II de Carthagène. Voici les informations essentielles:</p>
+<div class="contact-card"><div class="icon">📍</div><div class="info">C/ Sor Francisca Armendáriz, s/n · Carthagène</div></div>
+<div class="contact-card"><div class="icon">📞</div><div class="info">Rendez-vous: <a href="tel:968326600">968 32 66 00</a></div></div>
+<div class="contact-card"><div class="icon">⏰</div><div class="info">Horaires: Lundi à Vendredi 8h00 - 20h00</div></div>
+</div>
+<div class="section"><h2>📋 Comment prendre rendez-vous</h2>
+<ul><li>Par téléphone: <strong>968 32 66 00</strong> ou <strong>900 100 500</strong> (gratuit)</li>
+<li>Par internet: <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></li>
+<li>Sur place: au guichet d'accueil</li>
+<li>Urgences: sans rendez-vous</li></ul></div>
+<div class="section"><h2>📄 Documents nécessaires</h2>
+<ul><li>Carte de santé (SIP)</li><li>CNI/Titre de séjour/Passeport</li><li>Carte Européenne d'Assurance Maladie (si applicable)</li></ul></div>
+<div class="section"><h2>🚨 Quand aller aux urgences</h2>
+<ul><li>Douleur thoracique intense</li><li>Difficulté respiratoire grave</li><li>Perte de connaissance</li><li>Saignement abondant</li><li>Traumatisme grave</li><li>Fièvre très élevée persistante</li></ul>
+<p>🏥 Urgences Hôpital Santa Lucía: <a href="tel:968128600">968 12 86 00</a></p></div>`},
+
+en:{dir:'ltr',emergency_num:'112',emergency_text:'Emergency — Call if urgent',content:`
+<div class="section"><h2>🏥 Virgen de la Caridad Health Centre</h2>
+<p>Welcome to the Area II Health Centre in Cartagena. Here is the most important information:</p>
+<div class="contact-card"><div class="icon">📍</div><div class="info">C/ Sor Francisca Armendáriz, s/n · Cartagena</div></div>
+<div class="contact-card"><div class="icon">📞</div><div class="info">Appointments: <a href="tel:968326600">968 32 66 00</a></div></div>
+<div class="contact-card"><div class="icon">⏰</div><div class="info">Hours: Monday to Friday 8:00 AM - 8:00 PM</div></div>
+</div>
+<div class="section"><h2>📋 How to book an appointment</h2>
+<ul><li>By phone: <strong>968 32 66 00</strong> or <strong>900 100 500</strong> (free)</li>
+<li>Online: <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></li>
+<li>In person: at the Reception desk</li>
+<li>Emergencies: no appointment needed</li></ul></div>
+<div class="section"><h2>📄 Required documents</h2>
+<ul><li>Health card (SIP)</li><li>ID/Residence card/Passport</li><li>European Health Insurance Card (if applicable)</li></ul></div>
+<div class="section"><h2>🚨 When to go to the Emergency Room</h2>
+<ul><li>Severe chest pain</li><li>Serious breathing difficulty</li><li>Loss of consciousness</li><li>Heavy bleeding</li><li>Severe trauma/injury</li><li>Very high fever that won't come down</li></ul>
+<p>🏥 Santa Lucía Hospital ER: <a href="tel:968128600">968 12 86 00</a></p></div>`},
+
+ro:{dir:'ltr',emergency_num:'112',emergency_text:'Urgențe — Sunați dacă este urgent',content:`
+<div class="section"><h2>🏥 Centrul de Sănătate Virgen de la Caridad</h2>
+<p>Bine ați venit la Centrul de Sănătate din Zona II Cartagena. Iată informațiile cele mai importante:</p>
+<div class="contact-card"><div class="icon">📞</div><div class="info">Programări: <a href="tel:968326600">968 32 66 00</a></div></div>
+<div class="contact-card"><div class="icon">⏰</div><div class="info">Program: Luni - Vineri 8:00 - 20:00</div></div>
+</div>
+<div class="section"><h2>📋 Cum să faceți o programare</h2>
+<ul><li>Telefonic: <strong>968 32 66 00</strong> sau <strong>900 100 500</strong> (gratuit)</li>
+<li>Online: <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></li>
+<li>Personal: la ghișeul de Admitere</li></ul></div>
+<div class="section"><h2>📄 Documente necesare</h2>
+<ul><li>Card de sănătate (SIP)</li><li>Carte de identitate / NIE / Pașaport</li></ul></div>`},
+
+zh:{dir:'ltr',emergency_num:'112',emergency_text:'紧急情况 — 紧急时请拨打',content:`
+<div class="section"><h2>🏥 卡塔赫纳第二区卫生中心</h2>
+<p>欢迎来到卡塔赫纳第二区卫生中心。以下是最重要的信息：</p>
+<div class="contact-card"><div class="icon">📞</div><div class="info">预约电话：<a href="tel:968326600">968 32 66 00</a></div></div>
+<div class="contact-card"><div class="icon">⏰</div><div class="info">工作时间：周一至周五 8:00 - 20:00</div></div>
+</div>
+<div class="section"><h2>📋 如何预约</h2>
+<ul><li>电话：<strong>968 32 66 00</strong> 或 <strong>900 100 500</strong>（免费）</li>
+<li>网上预约：<a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></li>
+<li>现场：在前台登记</li></ul></div>
+<div class="section"><h2>📄 所需文件</h2>
+<ul><li>医疗卡 (SIP)</li><li>身份证 / 居留证 / 护照</li></ul></div>`},
+
+uk:{dir:'ltr',emergency_num:'112',emergency_text:'Невідкладна допомога — Телефонуйте у разі термінової ситуації',content:`
+<div class="section"><h2>🏥 Медичний центр Вірхен де ла Карідад</h2>
+<p>Ласкаво просимо до медичного центру Зони II Картахени. Ось найважливіша інформація:</p>
+<div class="contact-card"><div class="icon">📞</div><div class="info">Запис на прийом: <a href="tel:968326600">968 32 66 00</a></div></div>
+<div class="contact-card"><div class="icon">⏰</div><div class="info">Графік: Понеділок - П'ятниця 8:00 - 20:00</div></div>
+</div>
+<div class="section"><h2>📋 Як записатися на прийом</h2>
+<ul><li>Телефоном: <strong>968 32 66 00</strong> або <strong>900 100 500</strong> (безкоштовно)</li>
+<li>Онлайн: <a href="https://sms.carm.es/cmap/" target="_blank">sms.carm.es/cmap</a></li>
+<li>Особисто: на стійці реєстрації</li></ul></div>
+<div class="section"><h2>📄 Необхідні документи</h2>
+<ul><li>Медична картка (SIP)</li><li>Посвідчення / NIE / Паспорт</li></ul></div>`}
+};
+
+function setLang(lang,btn){
+    document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    var d=i18n[lang];
+    document.querySelector('[data-i18n="emergency_text"]').textContent=d.emergency_text;
+    document.getElementById('content').innerHTML=d.content;
+    document.getElementById('content').setAttribute('dir',d.dir);
+}
+
+// Init
+setLang('es',document.querySelector('.lang-btn'));
+</script>
+</body>
+</html>
