@@ -370,6 +370,34 @@
         body.dark-mode .patient-card-title{color:#93c5fd;}
         body.dark-mode input,body.dark-mode textarea,body.dark-mode select{background:#1e293b!important;color:#e2e8f0!important;border-color:#334155!important;}
         body.dark-mode .modal-box,body.dark-mode [style*="background:#fff"]{background:#1e293b!important;color:#e2e8f0!important;}
+        body.dark-mode .patients-header{background:linear-gradient(135deg,#0f172a,#1e3a5f)!important;}
+        body.dark-mode .patient-card-desc{color:#94a3b8!important;}
+        body.dark-mode .page{background:#0f172a!important;}
+        body.dark-mode .sidebar-left,.dark-mode .sidebar-right{background:#1e293b!important;border-color:#334155!important;}
+        body.dark-mode .sidebar-footer{color:#94a3b8!important;}
+        body.dark-mode .categories-list{background:#1e293b!important;}
+        body.dark-mode .category-btn{background:#0f172a!important;border-color:#334155!important;color:#e2e8f0!important;}
+        body.dark-mode .category-btn:hover,.dark-mode .category-btn.active{background:#1e3a5f!important;border-color:#3b82f6!important;}
+        body.dark-mode .tab-btn{background:#1e293b!important;color:#94a3b8!important;border-color:#334155!important;}
+        body.dark-mode .tab-btn.active{background:#3b82f6!important;color:#fff!important;}
+        body.dark-mode .content-area{background:#0f172a!important;}
+        body.dark-mode .doc-card,.dark-mode .note-card{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important;}
+        body.dark-mode h1,.dark-mode h2,.dark-mode h3,.dark-mode h4{color:#e2e8f0!important;}
+        body.dark-mode .answer-box,.dark-mode .ai-response{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important;}
+        body.dark-mode .question-input{background:#0f172a!important;color:#e2e8f0!important;border-color:#334155!important;}
+        body.dark-mode .config-box{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important;}
+        body.dark-mode .studio-card{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important;}
+        body.dark-mode .urg-tab-content{color:#e2e8f0!important;}
+        body.dark-mode p,.dark-mode span,.dark-mode div,.dark-mode li,.dark-mode td,.dark-mode th{color:inherit;}
+        body.dark-mode a{color:#60a5fa;}
+        body.dark-mode .hero-footer{color:rgba(148,163,184,.6)!important;}
+        body.dark-mode .hero-footer a{color:rgba(148,163,184,.8)!important;}
+        body.dark-mode code{background:#334155!important;color:#e2e8f0!important;}
+        body.dark-mode [style*="background:#fafffe"]{background:#1e293b!important;}
+        body.dark-mode [style*="background:#f"]{background:#1e293b!important;}
+        body.dark-mode [style*="background:#e"]{background:#0f172a!important;}
+        body.dark-mode [style*="background:linear-gradient(135deg,#e"]{background:linear-gradient(135deg,#1e293b,#0f172a)!important;}
+        body.dark-mode .dark-toggle{background:#1e293b!important;border-color:#334155!important;}
         .dark-toggle{position:fixed;bottom:20px;right:20px;z-index:9999;background:#1e293b;border:1px solid #334155;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:.3s;}
         .dark-toggle:hover{transform:scale(1.1);}
 
@@ -441,6 +469,9 @@
                 <div class="hero-buttons" style="margin-top:20px;">
                     <a class="hero-btn" href="casos-clinicos.html" target="_blank" style="background:linear-gradient(135deg,#4a148c,#6a1b9a);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🧠</span> Casos Clínicos</a>
                     <a class="hero-btn" href="generador-qr.html" target="_blank" style="background:linear-gradient(135deg,#37474f,#263238);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📱</span> QR Paciente</a>
+                </div>
+                <div class="hero-buttons" style="margin-top:20px;">
+                    <a class="hero-btn" href="dashboard.html" target="_blank" style="background:linear-gradient(135deg,#1e3a5f,#0f172a);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📊</span> Dashboard</a>
                 </div>
 
                 <!-- ── TARJETA AUTOTRIAJE AL FINAL (abajo del todo) ── -->
@@ -3980,6 +4011,8 @@ function showPage(id){
         if(!pageEl){console.error("showPage: no existe elemento con id="+id);return;}
         pageEl.classList.add("active");
     }catch(e){console.error("showPage error:",e);return;}
+    // Track page views for dashboard
+    try{var pv=JSON.parse(localStorage.getItem('pageViews')||'{}');pv[id]=(pv[id]||0)+1;localStorage.setItem('pageViews',JSON.stringify(pv));}catch(e){}
     // Inicializaciones específicas por página
     try{if(id==="pageProfessionals")initProfessionals();}catch(e){}
     try{if(id==="pageScanIA")scanRenderHist();}catch(e){}
@@ -4020,7 +4053,7 @@ function isReady(){var e=ep();var k=e.getKey();return k&&k.startsWith(e.prefix)}
 function updateStatus(){var el=document.getElementById("statusBadge"),b=document.getElementById("modelBadge"),i=document.getElementById("modelInfo");if(!el)return;if(isReady()){el.className="nav-status ok";el.textContent="✅ IA Conectada";b.textContent=ep().getModel().split("/").pop();i.textContent=CONFIG.provider==="groq"?"Groq · Gratuito":"Qwen · Alibaba";}else{el.className="nav-status wait";el.textContent="⚙️ Config";b.textContent="--";i.textContent="Configura API Key";}}
 function cambiarProvider(){var v=document.getElementById("cfgProvider").value;document.getElementById("groqConfig").style.display=v==="groq"?"block":"none";document.getElementById("qwenConfig").style.display=v==="qwen"?"block":"none";}
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){if(!(e instanceof TypeError))throw e;console.log("Direct fetch failed (CORS/network), trying proxies...");var proxies=["https://corsproxy.io/?url=","https://api.allorigins.win/raw?url="];for(var i=0;i<proxies.length;i++){try{var proxyOpts=Object.assign({},options);if(proxyOpts.headers){proxyOpts.headers=Object.assign({},proxyOpts.headers);delete proxyOpts.headers["Authorization"];}return await fetch(proxies[i]+encodeURIComponent(url),proxyOpts);}catch(pe){console.log("Proxy "+i+" failed:",pe.message);}}throw new Error("No se pudo conectar. Comprueba tu conexión a internet.");}}
-async function llamarIA(up,sp){if(!isReady())return"⚠️ Configura API Key en ⚙️ Config";var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"system",content:sp||"Eres un asistente médico. Responde en español."},{role:"user",content:up}],temperature:.7,max_tokens:2048})});if(!r.ok){var err=await r.json().catch(function(){return{}});if(r.status===401)return"❌ API Key inválida";if(r.status===429)return"⏳ Límite. Espera.";return"❌ Error "+r.status+": "+(err.error&&err.error.message?err.error.message:"");}var d=await r.json();var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:"Sin respuesta";return c.replace(/<think>[\s\S]*?<\/think>/g,"").trim()||"Sin respuesta";}catch(e){return"❌ "+e.message}}
+async function llamarIA(up,sp){if(!isReady())return"⚠️ Configura API Key en ⚙️ Config";var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"system",content:sp||"Eres un asistente médico. Responde en español."},{role:"user",content:up}],temperature:.7,max_tokens:2048})});if(!r.ok){var err=await r.json().catch(function(){return{}});if(r.status===401)return"❌ API Key inválida";if(r.status===429)return"⏳ Límite. Espera.";return"❌ Error "+r.status+": "+(err.error&&err.error.message?err.error.message:"");}var d=await r.json();var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:"Sin respuesta";c=c.replace(/<think>[\s\S]*?<\/think>/g,"").trim()||"Sin respuesta";try{var hist=JSON.parse(localStorage.getItem('aiHistory')||'[]');hist.push({question:up.substring(0,200),answer:c.substring(0,300),section:currentCategory||'general',timestamp:Date.now()});if(hist.length>200)hist=hist.slice(-200);localStorage.setItem('aiHistory',JSON.stringify(hist));}catch(he){}return c;}catch(e){return"❌ "+e.message}}
 async function hacerPregunta(){var input=document.getElementById("preguntaInput"),q=input.value.trim();if(!q||isProcessing)return;if(!isReady()){switchTab("config",document.querySelectorAll(".tab-btn")[4]);return;}isProcessing=true;document.getElementById("btnPreguntar").disabled=true;if(!preguntas[currentCategory])preguntas[currentCategory]=[];var idx=preguntas[currentCategory].length;preguntas[currentCategory].push({pregunta:q,respuesta:"⏳ Consultando...",fecha:new Date().toLocaleString("es-ES")});input.value="";actualizarUI();var docs=documents[currentCategory]||[];var dc=docs.map(function(d){return"- "+d.name}).join("\n");var sys="Eres un asistente médico especializado en "+currentCategory+". Responde en español."+(dc?"\nDocs:\n"+dc:"");var r=await llamarIA(q,sys);preguntas[currentCategory][idx].respuesta=r;guardarDatos();actualizarUI();isProcessing=false;document.getElementById("btnPreguntar").disabled=false;}
 var studioPrompts={resumen:{title:"📋 Resumen — ",prompt:"Resumen ejecutivo sobre {cat}: patologías, diagnósticos, tratamientos."},faq:{title:"❓ FAQ — ",prompt:"8 preguntas frecuentes sobre {cat} con respuestas."},guia:{title:"📖 Guía — ",prompt:"Guía de estudio {cat}: conceptos, clasificaciones, fármacos, dosis."},diagnostico:{title:"🩺 Dx — ",prompt:"Diagnóstico diferencial de {cat}: síntomas, pruebas, red flags."},farmacologia:{title:"💊 Farma — ",prompt:"Farmacología {cat}: grupos, mecanismo, dosis, efectos adversos."},emergencia:{title:"🚨 Urgencia — ",prompt:"Protocolos emergencia {cat}: reconocimiento, tratamiento, dosis."}};
 var lastSC="",lastST="";
@@ -5612,7 +5645,7 @@ if ('serviceWorker' in navigator && location.hostname === 'carlosgalera-a11y.git
       });
     }
     // Register current SW
-    navigator.serviceWorker.register('/Cartagenaeste/sw.js', { scope: '/Cartagenaeste/', updateViaCache: 'none' })
+    navigator.serviceWorker.register('/Cartagenaeste/sw-v2.js', { scope: '/Cartagenaeste/', updateViaCache: 'none' })
       .then(function(reg) {
         console.log('✅ SW v11 registrado:', reg.scope);
         // Force check for update immediately

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sin conexión | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0a2e1a,#145a32);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
+.container{max-width:400px}
+.icon{font-size:4rem;margin-bottom:16px;opacity:.8}
+h1{font-size:1.4rem;margin-bottom:8px}
+p{font-size:.9rem;opacity:.8;line-height:1.6;margin-bottom:20px}
+.btn{display:inline-block;padding:12px 24px;background:#fff;color:#0a2e1a;border-radius:8px;font-weight:700;text-decoration:none;font-size:.9rem}
+.cached{margin-top:30px;padding:16px;background:rgba(255,255,255,.1);border-radius:12px;text-align:left}
+.cached h3{font-size:.9rem;margin-bottom:8px}
+.cached a{display:block;padding:6px 0;color:#86efac;text-decoration:none;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.1)}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="icon">📡</div>
+    <h1>Sin conexión</h1>
+    <p>No hay conexión a Internet. Algunas funciones están disponibles offline:</p>
+    <a href="javascript:location.reload()" class="btn">🔄 Reintentar</a>
+    <div class="cached">
+        <h3>📋 Disponible sin conexión:</h3>
+        <a href="calculadoras.html">🧮 Calculadoras médicas</a>
+        <a href="casos-clinicos.html">🧠 Casos clínicos</a>
+        <a href="generador-qr.html">📱 Generador QR</a>
+        <a href="agenda-guardia.html">📋 Agenda de guardia</a>
+        <a href="mapa.html">🗺️ Mapa sanitario</a>
+    </div>
+</div>
+</body>
+</html>
