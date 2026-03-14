@@ -437,45 +437,73 @@
                         <button onclick="abrirBuscador()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">🔍 Buscar</button>
                         <button onclick="abrirFavoritos()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">⭐ Favoritos</button>
                     </div>
+                    <!-- 2 BOTONES PRINCIPALES -->
                     <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')" ><span class="hero-btn-icon">👤</span> Pacientes</a>
                     <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProfessionals')"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageEnfermeria')" style="background:linear-gradient(135deg,#e74c8b,#c2185b);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">👩‍⚕️</span> Enfermería</a>
+
+                <!-- GRID COMPACTO DE CATEGORÍAS -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;max-width:520px;width:100%;">
+
+                    <!-- PROTOCOLOS Y GUÍAS -->
+                    <div onclick="toggleSubMenu('subProtocolos')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px;cursor:pointer;text-align:center;transition:all .2s;backdrop-filter:blur(4px);" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+                        <div style="font-size:1.6rem;margin-bottom:4px;">📋</div>
+                        <div style="color:#fff;font-weight:700;font-size:.88rem;">Protocolos</div>
+                        <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">AP · Urgencias · Antibióticos</div>
+                    </div>
+
+                    <!-- ENFERMERÍA -->
+                    <div onclick="showPage('pageEnfermeria')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px;cursor:pointer;text-align:center;transition:all .2s;backdrop-filter:blur(4px);" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+                        <div style="font-size:1.6rem;margin-bottom:4px;">👩‍⚕️</div>
+                        <div style="color:#fff;font-weight:700;font-size:.88rem;">Enfermería</div>
+                        <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Protocolos · Técnicas · Vacunas</div>
+                    </div>
+
+                    <!-- HERRAMIENTAS CLÍNICAS -->
+                    <div onclick="toggleSubMenu('subHerramientas')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px;cursor:pointer;text-align:center;transition:all .2s;backdrop-filter:blur(4px);" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+                        <div style="font-size:1.6rem;margin-bottom:4px;">🛠️</div>
+                        <div style="color:#fff;font-weight:700;font-size:.88rem;">Herramientas</div>
+                        <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">IA · Calculadoras · Informes</div>
+                    </div>
+
+                    <!-- DOCENCIA -->
+                    <div onclick="toggleSubMenu('subDocencia')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px;cursor:pointer;text-align:center;transition:all .2s;backdrop-filter:blur(4px);" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+                        <div style="font-size:1.6rem;margin-bottom:4px;">📚</div>
+                        <div style="color:#fff;font-weight:700;font-size:.88rem;">Docencia</div>
+                        <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Casos · Cuaderno IA · Blog</div>
+                    </div>
                 </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pageProtocolosAP')" style="background:#fff;color:var(--primary-dark);"><span class="hero-btn-icon">📋</span> Protocolos Atencion Primaria</a>
-                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProtocolosUrgencias')" style="background:transparent;border-color:rgba(255,255,255,.4);color:#fff;"><span class="hero-btn-icon">🚨</span> Protocolos Urgencias</a>
+
+                <!-- SUBMENÚS DESPLEGABLES -->
+                <div id="subProtocolos" style="display:none;max-width:520px;width:100%;margin-top:10px;background:rgba(0,0,0,.3);border-radius:12px;padding:10px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <a href="javascript:void(0)" onclick="showPage('pageProtocolosAP')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Protocolos Atención Primaria</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageProtocolosUrgencias')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🚨 Protocolos Urgencias</a>
+                        <a href="javascript:void(0)" onclick="showAntibioticos()" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🦠 Guía Antibióticos HSL 2025</a>
+                    </div>
                 </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageScanIA')" style="background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🛠️</span> Herramientas</a>
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageTelefonos')" style="background:linear-gradient(135deg,#d4a853,#b8912e);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📞</span> Teléfonos Buscas</a>
+
+                <div id="subHerramientas" style="display:none;max-width:520px;width:100%;margin-top:10px;background:rgba(0,0,0,.3);border-radius:12px;padding:10px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <a href="javascript:void(0)" onclick="showPage('pageScanIA')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🔬 Análisis de Imagen con IA</a>
+                        <a href="calculadoras.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🧮 Calculadoras Médicas</a>
+                        <a href="plantillas-informes.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📄 Plantillas de Informes</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageTraductor')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌍 Traductor de Consulta</a>
+                        <a href="generador-qr.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📱 Generador QR Paciente</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageTelefonos')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📞 Teléfonos y Buscas</a>
+                        <a href="mapa.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🗺️ Mapa Sanitario</a>
+                        <a href="dashboard.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📊 Dashboard</a>
+                    </div>
                 </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageFilehub')" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📖</span> Cuaderno IA</a>
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageFilehub');setTimeout(openBlogPublisher,300)" style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🌐</span> Blog Publisher</a>
-                </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showPage('pageTraductor')" style="background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🌍</span> Traductor Consulta</a>
-                </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="calculadoras.html" target="_blank" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🧮</span> Calculadoras Médicas</a>
-                    <a class="hero-btn" href="javascript:void(0)" onclick="showAntibioticos()" style="background:linear-gradient(135deg,#c62828,#b71c1c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🦠</span> Guía Antibióticos HSL</a>
-                </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="agenda-guardia.html" target="_blank" style="background:linear-gradient(135deg,#1a237e,#283593);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📋</span> Agenda de Guardia</a>
-                    <a class="hero-btn" href="mapa.html" target="_blank" style="background:linear-gradient(135deg,#00695c,#004d40);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🗺️</span> Mapa Sanitario</a>
-                </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="casos-clinicos.html" target="_blank" style="background:linear-gradient(135deg,#4a148c,#6a1b9a);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🧠</span> Casos Clínicos</a>
-                    <a class="hero-btn" href="generador-qr.html" target="_blank" style="background:linear-gradient(135deg,#37474f,#263238);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📱</span> QR Paciente</a>
-                </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="dashboard.html" target="_blank" style="background:linear-gradient(135deg,#1e3a5f,#0f172a);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📊</span> Dashboard</a>
-                </div>
-                <div class="hero-buttons" style="margin-top:20px;">
-                    <a class="hero-btn" href="plantillas-informes.html" target="_blank" style="background:linear-gradient(135deg,#455a64,#37474f);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">📄</span> Plantillas Informes</a>
-                    <a class="hero-btn" href="multiidioma.html" target="_blank" style="background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;border:2px solid rgba(255,255,255,.3);cursor:pointer;"><span class="hero-btn-icon">🌍</span> Info Multilingüe</a>
+
+                <div id="subDocencia" style="display:none;max-width:520px;width:100%;margin-top:10px;background:rgba(0,0,0,.3);border-radius:12px;padding:10px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <a href="casos-clinicos.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🧠 Casos Clínicos Interactivos</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageFilehub')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📖 Cuaderno IA</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageFilehub');setTimeout(openBlogPublisher,300)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌐 Blog Publisher</a>
+                        <a href="agenda-guardia.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Agenda de Guardia</a>
+                        <a href="multiidioma.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌍 Info Multilingüe</a>
+                    </div>
                 </div>
 
                 <!-- ── TARJETA AUTOTRIAJE AL FINAL (abajo del todo) ── -->
@@ -5409,6 +5437,16 @@ function showFarmacias24h(){
 function showNotebooksModal(){
     var m=document.getElementById('modalNotebooks');
     if(m) m.style.display='flex';
+}
+
+function toggleSubMenu(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    var subs=['subProtocolos','subHerramientas','subDocencia'];
+    subs.forEach(function(s){
+        if(s!==id){var o=document.getElementById(s);if(o)o.style.display='none';}
+    });
+    el.style.display=el.style.display==='none'?'block':'none';
 }
 
 function showAntibioticos(){
