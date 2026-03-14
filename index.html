@@ -404,33 +404,54 @@
         .dark-toggle:hover{transform:scale(1.1);}
 
         /* ═══ EMBED/IFRAME MODE ═══ */
-        body.embed-mode .hero{min-height:auto!important;padding-bottom:20px!important;}
+        html.embed-mode body .hero,
+        body.embed-mode .hero{min-height:auto!important;padding-bottom:12px!important;}
+        html.embed-mode body #qrInstallSection,
         body.embed-mode #qrInstallSection{display:none!important;}
+        html.embed-mode body .hero-footer,
         body.embed-mode .hero-footer{display:none!important;}
-        body.embed-mode .landing-nav{position:relative!important;height:auto!important;padding:8px 16px!important;}
+        html.embed-mode body .landing-nav,
+        body.embed-mode .landing-nav{position:relative!important;height:auto!important;padding:6px 12px!important;}
+        html.embed-mode body .hero-bg,
         body.embed-mode .hero-bg{position:absolute!important;}
-        body.embed-mode .hero-content{padding-top:10px!important;}
-        body.embed-mode .hero-content h2{font-size:1.4rem!important;margin-bottom:6px!important;}
-        body.embed-mode .hero-content>p{font-size:.82rem!important;margin-bottom:10px!important;}
-        body.embed-mode .hero-buttons{margin-bottom:10px!important;}
-        body.embed-mode .dark-toggle{bottom:10px!important;right:10px!important;width:38px!important;height:38px!important;font-size:1rem!important;}
+        html.embed-mode body .hero-content,
+        body.embed-mode .hero-content{padding-top:6px!important;padding-bottom:6px!important;}
+        html.embed-mode body .hero-content h2,
+        body.embed-mode .hero-content h2{font-size:1.3rem!important;margin-bottom:4px!important;}
+        html.embed-mode body .hero-content>p,
+        body.embed-mode .hero-content>p{font-size:.78rem!important;margin-bottom:8px!important;}
+        html.embed-mode body .hero-badge,
+        body.embed-mode .hero-badge{font-size:.65rem!important;padding:3px 10px!important;margin-bottom:6px!important;}
+        html.embed-mode body .hero-buttons,
+        body.embed-mode .hero-buttons{margin-bottom:8px!important;}
+        html.embed-mode body .hero-btn,
+        body.embed-mode .hero-btn{padding:10px 16px!important;font-size:.82rem!important;}
+        html.embed-mode body .dark-toggle,
+        body.embed-mode .dark-toggle{bottom:8px!important;right:8px!important;width:36px!important;height:36px!important;font-size:.95rem!important;}
+        html.embed-mode body .page,
         body.embed-mode .page{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;}
+        /* Hide PWA install banner in embed */
+        html.embed-mode body #pwaInstallBanner,
+        body.embed-mode #pwaInstallBanner{display:none!important;}
 
         </style>
         <script>
         // Detect if running inside an iframe (Google Sites embed)
         (function(){
+            var isEmbed = false;
             try {
-                if(window.self !== window.top || window.location.search.indexOf('embed=1')!==-1){
-                    document.addEventListener('DOMContentLoaded',function(){
-                        document.body.classList.add('embed-mode');
-                    });
-                    // Also add class immediately for CSS to catch early
-                    document.documentElement.classList.add('embed-mode');
-                }
+                isEmbed = (window.self !== window.top);
             } catch(e){
-                // Cross-origin iframe - we're definitely embedded
+                isEmbed = true; // Cross-origin = definitely embedded
+            }
+            if(!isEmbed && window.location.search.indexOf('embed=1') !== -1){
+                isEmbed = true;
+            }
+            if(isEmbed){
                 document.documentElement.classList.add('embed-mode');
+                document.addEventListener('DOMContentLoaded',function(){
+                    document.body.classList.add('embed-mode');
+                });
             }
         })();
         </script>
