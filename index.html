@@ -2,16 +2,15 @@
 <html lang="es">
 <head>
 <script>
-// KILL ALL SERVICE WORKERS AND CACHES - v20260313fix
+// Service Worker cleanup — only remove OLD caches, not all
 (function(){
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations().then(function(regs){
-      regs.forEach(function(r){ r.unregister(); });
-    });
-  }
   if('caches' in window){
     caches.keys().then(function(keys){
-      keys.forEach(function(k){ caches.delete(k); });
+      keys.forEach(function(k){
+        if(k.indexOf('area2-v')===0 && k!=='area2-v5'){
+          caches.delete(k);
+        }
+      });
     });
   }
 })();
@@ -5804,15 +5803,14 @@ if ('serviceWorker' in navigator && location.hostname === 'carlosgalera-a11y.git
         console.log('✅ SW v11 registrado:', reg.scope);
         // Force check for update immediately
         reg.update();
-        // Auto-update when new SW is waiting
+        // Auto-update when new SW is waiting — no reload to avoid loops
         reg.addEventListener('updatefound', function() {
           var newSW = reg.installing;
           if (newSW) {
             newSW.addEventListener('statechange', function() {
-              if (newSW.state === 'installed' || newSW.state === 'activated') {
-                console.log('[PWA] New SW ready, reloading...');
+              if (newSW.state === 'installed') {
+                console.log('[PWA] New SW installed, will activate on next visit');
                 newSW.postMessage({type:'SKIP_WAITING'});
-                window.location.reload();
               }
             });
           }
