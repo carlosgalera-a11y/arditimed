@@ -3590,7 +3590,7 @@ function buscarGlobal(q){
     el.innerHTML=res.map(function(r){
         var click=r.url?'window.open("'+r.url+'","_blank")':'showPage("'+r.page+'")'+(r.tab?';setTimeout(function(){switchScanTab("'+r.tab+'")},200)':'');
         click+=';cerrarBuscador()';
-        return '<div onclick="'+click+'" style="padding:12px 14px;border-radius:10px;margin-bottom:8px;cursor:pointer;border:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;background:#fff;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'"><div><div style="font-size:.75rem;color:#64748b;margin-bottom:2px;">'+r.tipo+'</div><div style="font-size:.9rem;font-weight:600;color:#1e293b;">'+r.titulo+'</div></div><span style="margin-left:auto;color:#94a3b8;">→</span></div>';
+        return '<div onclick="'+click+'" style="padding:12px 14px;border-radius:10px;margin-bottom:8px;cursor:pointer;border:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;background:#fff;" onmouseover="this.style.background=\x27#f8fafc\x27" onmouseout="this.style.background=\x27#fff\x27"><div><div style="font-size:.75rem;color:#64748b;margin-bottom:2px;">'+r.tipo+'</div><div style="font-size:.9rem;font-weight:600;color:#1e293b;">'+r.titulo+'</div></div><span style="margin-left:auto;color:#94a3b8;">→</span></div>';
     }).join('');
 }
 document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();abrirBuscador();}});
