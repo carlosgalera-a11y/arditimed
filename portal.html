@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Área II Cartagena</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g1:#0a2e1a;--g2:#145a32;--g3:#1a6b4a;--white:#fff;--r:14px}
+body{font-family:'Inter',system-ui,sans-serif;background:linear-gradient(160deg,#0a1628 0%,#0f2b1a 40%,#0a2e1a 100%);min-height:100vh;color:#fff;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* Header */
+.hdr{padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.hdr-logo{display:flex;align-items:center;gap:8px}
+.hdr-logo span{font-size:1.3rem}
+.hdr-logo h1{font-size:1rem;font-weight:800;letter-spacing:-.02em}
+.hdr-logo h1 b{color:#4ade80}
+.hdr-badge{font-size:.6rem;font-weight:700;padding:4px 10px;background:rgba(74,222,128,.15);color:#4ade80;border-radius:20px;border:1px solid rgba(74,222,128,.2)}
+
+/* Hero */
+.hero{text-align:center;padding:20px 20px 16px}
+.hero h2{font-size:1.6rem;font-weight:900;line-height:1.2;margin-bottom:6px;letter-spacing:-.03em}
+.hero h2 span{background:linear-gradient(135deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:.82rem;color:rgba(255,255,255,.55);max-width:400px;margin:0 auto;line-height:1.5}
+
+/* Cards grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;max-width:600px;margin:16px auto 0}
+@media(max-width:480px){.grid{gap:8px;padding:0 12px}}
+
+.card{display:flex;flex-direction:column;align-items:center;padding:20px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);text-align:center;transition:all .25s;cursor:pointer;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .25s}
+.card:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
+.card:hover::before{opacity:1}
+.card:active{transform:translateY(0)}
+
+.card-icon{font-size:1.8rem;margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+.card h3{font-size:.82rem;font-weight:700;margin-bottom:3px;color:#fff}
+.card p{font-size:.65rem;color:rgba(255,255,255,.4);line-height:1.4}
+.card .arrow{font-size:.7rem;color:rgba(255,255,255,.25);margin-top:8px;transition:all .2s}
+.card:hover .arrow{color:#4ade80;transform:translateX(3px)}
+
+/* Card accent colors */
+.card-patients::before{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.card-patients:hover{border-color:rgba(59,130,246,.3)}
+.card-pro::before{background:linear-gradient(90deg,#10b981,#34d399)}
+.card-pro:hover{border-color:rgba(16,185,129,.3)}
+.card-triage::before{background:linear-gradient(90deg,#ef4444,#f87171)}
+.card-triage:hover{border-color:rgba(239,68,68,.3)}
+.card-calc::before{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.card-calc:hover{border-color:rgba(139,92,246,.3)}
+.card-enf::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.card-enf:hover{border-color:rgba(245,158,11,.3)}
+.card-cases::before{background:linear-gradient(90deg,#ec4899,#f472b6)}
+.card-cases:hover{border-color:rgba(236,72,153,.3)}
+.card-chat::before{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
+.card-chat:hover{border-color:rgba(6,182,212,.3)}
+.card-map::before{background:linear-gradient(90deg,#f97316,#fb923c)}
+.card-map:hover{border-color:rgba(249,115,22,.3)}
+
+/* Full width card */
+.card-full{grid-column:1/-1;flex-direction:row;gap:14px;padding:16px 18px}
+.card-full .card-icon{font-size:1.5rem;margin-bottom:0}
+.card-full .card-text{text-align:left;flex:1}
+.card-full h3{font-size:.88rem}
+.card-full .arrow{margin-top:0;margin-left:auto;font-size:.9rem}
+
+/* Footer */
+.foot{text-align:center;padding:16px;margin-top:16px}
+.foot p{font-size:.6rem;color:rgba(255,255,255,.25)}
+.foot a{color:rgba(255,255,255,.35);text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+    <div class="hdr-logo">
+        <span>🏥</span>
+        <h1>Área II <b>Cartagena</b></h1>
+    </div>
+    <div class="hdr-badge">🛡️ SMS Murcia</div>
+</div>
+
+<div class="hero">
+    <h2>Tu salud,<br><span>nuestra prioridad</span></h2>
+    <p>Accede a recursos para pacientes, herramientas clínicas para profesionales y formación docente.</p>
+</div>
+
+<div class="grid">
+    <!-- Patients -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/pacientes.html" target="_blank" class="card card-patients">
+        <div class="card-icon">👤</div>
+        <h3>Pacientes</h3>
+        <p>Dietas, ejercicios, medicación, citas</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- Professionals -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/" target="_blank" class="card card-pro">
+        <div class="card-icon">🩺</div>
+        <h3>Profesionales</h3>
+        <p>Protocolos, IA clínica, cuaderno</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- Triage -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/triaje-ai.html" target="_blank" class="card card-triage">
+        <div class="card-icon">🚨</div>
+        <h3>Autotriaje IA</h3>
+        <p>SET + FarmaCribado + Voz multiidioma</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- Calculadoras -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/calculadoras.html" target="_blank" class="card card-calc">
+        <div class="card-icon">🧮</div>
+        <h3>Calculadoras</h3>
+        <p>Glasgow, Wells, CURB-65, qSOFA...</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- Enfermería -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/" target="_blank" class="card card-enf">
+        <div class="card-icon">👩‍⚕️</div>
+        <h3>Enfermería</h3>
+        <p>Técnicas, vacunas, escalas, protocolos</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- Casos clínicos -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/casos-clinicos.html" target="_blank" class="card card-cases">
+        <div class="card-icon">🧠</div>
+        <h3>Casos Clínicos</h3>
+        <p>10+ casos interactivos con puntuación</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- Chatbot -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/chatbot-medicacion.html" target="_blank" class="card card-chat">
+        <div class="card-icon">💊</div>
+        <h3>Mi Medicación</h3>
+        <p>Chatbot IA para dudas de fármacos</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- Mapa -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/mapa.html" target="_blank" class="card card-map">
+        <div class="card-icon">🗺️</div>
+        <h3>Mapa Sanitario</h3>
+        <p>Hospitales, centros, farmacias 24h</p>
+        <div class="arrow">→</div>
+    </a>
+
+    <!-- App completa -->
+    <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/" target="_blank" class="card card-pro card-full">
+        <div class="card-icon">🚀</div>
+        <div class="card-text">
+            <h3>Abrir App Completa</h3>
+            <p>Todos los módulos: protocolos, IA, agenda, QR, multiidioma, dashboard...</p>
+        </div>
+        <div class="arrow">→</div>
+    </a>
+</div>
+
+<div class="foot">
+    <p>© 2026 Área II Cartagena · Hospital Santa Lucía · <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/" target="_blank">Servicio Murciano de Salud</a></p>
+</div>
+
+</body>
+</html>
