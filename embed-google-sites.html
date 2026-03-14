@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Área II Cartagena — Embed para Google Sites</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh;padding:20px}
+.container{max-width:800px;margin:0 auto}
+h1{color:#1a6b4a;font-size:1.5rem;margin-bottom:16px}
+h2{color:#0d47a1;font-size:1.1rem;margin:20px 0 10px}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px}
+.code-box{background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-family:'Courier New',monospace;font-size:.82rem;line-height:1.6;overflow-x:auto;margin:10px 0;position:relative}
+.copy-btn{position:absolute;top:8px;right:8px;background:#2563eb;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600}
+.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;align-items:flex-start}
+.step-num{width:28px;height:28px;background:#1a6b4a;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;flex-shrink:0}
+.step p{font-size:.88rem;color:#333;line-height:1.6}
+.warn{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:12px;font-size:.82rem;color:#6d4c00;margin:12px 0}
+.preview{border:2px solid #e0e0e0;border-radius:8px;overflow:hidden;margin:12px 0}
+.preview iframe{width:100%;height:500px;border:none}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🏥 Integración con Google Sites</h1>
+    <p style="color:#64748b;margin-bottom:20px;">Instrucciones para añadir la webapp Área II Cartagena a tu sitio de Google Sites.</p>
+
+    <div class="card">
+        <h2>Opción 1: Embed con iframe (recomendado)</h2>
+        <p style="font-size:.85rem;color:#555;margin-bottom:12px;">Inserta la webapp completa dentro de tu Google Sites.</p>
+        
+        <div class="step"><div class="step-num">1</div><p>Abre tu Google Sites: <a href="https://sites.google.com/view/area2cartagena" target="_blank">sites.google.com/view/area2cartagena</a></p></div>
+        <div class="step"><div class="step-num">2</div><p>Haz clic en <strong>Editar</strong> (icono lápiz arriba a la derecha)</p></div>
+        <div class="step"><div class="step-num">3</div><p>En el menú lateral derecho, haz clic en <strong>Insertar → Incorporar</strong></p></div>
+        <div class="step"><div class="step-num">4</div><p>Selecciona la pestaña <strong>"Incorporar código"</strong></p></div>
+        <div class="step"><div class="step-num">5</div><p>Pega el siguiente código y pulsa <strong>"Siguiente"</strong>:</p></div>
+
+        <div class="code-box" id="code1">
+            <button class="copy-btn" onclick="copyCode('code1')">📋 Copiar</button>
+&lt;iframe 
+  src="https://carlosgalera-a11y.github.io/Cartagenaeste/" 
+  width="100%" 
+  height="800" 
+  style="border:none;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);"
+  allow="microphone;camera;geolocation"
+  loading="lazy"
+  title="Área II Cartagena - App Médica"
+&gt;&lt;/iframe&gt;</div>
+
+        <div class="step"><div class="step-num">6</div><p>Ajusta el tamaño del iframe arrastrando las esquinas. <strong>Recomendado: ancho completo, alto 800px</strong></p></div>
+        <div class="step"><div class="step-num">7</div><p>Pulsa <strong>"Publicar"</strong> arriba a la derecha</p></div>
+        
+        <div class="warn">⚠️ <strong>Nota:</strong> El micrófono (triaje por voz, traductor) puede no funcionar dentro de un iframe en Google Sites por restricciones de seguridad del navegador. Para esas funciones, enlaza a la webapp directamente.</div>
+    </div>
+
+    <div class="card">
+        <h2>Opción 2: Botón de enlace directo</h2>
+        <p style="font-size:.85rem;color:#555;margin-bottom:12px;">Añade un botón que lleve directamente a la webapp (mejor para funciones de voz/micrófono).</p>
+        
+        <div class="step"><div class="step-num">1</div><p>En Google Sites, ve a <strong>Insertar → Incorporar → Incorporar código</strong></p></div>
+        <div class="step"><div class="step-num">2</div><p>Pega este código:</p></div>
+
+        <div class="code-box" id="code2">
+            <button class="copy-btn" onclick="copyCode('code2')">📋 Copiar</button>
+&lt;div style="text-align:center;padding:40px 20px;background:linear-gradient(135deg,#0a2e1a,#145a32);border-radius:16px;"&gt;
+  &lt;div style="font-size:3rem;margin-bottom:12px;"&gt;🏥&lt;/div&gt;
+  &lt;h2 style="color:#fff;font-size:1.4rem;margin-bottom:8px;"&gt;Área II Cartagena&lt;/h2&gt;
+  &lt;p style="color:rgba(255,255,255,.7);font-size:.9rem;margin-bottom:20px;"&gt;App Médica Docente · Centro de Salud Virgen de la Caridad&lt;/p&gt;
+  &lt;a href="https://carlosgalera-a11y.github.io/Cartagenaeste/" target="_blank" 
+     style="display:inline-block;padding:14px 32px;background:#fff;color:#1a6b4a;border-radius:10px;font-size:1rem;font-weight:700;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.2);"&gt;
+    🚀 Abrir App Completa
+  &lt;/a&gt;
+  &lt;div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"&gt;
+    &lt;a href="https://carlosgalera-a11y.github.io/Cartagenaeste/triaje-ai.html" target="_blank" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border-radius:8px;font-size:.82rem;text-decoration:none;font-weight:600;"&gt;🩺 Autotriaje IA&lt;/a&gt;
+    &lt;a href="https://carlosgalera-a11y.github.io/Cartagenaeste/calculadoras.html" target="_blank" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border-radius:8px;font-size:.82rem;text-decoration:none;font-weight:600;"&gt;🧮 Calculadoras&lt;/a&gt;
+    &lt;a href="https://carlosgalera-a11y.github.io/Cartagenaeste/chatbot-medicacion.html" target="_blank" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border-radius:8px;font-size:.82rem;text-decoration:none;font-weight:600;"&gt;💊 Medicación&lt;/a&gt;
+  &lt;/div&gt;
+  &lt;p style="color:rgba(255,255,255,.4);font-size:.7rem;margin-top:16px;"&gt;© 2026 Área II Cartagena — SMS&lt;/p&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <div class="card">
+        <h2>Opción 3: Solo enlace de texto</h2>
+        <p style="font-size:.85rem;color:#555;margin-bottom:12px;">Simplemente añade un enlace desde Google Sites.</p>
+        <div class="code-box" id="code3">
+            <button class="copy-btn" onclick="copyCode('code3')">📋 Copiar</button>
+https://carlosgalera-a11y.github.io/Cartagenaeste/</div>
+        <p style="font-size:.82rem;color:#555;margin-top:8px;">En Google Sites: <strong>Insertar → Enlace</strong> → pega la URL → elige texto del enlace.</p>
+    </div>
+
+    <div class="card">
+        <h2>Vista previa del embed</h2>
+        <div class="preview">
+            <iframe src="https://carlosgalera-a11y.github.io/Cartagenaeste/" title="Preview" loading="lazy"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyCode(id){
+    var el=document.getElementById(id);
+    var text=el.textContent.replace('📋 Copiar','').trim();
+    // Decode HTML entities
+    text=text.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+    navigator.clipboard.writeText(text).then(function(){
+        var btn=el.querySelector('.copy-btn');
+        btn.textContent='✅ Copiado';
+        setTimeout(function(){btn.textContent='📋 Copiar';},2000);
+    });
+}
+</script>
+</body>
+</html>
