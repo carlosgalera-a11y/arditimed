@@ -403,7 +403,37 @@
         .dark-toggle{position:fixed;bottom:20px;right:20px;z-index:9999;background:#1e293b;border:1px solid #334155;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:.3s;}
         .dark-toggle:hover{transform:scale(1.1);}
 
+        /* ═══ EMBED/IFRAME MODE ═══ */
+        body.embed-mode .hero{min-height:auto!important;padding-bottom:20px!important;}
+        body.embed-mode #qrInstallSection{display:none!important;}
+        body.embed-mode .hero-footer{display:none!important;}
+        body.embed-mode .landing-nav{position:relative!important;height:auto!important;padding:8px 16px!important;}
+        body.embed-mode .hero-bg{position:absolute!important;}
+        body.embed-mode .hero-content{padding-top:10px!important;}
+        body.embed-mode .hero-content h2{font-size:1.4rem!important;margin-bottom:6px!important;}
+        body.embed-mode .hero-content>p{font-size:.82rem!important;margin-bottom:10px!important;}
+        body.embed-mode .hero-buttons{margin-bottom:10px!important;}
+        body.embed-mode .dark-toggle{bottom:10px!important;right:10px!important;width:38px!important;height:38px!important;font-size:1rem!important;}
+        body.embed-mode .page{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;}
+
         </style>
+        <script>
+        // Detect if running inside an iframe (Google Sites embed)
+        (function(){
+            try {
+                if(window.self !== window.top || window.location.search.indexOf('embed=1')!==-1){
+                    document.addEventListener('DOMContentLoaded',function(){
+                        document.body.classList.add('embed-mode');
+                    });
+                    // Also add class immediately for CSS to catch early
+                    document.documentElement.classList.add('embed-mode');
+                }
+            } catch(e){
+                // Cross-origin iframe - we're definitely embedded
+                document.documentElement.classList.add('embed-mode');
+            }
+        })();
+        </script>
 <!-- PWA Meta Tags -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f6b4a">
