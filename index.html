@@ -2,13 +2,26 @@
 <html lang="es">
 <head>
 <script>
-// Service Worker cleanup — only remove OLD caches, not all
+// Aggressive cache cleanup — nuke everything except current version
 (function(){
+  var CURRENT='area2-v5';
   if('caches' in window){
     caches.keys().then(function(keys){
       keys.forEach(function(k){
-        if(k.indexOf('area2-v')===0 && k!=='area2-v5'){
+        if(k!==CURRENT){
+          console.log('[CLEANUP] Deleting cache:',k);
           caches.delete(k);
+        }
+      });
+    });
+  }
+  // Force unregister old SWs with wrong scope
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      regs.forEach(function(r){
+        if(r.active && r.active.scriptURL && !r.active.scriptURL.includes('sw-v2.js')){
+          console.log('[CLEANUP] Removing old SW');
+          r.unregister();
         }
       });
     });
@@ -104,7 +117,7 @@
     }
     var db = firebase.firestore();
     </script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=17733">
         <script>
         // Detect if running inside an iframe (Google Sites embed)
         (function(){
@@ -3294,7 +3307,7 @@ function infDescargar(formato){
 </div>
 
 
-<script src="app-main.js"></script>
+<script src="app-main.js?v=17733"></script>
 <!-- PWA Install Banner -->
 <div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f6b4a,#0a4f36);color:#fff;padding:14px 18px;z-index:99999;box-shadow:0 -4px 20px rgba(0,0,0,.4);font-family:var(--font-display,system-ui);animation:slideUpPWA .4s ease;">
 <div style="display:flex;align-items:center;gap:12px;max-width:600px;margin:0 auto;">
@@ -3487,7 +3500,7 @@ inp.type=inp.type==='password'?'text':'password';
 </script>
 
 <!-- ═══════ FILEHUB JS — Cuaderno IA + Blog Publisher ═══════ -->
-<script src="app-modules.js"></script>
+<script src="app-modules.js?v=17733"></script>
 
 </body>
 </html>
