@@ -1095,78 +1095,76 @@ function showScanLogin(){
 function scanGoogleLogin(){
     console.log("scanGoogleLogin called");
     var provider=new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
     var errEl=document.getElementById("scanLoginError");
-    errEl.style.display="none";
+    if(errEl) errEl.style.display="none";
 
-    function doLogin(){
-        firebase.auth().signInWithPopup(provider).then(function(result){
-            console.log("Login success:",result.user.email);
-            document.getElementById("scanLoginModal").style.display="none";
-            loadModeradoresFromFirestore(function(){
-                isAdminLoggedIn=isAdmin();
-                apShowAdminTab(isAdminLoggedIn);
-                updateModBadgeAll();
-                if(isAdminLoggedIn && !pendingPageAfterLogin){
-                    document.getElementById("adminPanel").style.display="flex";
-                }
-            });
-            if(pendingPageAfterLogin){
-                var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;
-                logPageAccess(pg,result.user);
-                showPage(pg);
-            }else{
-                showPage("pageScanIA");scanRenderHist();
+    var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
+
+    function onLoginSuccess(user){
+        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+        loadModeradoresFromFirestore(function(){
+            isAdminLoggedIn=isAdmin();
+            apShowAdminTab(isAdminLoggedIn);
+            updateModBadgeAll();
+            if(isAdminLoggedIn&&!pendingPageAfterLogin){
+                try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
             }
+        });
+        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
+        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
+        if(pg){logPageAccess(pg,user);showPage(pg);}
+        else{showPage("pageScanIA");scanRenderHist();}
+    }
+
+    function doPopup(){
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function(){
+            return firebase.auth().signInWithPopup(provider);
+        }).then(function(result){
+            console.log("Popup login OK:",result.user.email);
+            onLoginSuccess(result.user);
         }).catch(function(error){
-            console.error("Google login error:",error);
+            console.error("Popup error:",error.code,error.message);
             if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-                if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
-                firebase.auth().signInWithRedirect(provider);
-            }else if(error.message&&(error.message.indexOf("transaction")>-1||error.message.indexOf("aborted")>-1||error.message.indexOf("IndexedDB")>-1)){
-                // IndexedDB bloqueado (AdBlock, Brave, modo privado) → forzar SESSION persistence
-                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function(){
+                // Popup bloqueado → fallback redirect
+                doRedirect();
+            }else if(error.message&&(error.message.indexOf("transaction")>-1||error.message.indexOf("IndexedDB")>-1)){
+                // IndexedDB bloqueado (Brave, modo privado)
+                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
                     return firebase.auth().signInWithPopup(provider);
-                }).then(function(result){
-                    document.getElementById("scanLoginModal").style.display="none";
-                    loadModeradoresFromFirestore(function(){
-                        isAdminLoggedIn=isAdmin();apShowAdminTab(isAdminLoggedIn);updateModBadgeAll();
-                        if(isAdminLoggedIn&&!pendingPageAfterLogin)document.getElementById("adminPanel").style.display="flex";
-                    });
-                    if(pendingPageAfterLogin){var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;logPageAccess(pg,result.user);showPage(pg);}
-                    else{showPage("pageScanIA");scanRenderHist();}
-                }).catch(function(e2){
-                    errEl.innerHTML="❌ Error al iniciar sesión. Desactiva AdBlock para este sitio e inténtalo de nuevo.";
-                    errEl.style.display="block";
-                    console.error("Login con SESSION persistence falló:",e2);
+                }).then(function(r){onLoginSuccess(r.user);}).catch(function(e2){
+                    if(errEl){errEl.innerHTML="❌ Desactiva el bloqueador de anuncios para este sitio.";errEl.style.display="block";}
                 });
             }else if(error.code==="auth/unauthorized-domain"){
-                errEl.innerHTML="❌ <strong>Dominio no autorizado en Firebase.</strong><br>El administrador debe añadir <code>carlosgalera-a11y.github.io</code> en Firebase Console → Authentication → Authorized domains.";
-                errEl.style.display="block";
-                console.error("SOLUCIÓN: Firebase Console > docenciacartagenaeste > Authentication > Settings > Authorized domains > Añadir: carlosgalera-a11y.github.io");
+                if(errEl){errEl.innerHTML="❌ Dominio no autorizado. Contacta con el administrador.";errEl.style.display="block";}
             }else{
-                errEl.innerHTML="❌ "+error.message;
-                errEl.style.display="block";
+                if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
             }
         });
     }
 
-    // Detectar entorno
-    var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
+    function doRedirect(){
+        // Cerrar modal ANTES del redirect para evitar problemas en iOS
+        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+        if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
+        // Pequeño delay para que iOS procese el cierre del modal antes de navegar
+        setTimeout(function(){
+            firebase.auth().signInWithRedirect(provider).catch(function(error){
+                console.error("Redirect error:",error);
+                try{document.getElementById("scanLoginModal").style.display="flex";}catch(e){}
+                if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
+            });
+        }, 100);
+    }
 
     if(isMobile && !isStandalone){
-        // Todos los móviles en navegador (iOS Safari, iOS Chrome, Android Chrome):
-        // usar redirect para evitar auth/cancelled-popup-request en iOS
-        if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
-        firebase.auth().signInWithRedirect(provider).catch(function(error){
-            console.error("Redirect error:", error);
-            // Si redirect falla también, mostrar error claro
-            errEl.innerHTML="❌ Error al iniciar sesión: "+error.message+"<br><small>Prueba a abrir la página en Safari o Chrome y vuelve a intentarlo.</small>";
-            errEl.style.display="block";
-        });
+        // Móvil en navegador: redirect siempre (evita cancelled-popup en iOS)
+        doRedirect();
     } else {
-        // Desktop o PWA instalada: popup funciona correctamente
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(doLogin).catch(doLogin);
+        // Desktop o PWA instalada: popup
+        doPopup();
     }
 }
 
