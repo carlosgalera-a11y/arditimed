@@ -1119,7 +1119,8 @@ function scanGoogleLogin(){
             }
         }).catch(function(error){
             console.error("Google login error:",error);
-            if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"){
+            if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
+                if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
                 firebase.auth().signInWithRedirect(provider);
             }else if(error.message&&(error.message.indexOf("transaction")>-1||error.message.indexOf("aborted")>-1||error.message.indexOf("IndexedDB")>-1)){
                 // IndexedDB bloqueado (AdBlock, Brave, modo privado) → forzar SESSION persistence
@@ -1151,19 +1152,20 @@ function scanGoogleLogin(){
 
     // Detectar entorno
     var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    var isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
 
-    if(isSafari && !isStandalone){
-        // Safari en navegador: usar redirect (más fiable por restricciones de popup en Safari)
+    if(isMobile && !isStandalone){
+        // Todos los móviles en navegador (iOS Safari, iOS Chrome, Android Chrome):
+        // usar redirect para evitar auth/cancelled-popup-request en iOS
         if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
         firebase.auth().signInWithRedirect(provider).catch(function(error){
             console.error("Redirect error:", error);
-            // Si redirect falla, intentar popup como fallback
-            doLogin();
+            // Si redirect falla también, mostrar error claro
+            errEl.innerHTML="❌ Error al iniciar sesión: "+error.message+"<br><small>Prueba a abrir la página en Safari o Chrome y vuelve a intentarlo.</small>";
+            errEl.style.display="block";
         });
     } else {
-        // Chrome, Android, PWA standalone, desktop: popup funciona bien
+        // Desktop o PWA instalada: popup funciona correctamente
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(doLogin).catch(doLogin);
     }
 }
