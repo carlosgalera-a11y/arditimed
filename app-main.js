@@ -1100,7 +1100,6 @@ function scanGoogleLogin(){
     var errEl=document.getElementById("scanLoginError");
     if(errEl) errEl.style.display="none";
 
-    var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
 
     function onLoginSuccess(user){
@@ -1119,53 +1118,37 @@ function scanGoogleLogin(){
         else{showPage("pageScanIA");scanRenderHist();}
     }
 
-    function doPopup(){
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function(){
-            return firebase.auth().signInWithPopup(provider);
-        }).then(function(result){
-            console.log("Popup login OK:",result.user.email);
-            onLoginSuccess(result.user);
-        }).catch(function(error){
-            console.error("Popup error:",error.code,error.message);
-            if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-                // Popup bloqueado → fallback redirect
-                doRedirect();
-            }else if(error.message&&(error.message.indexOf("transaction")>-1||error.message.indexOf("IndexedDB")>-1)){
-                // IndexedDB bloqueado (Brave, modo privado)
-                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
-                    return firebase.auth().signInWithPopup(provider);
-                }).then(function(r){onLoginSuccess(r.user);}).catch(function(e2){
-                    if(errEl){errEl.innerHTML="❌ Desactiva el bloqueador de anuncios para este sitio.";errEl.style.display="block";}
-                });
-            }else if(error.code==="auth/unauthorized-domain"){
-                if(errEl){errEl.innerHTML="❌ Dominio no autorizado. Contacta con el administrador.";errEl.style.display="block";}
-            }else{
-                if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
-            }
-        });
-    }
-
-    function doRedirect(){
-        // Cerrar modal ANTES del redirect para evitar problemas en iOS
-        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
-        if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
-        // Pequeño delay para que iOS procese el cierre del modal antes de navegar
-        setTimeout(function(){
-            firebase.auth().signInWithRedirect(provider).catch(function(error){
-                console.error("Redirect error:",error);
-                try{document.getElementById("scanLoginModal").style.display="flex";}catch(e){}
-                if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
+    function handleError(error){
+        console.error("Login error:",error.code,error.message);
+        if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
+            // Popup bloqueado: intentar redirect
+            if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
+            firebase.auth().signInWithRedirect(provider).catch(function(e2){
+                if(errEl){errEl.innerHTML="❌ No se pudo abrir la ventana de Google. Comprueba que no está bloqueada.";errEl.style.display="block";}
             });
-        }, 100);
+        }else if(error.code==="auth/unauthorized-domain"){
+            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.display="block";}
+        }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
+                return firebase.auth().signInWithPopup(provider);
+            }).then(function(r){onLoginSuccess(r.user);}).catch(function(e2){
+                if(errEl){errEl.innerHTML="❌ Desactiva el bloqueador de anuncios e inténtalo de nuevo.";errEl.style.display="block";}
+            });
+        }else{
+            if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
+        }
     }
 
-    if(isMobile && !isStandalone){
-        // Móvil en navegador: redirect siempre (evita cancelled-popup en iOS)
-        doRedirect();
-    } else {
-        // Desktop o PWA instalada: popup
-        doPopup();
-    }
+    // Usar siempre signInWithPopup — es compatible con iOS cuando se llama
+    // directamente desde un evento click del usuario (sin capas async intermedias)
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(function(){
+        return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+    }).then(function(){
+        return firebase.auth().signInWithPopup(provider);
+    }).then(function(result){
+        console.log("Login OK:",result.user.email);
+        onLoginSuccess(result.user);
+    }).catch(handleError);
 }
 
 function scanSetType(t,btn){scanType=t;document.querySelectorAll(".scan-mode-btn").forEach(function(b){b.style.borderColor="var(--border)";b.style.background="var(--bg-card)";b.style.color="var(--text)";});if(btn){btn.style.borderColor="#0066cc";btn.style.background="linear-gradient(135deg,#0066cc,#004499)";btn.style.color="#fff";}var m=SCAN_MODELS[t];if(m){var html="<strong>"+m.model+"</strong><br><span style='font-size:.8rem;color:var(--text-muted);'>📊 "+m.dataset+"</span>";if(m.repo)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>📦 "+m.repo+"</span>";if(m.precision)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>🎯 "+m.precision+"</span>";if(m.formato)html+="<br><span style='font-size:.78rem;color:var(--text-muted);'>⚙️ "+m.formato+"</span>";if(m.nota)html+="<br><span style='font-size:.78rem;color:"+(m.nota.indexOf("⚠️")>-1?"#d97706":"#64748b")+";font-style:italic;'>"+m.nota+"</span>";if(m.links){html+="<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;'>";if(m.links.physionet)html+="<a href='"+m.links.physionet+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#e0f2fe;color:#0369a1;border-radius:4px;text-decoration:none;font-weight:600;'>📥 PhysioNet</a>";if(m.links.github)html+="<a href='"+m.links.github+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#f0fdf4;color:#15803d;border-radius:4px;text-decoration:none;font-weight:600;'>💻 GitHub</a>";if(m.links.paper)html+="<a href='"+m.links.paper+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;text-decoration:none;font-weight:600;'>📄 Paper</a>";html+="</div>";}html+="<br><span style='font-size:.78rem;color:#0066cc;'>Análisis por Llama 4 Scout (Groq)</span>";document.getElementById("scanModelRef").innerHTML=html;}}
