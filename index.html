@@ -263,6 +263,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                     <div style="display:flex;flex-direction:column;gap:6px;">
                         <a href="casos-clinicos.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🧠 Casos Clínicos Interactivos</a>
                         <a href="javascript:void(0)" onclick="showPage('pageFilehub')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📖 Cuaderno IA</a>
+                        <a href="javascript:void(0)" onclick="showNotebooksModal()" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🤖 Cuadernos NotebookLM</a>
                         <a href="javascript:void(0)" onclick="showPage('pageFilehub');setTimeout(openBlogPublisher,300)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌐 Blog Publisher</a>
                         <a href="agenda-guardia.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Agenda de Guardia</a>
                         <a href="multiidioma.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌍 Info Multilingüe</a>
@@ -1771,10 +1772,11 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
             </div>
 
             <!-- TABS: Scan IA / Quiz NIH -->
-            <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:3px solid var(--border);">
-                <button id="tabScanIA" onclick="switchScanTab('scanIA')" style="flex:1;padding:14px;border:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🔬 Analizar imagen</button>
-                <button id="tabCalc" onclick="switchScanTab('calc')" style="flex:1;padding:14px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧮 Calculadoras</button>
-                <button id="tabNIHQuiz" onclick="switchScanTab('nihQuiz')" style="flex:1;padding:14px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.95rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧠 Quiz NIH Chest X-Ray</button>
+            <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:3px solid var(--border);flex-wrap:wrap;">
+                <button id="tabScanIA" onclick="switchScanTab('scanIA')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🔬 Analizar imagen</button>
+                <button id="tabCalc" onclick="switchScanTab('calc')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧮 Calculadoras</button>
+                <button id="tabNIHQuiz" onclick="switchScanTab('nihQuiz')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧠 Quiz NIH</button>
+                <button id="tabNotebooks" onclick="switchScanTab('notebooks')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🤖 NotebookLM</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -1988,6 +1990,84 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
               </div>
             </div><!-- end panelCalc -->
+
+            <!-- TAB 4: NOTEBOOKLM -->
+            <div id="panelNotebooks" style="display:none;">
+                <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#0d47a1;margin-bottom:20px;line-height:1.6;">
+                    🤖 <strong>Cuadernos NotebookLM</strong> — IA de Google entrenada con documentación clínica del Área II. Haz preguntas en español y obtén respuestas basadas en los documentos cargados.
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+                    <a href="https://notebooklm.google.com/notebook/d8b9054c-a565-4916-8667-4ff1cb9cd77f" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">📋</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Enfermería</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Vacunas, protocolos, documentación</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/9d377e7d-51ec-4773-acd7-fc84534a4b29" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">🚨</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Urgencias</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Trípticos, SEMFyC, hospitalarios</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/10df02b6-e1f6-4e4c-b7e7-8b758e4e8d0d" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">🩺</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Atención Primaria</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Protocolos AP y guías clínicas</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/24996c1c-e88b-4716-87f1-15df52c8dc5e" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">💊</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Farmacología</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Fármacos, dosis, interacciones</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/8a4e3e50-a33c-4bd9-821d-8ec320b74276" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;grid-column:1/-1;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">📖</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Formación y Docencia</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Material docente MFyC</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                </div>
+
+                <!-- Selector de cuaderno para ver embedded -->
+                <div style="margin-bottom:12px;">
+                    <p style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">📺 Abrir cuaderno en esta pantalla:</p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                        <button onclick="loadNotebook('d8b9054c-a565-4916-8667-4ff1cb9cd77f','Enfermería')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">📋 Enfermería</button>
+                        <button onclick="loadNotebook('9d377e7d-51ec-4773-acd7-fc84534a4b29','Urgencias')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">🚨 Urgencias</button>
+                        <button onclick="loadNotebook('10df02b6-e1f6-4e4c-b7e7-8b758e4e8d0d','Atención Primaria')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">🩺 AP</button>
+                        <button onclick="loadNotebook('24996c1c-e88b-4716-87f1-15df52c8dc5e','Farmacología')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">💊 Farmacología</button>
+                        <button onclick="loadNotebook('8a4e3e50-a33c-4bd9-821d-8ec320b74276','Docencia')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">📖 Docencia</button>
+                    </div>
+                    <div id="notebookFrame" style="display:none;border-radius:12px;overflow:hidden;border:2px solid #90caf9;">
+                        <div style="background:#0d47a1;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+                            <span id="notebookFrameTitle" style="color:#fff;font-size:.85rem;font-weight:700;"></span>
+                            <div style="display:flex;gap:8px;">
+                                <a id="notebookFrameLink" href="#" target="_blank" style="color:#90caf9;font-size:.78rem;text-decoration:none;padding:4px 10px;border:1px solid #90caf9;border-radius:6px;">↗ Abrir en pestaña</a>
+                                <button onclick="document.getElementById('notebookFrame').style.display='none'" style="background:none;border:none;color:#90caf9;cursor:pointer;font-size:1.1rem;line-height:1;">✕</button>
+                            </div>
+                        </div>
+                        <iframe id="notebookIframe" src="" style="width:100%;height:600px;border:none;display:block;" allow="clipboard-write"></iframe>
+                    </div>
+                    <div id="notebookEmbedInfo" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 14px;font-size:.8rem;color:#856404;margin-top:8px;">
+                        ⚠️ <strong>NotebookLM no permite embeber.</strong> Usa el botón <strong>"↗ Abrir en pestaña"</strong> para acceder al cuaderno completo, o pulsa directamente sobre cualquiera de las tarjetas de arriba.
+                    </div>
+                </div>
+
+                <div style="padding:10px;background:#f3e5f5;border-radius:8px;font-size:.76rem;color:#4a148c;text-align:center;">
+                    💡 <strong>Tip:</strong> Puedes hacer preguntas en español y NotebookLM responde basándose en los documentos cargados. Ideal para consultar protocolos rápidamente.
+                </div>
+            </div><!-- end panelNotebooks -->
 
         </div>
     </div>

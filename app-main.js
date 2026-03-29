@@ -1194,6 +1194,28 @@ function switchScanTab(tab){
     document.getElementById("tabNIHQuiz").style.color=tab==="nihQuiz"?"#fff":"var(--text)";
     var calcEl=document.getElementById("panelCalc");if(calcEl)calcEl.style.display=tab==="calc"?"block":"none";
     var calcBtn=document.getElementById("tabCalc");if(calcBtn){calcBtn.style.background=tab==="calc"?"linear-gradient(135deg,#7c3aed,#4f46e5)":"var(--bg-subtle)";calcBtn.style.color=tab==="calc"?"#fff":"var(--text)";}
+    var nbEl=document.getElementById("panelNotebooks");if(nbEl)nbEl.style.display=tab==="notebooks"?"block":"none";
+    var nbBtn=document.getElementById("tabNotebooks");if(nbBtn){nbBtn.style.background=tab==="notebooks"?"linear-gradient(135deg,#0d47a1,#1565c0)":"var(--bg-subtle)";nbBtn.style.color=tab==="notebooks"?"#fff":"var(--text)";}
+}
+
+// ═══ NOTEBOOKLM VIEWER ═══
+function loadNotebook(id, title){
+    var url = "https://notebooklm.google.com/notebook/" + id;
+    var frame = document.getElementById("notebookFrame");
+    var iframe = document.getElementById("notebookIframe");
+    var titleEl = document.getElementById("notebookFrameTitle");
+    var linkEl = document.getElementById("notebookFrameLink");
+    var infoEl = document.getElementById("notebookEmbedInfo");
+
+    if(titleEl) titleEl.textContent = "🤖 " + title;
+    if(linkEl){ linkEl.href = url; }
+
+    // NotebookLM bloquea iframes (X-Frame-Options: DENY)
+    // Mostramos el aviso y abrimos en nueva pestaña automáticamente
+    if(frame) frame.style.display = "none";
+    if(infoEl) infoEl.style.display = "block";
+    // Abrir en nueva pestaña directamente
+    window.open(url, "_blank");
 }
 
 // ═══ NIH CHEST X-RAY QUIZ MODULE ═══
