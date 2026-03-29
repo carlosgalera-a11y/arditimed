@@ -38,7 +38,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="expires" content="0">
@@ -157,6 +157,13 @@
     align-items: flex-start;
   }
 }
+</style>
+
+<style>
+/* Safe area para iPhone X+ (notch y home bar) */
+body { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.landing-nav { padding-top: max(12px, env(safe-area-inset-top, 12px)); }
+#pwaInstallBanner { padding-bottom: max(14px, calc(14px + env(safe-area-inset-bottom, 0px))); }
 </style>
 <!-- PWA Meta Tags -->
 <link rel="manifest" href="manifest.json">
