@@ -3800,6 +3800,8 @@ ANAFILAXIA: Adrenalina 0.3-0.5mg IM cara anterolateral muslo (repetir c/5-15min)
 SEPSIS (qSOFA ≥2): FR>22, alteración mental, TAS<100 → activar código sepsis, antibiótico en primera hora.`;
 
 var megaHistory = [];
+var megaIsBusy = false;
+var megaQueue = [];
 
 function megaSend(text) {
     var input = document.getElementById('megaInput');
@@ -3807,8 +3809,72 @@ function megaSend(text) {
     megaSendInput();
 }
 
-var megaLastCall = 0;
-var megaMinInterval = 4000; // min 4s between calls to avoid 429
+// ── Groq models to try in order (fallback chain) ──────────────
+var MEGA_MODELS = [
+    'llama-3.1-8b-instant',
+    'llama3-8b-8192',
+    'gemma2-9b-it',
+    'llama-3.2-3b-preview'
+];
+
+function megaCallGroq(groqKey, systemPrompt, messages, modelIndex, retryCount, resolve, reject) {
+    if (modelIndex === undefined) modelIndex = 0;
+    if (retryCount === undefined) retryCount = 0;
+    var model = MEGA_MODELS[modelIndex] || MEGA_MODELS[0];
+
+    fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
+        body: JSON.stringify({
+            model: model,
+            messages: [{role:'system', content: systemPrompt}].concat(messages),
+            max_tokens: 900,
+            temperature: 0.2
+        })
+    })
+    .then(function(r) {
+        if (r.status === 429) {
+            // Try next model in chain first
+            var nextModel = modelIndex + 1;
+            if (nextModel < MEGA_MODELS.length) {
+                setTimeout(function() {
+                    megaCallGroq(groqKey, systemPrompt, messages, nextModel, 0, resolve, reject);
+                }, 1500);
+                return;
+            }
+            // All models rate-limited → retry with backoff
+            if (retryCount < 3) {
+                var delay = (retryCount + 1) * 12000; // 12s, 24s, 36s
+                var btn = document.getElementById('megaBtn');
+                var remaining = delay;
+                var countdown = setInterval(function() {
+                    remaining -= 1000;
+                    if (remaining <= 0) {
+                        clearInterval(countdown);
+                        if (btn) btn.textContent = '⏳ Reintentando...';
+                    } else {
+                        if (btn) btn.textContent = '⏳ ' + Math.ceil(remaining/1000) + 's';
+                    }
+                }, 1000);
+                setTimeout(function() {
+                    clearInterval(countdown);
+                    megaCallGroq(groqKey, systemPrompt, messages, 0, retryCount + 1, resolve, reject);
+                }, delay);
+            } else {
+                reject(new Error('rate_limit_final'));
+            }
+            return;
+        }
+        if (!r.ok) {
+            r.json().catch(function(){return {};}).then(function(e) {
+                reject(new Error((e.error && e.error.message) ? e.error.message : 'HTTP ' + r.status));
+            });
+            return;
+        }
+        r.json().then(resolve).catch(reject);
+    })
+    .catch(reject);
+}
 
 function megaSendInput() {
     var input = document.getElementById('megaInput');
@@ -3816,18 +3882,8 @@ function megaSendInput() {
     var question = input.value.trim();
     if (!question) return;
 
-    // Rate limit: wait at least 4s between calls
-    var now = Date.now();
-    var elapsed = now - megaLastCall;
-    if (megaLastCall > 0 && elapsed < megaMinInterval) {
-        var wait = Math.ceil((megaMinInterval - elapsed) / 1000);
-        megaAppendMsg('system', '⏳ Espera ' + wait + 's antes de la siguiente pregunta...');
-        return;
-    }
-
     input.value = '';
 
-    // getScanGroqKey is in app-main.js — call safely
     var groqKey = '';
     try { groqKey = getScanGroqKey(); } catch(e) {}
 
@@ -3836,78 +3892,54 @@ function megaSendInput() {
         return;
     }
 
-    megaLastCall = Date.now();
+    // If busy, queue the message
+    if (megaIsBusy) {
+        megaQueue.push({question: question, key: groqKey});
+        megaAppendMsg('system', '📋 Pregunta añadida a la cola (' + megaQueue.length + ' en espera)...');
+        return;
+    }
+
+    megaDispatch(question, groqKey);
+}
+
+function megaDispatch(question, groqKey) {
+    megaIsBusy = true;
     megaAppendMsg('user', question);
     megaHistory.push({role:'user', content: question});
 
     var btn = document.getElementById('megaBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
-    
-    var systemPrompt = `Eres un asistente clínico especializado del Centro de Salud Área II Cartagena (Servicio Murciano de Salud). Respondes únicamente con fines DOCENTES E INFORMATIVOS, nunca como sustituto del juicio clínico profesional.
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Pensando...'; }
 
-Tu base de conocimiento incluye los protocolos y guías del Área II:
+    var systemPrompt = 'Eres un asistente clínico especializado del Centro de Salud Área II Cartagena (Servicio Murciano de Salud). Respondes únicamente con fines DOCENTES E INFORMATIVOS, nunca como sustituto del juicio clínico profesional.\n\nTu base de conocimiento incluye los protocolos y guías del Área II:\n\n' + MEGA_KB + '\n\nINSTRUCCIONES:\n- Responde en español, de forma clara y estructurada\n- Cita el protocolo o guía cuando corresponda\n- Para fármacos, indica dosis, vía y duración\n- Si no tienes info suficiente, indícalo\n- Uso EXCLUSIVAMENTE DOCENTE';
 
-` + MEGA_KB + `
+    var messages = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:'user', content: question}];
 
-INSTRUCCIONES:
-- Responde en español, de forma clara y estructurada
-- Cita el protocolo o guía específica cuando corresponda
-- Para fármacos, indica siempre dosis, vía y duración según los protocolos del Área II
-- Si no tienes información suficiente en la base de conocimiento, indícalo claramente
-- Usa formato con bullets o secciones cuando ayude a la claridad
-- Recuerda siempre que es uso EXCLUSIVAMENTE DOCENTE`;
-
-    var messages = [{role:'user', content: question}];
-    if (megaHistory.length > 2) {
-        messages = megaHistory.slice(-6);
-    }
-    
-    fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-        body: JSON.stringify({
-            model: 'gemma2-9b-it',
-            messages: [{role:'system', content: systemPrompt}].concat(messages),
-            max_tokens: 800,
-            temperature: 0.2
-        })
-    })
-    .then(function(r) {
-        if (!r.ok) {
-            return r.json().then(function(e) {
-                var msg = (e.error && e.error.message) ? e.error.message : 'HTTP ' + r.status;
-                if (r.status === 429) msg = '429';
-                throw new Error(msg);
-            }).catch(function() { throw new Error('HTTP ' + r.status); });
-        }
-        return r.json();
+    new Promise(function(resolve, reject) {
+        megaCallGroq(groqKey, systemPrompt, messages, 0, 0, resolve, reject);
     })
     .then(function(d) {
         var answer = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content)
             ? d.choices[0].message.content
-            : 'El modelo no devolvió respuesta. Inténtalo de nuevo.';
+            : 'El modelo no devolvió respuesta.';
         megaHistory.push({role:'assistant', content: answer});
         if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
         megaAppendMsg('assistant', answer);
-        if (btn) {
-        // Show cooldown countdown
-        var remaining = megaMinInterval;
-        var countdown = setInterval(function() {
-            remaining -= 1000;
-            if (remaining <= 0) {
-                clearInterval(countdown);
-                btn.disabled = false;
-                btn.textContent = 'Enviar';
-            } else {
-                btn.textContent = '⏳ ' + Math.ceil(remaining/1000) + 's';
-            }
-        }, 1000);
-    }
+        megaIsBusy = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
+        // Process queue
+        if (megaQueue.length > 0) {
+            var next = megaQueue.shift();
+            setTimeout(function() { megaDispatch(next.question, next.key); }, 1000);
+        }
     })
     .catch(function(e) {
-        megaAppendMsg('system', (e.message && e.message.includes('429'))
-            ? '⏱️ Demasiadas peticiones. Espera 30 segundos e inténtalo de nuevo. Si el problema persiste, configura tu propia API Key de Groq en ⚙️ Configuración.'
-            : '❌ ' + (e.message || 'Error desconocido'));
+        if (e.message === 'rate_limit_final') {
+            megaAppendMsg('system', '⚠️ La API gratuita de Groq está saturada en este momento. Soluciones:\n• Espera 1-2 minutos e inténtalo de nuevo\n• Configura tu propia API Key gratuita en groq.com → ⚙️ Configuración');
+        } else {
+            megaAppendMsg('system', '❌ ' + (e.message || 'Error desconocido'));
+        }
+        megaIsBusy = false;
+        megaQueue = [];
         if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
     });
 }
@@ -4745,97 +4777,7 @@ function megaSend(text) {
     megaSendInput();
 }
 
-var megaLastCall = 0;
-var megaMinInterval = 4000; // min 4s between calls to avoid 429
-
-function megaSendInput() {
-    var input = document.getElementById('megaInput');
-    if (!input) return;
-    var question = input.value.trim();
-    if (!question) return;
-
-    // Rate limit: wait at least 4s between calls
-    var now = Date.now();
-    var elapsed = now - megaLastCall;
-    if (megaLastCall > 0 && elapsed < megaMinInterval) {
-        var wait = Math.ceil((megaMinInterval - elapsed) / 1000);
-        megaAppendMsg('system', '⏳ Espera ' + wait + 's antes de la siguiente pregunta...');
-        return;
-    }
-
-    input.value = '';
-
-    // getScanGroqKey is in app-main.js — call safely
-    var groqKey = '';
-    try { groqKey = getScanGroqKey(); } catch(e) {}
-
-    if (!groqKey) {
-        megaAppendMsg('system', '⚠️ Configura tu API Key de Groq en Herramientas → Cuaderno IA → ⚙️ Configuración.');
-        return;
-    }
-
-    megaLastCall = Date.now();
-    megaAppendMsg('user', question);
-    megaHistory.push({role:'user', content: question});
-
-    var btn = document.getElementById('megaBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
-    
-    var systemPrompt = `Eres un asistente clínico especializado del Centro de Salud Área II Cartagena (Servicio Murciano de Salud). Respondes únicamente con fines DOCENTES E INFORMATIVOS, nunca como sustituto del juicio clínico profesional.
-
-Tu base de conocimiento incluye los protocolos y guías del Área II:
-
-` + MEGA_KB + `
-
-INSTRUCCIONES:
-- Responde en español, de forma clara y estructurada
-- Cita el protocolo o guía específica cuando corresponda
-- Para fármacos, indica siempre dosis, vía y duración según los protocolos del Área II
-- Si no tienes información suficiente en la base de conocimiento, indícalo claramente
-- Usa formato con bullets o secciones cuando ayude a la claridad
-- Recuerda siempre que es uso EXCLUSIVAMENTE DOCENTE`;
-
-    var messages = [{role:'user', content: question}];
-    if (megaHistory.length > 2) {
-        messages = megaHistory.slice(-6);
-    }
-    
-    fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-        body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [{role:'system', content: systemPrompt}].concat(messages),
-            max_tokens: 1200,
-            temperature: 0.2
-        })
-    })
-    .then(function(r) {
-        if (!r.ok) {
-            return r.json().then(function(e) {
-                var msg = (e.error && e.error.message) ? e.error.message : 'HTTP ' + r.status;
-                if (r.status === 429) msg = '429';
-                throw new Error(msg);
-            }).catch(function() { throw new Error('HTTP ' + r.status); });
-        }
-        return r.json();
-    })
-    .then(function(d) {
-        var answer = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content)
-            ? d.choices[0].message.content
-            : 'El modelo no devolvió respuesta. Inténtalo de nuevo.';
-        megaHistory.push({role:'assistant', content: answer});
-        if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
-        megaAppendMsg('assistant', answer);
-        if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
-    })
-    .catch(function(e) {
-        megaAppendMsg('system', (e.message && e.message.includes('429'))
-            ? '⏱️ Demasiadas peticiones. Espera 30 segundos e inténtalo de nuevo. Si el problema persiste, configura tu propia API Key de Groq en ⚙️ Configuración.'
-            : '❌ ' + (e.message || 'Error desconocido'));
-        if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
-    });
-}
+// megaSendInput and megaDispatch defined above (with retry + queue logic)
 
 function megaAppendMsg(role, text) {
     var chat = document.getElementById('megaChat');
