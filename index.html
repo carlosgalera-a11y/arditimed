@@ -3497,11 +3497,24 @@ function megaSend(text) {
     megaSendInput();
 }
 
+var megaLastCall = 0;
+var megaMinInterval = 4000; // min 4s between calls to avoid 429
+
 function megaSendInput() {
     var input = document.getElementById('megaInput');
     if (!input) return;
     var question = input.value.trim();
     if (!question) return;
+
+    // Rate limit: wait at least 4s between calls
+    var now = Date.now();
+    var elapsed = now - megaLastCall;
+    if (megaLastCall > 0 && elapsed < megaMinInterval) {
+        var wait = Math.ceil((megaMinInterval - elapsed) / 1000);
+        megaAppendMsg('system', '⏳ Espera ' + wait + 's antes de la siguiente pregunta...');
+        return;
+    }
+
     input.value = '';
 
     // getScanGroqKey is in app-main.js — call safely
@@ -3513,6 +3526,7 @@ function megaSendInput() {
         return;
     }
 
+    megaLastCall = Date.now();
     megaAppendMsg('user', question);
     megaHistory.push({role:'user', content: question});
 
@@ -3542,7 +3556,7 @@ INSTRUCCIONES:
         method: 'POST',
         headers: {'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
         body: JSON.stringify({
-            model: 'llama3-8b-8192',
+            model: 'gemma2-9b-it',
             messages: [{role:'system', content: systemPrompt}].concat(messages),
             max_tokens: 800,
             temperature: 0.2
@@ -3551,7 +3565,9 @@ INSTRUCCIONES:
     .then(function(r) {
         if (!r.ok) {
             return r.json().then(function(e) {
-                throw new Error((e.error && e.error.message) ? e.error.message : 'HTTP ' + r.status);
+                var msg = (e.error && e.error.message) ? e.error.message : 'HTTP ' + r.status;
+                if (r.status === 429) msg = '429';
+                throw new Error(msg);
             }).catch(function() { throw new Error('HTTP ' + r.status); });
         }
         return r.json();
@@ -3563,10 +3579,25 @@ INSTRUCCIONES:
         megaHistory.push({role:'assistant', content: answer});
         if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
         megaAppendMsg('assistant', answer);
-        if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
+        if (btn) {
+        // Show cooldown countdown
+        var remaining = megaMinInterval;
+        var countdown = setInterval(function() {
+            remaining -= 1000;
+            if (remaining <= 0) {
+                clearInterval(countdown);
+                btn.disabled = false;
+                btn.textContent = 'Enviar';
+            } else {
+                btn.textContent = '⏳ ' + Math.ceil(remaining/1000) + 's';
+            }
+        }, 1000);
+    }
     })
     .catch(function(e) {
-        megaAppendMsg('system', '❌ ' + (e.message || 'Error desconocido') + '. Comprueba la API Key de Groq.');
+        megaAppendMsg('system', (e.message && e.message.includes('429'))
+            ? '⏱️ Demasiadas peticiones. Espera 30 segundos e inténtalo de nuevo. Si el problema persiste, configura tu propia API Key de Groq en ⚙️ Configuración.'
+            : '❌ ' + (e.message || 'Error desconocido'));
         if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
     });
 }
@@ -4404,11 +4435,24 @@ function megaSend(text) {
     megaSendInput();
 }
 
+var megaLastCall = 0;
+var megaMinInterval = 4000; // min 4s between calls to avoid 429
+
 function megaSendInput() {
     var input = document.getElementById('megaInput');
     if (!input) return;
     var question = input.value.trim();
     if (!question) return;
+
+    // Rate limit: wait at least 4s between calls
+    var now = Date.now();
+    var elapsed = now - megaLastCall;
+    if (megaLastCall > 0 && elapsed < megaMinInterval) {
+        var wait = Math.ceil((megaMinInterval - elapsed) / 1000);
+        megaAppendMsg('system', '⏳ Espera ' + wait + 's antes de la siguiente pregunta...');
+        return;
+    }
+
     input.value = '';
 
     // getScanGroqKey is in app-main.js — call safely
@@ -4420,6 +4464,7 @@ function megaSendInput() {
         return;
     }
 
+    megaLastCall = Date.now();
     megaAppendMsg('user', question);
     megaHistory.push({role:'user', content: question});
 
@@ -4458,7 +4503,9 @@ INSTRUCCIONES:
     .then(function(r) {
         if (!r.ok) {
             return r.json().then(function(e) {
-                throw new Error((e.error && e.error.message) ? e.error.message : 'HTTP ' + r.status);
+                var msg = (e.error && e.error.message) ? e.error.message : 'HTTP ' + r.status;
+                if (r.status === 429) msg = '429';
+                throw new Error(msg);
             }).catch(function() { throw new Error('HTTP ' + r.status); });
         }
         return r.json();
@@ -4473,7 +4520,9 @@ INSTRUCCIONES:
         if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
     })
     .catch(function(e) {
-        megaAppendMsg('system', '❌ ' + (e.message || 'Error desconocido') + '. Comprueba la API Key de Groq.');
+        megaAppendMsg('system', (e.message && e.message.includes('429'))
+            ? '⏱️ Demasiadas peticiones. Espera 30 segundos e inténtalo de nuevo. Si el problema persiste, configura tu propia API Key de Groq en ⚙️ Configuración.'
+            : '❌ ' + (e.message || 'Error desconocido'));
         if (btn) { btn.disabled = false; btn.textContent = 'Enviar'; }
     });
 }
