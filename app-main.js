@@ -1149,18 +1149,21 @@ function scanGoogleLogin(){
         });
     }
 
-    // Primero intentar con signInWithRedirect si hay indicios de problemas (móvil/Safari)
+    // Detectar entorno
     var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     var isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    
-    if(isMobile || isSafari){
-        // En móvil/Safari: redirect es más fiable que popup
+    var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
+
+    if(isSafari && !isStandalone){
+        // Safari en navegador: usar redirect (más fiable por restricciones de popup en Safari)
         if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
         firebase.auth().signInWithRedirect(provider).catch(function(error){
-            errEl.innerHTML="❌ "+error.message+" (código: "+error.code+")";
-            errEl.style.display="block";
+            console.error("Redirect error:", error);
+            // Si redirect falla, intentar popup como fallback
+            doLogin();
         });
     } else {
+        // Chrome, Android, PWA standalone, desktop: popup funciona bien
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(doLogin).catch(doLogin);
     }
 }
