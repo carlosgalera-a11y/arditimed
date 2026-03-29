@@ -2269,7 +2269,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                   // Alerta cell
                   var tdAlerta = document.createElement('td');
                   tdAlerta.className = 'pt-col-alerta';
-                  tdAlerta.innerHTML = '<button class="pt-alerta-btn pt-alerta-alta'+(al==='alta'?' active':'')+'" title="Alerta alta — vigilancia estrecha" onclick="ptSetAlerta(this,'alta')">🔴</button><button class="pt-alerta-btn pt-alerta-media'+(al==='media'?' active':'')+'" title="Alerta media" onclick="ptSetAlerta(this,'media')">🟡</button><button class="pt-alerta-btn pt-alerta-ok'+(al==='ok'?' active':'')+'" title="Sin alerta" onclick="ptSetAlerta(this,'ok')">🟢</button>';
+                  tdAlerta.innerHTML = '<button class="pt-alerta-btn pt-alerta-alta'+(al==='alta'?' active':'')+'" title="Alerta alta — vigilancia estrecha" onclick="ptSetAlerta(this,&#39;alta&#39;)">🔴</button><button class="pt-alerta-btn pt-alerta-media'+(al==='media'?' active':'')+'" title="Alerta media" onclick="ptSetAlerta(this,&#39;media&#39;)">🟡</button><button class="pt-alerta-btn pt-alerta-ok'+(al==='ok'?' active':'')+'" title="Sin alerta" onclick="ptSetAlerta(this,&#39;ok&#39;)">🟢</button>';
                   tr.appendChild(tdAlerta);
 
                   // Text cols: nombre, nhc, motivo, pendiente, diagnostico, tto-casa, tto-hosp, resultado
@@ -2297,7 +2297,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                   // Delete cell
                   var tdDel = document.createElement('td');
                   tdDel.style.textAlign='center';
-                  tdDel.innerHTML='<button onclick="ptDeleteRow(this)" title="Eliminar fila" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem;padding:4px 6px;border-radius:5px;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='none'">✕</button>';
+                  tdDel.innerHTML='<button onclick="ptDeleteRow(this)" title="Eliminar fila" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem;padding:4px 6px;border-radius:5px;" onmouseover="this.style.background=&#39;#fee2e2&#39;" onmouseout="this.style.background=&#39;none&#39;">✕</button>';
                   tr.appendChild(tdDel);
 
                   tbody.appendChild(tr);
@@ -3755,196 +3755,7 @@ function infDescargar(formato){
     htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
     htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
     htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
-    htmlDoc+='
-<script id="megaKB">
-var MEGA_KB = "=== GUIA ANTIBIOTICOS HSL 2025 (Area II Cartagena) ===\n" +
-"RESPIRATORIO: Neumonia comunitaria leve-mod: Amoxicilina 1g/8h 5-7d o Amox-clavulanico 875/125mg/8h. Alergicos: Levofloxacino 500mg/24h 5d. Exacerbacion EPOC: Amox-clavulanico 875/125mg/8h 5d.\n" +
-"URINARIO: ITU baja no complicada mujer: Fosfomicina 3g dosis unica o Nitrofurantoina 100mg/12h 5d. ITU hombre/complicada: Ciprofloxacino 500mg/12h 7d. Pielonefritis: Ciprofloxacino 500mg/12h 10-14d.\n" +
-"PIEL: Celulitis/erisipela: Amox-clavulanico 875/125mg/8h 7-10d. SARM: Cotrimoxazol 160/800mg/12h.\n" +
-"DIGESTIVO: H.pylori: Omeprazol 20mg/12h + Claritromicina 500mg/12h + Amoxicilina 1g/12h x14d. Diverticulitis leve: Amox-clavulanico 875/125mg/8h 7d.\n" +
-"COLELITIASIS/COLECISTITIS: Dolor HD+fiebre+Murphy+. Eco urgente. Amox-clavulanico IV o Piperacilina-tazobactam. Biologicos: descartar infeccion activa, TBC latente (Mantoux/IGRA), hepatitis B/C, VIH antes de iniciar. Vacunas al dia.\n" +
-"=== PROTOCOLOS AP ===\n" +
-"HTA: Objetivo <140/90. 1a linea: IECA/ARA-II o calcioantagonista. Crisis asintomatica: captopril 25mg SL.\n" +
-"EPOC AGUDIZADA: Salbutamol+ipratropio, prednisona 40mg/d 5d, antibiotico si esputo purulento. Ingreso si SpO2<90%.\n" +
-"DIABETES T2: Metformina 500-2000mg/d. iSGLT2/GLP1 si ECV/ERC. Hipoglucemia: 15g azucar rapido.\n" +
-"DISLIPEMIA: Rosuvastatina 20-40mg o Atorvastatina 40-80mg si RCV alto.\n" +
-"=== URGENCIAS ===\n" +
-"DOLOR TORACICO: ECG urgente. Irradiado+sudoracion+disnea: 112.\n" +
-"ANAFILAXIA: Adrenalina 0.3mg IM muslo. Antihistaminico + corticoide. Observacion 4h.\n" +
-"SEPSIS qSOFA>=2: FR>22, alt.mental, TAS<100: antibiotico primera hora.\n" +
-"BIOLOGICOS: Antes de iniciar: descartar TBC (Mantoux/IGRA+Rx torax), VHB (HBsAg, antiHBc, antiHBs), VHC, VIH. Vacunas actualizadas. Durante tto: vigilar infecciones oportunistas, no vacunas vivas.";
-
-var megaHistory = [];
-var megaIsBusy = false;
-var megaQueue = [];
-
-// Groq key (embedded, free tier)
-var _mgk = atob(["Z3NrX0dUVHFmVFhwQzV","IR3lNSFRrRzByV0dkeW","IzRllPSHNnVVRBOE5Za","lVWVDROOVd5ak1NeFQ="].join(""));
-
-// Models to try in order
-var MEGA_MODELS = ["llama-3.1-8b-instant","llama3-8b-8192","gemma2-9b-it"];
-
-function megaSend(text) {
-    var inp = document.getElementById("megaInput");
-    if (inp) { inp.value = text; megaSendInput(); }
-}
-
-function megaSendInput() {
-    var inp = document.getElementById("megaInput");
-    if (!inp) return;
-    var q = inp.value.trim();
-    if (!q) return;
-    inp.value = "";
-    if (megaIsBusy) {
-        megaQueue.push(q);
-        megaAppendMsg("system","En cola (" + megaQueue.length + ")...");
-        return;
-    }
-    megaDispatch(q);
-}
-
-function megaDispatch(question) {
-    megaIsBusy = true;
-    megaAppendMsg("user", question);
-    megaHistory.push({role:"user", content:question});
-    var btn = document.getElementById("megaBtn");
-    if (btn) { btn.disabled = true; btn.textContent = "Pensando..."; }
-
-    var sp = "Eres un asistente clinico del Centro de Salud Area II Cartagena (SMS). " +
-             "Uso exclusivamente DOCENTE e INFORMATIVO.\n\n" +
-             "CONOCIMIENTO BASE:\n" + MEGA_KB + "\n\n" +
-             "Responde en espanol, de forma clara y estructurada. " +
-             "Cita protocolos cuando corresponda. " +
-             "Para farmacos indica dosis, via y duracion. " +
-             "Si no tienes info, indicalo claramente.";
-
-    var msgs = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:"user",content:question}];
-
-    // Try Pollinations first (no key, unlimited, free)
-    // Falls back to Groq if needed
-    megaCallPollinations(sp, msgs, question, btn);
-}
-
-function megaCallPollinations(sp, msgs, question, btn) {
-    var allMsgs = [{role:"system", content:sp}].concat(msgs);
-    fetch("https://text.pollinations.ai/openai", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-            model: "openai-large",
-            messages: allMsgs,
-            seed: Math.floor(Math.random()*9999),
-            private: true
-        })
-    })
-    .then(function(r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-    })
-    .then(function(d) {
-        var ans = (d.choices && d.choices[0] && d.choices[0].message)
-            ? d.choices[0].message.content : null;
-        if (!ans) throw new Error("empty");
-        megaOnAnswer(ans, btn);
-    })
-    .catch(function() {
-        // Fallback: Groq
-        megaCallGroq(sp, msgs, 0, btn);
-    });
-}
-
-function megaCallGroq(sp, msgs, modelIdx, btn) {
-    var model = MEGA_MODELS[modelIdx] || MEGA_MODELS[0];
-    // Try user key first, then embedded
-    var key = "";
-    try { key = getScanGroqKey(); } catch(e) {}
-    if (!key) key = _mgk;
-
-    fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {"Content-Type":"application/json","Authorization":"Bearer " + key},
-        body: JSON.stringify({
-            model: model,
-            messages: [{role:"system",content:sp}].concat(msgs),
-            max_tokens: 900,
-            temperature: 0.2
-        })
-    })
-    .then(function(r) {
-        if (r.status === 429) {
-            // Try next model
-            if (modelIdx + 1 < MEGA_MODELS.length) {
-                setTimeout(function(){ megaCallGroq(sp, msgs, modelIdx+1, btn); }, 1500);
-            } else {
-                megaAppendMsg("system","API temporalmente saturada. Intenta de nuevo en 30 segundos.");
-                megaReset(btn);
-            }
-            return;
-        }
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-    })
-    .then(function(d) {
-        if (!d) return;
-        var ans = (d.choices && d.choices[0] && d.choices[0].message)
-            ? d.choices[0].message.content : null;
-        if (!ans) throw new Error("empty");
-        megaOnAnswer(ans, btn);
-    })
-    .catch(function(e) {
-        megaAppendMsg("system","Error: " + (e.message||"desconocido") + ". Comprueba la conexion.");
-        megaReset(btn);
-    });
-}
-
-function megaOnAnswer(ans, btn) {
-    megaHistory.push({role:"assistant", content:ans});
-    if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
-    megaAppendMsg("assistant", ans);
-    megaReset(btn);
-    if (megaQueue.length > 0) {
-        var nx = megaQueue.shift();
-        setTimeout(function(){ megaDispatch(nx); }, 300);
-    }
-}
-
-function megaReset(btn) {
-    megaIsBusy = false;
-    if (btn) { btn.disabled = false; btn.textContent = "Enviar"; }
-}
-
-function megaAppendMsg(role, text) {
-    var chat = document.getElementById("megaChat");
-    if (!chat) return;
-    var div = document.createElement("div");
-    var isUser = role === "user";
-    var isSystem = role === "system";
-    div.style.cssText = "margin-bottom:12px;display:flex;" +
-        (isUser ? "justify-content:flex-end" : "justify-content:flex-start");
-    var bubble = document.createElement("div");
-    var formatted = text
-        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-        .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
-        .replace(/^#{1,3} (.+)$/gm,"<strong>$1</strong>")
-        .replace(/^[-*] (.+)$/gm,"&bull; $1")
-        .replace(/
-/g,"<br>");
-    bubble.innerHTML = formatted;
-    bubble.style.cssText = "max-width:88%;padding:10px 14px;border-radius:12px;" +
-        "font-size:.85rem;line-height:1.6;" +
-        (isUser
-            ? "background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border-radius:12px 12px 2px 12px;"
-            : isSystem
-            ? "background:#fff3cd;border:1px solid #ffc107;color:#856404;width:100%;"
-            : "background:#fff;border:1px solid #e0e0e0;color:#1a1a2e;" +
-              "border-radius:12px 12px 12px 2px;box-shadow:0 1px 4px rgba(0,0,0,.08);");
-    div.appendChild(bubble);
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-}
-</script>
-
-</body></html>';
+    htmlDoc+='</body></html>';
     var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName+'.doc';a.click();
     URL.revokeObjectURL(a.href);
@@ -4189,6 +4000,195 @@ inp.type=inp.type==='password'?'text':'password';
 <!-- ═══════ FILEHUB JS — Cuaderno IA + Blog Publisher ═══════ -->
 <script src="app-modules.js?v=20260315b"></script>
 
+
+
+<script>
+/* ═══ MEGACUADERNO CLINICO - CORE FUNCTIONS ═══ */
+var MEGA_KB = "=== GUIA ANTIBIOTICOS HSL 2025 (Area II Cartagena) ===\n" +
+"RESPIRATORIO: Neumonia comunitaria leve-mod: Amoxicilina 1g/8h 5-7d o Amox-clavulanico 875/125mg/8h. Alergicos: Levofloxacino 500mg/24h 5d. Exacerbacion EPOC: Amox-clavulanico 875/125mg/8h 5d.\n" +
+"URINARIO: ITU baja no complicada mujer: Fosfomicina 3g dosis unica o Nitrofurantoina 100mg/12h 5d. ITU hombre/complicada: Ciprofloxacino 500mg/12h 7d. Pielonefritis: Ciprofloxacino 500mg/12h 10-14d.\n" +
+"PIEL: Celulitis/erisipela: Amox-clavulanico 875/125mg/8h 7-10d. SARM: Cotrimoxazol 160/800mg/12h.\n" +
+"DIGESTIVO: H.pylori: Omeprazol 20mg/12h + Claritromicina 500mg/12h + Amoxicilina 1g/12h x14d. Diverticulitis leve: Amox-clavulanico 875/125mg/8h 7d.\n" +
+"COLELITIASIS/COLECISTITIS: Dolor HD+fiebre+Murphy+. Eco urgente. Amox-clavulanico IV o Piperacilina-tazobactam. Biologicos: descartar infeccion activa, TBC latente (Mantoux/IGRA), hepatitis B/C, VIH antes de iniciar. Vacunas al dia.\n" +
+"=== PROTOCOLOS AP ===\n" +
+"HTA: Objetivo <140/90. 1a linea: IECA/ARA-II o calcioantagonista. Crisis asintomatica: captopril 25mg SL.\n" +
+"EPOC AGUDIZADA: Salbutamol+ipratropio, prednisona 40mg/d 5d, antibiotico si esputo purulento. Ingreso si SpO2<90%.\n" +
+"DIABETES T2: Metformina 500-2000mg/d. iSGLT2/GLP1 si ECV/ERC. Hipoglucemia: 15g azucar rapido.\n" +
+"DISLIPEMIA: Rosuvastatina 20-40mg o Atorvastatina 40-80mg si RCV alto.\n" +
+"=== URGENCIAS ===\n" +
+"DOLOR TORACICO: ECG urgente. Irradiado+sudoracion+disnea: 112.\n" +
+"ANAFILAXIA: Adrenalina 0.3mg IM muslo. Antihistaminico + corticoide. Observacion 4h.\n" +
+"SEPSIS qSOFA>=2: FR>22, alt.mental, TAS<100: antibiotico primera hora.\n" +
+"BIOLOGICOS: Antes de iniciar: descartar TBC (Mantoux/IGRA+Rx torax), VHB (HBsAg, antiHBc, antiHBs), VHC, VIH. Vacunas actualizadas. Durante tto: vigilar infecciones oportunistas, no vacunas vivas.";
+
+var megaHistory = [];
+var megaIsBusy = false;
+var megaQueue = [];
+
+// Groq key (embedded, free tier)
+var _mgk = atob(["Z3NrX0dUVHFmVFhwQzV","IR3lNSFRrRzByV0dkeW","IzRllPSHNnVVRBOE5Za","lVWVDROOVd5ak1NeFQ="].join(""));
+
+// Models to try in order
+var MEGA_MODELS = ["llama-3.1-8b-instant","llama3-8b-8192","gemma2-9b-it"];
+
+function megaSend(text) {
+    var inp = document.getElementById("megaInput");
+    if (inp) { inp.value = text; megaSendInput(); }
+}
+
+function megaSendInput() {
+    var inp = document.getElementById("megaInput");
+    if (!inp) return;
+    var q = inp.value.trim();
+    if (!q) return;
+    inp.value = "";
+    if (megaIsBusy) {
+        megaQueue.push(q);
+        megaAppendMsg("system","En cola (" + megaQueue.length + ")...");
+        return;
+    }
+    megaDispatch(q);
+}
+
+function megaDispatch(question) {
+    megaIsBusy = true;
+    megaAppendMsg("user", question);
+    megaHistory.push({role:"user", content:question});
+    var btn = document.getElementById("megaBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "Pensando..."; }
+
+    var sp = "Eres un asistente clinico del Centro de Salud Area II Cartagena (SMS). " +
+             "Uso exclusivamente DOCENTE e INFORMATIVO.\n\n" +
+             "CONOCIMIENTO BASE:\n" + MEGA_KB + "\n\n" +
+             "Responde en espanol, de forma clara y estructurada. " +
+             "Cita protocolos cuando corresponda. " +
+             "Para farmacos indica dosis, via y duracion. " +
+             "Si no tienes info, indicalo claramente.";
+
+    var msgs = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:"user",content:question}];
+
+    // Try Pollinations first (no key, unlimited, free)
+    // Falls back to Groq if needed
+    megaCallPollinations(sp, msgs, question, btn);
+}
+
+function megaCallPollinations(sp, msgs, question, btn) {
+    var allMsgs = [{role:"system", content:sp}].concat(msgs);
+    fetch("https://text.pollinations.ai/openai", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            model: "openai-large",
+            messages: allMsgs,
+            seed: Math.floor(Math.random()*9999),
+            private: true
+        })
+    })
+    .then(function(r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+    })
+    .then(function(d) {
+        var ans = (d.choices && d.choices[0] && d.choices[0].message)
+            ? d.choices[0].message.content : null;
+        if (!ans) throw new Error("empty");
+        megaOnAnswer(ans, btn);
+    })
+    .catch(function() {
+        // Fallback: Groq
+        megaCallGroq(sp, msgs, 0, btn);
+    });
+}
+
+function megaCallGroq(sp, msgs, modelIdx, btn) {
+    var model = MEGA_MODELS[modelIdx] || MEGA_MODELS[0];
+    // Try user key first, then embedded
+    var key = "";
+    try { key = getScanGroqKey(); } catch(e) {}
+    if (!key) key = _mgk;
+
+    fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {"Content-Type":"application/json","Authorization":"Bearer " + key},
+        body: JSON.stringify({
+            model: model,
+            messages: [{role:"system",content:sp}].concat(msgs),
+            max_tokens: 900,
+            temperature: 0.2
+        })
+    })
+    .then(function(r) {
+        if (r.status === 429) {
+            // Try next model
+            if (modelIdx + 1 < MEGA_MODELS.length) {
+                setTimeout(function(){ megaCallGroq(sp, msgs, modelIdx+1, btn); }, 1500);
+            } else {
+                megaAppendMsg("system","API temporalmente saturada. Intenta de nuevo en 30 segundos.");
+                megaReset(btn);
+            }
+            return;
+        }
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+    })
+    .then(function(d) {
+        if (!d) return;
+        var ans = (d.choices && d.choices[0] && d.choices[0].message)
+            ? d.choices[0].message.content : null;
+        if (!ans) throw new Error("empty");
+        megaOnAnswer(ans, btn);
+    })
+    .catch(function(e) {
+        megaAppendMsg("system","Error: " + (e.message||"desconocido") + ". Comprueba la conexion.");
+        megaReset(btn);
+    });
+}
+
+function megaOnAnswer(ans, btn) {
+    megaHistory.push({role:"assistant", content:ans});
+    if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
+    megaAppendMsg("assistant", ans);
+    megaReset(btn);
+    if (megaQueue.length > 0) {
+        var nx = megaQueue.shift();
+        setTimeout(function(){ megaDispatch(nx); }, 300);
+    }
+}
+
+function megaReset(btn) {
+    megaIsBusy = false;
+    if (btn) { btn.disabled = false; btn.textContent = "Enviar"; }
+}
+
+function megaAppendMsg(role, text) {
+    var chat = document.getElementById("megaChat");
+    if (!chat) return;
+    var div = document.createElement("div");
+    var isUser = role === "user";
+    var isSystem = role === "system";
+    div.style.cssText = "margin-bottom:12px;display:flex;" +
+        (isUser ? "justify-content:flex-end" : "justify-content:flex-start");
+    var bubble = document.createElement("div");
+    var formatted = text
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+        .replace(/^#{1,3} (.+)$/gm,"<strong>$1</strong>")
+        .replace(/^[-*] (.+)$/gm,"&bull; $1")
+        .replace(/\n/g,"<br>");
+    bubble.innerHTML = formatted;
+    bubble.style.cssText = "max-width:88%;padding:10px 14px;border-radius:12px;" +
+        "font-size:.85rem;line-height:1.6;" +
+        (isUser
+            ? "background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border-radius:12px 12px 2px 12px;"
+            : isSystem
+            ? "background:#fff3cd;border:1px solid #ffc107;color:#856404;width:100%;"
+            : "background:#fff;border:1px solid #e0e0e0;color:#1a1a2e;" +
+              "border-radius:12px 12px 12px 2px;box-shadow:0 1px 4px rgba(0,0,0,.08);");
+    div.appendChild(bubble);
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
 
 <script>
 // Extended knowledge base — appended to MEGA_KB defined above
