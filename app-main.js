@@ -1196,6 +1196,9 @@ function switchScanTab(tab){
     var calcBtn=document.getElementById("tabCalc");if(calcBtn){calcBtn.style.background=tab==="calc"?"linear-gradient(135deg,#7c3aed,#4f46e5)":"var(--bg-subtle)";calcBtn.style.color=tab==="calc"?"#fff":"var(--text)";}
     var nbEl=document.getElementById("panelNotebooks");if(nbEl)nbEl.style.display=tab==="notebooks"?"block":"none";
     var nbBtn=document.getElementById("tabNotebooks");if(nbBtn){nbBtn.style.background=tab==="notebooks"?"linear-gradient(135deg,#0d47a1,#1565c0)":"var(--bg-subtle)";nbBtn.style.color=tab==="notebooks"?"#fff":"var(--text)";}
+    var ptEl=document.getElementById("panelPlantillas");if(ptEl)ptEl.style.display=tab==="plantillas"?"block":"none";
+    var ptBtn=document.getElementById("tabPlantillas");if(ptBtn){ptBtn.style.background=tab==="plantillas"?"linear-gradient(135deg,#0a1628,#1a3050)":"var(--bg-subtle)";ptBtn.style.color=tab==="plantillas"?"#fff":"var(--text)";}
+    if(tab==="plantillas" && typeof ptInit==="function") ptInit();
 }
 
 // ═══ NOTEBOOKLM VIEWER ═══

@@ -254,6 +254,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                         <a href="javascript:void(0)" onclick="showPage('pageTraductor')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌍 Traductor de Consulta</a>
                         <a href="generador-qr.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📱 Generador QR Paciente</a>
                         <a href="javascript:void(0)" onclick="showPage('pageTelefonos')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📞 Teléfonos y Buscas</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('plantillas')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Plantillas de Pacientes</a>
                         <a href="mapa.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🗺️ Mapa Sanitario</a>
                         <a href="dashboard.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📊 Dashboard</a>
                     </div>
@@ -1777,6 +1778,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <button id="tabCalc" onclick="switchScanTab('calc')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧮 Calculadoras</button>
                 <button id="tabNIHQuiz" onclick="switchScanTab('nihQuiz')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧠 Quiz NIH</button>
                 <button id="tabNotebooks" onclick="switchScanTab('notebooks')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🤖 NotebookLM</button>
+                <button id="tabPlantillas" onclick="switchScanTab('plantillas')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📋 Plantillas</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -2122,6 +2124,239 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 </div>
 
             </div><!-- end panelNotebooks -->
+
+            <!-- TAB 5: PLANTILLAS DE PACIENTES -->
+            <div id="panelPlantillas" style="display:none;">
+              <style>
+                #tablaPacientes { width:100%; border-collapse:collapse; font-size:.82rem; font-family:var(--font-body); }
+                #tablaPacientes th { background:var(--bg-dark,#0a1628); color:#fff; padding:10px 10px; text-align:left; font-weight:700; font-size:.78rem; letter-spacing:.03em; white-space:nowrap; position:sticky; top:0; z-index:2; }
+                #tablaPacientes td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--text); }
+                #tablaPacientes tr:hover td { background:var(--bg-subtle); }
+                #tablaPacientes tr.alerta-alta td { background:#fff0f0!important; }
+                #tablaPacientes tr.alerta-media td { background:#fffbe6!important; }
+                #tablaPacientes tr.alerta-alta:hover td { background:#ffe0e0!important; }
+                #tablaPacientes tr.alerta-media:hover td { background:#fff3cd!important; }
+                .pt-col-nombre { min-width:150px; font-weight:600; }
+                .pt-col-nhc { min-width:80px; color:var(--text-light); font-size:.75rem; font-variant-numeric:tabular-nums; }
+                .pt-col-motivo { min-width:130px; }
+                .pt-col-pendiente { min-width:140px; }
+                .pt-col-diagnostico { min-width:140px; }
+                .pt-col-tto-casa { min-width:130px; }
+                .pt-col-tto-hosp { min-width:130px; }
+                .pt-col-resultado { min-width:130px; }
+                .pt-col-alerta { min-width:90px; text-align:center; }
+                .pt-input { width:100%; border:1px solid var(--border); border-radius:5px; padding:5px 7px; font-size:.8rem; background:var(--bg-card); color:var(--text); font-family:var(--font-body); resize:vertical; min-height:32px; box-sizing:border-box; }
+                .pt-input:focus { outline:none; border-color:#0d6b4a; }
+                .pt-alerta-btn { border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:1rem; display:inline-flex; align-items:center; justify-content:center; transition:.15s; margin:0 2px; }
+                .pt-alerta-btn:hover { transform:scale(1.15); }
+                .pt-alerta-alta { background:#fee2e2; }
+                .pt-alerta-alta.active { background:#ef4444; color:#fff; box-shadow:0 0 0 2px #ef4444; }
+                .pt-alerta-media { background:#fef3c7; }
+                .pt-alerta-media.active { background:#f59e0b; color:#fff; box-shadow:0 0 0 2px #f59e0b; }
+                .pt-alerta-ok { background:#dcfce7; }
+                .pt-alerta-ok.active { background:#22c55e; color:#fff; box-shadow:0 0 0 2px #22c55e; }
+                .pt-badge-alta { display:inline-block; background:#ef4444; color:#fff; font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:20px; vertical-align:middle; margin-left:4px; }
+                .pt-badge-media { display:inline-block; background:#f59e0b; color:#fff; font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:20px; vertical-align:middle; margin-left:4px; }
+                @media(max-width:700px){ .pt-col-tto-casa,.pt-col-tto-hosp,.pt-col-resultado{ display:none; } }
+              </style>
+
+              <!-- Header card -->
+              <div style="background:linear-gradient(135deg,#0a1628,#1a3050);border-radius:var(--radius);padding:22px 24px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;">
+                <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.12;">📋</div>
+                <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:6px;">📋 Plantilla de pacientes</h2>
+                <p style="opacity:.75;font-size:.88rem;font-weight:300;margin:0;">Registro de seguimiento durante la guardia. Los datos se guardan en este navegador y no se envían a ningún servidor.</p>
+              </div>
+
+              <!-- Toolbar -->
+              <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+                <button onclick="ptAddRow()" style="background:linear-gradient(135deg,#0d6b4a,#1a8b60);color:#fff;border:none;padding:8px 16px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);display:flex;align-items:center;gap:6px;">➕ Añadir paciente</button>
+                <button onclick="ptClear()" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🗑️ Limpiar tabla</button>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <span style="font-size:.78rem;color:var(--text-light);">Filtrar:</span>
+                  <button onclick="ptFilter('all')" id="ptFiltroAll" style="background:#0d6b4a;color:#fff;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">Todos</button>
+                  <button onclick="ptFilter('alta')" id="ptFiltroAlta" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:5px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🔴 Alerta alta</button>
+                  <button onclick="ptFilter('media')" id="ptFiltroMedia" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:5px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🟡 Alerta media</button>
+                </div>
+              </div>
+
+              <!-- Leyenda -->
+              <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;font-size:.78rem;color:var(--text-light);align-items:center;">
+                <span>Alertas:</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:50%;vertical-align:middle;margin-right:4px;"></span>Alta prioridad — vigilancia estrecha</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:#f59e0b;border-radius:50%;vertical-align:middle;margin-right:4px;"></span>Atención media</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:#22c55e;border-radius:50%;vertical-align:middle;margin-right:4px;"></span>Sin alerta</span>
+              </div>
+
+              <!-- Table wrapper -->
+              <div style="overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-card);">
+                <table id="tablaPacientes">
+                  <thead>
+                    <tr>
+                      <th class="pt-col-alerta">Alerta</th>
+                      <th class="pt-col-nombre">Paciente</th>
+                      <th class="pt-col-nhc">N.H.C.</th>
+                      <th class="pt-col-motivo">Motivo / Sospecha</th>
+                      <th class="pt-col-pendiente">Pendiente</th>
+                      <th class="pt-col-diagnostico">Posible diagnóstico</th>
+                      <th class="pt-col-tto-casa">Tto. en casa</th>
+                      <th class="pt-col-tto-hosp">Tto. en hospital</th>
+                      <th class="pt-col-resultado">Resultado pruebas</th>
+                      <th style="min-width:40px;text-align:center;">✕</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaPacientesTbody">
+                  </tbody>
+                </table>
+              </div>
+              <p style="font-size:.72rem;color:var(--text-light);margin-top:10px;text-align:center;">💾 Los datos se guardan automáticamente en este navegador (localStorage). No se envían a ningún servidor ni se almacenan en la nube.</p>
+
+              <script>
+              (function(){
+                var PT_KEY = 'plantilla_pacientes_v1';
+                var ptFiltroActual = 'all';
+                var ptRowId = 0;
+
+                function ptSave(){
+                  var rows = [];
+                  document.querySelectorAll('#tablaPacientesTbody tr').forEach(function(tr){
+                    var cells = tr.querySelectorAll('textarea, input[type=text]');
+                    var alerta = tr.dataset.alerta || 'none';
+                    var rowData = {id: tr.dataset.id, alerta: alerta, cols: []};
+                    cells.forEach(function(el){ rowData.cols.push(el.value); });
+                    rows.push(rowData);
+                  });
+                  try{ localStorage.setItem(PT_KEY, JSON.stringify(rows)); } catch(e){}
+                }
+
+                function ptLoad(){
+                  try{
+                    var saved = localStorage.getItem(PT_KEY);
+                    if(saved){
+                      var rows = JSON.parse(saved);
+                      rows.forEach(function(row){
+                        ptAddRow(row.cols, row.alerta, row.id);
+                      });
+                    } else {
+                      // Start with 3 empty rows
+                      ptAddRow(); ptAddRow(); ptAddRow();
+                    }
+                  } catch(e){ ptAddRow(); ptAddRow(); ptAddRow(); }
+                }
+
+                window.ptAddRow = function(data, alerta, id){
+                  var tbody = document.getElementById('tablaPacientesTbody');
+                  if(!tbody) return;
+                  var rid = id || ('pt_' + (++ptRowId));
+                  var d = data || ['','','','','','','',''];
+                  var al = alerta || 'none';
+                  var tr = document.createElement('tr');
+                  tr.dataset.id = rid;
+                  tr.dataset.alerta = al;
+                  if(al==='alta') tr.className='alerta-alta';
+                  else if(al==='media') tr.className='alerta-media';
+
+                  // Alerta cell
+                  var tdAlerta = document.createElement('td');
+                  tdAlerta.className = 'pt-col-alerta';
+                  tdAlerta.innerHTML = '<button class="pt-alerta-btn pt-alerta-alta'+(al==='alta'?' active':'')+'" title="Alerta alta — vigilancia estrecha" onclick="ptSetAlerta(this,'alta')">🔴</button><button class="pt-alerta-btn pt-alerta-media'+(al==='media'?' active':'')+'" title="Alerta media" onclick="ptSetAlerta(this,'media')">🟡</button><button class="pt-alerta-btn pt-alerta-ok'+(al==='ok'?' active':'')+'" title="Sin alerta" onclick="ptSetAlerta(this,'ok')">🟢</button>';
+                  tr.appendChild(tdAlerta);
+
+                  // Text cols: nombre, nhc, motivo, pendiente, diagnostico, tto-casa, tto-hosp, resultado
+                  var colClasses = ['pt-col-nombre','pt-col-nhc','pt-col-motivo','pt-col-pendiente','pt-col-diagnostico','pt-col-tto-casa','pt-col-tto-hosp','pt-col-resultado'];
+                  var placeholders = ['Apellidos, Nombre','N.H.C.','Motivo / Sospecha diagnóstica','Actuaciones pendientes','Posible diagnóstico','Tratamiento en domicilio','Tratamiento hospitalario','Resultados de pruebas'];
+                  var isTextarea = [true, false, true, true, true, true, true, true];
+
+                  d.forEach(function(val, i){
+                    var td = document.createElement('td');
+                    td.className = colClasses[i];
+                    if(isTextarea[i]){
+                      var ta = document.createElement('textarea');
+                      ta.className='pt-input'; ta.rows=2; ta.placeholder=placeholders[i]; ta.value=val;
+                      ta.addEventListener('input', function(){ ptSave(); ptAutoResize(ta); });
+                      td.appendChild(ta);
+                    } else {
+                      var inp = document.createElement('input');
+                      inp.type='text'; inp.className='pt-input'; inp.placeholder=placeholders[i]; inp.value=val;
+                      inp.addEventListener('input', ptSave);
+                      td.appendChild(inp);
+                    }
+                    tr.appendChild(td);
+                  });
+
+                  // Delete cell
+                  var tdDel = document.createElement('td');
+                  tdDel.style.textAlign='center';
+                  tdDel.innerHTML='<button onclick="ptDeleteRow(this)" title="Eliminar fila" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem;padding:4px 6px;border-radius:5px;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='none'">✕</button>';
+                  tr.appendChild(tdDel);
+
+                  tbody.appendChild(tr);
+                  if(!id) ptSave();
+                  ptApplyFilter();
+                };
+
+                window.ptAutoResize = function(el){
+                  el.style.height='auto';
+                  el.style.height=(el.scrollHeight)+'px';
+                };
+
+                window.ptSetAlerta = function(btn, nivel){
+                  var tr = btn.closest('tr');
+                  if(!tr) return;
+                  var wasActive = btn.classList.contains('active');
+                  // Reset all buttons in this row
+                  tr.querySelectorAll('.pt-alerta-btn').forEach(function(b){ b.classList.remove('active'); });
+                  tr.className='';
+                  tr.dataset.alerta='none';
+                  if(!wasActive){
+                    btn.classList.add('active');
+                    tr.dataset.alerta=nivel;
+                    if(nivel==='alta') tr.className='alerta-alta';
+                    else if(nivel==='media') tr.className='alerta-media';
+                  }
+                  ptSave();
+                  ptApplyFilter();
+                };
+
+                window.ptDeleteRow = function(btn){
+                  var tr = btn.closest('tr');
+                  if(tr && confirm('¿Eliminar este paciente de la tabla?')){ tr.remove(); ptSave(); }
+                };
+
+                window.ptClear = function(){
+                  if(!confirm('¿Limpiar toda la tabla? Esta acción no se puede deshacer.')) return;
+                  document.getElementById('tablaPacientesTbody').innerHTML='';
+                  try{ localStorage.removeItem(PT_KEY); } catch(e){}
+                  ptAddRow(); ptAddRow(); ptAddRow();
+                };
+
+                window.ptFilter = function(tipo){
+                  ptFiltroActual = tipo;
+                  ['All','Alta','Media'].forEach(function(t){
+                    var btn = document.getElementById('ptFiltro'+t);
+                    if(btn){ btn.style.background = tipo===t.toLowerCase() ? '#0d6b4a' : 'var(--bg-subtle)'; btn.style.color = tipo===t.toLowerCase() ? '#fff' : 'var(--text)'; btn.style.border = tipo===t.toLowerCase() ? 'none' : '1px solid var(--border)'; }
+                  });
+                  ptApplyFilter();
+                };
+
+                window.ptApplyFilter = function(){
+                  document.querySelectorAll('#tablaPacientesTbody tr').forEach(function(tr){
+                    if(ptFiltroActual==='all'){ tr.style.display=''; }
+                    else if(ptFiltroActual==='alta'){ tr.style.display = tr.dataset.alerta==='alta' ? '' : 'none'; }
+                    else if(ptFiltroActual==='media'){ tr.style.display = tr.dataset.alerta==='media' ? '' : 'none'; }
+                  });
+                };
+
+                // Init on first show
+                var ptInited = false;
+                window.ptInit = function(){
+                  if(ptInited) return;
+                  ptInited = true;
+                  ptLoad();
+                };
+              })();
+              </script>
+            </div><!-- end panelPlantillas -->
+
 
         </div>
     </div>
