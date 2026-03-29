@@ -130,7 +130,7 @@
         .nav-status{padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600}
         .nav-status.ok{background:rgba(34,197,94,.15);color:#4ade80}.nav-status.wait{background:rgba(234,179,8,.15);color:#fbbf24}
         .scrollbar::-webkit-scrollbar{width:6px}.scrollbar::-webkit-scrollbar-track{background:0 0}.scrollbar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-        @media(max-width:1024px){.prof-layout{grid-template-columns:1fr}.sidebar-left,.sidebar-right{display:none}.landing-nav .nav-links{display:none}.hero-content h2{font-size:2rem}.hero-buttons{flex-direction:column;align-items:center}.patients-grid{padding:20px}}
+        @media(max-width:1024px){.prof-layout{grid-template-columns:1fr}.sidebar-left,.sidebar-right{display:none}.landing-nav .nav-links{display:none}.landing-nav .nav-links .page-back{display:inline-flex!important}.hero-content h2{font-size:2rem}.hero-buttons{flex-direction:column;align-items:center}.patients-grid{padding:20px}}
 
         /* ═══ COMPREHENSIVE MOBILE RESPONSIVE ═══ */
 
@@ -400,3 +400,48 @@
                 gap:6px!important
             }
         }
+
+        /* ═══ MOBILE BACK BUTTON ═══ */
+        /* Botón volver visible en móvil dentro del nav */
+        @media(max-width:1024px){
+            .landing-nav{
+                display:flex!important;
+                align-items:center;
+                justify-content:space-between;
+                padding:10px 16px;
+                padding-top:max(10px,env(safe-area-inset-top,10px));
+            }
+            .landing-nav .nav-links{
+                display:flex!important;
+                gap:6px;
+                align-items:center;
+            }
+            /* Ocultar botones secundarios en móvil, solo mostrar page-back y login */
+            .landing-nav .btn-subir-contenido,
+            .landing-nav .btn-panel-mod,
+            .landing-nav .nav-status{
+                display:none!important;
+            }
+            /* Botón volver prominente en móvil */
+            .landing-nav .page-back{
+                display:inline-flex!important;
+                background:rgba(255,255,255,.15)!important;
+                border:1px solid rgba(255,255,255,.3)!important;
+                color:#fff!important;
+                padding:8px 14px!important;
+                border-radius:8px!important;
+                font-size:.82rem!important;
+                font-weight:600!important;
+                white-space:nowrap;
+            }
+            /* Login button más compacto en móvil */
+            .landing-nav button[onclick*="showLoginModal"]{
+                padding:8px 12px!important;
+                font-size:.78rem!important;
+            }
+            /* Brand más compacto */
+            .landing-nav .brand h1{
+                font-size:.95rem!important;
+            }
+        }
+
