@@ -1121,11 +1121,8 @@ function scanGoogleLogin(){
     function handleError(error){
         console.error("Login error:",error.code,error.message);
         if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-            // Popup bloqueado: intentar redirect
-            if(pendingPageAfterLogin) sessionStorage.setItem('pendingPage', pendingPageAfterLogin);
-            firebase.auth().signInWithRedirect(provider).catch(function(e2){
-                if(errEl){errEl.innerHTML="❌ No se pudo abrir la ventana de Google. Comprueba que no está bloqueada.";errEl.style.display="block";}
-            });
+            // Popup bloqueado: mostrar instrucción clara (no usar redirect - rompe GitHub Pages)
+            if(errEl){errEl.innerHTML="⚠️ El navegador bloqueó la ventana de Google.<br><strong>Pulsa de nuevo el botón</strong> o desactiva el bloqueador de popups para este sitio.";errEl.style.display="block";}
         }else if(error.code==="auth/unauthorized-domain"){
             if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.display="block";}
         }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
@@ -1864,29 +1861,7 @@ firebase.auth().onAuthStateChanged(function(user){
     }
 });
 
-// Handle redirect result (for mobile where popup is blocked)
-firebase.auth().getRedirectResult().then(function(result){
-    if(result && result.user){
-        console.log("Redirect login success:",result.user.email);
-        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
-        loadModeradoresFromFirestore(function(){
-            isAdminLoggedIn=isAdmin();apShowAdminTab(isAdminLoggedIn);updateModBadgeAll();
-            if(isAdminLoggedIn) try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
-        });
-        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
-        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
-        if(pg){logPageAccess(pg,result.user);showPage(pg);}
-        else{showPage("pageScanIA");}
-    }
-}).catch(function(e){
-    if(e && e.code && e.code!=="auth/no-auth-event"){
-        console.error("Redirect result error:",e);
-        try{
-            var errEl=document.getElementById("scanLoginError");
-            if(errEl){errEl.innerHTML="❌ "+e.message+" ("+e.code+")";errEl.style.display="block";}
-        }catch(e2){}
-    }
-});
+// getRedirectResult eliminado - usar solo popup para evitar 404 en GitHub Pages
 
 // ═══ INIT ═══
 function showFarmacias24h(){
