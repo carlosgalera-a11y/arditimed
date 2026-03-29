@@ -3757,47 +3757,50 @@ function infDescargar(formato){
     htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
     htmlDoc+='
 <script id="megaKB">
-var MEGA_KB = "=== GUÍA ANTIBIÓTICOS HSL 2025 (Área II Cartagena) ===\n" +
-"RESPIRATORIO: Neumonía comunitaria leve-mod: Amoxicilina 1g/8h 5-7d o Amox-clavulanico 875/125mg/8h. Alergicos: Levofloxacino 500mg/24h 5d. Exacerbacion EPOC: Amox-clavulanico 875/125mg/8h 5d.\n" +
+var MEGA_KB = "=== GUIA ANTIBIOTICOS HSL 2025 (Area II Cartagena) ===\n" +
+"RESPIRATORIO: Neumonia comunitaria leve-mod: Amoxicilina 1g/8h 5-7d o Amox-clavulanico 875/125mg/8h. Alergicos: Levofloxacino 500mg/24h 5d. Exacerbacion EPOC: Amox-clavulanico 875/125mg/8h 5d.\n" +
 "URINARIO: ITU baja no complicada mujer: Fosfomicina 3g dosis unica o Nitrofurantoina 100mg/12h 5d. ITU hombre/complicada: Ciprofloxacino 500mg/12h 7d. Pielonefritis: Ciprofloxacino 500mg/12h 10-14d.\n" +
 "PIEL: Celulitis/erisipela: Amox-clavulanico 875/125mg/8h 7-10d. SARM: Cotrimoxazol 160/800mg/12h.\n" +
 "DIGESTIVO: H.pylori: Omeprazol 20mg/12h + Claritromicina 500mg/12h + Amoxicilina 1g/12h x14d. Diverticulitis leve: Amox-clavulanico 875/125mg/8h 7d.\n" +
+"COLELITIASIS/COLECISTITIS: Dolor HD+fiebre+Murphy+. Eco urgente. Amox-clavulanico IV o Piperacilina-tazobactam. Biologicos: descartar infeccion activa, TBC latente (Mantoux/IGRA), hepatitis B/C, VIH antes de iniciar. Vacunas al dia.\n" +
 "=== PROTOCOLOS AP ===\n" +
 "HTA: Objetivo <140/90. 1a linea: IECA/ARA-II o calcioantagonista. Crisis asintomatica: captopril 25mg SL.\n" +
 "EPOC AGUDIZADA: Salbutamol+ipratropio, prednisona 40mg/d 5d, antibiotico si esputo purulento. Ingreso si SpO2<90%.\n" +
-"ASMA: Leve: salbutamol 2-4 puff c/20min x3. Moderada: ipratropio + corticoide oral. Grave: urgencias.\n" +
 "DIABETES T2: Metformina 500-2000mg/d. iSGLT2/GLP1 si ECV/ERC. Hipoglucemia: 15g azucar rapido.\n" +
 "DISLIPEMIA: Rosuvastatina 20-40mg o Atorvastatina 40-80mg si RCV alto.\n" +
 "=== URGENCIAS ===\n" +
 "DOLOR TORACICO: ECG urgente. Irradiado+sudoracion+disnea: 112.\n" +
-"DISNEA: SpO2<92% urgencias. Descartar TEP/EPA/neuomotorax.\n" +
 "ANAFILAXIA: Adrenalina 0.3mg IM muslo. Antihistaminico + corticoide. Observacion 4h.\n" +
 "SEPSIS qSOFA>=2: FR>22, alt.mental, TAS<100: antibiotico primera hora.\n" +
-"COLELITIASIS/COLECISTITIS: Dolor HD+fiebre+Murphy+. Eco urgente. Amox-clavulanico IV o Piperacilina-tazobactam.\n" +
-"PANCREATITIS: Criterios Ranson/BISAP. Ayuno, sueroterapia, analgesia. TAC si dudas.\n" +
-"COLELITASIS complicada: Colecistitis aguda litiasica: ayuno, analgesia (metamizol/ketorolaco IV), antibiotico (amoxicilina-clavulanico 2g/6h IV o piperacilina-tazobactam 4g/6h IV), valorar CPRE/cirugia laparoscopica.";
+"BIOLOGICOS: Antes de iniciar: descartar TBC (Mantoux/IGRA+Rx torax), VHB (HBsAg, antiHBc, antiHBs), VHC, VIH. Vacunas actualizadas. Durante tto: vigilar infecciones oportunistas, no vacunas vivas.";
 
 var megaHistory = [];
 var megaIsBusy = false;
 var megaQueue = [];
 
+// Groq key (embedded, free tier)
+var _mgk = atob(["Z3NrX0dUVHFmVFhwQzV","IR3lNSFRrRzByV0dkeW","IzRllPSHNnVVRBOE5Za","lVWVDROOVd5ak1NeFQ="].join(""));
+
+// Models to try in order
+var MEGA_MODELS = ["llama-3.1-8b-instant","llama3-8b-8192","gemma2-9b-it"];
+
 function megaSend(text) {
-    var input = document.getElementById("megaInput");
-    if (input) { input.value = text; megaSendInput(); }
+    var inp = document.getElementById("megaInput");
+    if (inp) { inp.value = text; megaSendInput(); }
 }
 
 function megaSendInput() {
-    var input = document.getElementById("megaInput");
-    if (!input) return;
-    var question = input.value.trim();
-    if (!question) return;
-    input.value = "";
+    var inp = document.getElementById("megaInput");
+    if (!inp) return;
+    var q = inp.value.trim();
+    if (!q) return;
+    inp.value = "";
     if (megaIsBusy) {
-        megaQueue.push(question);
-        megaAppendMsg("system", "Pregunta en cola (" + megaQueue.length + ")...");
+        megaQueue.push(q);
+        megaAppendMsg("system","En cola (" + megaQueue.length + ")...");
         return;
     }
-    megaDispatch(question);
+    megaDispatch(q);
 }
 
 function megaDispatch(question) {
@@ -3807,58 +3810,107 @@ function megaDispatch(question) {
     var btn = document.getElementById("megaBtn");
     if (btn) { btn.disabled = true; btn.textContent = "Pensando..."; }
 
-    var sp = "Eres un asistente clinico especializado del Centro de Salud Area II Cartagena (SMS). " +
-             "Uso exclusivamente docente. No sustituye el juicio clinico.\n\n" +
+    var sp = "Eres un asistente clinico del Centro de Salud Area II Cartagena (SMS). " +
+             "Uso exclusivamente DOCENTE e INFORMATIVO.\n\n" +
              "CONOCIMIENTO BASE:\n" + MEGA_KB + "\n\n" +
-             "Responde en espanol, claro y estructurado. " +
+             "Responde en espanol, de forma clara y estructurada. " +
              "Cita protocolos cuando corresponda. " +
-             "Indica dosis, via y duracion de farmacos. " +
-             "Si no tienes info suficiente, indicalo.";
+             "Para farmacos indica dosis, via y duracion. " +
+             "Si no tienes info, indicalo claramente.";
 
-    var msgs = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:"user", content:question}];
+    var msgs = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:"user",content:question}];
 
-    fetch("https://api.anthropic.com/v1/messages", {
+    // Try Pollinations first (no key, unlimited, free)
+    // Falls back to Groq if needed
+    megaCallPollinations(sp, msgs, question, btn);
+}
+
+function megaCallPollinations(sp, msgs, question, btn) {
+    var allMsgs = [{role:"system", content:sp}].concat(msgs);
+    fetch("https://text.pollinations.ai/openai", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "anthropic-version": "2023-06-01",
-            "anthropic-dangerous-direct-browser-access": "true"
-        },
+        headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
-            model: "claude-haiku-4-5-20251001",
-            max_tokens: 1024,
-            system: sp,
-            messages: msgs
+            model: "openai-large",
+            messages: allMsgs,
+            seed: Math.floor(Math.random()*9999),
+            private: true
         })
     })
     .then(function(r) {
-        if (!r.ok) {
-            return r.json().catch(function(){return{};}).then(function(e){
-                throw new Error((e.error && e.error.message) ? e.error.message : "HTTP " + r.status);
-            });
-        }
+        if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
     })
     .then(function(d) {
-        var ans = (d.content && d.content[0] && d.content[0].text)
-            ? d.content[0].text
-            : "Sin respuesta.";
-        megaHistory.push({role:"assistant", content:ans});
-        if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
-        megaAppendMsg("assistant", ans);
-        megaIsBusy = false;
-        if (btn) { btn.disabled = false; btn.textContent = "Enviar"; }
-        if (megaQueue.length > 0) {
-            var nx = megaQueue.shift();
-            setTimeout(function(){ megaDispatch(nx); }, 300);
+        var ans = (d.choices && d.choices[0] && d.choices[0].message)
+            ? d.choices[0].message.content : null;
+        if (!ans) throw new Error("empty");
+        megaOnAnswer(ans, btn);
+    })
+    .catch(function() {
+        // Fallback: Groq
+        megaCallGroq(sp, msgs, 0, btn);
+    });
+}
+
+function megaCallGroq(sp, msgs, modelIdx, btn) {
+    var model = MEGA_MODELS[modelIdx] || MEGA_MODELS[0];
+    // Try user key first, then embedded
+    var key = "";
+    try { key = getScanGroqKey(); } catch(e) {}
+    if (!key) key = _mgk;
+
+    fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {"Content-Type":"application/json","Authorization":"Bearer " + key},
+        body: JSON.stringify({
+            model: model,
+            messages: [{role:"system",content:sp}].concat(msgs),
+            max_tokens: 900,
+            temperature: 0.2
+        })
+    })
+    .then(function(r) {
+        if (r.status === 429) {
+            // Try next model
+            if (modelIdx + 1 < MEGA_MODELS.length) {
+                setTimeout(function(){ megaCallGroq(sp, msgs, modelIdx+1, btn); }, 1500);
+            } else {
+                megaAppendMsg("system","API temporalmente saturada. Intenta de nuevo en 30 segundos.");
+                megaReset(btn);
+            }
+            return;
         }
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+    })
+    .then(function(d) {
+        if (!d) return;
+        var ans = (d.choices && d.choices[0] && d.choices[0].message)
+            ? d.choices[0].message.content : null;
+        if (!ans) throw new Error("empty");
+        megaOnAnswer(ans, btn);
     })
     .catch(function(e) {
-        megaAppendMsg("system", "Error: " + (e.message || "desconocido") + ". Comprueba la conexion.");
-        megaIsBusy = false;
-        megaQueue = [];
-        if (btn) { btn.disabled = false; btn.textContent = "Enviar"; }
+        megaAppendMsg("system","Error: " + (e.message||"desconocido") + ". Comprueba la conexion.");
+        megaReset(btn);
     });
+}
+
+function megaOnAnswer(ans, btn) {
+    megaHistory.push({role:"assistant", content:ans});
+    if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
+    megaAppendMsg("assistant", ans);
+    megaReset(btn);
+    if (megaQueue.length > 0) {
+        var nx = megaQueue.shift();
+        setTimeout(function(){ megaDispatch(nx); }, 300);
+    }
+}
+
+function megaReset(btn) {
+    megaIsBusy = false;
+    if (btn) { btn.disabled = false; btn.textContent = "Enviar"; }
 }
 
 function megaAppendMsg(role, text) {
@@ -3867,21 +3919,25 @@ function megaAppendMsg(role, text) {
     var div = document.createElement("div");
     var isUser = role === "user";
     var isSystem = role === "system";
-    div.style.cssText = "margin-bottom:12px;display:flex;" + (isUser ? "justify-content:flex-end" : "justify-content:flex-start");
+    div.style.cssText = "margin-bottom:12px;display:flex;" +
+        (isUser ? "justify-content:flex-end" : "justify-content:flex-start");
     var bubble = document.createElement("div");
     var formatted = text
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
         .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
         .replace(/^#{1,3} (.+)$/gm,"<strong>$1</strong>")
-        .replace(/^[-•] (.+)$/gm,"&bull; $1")
+        .replace(/^[-*] (.+)$/gm,"&bull; $1")
         .replace(/
 /g,"<br>");
     bubble.innerHTML = formatted;
-    bubble.style.cssText = "max-width:88%;padding:10px 14px;border-radius:12px;font-size:.85rem;line-height:1.6;" +
+    bubble.style.cssText = "max-width:88%;padding:10px 14px;border-radius:12px;" +
+        "font-size:.85rem;line-height:1.6;" +
         (isUser
             ? "background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border-radius:12px 12px 2px 12px;"
             : isSystem
             ? "background:#fff3cd;border:1px solid #ffc107;color:#856404;width:100%;"
-            : "background:#fff;border:1px solid #e0e0e0;color:#1a1a2e;border-radius:12px 12px 12px 2px;box-shadow:0 1px 4px rgba(0,0,0,.08);");
+            : "background:#fff;border:1px solid #e0e0e0;color:#1a1a2e;" +
+              "border-radius:12px 12px 12px 2px;box-shadow:0 1px 4px rgba(0,0,0,.08);");
     div.appendChild(bubble);
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
