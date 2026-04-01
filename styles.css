@@ -130,7 +130,7 @@
         .nav-status{padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600}
         .nav-status.ok{background:rgba(34,197,94,.15);color:#4ade80}.nav-status.wait{background:rgba(234,179,8,.15);color:#fbbf24}
         .scrollbar::-webkit-scrollbar{width:6px}.scrollbar::-webkit-scrollbar-track{background:0 0}.scrollbar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-        @media(max-width:1024px){.prof-layout{grid-template-columns:1fr}.sidebar-left,.sidebar-right{display:none}.landing-nav .nav-links{display:none}.landing-nav .nav-links .page-back{display:inline-flex!important}.hero-content h2{font-size:2rem}.hero-buttons{flex-direction:column;align-items:center}.patients-grid{padding:20px}}
+        @media(max-width:1024px){.prof-layout{grid-template-columns:1fr}.sidebar-left{display:flex;position:fixed;top:0;left:-300px;width:280px;height:100%;z-index:9999;box-shadow:4px 0 24px rgba(0,0,0,.3);transition:left .3s ease}.sidebar-left.open{left:0}.sidebar-right{display:none}.landing-nav .nav-links{display:none}.landing-nav .nav-links .page-back{display:inline-flex!important}.hero-content h2{font-size:2rem}.hero-buttons{flex-direction:column;align-items:center}.patients-grid{padding:20px}.mobile-cat-btn{display:flex!important}.mobile-cat-close{display:block!important}.sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9998}.sidebar-overlay.open{display:block}}
 
         /* ═══ COMPREHENSIVE MOBILE RESPONSIVE ═══ */
 
