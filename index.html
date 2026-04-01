@@ -3234,6 +3234,18 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                     <option value="Neumología">💨 Neumología</option>
                     <option value="Pediatría">👶 Pediatría</option>
                     <option value="Traumatología">🦴 Traumatología</option>
+                    <option value="Urología">🫘 Urología</option>
+                    <option value="ORL">👂 ORL (Otorrinolaringología)</option>
+                    <option value="Oftalmología">👁️ Oftalmología</option>
+                    <option value="Psiquiatría">🧠 Psiquiatría / Salud Mental</option>
+                    <option value="Hematología">🩸 Hematología</option>
+                    <option value="Nefrología">💧 Nefrología</option>
+                    <option value="Reumatología">🦿 Reumatología</option>
+                    <option value="Urgencias">🚨 Urgencias / Emergencias</option>
+                    <option value="Infecciosas">🦠 Infecciosas</option>
+                    <option value="Alergología">🤧 Alergología</option>
+                    <option value="Cirugía Menor">🩹 Cirugía Menor</option>
+                    <option value="Paliativos">🕊️ Paliativos</option>
                     <option value="Protocolos Médicos">📋 Protocolos Médicos</option>
                 </select>
             </div>
@@ -4776,6 +4788,45 @@ if(typeof MEGA_KB !== 'undefined') {
     'Valorar: depresión, SAOS, piernas inquietas, dolor crónico como causa subyacente\n' +
     'nn Evitar benzodiacepinas de vida media larga en ancianos (riesgo caídas, deterioro cognitivo)\n' +
     'Centro de Salud Cartagena Este · Ficha de consulta rápida · No sustituye juicio clínico\n' +
+    '=== UROLOGIA ===\n' +
+    'ITU baja no complicada mujer: Fosfomicina 3g DU o Nitrofurantoina 100mg/12h 5d. Hombre/complicada: Ciprofloxacino 500mg/12h 7d.\n' +
+    'Colico renal: Dexketoprofeno 50mg IV/IM, Metamizol 2g IV. Eco si fiebre/anuria. Tamsulosina 0.4mg si litiasis 5-10mm.\n' +
+    'RAO: Sondaje vesical (Foley 16-18Fr). Tamsulosina 0.4mg/d. Si no mejora: derivar urologia.\n' +
+    '=== ORL ===\n' +
+    'OMA: Amoxicilina 80mg/kg/d (ninos) o 1g/8h (adultos) 7d. Espera vigilante 48h si leve.\n' +
+    'Faringoamigdalitis: Centor>=3: Penicilina V 500mg/12h 10d o Amoxicilina 500mg/8h 10d. Alergicos: Azitromicina 500mg/d 3d.\n' +
+    'Epistaxis anterior: Compresion digital 10min. Taponamiento Merocel. Posterior: sonda Foley + derivar ORL.\n' +
+    'Vertigo: VPPB: Dix-Hallpike + Epley. Neuronitis: sulpiride+dimenhidrinato. Banderas rojas: focalidad, cefalea intensa.\n' +
+    '=== OFTALMOLOGIA ===\n' +
+    'Ojo rojo: Conjuntivitis (secrecion, no dolor): tobramicina. Uveitis (dolor, miosis): derivar urgente. Glaucoma agudo (dolor+midriasis+dureza): timolol+pilocarpina+derivar.\n' +
+    '=== PSIQUIATRIA ===\n' +
+    'Crisis ansiedad: Alprazolam 0.25-0.5mg SL o Lorazepam 1mg SL. Derivar salud mental si recurrente.\n' +
+    'Agitacion: Contencion verbal primero. Haloperidol 5mg IM + Midazolam 5mg IM. Olanzapina 10mg IM alternativa.\n' +
+    'Ideacion suicida: Columbia C-SSRS. Plan seguridad. Retirar medios letales. Ingreso si riesgo alto.\n' +
+    '=== HEMATOLOGIA ===\n' +
+    'Anemia ferropenica: Ferritina<30. Hierro oral 3-6m. IV si intolerancia o Hb<8.\n' +
+    'ACODs: Apixaban 5mg/12h, Rivaroxaban 20mg/d, Edoxaban 60mg/d. Ajustar dosis renal.\n' +
+    'TVP: Wells>=2: eco-doppler. HBPM Enoxaparina 1mg/kg/12h. Derivar si masiva o TEP.\n' +
+    '=== NEFROLOGIA ===\n' +
+    'ERC: KDIGO por FGe y albuminuria. IECA/ARA-II si albuminuria. iSGLT2 (dapagliflozina 10mg) si FGe>20. Derivar si FGe<30.\n' +
+    'Hiperpotasemia K>6.5 o ECG: Gluconato calcico 10ml IV, Insulina 10UI+Glucosa, Salbutamol NEB.\n' +
+    '=== REUMATOLOGIA ===\n' +
+    'Gota aguda: Colchicina 0.5mg/8h 3d o AINE. No iniciar alopurinol en brote. Profilaxis: Febuxostat 80mg.\n' +
+    'Lumbalgia: Sin banderas rojas: AINE+paracetamol, actividad precoz. Imagen si >6sem o banderas rojas.\n' +
+    '=== URGENCIAS ===\n' +
+    'SVA FV/TVSP: Descarga 200J+RCP 2min+Adrenalina 1mg/3-5min+Amiodarona 300mg. No desfibrilable: Adrenalina 1mg inmediata.\n' +
+    'Shock: Cristaloides 20ml/kg. Si persiste: Noradrenalina 0.1-2mcg/kg/min.\n' +
+    '=== INFECCIOSAS ===\n' +
+    'COVID: Paxlovid en primeras 5d si factores riesgo. Gripe: Oseltamivir 75mg/12h 5d si <48h.\n' +
+    '=== ALERGOLOGIA ===\n' +
+    'Anafilaxia: Adrenalina 0.3-0.5mg IM muslo. REPETIR cada 5-15min. Dexclorfeniramina 5mg IV+Metilprednisolona 1-2mg/kg IV. Observacion 6-8h.\n' +
+    'Angioedema por IECA: SUSPENDER IECA para siempre. Icatibant si grave.\n' +
+    '=== CIRUGIA MENOR ===\n' +
+    'Absceso: Incision+drenaje. Mecha. ATB solo si celulitis (Amox-clav 875/8h). Sutura retirada: cara 4-5d, cabeza 7d, tronco 10d, extremidades 10-14d.\n' +
+    '=== PALIATIVOS ===\n' +
+    'Dolor: Escalera OMS. Morfina oral 5-10mg/4h inicio. Rescate 1/6 dosis diaria. Rotacion: Oral x0.5=SC.\n' +
+    'Sedacion paliativa: Midazolam SC 2.5-5mg bolo+0.5-1mg/h. Levomepromazina 12.5-25mg SC si agitacion. Registro+consentimiento.\n' +
+    'Via SC: Palomilla 21-23G pectoral/deltoides/abdomen. Compatibles: Morfina+Midazolam+Butilescopolamina.\n' +
     '';
 }
 </script>

@@ -424,6 +424,616 @@
         "size_mb": 0.65,
         "url": "https://drive.google.com/file/d/1ReIzte56fA5wtjGf5N_nYqmBsAC28k_o/view?usp=sharing"
       }
+    ],
+    "Urología": [
+      {
+        "title": "ITU no complicada — Protocolo AP",
+        "description": "Manejo de infección urinaria baja en mujer. Fosfomicina, nitrofurantoína. Criterios derivación.",
+        "type": "protocolo",
+        "tags": [
+          "itu",
+          "cistitis",
+          "fosfomicina"
+        ]
+      },
+      {
+        "title": "Cólico renal — Actuación en Urgencias",
+        "description": "Diagnóstico, analgesia (Dexketoprofeno, metamizol), criterios de ingreso, indicación eco/TAC.",
+        "type": "protocolo",
+        "tags": [
+          "colico renal",
+          "litiasis",
+          "urgencias"
+        ]
+      },
+      {
+        "title": "Retención aguda de orina (RAO)",
+        "description": "Sondaje vesical, causas, manejo farmacológico con tamsulosina, criterios derivación urología.",
+        "type": "protocolo",
+        "tags": [
+          "rao",
+          "sondaje",
+          "prostata"
+        ]
+      },
+      {
+        "title": "HBP — Hiperplasia benigna de próstata",
+        "description": "Escala IPSS, alfa-bloqueantes, inhibidores 5-alfa-reductasa, criterios derivación.",
+        "type": "protocolo",
+        "tags": [
+          "prostata",
+          "hbp",
+          "tamsulosina"
+        ]
+      },
+      {
+        "title": "Hematuria — Algoritmo diagnóstico",
+        "description": "Hematuria macro/micro, estudio básico AP, derivación urgente vs preferente.",
+        "type": "protocolo",
+        "tags": [
+          "hematuria",
+          "derivacion"
+        ]
+      }
+    ],
+    "ORL": [
+      {
+        "title": "Otitis media aguda — Manejo AP",
+        "description": "Criterios antibiótico vs espera vigilante. Amoxicilina dosis altas. OMA recurrente.",
+        "type": "protocolo",
+        "tags": [
+          "otitis",
+          "oma",
+          "amoxicilina"
+        ]
+      },
+      {
+        "title": "Faringoamigdalitis aguda",
+        "description": "Criterios de Centor/McIsaac, test rápido estreptococo, tratamiento antibiótico.",
+        "type": "protocolo",
+        "tags": [
+          "amigdalitis",
+          "faringitis",
+          "centor"
+        ]
+      },
+      {
+        "title": "Epistaxis — Protocolo de actuación",
+        "description": "Taponamiento anterior, cauterización, epistaxis posterior, criterios derivación ORL.",
+        "type": "protocolo",
+        "tags": [
+          "epistaxis",
+          "hemorragia nasal"
+        ]
+      },
+      {
+        "title": "Vértigo — Diagnóstico diferencial",
+        "description": "VPPB (Dix-Hallpike, Epley), neuronitis vestibular, Menière. Banderas rojas.",
+        "type": "protocolo",
+        "tags": [
+          "vertigo",
+          "vppb",
+          "epley"
+        ]
+      },
+      {
+        "title": "Hipoacusia súbita",
+        "description": "Urgencia ORL, corticoides, derivación inmediata, diagnóstico diferencial.",
+        "type": "protocolo",
+        "tags": [
+          "hipoacusia",
+          "sordera"
+        ]
+      }
+    ],
+    "Oftalmología": [
+      {
+        "title": "Ojo rojo — Algoritmo diagnóstico",
+        "description": "Conjuntivitis vs uveítis vs glaucoma agudo. Banderas rojas. Derivación urgente.",
+        "type": "protocolo",
+        "tags": [
+          "ojo rojo",
+          "conjuntivitis",
+          "uveitis"
+        ]
+      },
+      {
+        "title": "Cuerpo extraño corneal",
+        "description": "Extracción, tinción fluoresceína, anillo de óxido, cobertura antibiótica, derivación.",
+        "type": "protocolo",
+        "tags": [
+          "cuerpo extrano",
+          "cornea"
+        ]
+      },
+      {
+        "title": "Glaucoma agudo de ángulo cerrado",
+        "description": "Urgencia oftalmológica. Clínica, tratamiento inicial (timolol, pilocarpina), derivación.",
+        "type": "protocolo",
+        "tags": [
+          "glaucoma",
+          "urgencia"
+        ]
+      },
+      {
+        "title": "Herpes ocular",
+        "description": "Queratitis herpética dendrítica, aciclovir tópico, contraindicación corticoides, seguimiento.",
+        "type": "protocolo",
+        "tags": [
+          "herpes",
+          "queratitis"
+        ]
+      },
+      {
+        "title": "Pérdida brusca de visión",
+        "description": "Oclusión arteria/vena central retina, desprendimiento retina. Derivación urgente.",
+        "type": "protocolo",
+        "tags": [
+          "vision",
+          "retina",
+          "urgencia"
+        ]
+      }
+    ],
+    "Psiquiatría": [
+      {
+        "title": "Crisis de ansiedad / Ataque de pánico",
+        "description": "Manejo no farmacológico, benzodiacepinas (alprazolam, lorazepam), derivación salud mental.",
+        "type": "protocolo",
+        "tags": [
+          "ansiedad",
+          "panico",
+          "benzodiacepinas"
+        ]
+      },
+      {
+        "title": "Agitación psicomotriz — Protocolo",
+        "description": "Contención verbal, haloperidol + midazolam, olanzapina IM, medidas de seguridad.",
+        "type": "protocolo",
+        "tags": [
+          "agitacion",
+          "haloperidol",
+          "contencion"
+        ]
+      },
+      {
+        "title": "Ideación suicida — Evaluación y manejo",
+        "description": "Escala Columbia (C-SSRS), factores riesgo/protección, decisión ingreso, plan de seguridad.",
+        "type": "protocolo",
+        "tags": [
+          "suicidio",
+          "columbia",
+          "riesgo"
+        ]
+      },
+      {
+        "title": "Insomnio — Manejo en AP",
+        "description": "Higiene del sueño, terapia cognitivo-conductual, fármacos (zolpidem, trazodona, melatonina).",
+        "type": "protocolo",
+        "tags": [
+          "insomnio",
+          "sueno",
+          "trazodona"
+        ]
+      },
+      {
+        "title": "Depresión — Guía rápida AP",
+        "description": "PHQ-9, ISRS primera línea (sertralina, escitalopram), criterios derivación, seguimiento.",
+        "type": "protocolo",
+        "tags": [
+          "depresion",
+          "isrs",
+          "phq9"
+        ]
+      }
+    ],
+    "Hematología": [
+      {
+        "title": "Anemia ferropénica — Estudio y tratamiento",
+        "description": "Ferritina, hierro oral vs IV, causas, indicación colonoscopia, derivación.",
+        "type": "protocolo",
+        "tags": [
+          "anemia",
+          "ferritina",
+          "hierro"
+        ]
+      },
+      {
+        "title": "Anticoagulación oral — Manejo en AP",
+        "description": "ACODs vs acenocumarol, INR, interacciones, manejo perioperatorio, reversión.",
+        "type": "protocolo",
+        "tags": [
+          "anticoagulacion",
+          "sintrom",
+          "acod"
+        ]
+      },
+      {
+        "title": "TVP / TEP — Diagnóstico y actuación",
+        "description": "Escala de Wells, D-dímero, eco-doppler, HBPM, criterios ingreso.",
+        "type": "protocolo",
+        "tags": [
+          "trombosis",
+          "tvp",
+          "tep",
+          "wells"
+        ]
+      },
+      {
+        "title": "Leucocitosis / Leucopenia — Estudio básico",
+        "description": "Hemograma, frotis, causas frecuentes, derivación hematología.",
+        "type": "protocolo",
+        "tags": [
+          "leucocitos",
+          "hemograma"
+        ]
+      },
+      {
+        "title": "Trombocitopenia — Algoritmo",
+        "description": "Causas (PTI, fármacos, hiperesplenismo), estudio, criterios transfusión.",
+        "type": "protocolo",
+        "tags": [
+          "plaquetas",
+          "trombocitopenia"
+        ]
+      }
+    ],
+    "Nefrología": [
+      {
+        "title": "ERC — Clasificación y manejo AP",
+        "description": "Estadios KDIGO, FGe, albuminuria, IECA/ARA-II, iSGLT2, derivación nefrología.",
+        "type": "protocolo",
+        "tags": [
+          "erc",
+          "kdigo",
+          "isglt2"
+        ]
+      },
+      {
+        "title": "Hiperpotasemia — Protocolo urgente",
+        "description": "ECG, gluconato cálcico, insulina+glucosa, salbutamol, resinas, diálisis.",
+        "type": "protocolo",
+        "tags": [
+          "potasio",
+          "hiperpotasemia",
+          "ecg"
+        ]
+      },
+      {
+        "title": "Hiponatremia — Diagnóstico y manejo",
+        "description": "Algoritmo osmolalidad, SIADH, restricción hídrica, suero salino hipertónico.",
+        "type": "protocolo",
+        "tags": [
+          "sodio",
+          "hiponatremia",
+          "siadh"
+        ]
+      },
+      {
+        "title": "Fracaso renal agudo — Actuación",
+        "description": "Pre-renal, renal, post-renal. Fluidoterapia, ecografía, criterios derivación/diálisis.",
+        "type": "protocolo",
+        "tags": [
+          "fra",
+          "insuficiencia renal aguda"
+        ]
+      },
+      {
+        "title": "Proteinuria / Síndrome nefrótico",
+        "description": "Cociente albúmina/creatinina, estudio básico, edemas, derivación.",
+        "type": "protocolo",
+        "tags": [
+          "proteinuria",
+          "nefrotico"
+        ]
+      }
+    ],
+    "Reumatología": [
+      {
+        "title": "Gota aguda — Manejo en AP/Urgencias",
+        "description": "Colchicina, AINEs, corticoides, febuxostat/alopurinol profilaxis, dieta.",
+        "type": "protocolo",
+        "tags": [
+          "gota",
+          "colchicina",
+          "acido urico"
+        ]
+      },
+      {
+        "title": "Artritis reumatoide — Sospecha y derivación",
+        "description": "Criterios ACR/EULAR, FR, anti-CCP, derivación precoz reumatología.",
+        "type": "protocolo",
+        "tags": [
+          "artritis",
+          "reumatoide",
+          "anti-ccp"
+        ]
+      },
+      {
+        "title": "Lumbalgia — Protocolo AP",
+        "description": "Banderas rojas, tratamiento conservador, AINEs, criterios imagen, derivación.",
+        "type": "protocolo",
+        "tags": [
+          "lumbalgia",
+          "dolor espalda"
+        ]
+      },
+      {
+        "title": "Fibromialgia — Manejo integral",
+        "description": "Criterios diagnósticos, ejercicio, duloxetina/pregabalina, abordaje multidisciplinar.",
+        "type": "protocolo",
+        "tags": [
+          "fibromialgia",
+          "dolor cronico"
+        ]
+      },
+      {
+        "title": "Osteoporosis — Cribado y tratamiento",
+        "description": "FRAX, densitometría, calcio/vitamina D, bifosfonatos, denosumab.",
+        "type": "protocolo",
+        "tags": [
+          "osteoporosis",
+          "frax",
+          "bifosfonatos"
+        ]
+      }
+    ],
+    "Urgencias": [
+      {
+        "title": "PCR — Soporte vital avanzado",
+        "description": "Algoritmo SVA/SVB, desfibrilación, adrenalina, amiodarona, causas reversibles (4H/4T).",
+        "type": "protocolo",
+        "tags": [
+          "pcr",
+          "rcp",
+          "sva"
+        ]
+      },
+      {
+        "title": "Shock — Clasificación y manejo inicial",
+        "description": "Hipovolémico, cardiogénico, distributivo, obstructivo. Fluidoterapia, vasopresores.",
+        "type": "protocolo",
+        "tags": [
+          "shock",
+          "noradrenalina"
+        ]
+      },
+      {
+        "title": "Politraumatizado — ABCDE",
+        "description": "Evaluación primaria y secundaria, vía aérea, neumotórax, hemorragia, inmovilización.",
+        "type": "protocolo",
+        "tags": [
+          "trauma",
+          "abcde",
+          "politrauma"
+        ]
+      },
+      {
+        "title": "Dolor torácico — Algoritmo urgencias",
+        "description": "SCA vs TEP vs disección vs neumotórax. ECG, troponina, escala HEART.",
+        "type": "protocolo",
+        "tags": [
+          "dolor toracico",
+          "sca",
+          "troponina"
+        ]
+      },
+      {
+        "title": "Intoxicación aguda — Manejo general",
+        "description": "Carbón activado, lavado gástrico, antídotos específicos, criterios UCI.",
+        "type": "protocolo",
+        "tags": [
+          "intoxicacion",
+          "antidoto"
+        ]
+      },
+      {
+        "title": "Cetoacidosis diabética — Protocolo",
+        "description": "Fluidoterapia, insulina IV, potasio, bicarbonato, monitorización.",
+        "type": "protocolo",
+        "tags": [
+          "cetoacidosis",
+          "cad",
+          "diabetes"
+        ]
+      }
+    ],
+    "Infecciosas": [
+      {
+        "title": "COVID-19 — Manejo actualizado 2025",
+        "description": "Variantes actuales, antivirales (nirmatrelvir/ritonavir), vacunación, grupos riesgo.",
+        "type": "protocolo",
+        "tags": [
+          "covid",
+          "paxlovid"
+        ]
+      },
+      {
+        "title": "Gripe — Protocolo AP y Urgencias",
+        "description": "Diagnóstico clínico, oseltamivir, indicaciones ingreso, vacunación.",
+        "type": "protocolo",
+        "tags": [
+          "gripe",
+          "influenza",
+          "oseltamivir"
+        ]
+      },
+      {
+        "title": "Infecciones oportunistas — Inmunodeprimidos",
+        "description": "Profilaxis, CMV, PCP, toxoplasma, cribado pre-biológicos.",
+        "type": "protocolo",
+        "tags": [
+          "oportunistas",
+          "inmunodeprimido"
+        ]
+      },
+      {
+        "title": "Herpes zóster — Manejo AP",
+        "description": "Valaciclovir/aciclovir, dolor neuropático, vacuna Shingrix, neuralgia postherpética.",
+        "type": "protocolo",
+        "tags": [
+          "herpes zoster",
+          "valaciclovir"
+        ]
+      },
+      {
+        "title": "Infección por VIH — Sospecha y derivación",
+        "description": "Test rápido, indicadores clínicos, derivación a unidad VIH, PrEP/PEP.",
+        "type": "protocolo",
+        "tags": [
+          "vih",
+          "sida",
+          "prep"
+        ]
+      }
+    ],
+    "Alergología": [
+      {
+        "title": "Anafilaxia — Protocolo de actuación",
+        "description": "Adrenalina IM 0.3-0.5mg, posición Trendelenburg, observación 6-8h, auto-inyector.",
+        "type": "protocolo",
+        "tags": [
+          "anafilaxia",
+          "adrenalina",
+          "epipen"
+        ]
+      },
+      {
+        "title": "Urticaria aguda / Angioedema",
+        "description": "Antihistamínicos, corticoides, angioedema por IECA (suspender), derivación alergología.",
+        "type": "protocolo",
+        "tags": [
+          "urticaria",
+          "angioedema"
+        ]
+      },
+      {
+        "title": "Rinitis alérgica — Manejo AP",
+        "description": "Corticoides nasales, antihistamínicos, inmunoterapia, derivación alergología.",
+        "type": "protocolo",
+        "tags": [
+          "rinitis",
+          "alergia"
+        ]
+      },
+      {
+        "title": "Alergia medicamentosa — Actuación",
+        "description": "Reacciones inmediatas vs tardías, registro en historia clínica, alternativas, derivación.",
+        "type": "protocolo",
+        "tags": [
+          "alergia farmacos",
+          "penicilina"
+        ]
+      },
+      {
+        "title": "Picaduras / Reacciones alérgicas",
+        "description": "Himenópteros, manejo local, indicación adrenalina, derivación inmunoterapia veneno.",
+        "type": "protocolo",
+        "tags": [
+          "picadura",
+          "avispa",
+          "abeja"
+        ]
+      }
+    ],
+    "Cirugía Menor": [
+      {
+        "title": "Incisión y drenaje de abscesos",
+        "description": "Técnica, anestesia local, indicaciones antibiótico, curas posteriores.",
+        "type": "protocolo",
+        "tags": [
+          "absceso",
+          "drenaje",
+          "cirugia"
+        ]
+      },
+      {
+        "title": "Uña incarnata — Cirugía ungueal",
+        "description": "Matricectomía parcial, fenolización, cuidados postoperatorios.",
+        "type": "protocolo",
+        "tags": [
+          "una incarnata",
+          "onicocriptosis"
+        ]
+      },
+      {
+        "title": "Sutura de heridas — Técnicas básicas",
+        "description": "Puntos simples, colchonero, intradérmico, materiales, tiempos de retirada.",
+        "type": "protocolo",
+        "tags": [
+          "sutura",
+          "herida",
+          "puntos"
+        ]
+      },
+      {
+        "title": "Quemaduras — Manejo inicial",
+        "description": "Clasificación (grado/extensión), Wallace, curas, criterios derivación grandes quemados.",
+        "type": "protocolo",
+        "tags": [
+          "quemadura",
+          "wallace"
+        ]
+      },
+      {
+        "title": "Extracción de cuerpos extraños",
+        "description": "Anzuelos, astillas, anillos, técnicas, anestesia local.",
+        "type": "protocolo",
+        "tags": [
+          "cuerpo extrano",
+          "extraccion"
+        ]
+      }
+    ],
+    "Paliativos": [
+      {
+        "title": "Manejo del dolor — Escalera analgésica OMS",
+        "description": "Paracetamol, AINEs, tramadol, morfina, fentanilo, coadyuvantes, rotación opioides.",
+        "type": "protocolo",
+        "tags": [
+          "dolor",
+          "morfina",
+          "opioides"
+        ]
+      },
+      {
+        "title": "Sedación paliativa — Protocolo",
+        "description": "Midazolam, levomepromazina, indicaciones, consentimiento, registro, aspectos éticos.",
+        "type": "protocolo",
+        "tags": [
+          "sedacion",
+          "paliativa",
+          "midazolam"
+        ]
+      },
+      {
+        "title": "Control de síntomas — Guía rápida",
+        "description": "Náuseas, disnea, estreñimiento, delirium, estertores, vía subcutánea.",
+        "type": "protocolo",
+        "tags": [
+          "sintomas",
+          "via subcutanea"
+        ]
+      },
+      {
+        "title": "Vía subcutánea — Técnica y fármacos",
+        "description": "Palomilla, infusor elastomérico, fármacos compatibles, mezclas, cuidados.",
+        "type": "protocolo",
+        "tags": [
+          "subcutanea",
+          "infusor"
+        ]
+      },
+      {
+        "title": "Atención al final de la vida",
+        "description": "Agonía, signos, comunicación con familia, medidas de confort, aspectos legales.",
+        "type": "protocolo",
+        "tags": [
+          "final vida",
+          "agonia",
+          "confort"
+        ]
+      }
     ]
   }
 }

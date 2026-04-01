@@ -606,7 +606,7 @@ function logUsage(action,detail){
 (function(){var _origShowPage=null;document.addEventListener('DOMContentLoaded',function(){logUsage('session_start','landing');});})();
 
 // ═══ PROFESSIONALS LOGIC (all existing code) ═══
-var categories={"Cardiología":"❤️","Dermatología":"🩹","Digestivo":"🍽️","Endocrinología":"🧬","Geriatría":"👴","Ginecología":"🤰","Neurología":"🧠","Neumología":"💨","Pediatría":"👶","Traumatología":"🦴","Protocolos Médicos":"📋"};
+var categories={"Cardiología":"❤️","Dermatología":"🩹","Digestivo":"🍽️","Endocrinología":"🧬","Geriatría":"👴","Ginecología":"🤰","Neurología":"🧠","Neumología":"💨","Pediatría":"👶","Traumatología":"🦴","Urología":"🫘","ORL":"👂","Oftalmología":"👁️","Psiquiatría":"🧠","Hematología":"🩸","Nefrología":"💧","Reumatología":"🦿","Urgencias":"🚨","Infecciosas":"🦠","Alergología":"🤧","Cirugía Menor":"🩹","Paliativos":"🕊️","Protocolos Médicos":"📋"};
 var currentCategory="Cardiología",documents={},preguntas={},notas={},isProcessing=false,profInitialized=false;
 var CONFIG={provider:"groq",groqKey:"",groqModel:"qwen/qwen3-32b",qwenKey:"",qwenModel:"qwen-turbo"};
 try{var s=localStorage.getItem("notebook_ai_cfg_v3");if(s)Object.assign(CONFIG,JSON.parse(s));}catch(e){}
