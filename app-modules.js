@@ -541,7 +541,7 @@ function trSetPersona(p){
   var el=document.getElementById('trAlertasList');
   el.innerHTML='';
   TR_ALERTAS.forEach(function(a){
-    el.innerHTML+='<div style="padding:10px 12px;background:#fdecea;border:1px solid #f5b7b1;border-radius:8px;font-size:.88rem;color:#5a0000;display:flex;align-items:center;gap:10px;"><span style="font-size:1rem;flex-shrink:0;">⚠️</span>'+a+'</div>';
+    el.innerHTML+='<div style="padding:10px 12px;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.4);border-radius:8px;font-size:.88rem;color:var(--text);display:flex;align-items:center;gap:10px;"><span style="font-size:1rem;flex-shrink:0;">⚠️</span>'+a+'</div>';
   });
   trShow('trBloqueA');
   window.scrollTo(0,0);
@@ -639,11 +639,24 @@ function trMostrarResultado(nivel){
     +'<div style="font-size:2.2rem;">'+n.icon+'</div>'
     +'<div><div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:'+n.color+';font-weight:700;margin-bottom:2px;">Nivel '+nivel+' de 5</div>'
     +'<div style="font-size:1.2rem;font-weight:800;color:'+n.color+';">'+n.texto+'</div></div></div>'
-    +'<div style="font-size:.95rem;font-weight:700;color:#1a1a1a;margin-bottom:8px;">'+n.accion+'</div>'
-    +'<div style="font-size:.88rem;color:#333;line-height:1.5;margin-bottom:16px;">'+n.desc+'</div>'
+    +'<div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:8px;">'+n.accion+'</div>'
+    +'<div style="font-size:.88rem;color:var(--text-muted);line-height:1.5;margin-bottom:16px;">'+n.desc+'</div>'
     +telBtn
     +'<button onclick="trReiniciar()" style="width:100%;padding:11px;background:transparent;border:1.5px solid '+n.color+';border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:600;color:'+n.color+';">🔄 Hacer de nuevo</button>'
     +'</div>'
+    // QR section for hospital
+    +'<div style="background:var(--bg-card);border:2px solid '+n.color+';border-radius:14px;padding:18px;margin-bottom:14px;text-align:center;">'
+    +'<p style="font-size:1rem;font-weight:800;color:var(--text);margin:0 0 4px;">📱 ¿Vas a ir a Urgencias?</p>'
+    +'<p style="font-size:.82rem;color:var(--text-muted);margin:0 0 12px;">Genera un QR para que enfermería vea tu triaje al llegar</p>'
+    +'<div id="trClasQRFields">'
+    +'<input id="trClasAlergias" placeholder="⚠️ Alergias conocidas" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:.85rem;background:var(--bg-card);color:var(--text);" />'
+    +'<input id="trClasMedicacion" placeholder="💊 Medicación habitual" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:.85rem;background:var(--bg-card);color:var(--text);" />'
+    +'<input id="trClasConstantes" placeholder="📊 Constantes: TA, FC, Tª, SatO2" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;font-size:.85rem;background:var(--bg-card);color:var(--text);" />'
+    +'</div>'
+    +'<button onclick="trClasGenerarQR('+nivel+')" id="trClasQRBtn" style="width:100%;padding:14px;background:'+n.color+';color:#fff;border:none;border-radius:12px;font-weight:800;font-size:1rem;cursor:pointer;">📱 Generar QR para el hospital</button>'
+    +'<div id="trClasQRResult" style="display:none;margin-top:14px;"></div>'
+    +'</div>'
+    // Remember section
     +'<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;">'
     +'<p style="font-size:.85rem;font-weight:700;color:var(--text);margin:0 0 8px;">📋 Recuerda siempre:</p>'
     +'<div style="font-size:.83rem;color:var(--text-muted);line-height:1.7;">'
@@ -654,6 +667,63 @@ function trMostrarResultado(nivel){
     +'</div></div>';
   trShow('trResultado');
   window.scrollTo(0,0);
+}
+
+// Generate QR from classic triage result
+async function trClasGenerarQR(nivel) {
+  var btn = document.getElementById('trClasQRBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Generando QR...'; }
+  var verifyCode = String(Math.floor(100000 + Math.random() * 900000));
+  var n = TR_NIVELES[nivel] || TR_NIVELES[3];
+  var state = TR_STATE || {};
+
+  var fichaData = {
+    nivel: nivel,
+    verifyCode: verifyCode,
+    motivo: (state.area || 'No especificado') + ' — ' + (state.sintoma || ''),
+    sintomas: 'Área: ' + (state.area||'-') + '\nSíntoma: ' + (state.sintoma||'-') + '\nIntensidad: ' + (state.intensidad||'-') + '/10\nDuración: ' + (state.duracion||'-') + '\nContexto: ' + ((state.contexto||[]).join(', ')||'Ninguno'),
+    recomendacion: n.texto + ' — ' + n.accion + '. ' + n.desc,
+    alergias: (document.getElementById('trClasAlergias').value || '').trim(),
+    medicacion: (document.getElementById('trClasMedicacion').value || '').trim(),
+    constantes: (document.getElementById('trClasConstantes').value || '').trim(),
+    conversacion: [],
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    expiresAt: new Date(Date.now() + 24*60*60*1000)
+  };
+
+  try {
+    var docRef = await db.collection('triajes').add(fichaData);
+    var baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '');
+    var fichaUrl = baseUrl + 'triaje-ficha.html?id=' + docRef.id;
+    var NI = { 1:'🔴', 2:'🟠', 3:'🟡', 4:'🟢', 5:'🔵' };
+
+    document.getElementById('trClasQRFields').style.display = 'none';
+    if (btn) btn.style.display = 'none';
+    var result = document.getElementById('trClasQRResult');
+    result.style.display = 'block';
+    result.innerHTML =
+      '<div style="background:var(--bg-card);border-radius:14px;padding:20px;text-align:center;">'
+      +'<p style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:2px;">'+(NI[nivel]||'')+' Tu QR de Triaje</p>'
+      +'<p style="font-size:.82rem;color:var(--text-muted);margin-bottom:14px;">Muéstralo al llegar a Urgencias</p>'
+      +'<div style="background:#fff;border-radius:14px;padding:14px;display:inline-block;margin-bottom:14px;">'
+      +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(fichaUrl)+'" style="width:220px;height:220px;border-radius:10px;" />'
+      +'</div>'
+      +'<div style="margin-bottom:14px;">'
+      +'<p style="font-size:.82rem;color:var(--text-muted);margin-bottom:4px;font-weight:600;">🔑 Código de verificación:</p>'
+      +'<div style="font-family:monospace;font-size:2rem;letter-spacing:.3em;font-weight:900;color:#0d47a1;padding:10px 16px;background:#eff6ff;border-radius:10px;border:2px dashed #93c5fd;display:inline-block;">'+verifyCode+'</div>'
+      +'<p style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Diga este código a enfermería</p>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;max-width:320px;margin:0 auto;">'
+      +'<button onclick="trIAPrintQR()" style="flex:1;padding:10px;background:#0d47a1;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;">🖨️ Imprimir</button>'
+      +'<button onclick="trIAShareQR(\''+fichaUrl+'\')" style="flex:1;padding:10px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;">📤 Compartir</button>'
+      +'</div>'
+      +'<p style="font-size:.72rem;color:var(--text-muted);margin-top:10px;">⏱️ Válido 24h · 🔒 Solo visible para profesionales</p>'
+      +'</div>';
+    result.scrollIntoView({ behavior:'smooth', block:'center' });
+  } catch(e) {
+    if (btn) { btn.disabled=false; btn.innerHTML='📱 Generar QR para el hospital'; }
+    alert('Error: ' + e.message);
+  }
 }
 
 function trReiniciar(){
