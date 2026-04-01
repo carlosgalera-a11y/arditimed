@@ -610,7 +610,7 @@ var categories={"Cardiología":"❤️","Dermatología":"🩹","Digestivo":"🍽
 var currentCategory="Cardiología",documents={},preguntas={},notas={},isProcessing=false,profInitialized=false;
 var CONFIG={provider:"groq",groqKey:"",groqModel:"qwen/qwen3-32b",qwenKey:"",qwenModel:"qwen-turbo"};
 try{var s=localStorage.getItem("notebook_ai_cfg_v3");if(s)Object.assign(CONFIG,JSON.parse(s));}catch(e){}
-var ENDPOINTS={groq:{url:"https://api.groq.com/openai/v1/chat/completions",getKey:function(){return CONFIG.groqKey||EMBEDDED_GROQ_KEY},getModel:function(){return CONFIG.groqModel},prefix:"gsk_"},qwen:{url:"https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",getKey:function(){return CONFIG.qwenKey},getModel:function(){return CONFIG.qwenModel},prefix:"sk-"}};
+var ENDPOINTS={groq:{url:"https://openrouter.ai/api/v1/chat/completions",getKey:function(){return "REDACTED_OPENROUTER_3_2026-04"},getModel:function(){return "deepseek/deepseek-chat-v3-0324:free"},prefix:"sk-"},qwen:{url:"https://openrouter.ai/api/v1/chat/completions",getKey:function(){return "REDACTED_OPENROUTER_3_2026-04"},getModel:function(){return "google/gemma-3-27b-it:free"},prefix:"sk-"}};
 function ep(){return ENDPOINTS[CONFIG.provider]||ENDPOINTS.groq}
 function isReady(){return true;}
 function updateStatus(){var el=document.getElementById("statusBadge"),b=document.getElementById("modelBadge"),i=document.getElementById("modelInfo");if(!el)return;el.className="nav-status ok";el.textContent="✅ IA Conectada";b.textContent="DeepSeek";i.textContent="OpenRouter · Gratuito";}
@@ -1058,9 +1058,9 @@ var SCAN_PWD="gmail";
 var scanType="derma";
 var scanB64=null;
 var scanHist=JSON.parse(localStorage.getItem("scan_hist_v2")||"[]");
-var SCAN_GROQ_KEY_DEFAULT="";var EMBEDDED_GROQ_KEY=atob(["Z3NrX0dUVHFmVFhwQzV","IR3lNSFRrRzByV0dkeW","IzRllPSHNnVVRBOE5Za","lVWVDROOVd5ak1NeFQ="].join(""));
-var SCAN_GROQ_MODEL_DEFAULT="meta-llama/llama-4-scout-17b-16e-instruct";
-function getScanGroqKey(){return CONFIG.groqKey||SCAN_GROQ_KEY_DEFAULT||EMBEDDED_GROQ_KEY;}
+var SCAN_GROQ_KEY_DEFAULT="";var EMBEDDED_GROQ_KEY="REDACTED_OPENROUTER_3_2026-04";
+var SCAN_GROQ_MODEL_DEFAULT="google/gemma-3-27b-it:free";
+function getScanGroqKey(){return "REDACTED_OPENROUTER_3_2026-04";}
 function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 
 // Guardar/cargar key de referencia en Firestore
@@ -1076,8 +1076,8 @@ function loadGroqKeyFromFirestore(){
         }
     }).catch(function(e){console.log("No Firestore key found");});}catch(e){}
 }
-var SCAN_GROQ_KEY=getScanGroqKey();
-var SCAN_GROQ_MODEL=SCAN_GROQ_MODEL_DEFAULT;
+var SCAN_GROQ_KEY="REDACTED_OPENROUTER_3_2026-04";
+var SCAN_GROQ_MODEL="google/gemma-3-27b-it:free";
 var SCAN_PROMPTS={
 derma:"Eres un dermatólogo experto realizando una evaluación docente de una imagen clínica de piel.\n\nModelo de referencia: ConvNeXt-Base / Vision Transformers (ViT) preentrenados en ISIC 2019 (HuggingFace: LukeO/convnext-base-isic2019). Precisión: 85-90% diferenciando nevus, melanoma, carcinoma basocelular.\nDataset: ISIC Archive (International Skin Imaging Collaboration).\nFormato: PyTorch / ONNX.\n\nAnaliza siguiendo esta estructura:\n1. **Descripción de la lesión**: Morfología, color, bordes, distribución, simetría\n2. **Diagnóstico diferencial**: 3-5 diagnósticos más probables con probabilidad estimada (simula la salida de ConvNeXt-Base ISIC)\n3. **Hallazgos clave**: Elementos que apoyan cada diagnóstico\n4. **Signos de alarma**: Criterios ABCDE de melanoma (Asimetría, Bordes, Color, Diámetro, Evolución)\n5. **Clasificación ISIC**: Tipo de lesión según taxonomía ISIC (melanoma, nevus melanocítico, carcinoma basocelular, queratosis actínica, dermatofibroma, lesión vascular, queratosis seborreica)\n6. **Recomendación**: Siguiente paso clínico\n\nIMPORTANTE: Herramienta DOCENTE. El diagnóstico definitivo requiere valoración presencial.",
 torax:"Eres un radiólogo torácico subespecializado con experiencia en detección de nódulos pulmonares y lectura sistemática de radiografía de tórax.\n\nModelo de referencia: TorchXRayVision (librería estándar de la industria — GitHub: mlmed/torchxrayvision). Modelos DenseNet y ResNet preentrenados conjuntamente con CheXpert + MIMIC-CXR + NIH. Detecta hasta 18 patologías.\nDatasets: CheXpert (Stanford), MIMIC-CXR (MIT), NIH ChestX-ray14, LIDC-IDRI (Lung Nodule Analysis), LUNA16.\nEquivalente comercial: Lunit INSIGHT CXR, Siemens AI-Rad Companion.\nIntegración: pip install torchxrayvision — imagen en escala de grises — probabilidades por patología.\n\nINSTRUCCIONES CRÍTICAS:\n- Examina CADA zona del pulmón meticulosamente buscando opacidades focales, nódulos, masas o densidades anómalas.\n- Divide cada pulmón en 3 zonas (superior, media, inferior) y 2 regiones (central/periférica) = 12 zonas a examinar.\n- Presta especial atención a zonas donde los nódulos se ocultan: detrás del corazón, hilios, detrás de costillas, ápices, ángulos costofrénicos, región retrocardíaca.\n- Si detectas CUALQUIER opacidad redondeada o nodular, descríbela con máximo detalle.\n\nANÁLISIS SISTEMÁTICO:\n\n1. **CALIDAD TÉCNICA**: Proyección (PA/AP), rotación (apófisis espinosas centradas), grado de inspiración (>6 arcos costales anteriores), penetración adecuada.\n\n2. **BÚSQUEDA ACTIVA DE NÓDULOS Y MASAS** (SECCIÓN PRIORITARIA):\n   - Recorre cada una de las 12 zonas pulmonares.\n   - Para CADA nódulo u opacidad focal detectada, reporta:\n     a) LOCALIZACIÓN: Campo pulmonar (derecho/izquierdo), zona (superior/media/inferior), región (central/periférica/subpleural). Usa coordenadas relativas en la imagen.\n     b) TAMAÑO estimado en mm (comparar con estructuras conocidas: cuerpo vertebral ~25mm, costilla ~10mm grosor).\n     c) FORMA: Redondeada, ovalada, irregular, lobulada, espiculada.\n     d) DENSIDAD: Sólido, parcialmente sólido (vidrio deslustrado con componente sólido), vidrio deslustrado puro.\n     e) BORDES: Bien definidos, mal definidos, espiculados, lobulados, corona radiata.\n     f) CALCIFICACIÓN: Central, laminada, popcorn, difusa, excéntrica (las excéntricas son sospechosas).\n     g) CAVITACIÓN: Presente/ausente, grosor de pared (fina <4mm sugiere benigno, gruesa >15mm sospechosa).\n     h) SIGNO DE BRONCOGRAMA AÉREO.\n     i) RELACIÓN con estructuras: Cisuras, vasos, bronquios, pared torácica, mediastino.\n   - CLASIFICACIÓN del nódulo según tamaño:\n     • Micronódulo: <3mm\n     • Nódulo pequeño: 3-6mm\n     • Nódulo intermedio: 6-8mm\n     • Nódulo grande: 8-30mm\n     • Masa: >30mm\n   - RIESGO según Fleischner Society Guidelines 2017:\n     • <6mm en bajo riesgo: No seguimiento\n     • 6-8mm: TC control a 6-12 meses\n     • >8mm: TC, PET-TC o biopsia\n   - LUNG-RADS (si aplica): Categoría 1-4.\n\n3. **MEDIASTINO**: Silueta cardíaca (ICT normal <0.5), hilios (tamaño, densidad, adenopatías), tráquea (centrada/desviada), botón aórtico, ventana aortopulmonar, líneas mediastínicas.\n\n4. **CAMPOS PULMONARES**: Transparencia global, patrón intersticial vs alveolar, consolidaciones, atelectasias, signos de hiperinsuflación, marcas vasculares.\n\n5. **PLEURA**: Derrame (menisco, borramiento de senos), neumotórax (línea pleural visible, signo del surco profundo), engrosamiento pleural, placas pleurales.\n\n6. **ESTRUCTURAS ÓSEAS**: Lesiones líticas/blásticas en costillas, clavículas, húmeros, columna. Fracturas patológicas.\n\n7. **DIAFRAGMA Y ABDOMEN SUPERIOR**: Ángulos costofrénicos, aire subdiafragmático, cámara gástrica.\n\n8. **DISPOSITIVOS**: CVC, marcapasos, tubos endotraqueales, drenajes, suturas.\n\n9. **PROBABILIDADES CheXpert**: Estima probabilidad (0-100%) de las 14 patologías: Atelectasia, Cardiomegalia, Consolidación, Edema, Derrame, Enfisema, Fibrosis, Hernia, Infiltración, Masa, Nódulo, Engrosamiento pleural, Neumonía, Neumotórax. MARCA en negrita las >20%.\n\n10. **IMPRESIÓN DIAGNÓSTICA**: \n    - Hallazgo principal con nivel de sospecha (baja/intermedia/alta).\n    - Diagnóstico diferencial ordenado por probabilidad.\n    - Para nódulos: clasificación Brock Model / riesgo de malignidad estimado.\n\n11. **RECOMENDACIÓN SEGÚN HALLAZGOS**:\n    - Guías Fleischner Society para nódulos incidentales.\n    - Lung-RADS para screening.\n    - Necesidad de TC, PET-TC, broncoscopia, biopsia guiada.\n\n⚠️ RECUERDA: HERRAMIENTA DOCENTE. No sustituye diagnóstico médico profesional. Toda imagen sospechosa requiere confirmación con TC de alta resolución.",
@@ -1186,7 +1186,7 @@ async function scanAnalyze(){
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
     try{
-        var r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+getScanGroqKey()},body:JSON.stringify({model:SCAN_GROQ_MODEL,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})});
+        var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+getScanGroqKey(),"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},body:JSON.stringify({model:SCAN_GROQ_MODEL,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})});
         if(!r.ok){var ed=await r.json().catch(function(){return{}});throw new Error(ed.error?.message||"Error HTTP "+r.status);}
         var d=await r.json(),txt=d.choices?.[0]?.message?.content||"Sin respuesta";
         var fmt=txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
@@ -1413,9 +1413,9 @@ function nihSendToGroqVision(c,b64,el){
     var sysPrompt="Eres un radiólogo experto realizando una lectura docente de una radiografía de tórax real. Responde en español de forma estructurada.";
     var userPrompt="Analiza esta radiografía de tórax real de un paciente de "+c.age+" años ("+c.sex+").\n\n1. Hallazgos principales\n2. Diagnóstico más probable\n3. Diagnósticos diferenciales\n4. Recomendación\n\nIMPORTANTE: Solo uso DOCENTE.";
 
-    fetch("https://api.groq.com/openai/v1/chat/completions",{
+    fetch("https://openrouter.ai/api/v1/chat/completions",{
         method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer "+getScanGroqKey()},
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+getScanGroqKey(),"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"Area II Cartagena"},
         body:JSON.stringify({
             model:SCAN_GROQ_MODEL,
             messages:[{role:"system",content:sysPrompt},{role:"user",content:[{type:"image_url",image_url:{url:b64}},{type:"text",text:userPrompt}]}],
@@ -1432,9 +1432,9 @@ function nihSendToGroqVision(c,b64,el){
 function nihSendTextAnalysis(c,el){
     var prompt="Eres un radiólogo experto. Analiza esta radiografía de tórax de un paciente de "+c.age+" años ("+c.sex+").\n\nDa tu diagnóstico principal y describe los hallazgos radiológicos que observas.\nResponde en español de forma estructurada:\n1. Hallazgos principales\n2. Diagnóstico más probable\n3. Diagnósticos diferenciales\n4. Recomendación\n\nLos hallazgos de esta radiografía son: "+c.desc+"\n\nIMPORTANTE: Solo uso DOCENTE.";
 
-    fetch("https://api.groq.com/openai/v1/chat/completions",{
+    fetch("https://openrouter.ai/api/v1/chat/completions",{
         method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer "+getScanGroqKey()},
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+getScanGroqKey(),"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"Area II Cartagena"},
         body:JSON.stringify({
             model:SCAN_GROQ_MODEL,
             messages:[{role:"system",content:"Eres un radiólogo experto realizando una lectura docente de una radiografía de tórax."},{role:"user",content:prompt}],

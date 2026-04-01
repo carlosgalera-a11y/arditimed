@@ -3690,10 +3690,10 @@ async function infGenerar(){
     model=localStorage.getItem('qwenModel')||'qwen-turbo';
     apiUrl='https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions';
   }else{
-    key=localStorage.getItem('groqApiKey');
+    key='REDACTED_OPENROUTER_3_2026-04';
     if(!key)try{key=atob(['Z3NrX0dUVHFmVFhwQzV','IR3lNSFRrRzByV0dkeW','IzRllPSHNnVVRBOE5Za','lVWVDROOVd5ak1NeFQ='].join(''));}catch(e){}
-    model=localStorage.getItem('groqModel')||'qwen/qwen3-32b';
-    apiUrl='https://api.groq.com/openai/v1/chat/completions';
+    model='deepseek/deepseek-chat-v3-0324:free';
+    apiUrl='https://openrouter.ai/api/v1/chat/completions';
   }
   if(!key){alert('Configura una API key en la pestaña Config IA');return;}
 
@@ -4063,7 +4063,7 @@ var k=document.getElementById('secretKeyInput').value.trim();
 if(!k||!k.startsWith('gsk_')){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}
 document.getElementById('secretKeyStatus').innerHTML='<span style="color:#d97706">⏳ Probando...</span>';
 try{
-var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:'qwen/qwen3-32b',messages:[{role:'user',content:'Di: OK'}],max_tokens:10})});
+var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'},body:JSON.stringify({model:'qwen/qwen3-32b',messages:[{role:'user',content:'Di: OK'}],max_tokens:10})});
 if(r.ok)document.getElementById('secretKeyStatus').innerHTML='<span style="color:#059669">✅ ¡Conexión exitosa!</span>';
 else document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Error '+r.status+'</span>';
 }catch(e){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ '+e.message+'</span>';}

@@ -128,7 +128,7 @@ document.addEventListener('keydown',function(e){
 
 // ═══ FILEHUB CONFIG ═══
 var FH_GROQ_KEY=['Z3NrX0dU','VHFmVFhwQzV','IR3lNSFRr','RzByV0dkeW','IzRllPSHNnVVRB','OE5ZalVWVDROOVd5ak1NeFQ='].join('');FH_GROQ_KEY=atob(FH_GROQ_KEY);
-var FH_GROQ_MODEL='llama-3.3-70b-versatile';
+var FH_GROQ_MODEL='deepseek/deepseek-chat-v3-0324:free';
 var FH_BLOG_WP={url:'https://cartagenaeste.es',apiKey:'REDACTED_FH_WP_2026-04'};
 
 // ═══ NOTEBOOK IA ═══
@@ -208,7 +208,7 @@ async function fhSendMsg(){
     var sysPrompt='Eres un asistente de cuaderno digital inteligente integrado en FILEHUB. Ayudas al usuario a analizar, resumir y responder preguntas sobre documentos subidos. Responde SIEMPRE en español. Sé conciso pero completo. Usa markdown (negritas, listas). Si hay documentos, cita información relevante.'+filesCtx;
     var chatHist=fhMessages.slice(-10).map(function(m){return{role:m.role,content:m.content}});
     var apiMsgs=[{role:'system',content:sysPrompt}].concat(chatHist);
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+FH_GROQ_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:FH_GROQ_MODEL,messages:apiMsgs,max_tokens:4096,temperature:0.7})});
+    var res=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+FH_GROQ_KEY,'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Area II Cartagena'},body:JSON.stringify({model:FH_GROQ_MODEL,messages:apiMsgs,max_tokens:4096,temperature:0.7})});
     if(!res.ok)throw new Error('API error: '+res.status);
     var data=await res.json();
     var reply=data.choices[0]?.message?.content||'Sin respuesta';
@@ -301,7 +301,7 @@ function fhBlogRenderFiles(){
 async function fhBlogGeneratePost(text,imgUrls){
   var imgCtx='';
   if(imgUrls&&imgUrls.length>0)imgCtx='\n\nImagenes: '+imgUrls.map(function(u,i){return(i+1)+'. '+u}).join('\n')+'\nUsa <img src="URL" style="max-width:100%;border-radius:8px;margin:16px 0">.';
-  var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+FH_GROQ_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,temperature:0.7,messages:[
+  var res=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+FH_GROQ_KEY,'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Area II Cartagena'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,temperature:0.7,messages:[
     {role:'system',content:'Editor blog cartagenaeste.es. Responde SOLO JSON: {"title":"","content":"<p>HTML</p>","excerpt":"","tags":[],"category_suggestion":""}. Si hay documentos adjuntos, incluye al final del HTML una seccion con enlaces de descarga usando: <div style="background:#f0f9ff;padding:16px;border-radius:12px;margin-top:24px"><h3>📎 Documentos adjuntos</h3><ul><li><a href="URL" target="_blank">NOMBRE</a></li></ul></div>'},
     {role:'user',content:'Genera entrada completa. HTML limpio, tono local Cartagena.'+imgCtx+'\n\nContenido:\n'+text}
   ]})});
