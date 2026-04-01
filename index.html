@@ -3195,11 +3195,16 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
             </div>
         </div>
         
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
             <button onclick="showUploadForm()" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:20px;border:none;border-radius:12px;cursor:pointer;font-weight:600;font-size:.95rem;font-family:var(--font-body);text-align:left;">
                 <div style="font-size:1.8rem;margin-bottom:8px;">📤</div>
                 <div>Subir Archivos</div>
                 <div style="font-size:.8rem;opacity:.8;margin-top:4px;">PDF, DOCX, PPTX...</div>
+            </button>
+            <button onclick="showMobileQR()" style="background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;padding:20px;border:none;border-radius:12px;cursor:pointer;font-weight:600;font-size:.95rem;font-family:var(--font-body);text-align:left;">
+                <div style="font-size:1.8rem;margin-bottom:8px;">📱</div>
+                <div>Subir desde Móvil</div>
+                <div style="font-size:.8rem;opacity:.8;margin-top:4px;">Escanea QR y sube</div>
             </button>
             <button onclick="showCategoryForm()" style="background:linear-gradient(135deg,#238c62,#1a6b4a);color:#fff;padding:20px;border:none;border-radius:12px;cursor:pointer;font-weight:600;font-size:.95rem;font-family:var(--font-body);text-align:left;">
                 <div style="font-size:1.8rem;margin-bottom:8px;">➕</div>
@@ -3465,7 +3470,33 @@ function logoutAdmin(){
     }).catch(function(e){});
 }
 
-function showUploadForm(){document.getElementById("uploadForm").style.display="block";document.getElementById("categoryForm").style.display="none"}
+function showUploadForm(){document.getElementById("uploadForm").style.display="block";document.getElementById("categoryForm").style.display="none";var mqr=document.getElementById("mobileQRPanel");if(mqr)mqr.style.display="none";}
+
+function showMobileQR(){
+  document.getElementById("uploadForm").style.display="none";
+  document.getElementById("categoryForm").style.display="none";
+  var panel = document.getElementById("mobileQRPanel");
+  if(!panel){
+    panel = document.createElement("div");
+    panel.id = "mobileQRPanel";
+    panel.style.cssText = "background:var(--bg-card);border:2px solid var(--border);border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;";
+    panel.innerHTML = '<h3 style="font-family:var(--font-display);margin-bottom:4px;">📱 Subir desde el Móvil</h3>' +
+      '<p style="font-size:.82rem;color:var(--text-light);margin-bottom:16px;">Escanea este QR con tu móvil para abrir la página de subida</p>' +
+      '<div id="mobileQRImg" style="margin:0 auto 16px;"></div>' +
+      '<p style="font-size:.72rem;color:var(--text-light);margin-bottom:8px;">O copia este enlace:</p>' +
+      '<input id="mobileQRLink" readonly style="width:100%;max-width:400px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:.78rem;font-family:monospace;text-align:center;background:var(--bg-subtle);color:var(--text);" onclick="this.select();document.execCommand(\'copy\');"/>' +
+      '<p style="font-size:.72rem;color:var(--text-light);margin-top:12px;">⏱️ El enlace es válido mientras tengas la sesión abierta</p>' +
+      '<button onclick="this.parentElement.style.display=\'none\'" style="margin-top:12px;padding:6px 16px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--text-light);cursor:pointer;font-size:.8rem;">Cerrar</button>';
+    var uploadForm = document.getElementById("uploadForm");
+    uploadForm.parentElement.insertBefore(panel, uploadForm);
+  }
+  panel.style.display = "block";
+  var url = window.location.origin + window.location.pathname.replace("index.html","") + "upload-mobile.html";
+  document.getElementById("mobileQRLink").value = url;
+  // Generate QR using free API
+  var qrImg = document.getElementById("mobileQRImg");
+  qrImg.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '" alt="QR" style="width:200px;height:200px;border-radius:12px;border:4px solid #fff;box-shadow:0 4px 20px rgba(0,0,0,.15);" />';
+}
 function hideUploadForm(){document.getElementById("uploadForm").style.display="none"}
 function showCategoryForm(){document.getElementById("categoryForm").style.display="block";document.getElementById("uploadForm").style.display="none"}
 function hideCategoryForm(){document.getElementById("categoryForm").style.display="none"}

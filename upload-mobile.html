@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>📸 Subir desde Móvil — Área II Cartagena</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a1628;--surface:#1a2744;--border:#2d3f5e;--accent:#3b82f6;--green:#22c55e;--text:#f1f5f9;--text2:#94a3b8;--radius:14px}
+body{font-family:-apple-system,system-ui,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.header{text-align:center;padding:24px 16px 16px}
+.header h1{font-size:1.3rem;font-weight:800;margin-bottom:4px}
+.header p{font-size:.82rem;color:var(--text2)}
+.auth-panel{max-width:400px;margin:20px auto;padding:20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)}
+.auth-panel h2{font-size:1rem;margin-bottom:12px;text-align:center}
+.auth-panel input{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:.9rem;margin-bottom:8px}
+.auth-panel button{width:100%;padding:12px;border:none;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;margin-bottom:6px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-google{background:#fff;color:#333;border:1px solid #ddd!important;display:flex;align-items:center;justify-content:center;gap:8px}
+.divider{text-align:center;margin:12px 0;color:var(--text2);font-size:.78rem;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:35%;height:1px;background:var(--border)}
+.divider::before{left:0}
+.divider::after{right:0}
+
+.upload-area{max-width:500px;margin:16px auto;padding:16px}
+.drop-zone{border:3px dashed var(--border);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;transition:.3s;position:relative;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.drop-zone.dragover{border-color:var(--accent);background:rgba(59,130,246,.08)}
+.drop-zone .icon{font-size:3rem}
+.drop-zone .label{font-size:1rem;font-weight:600}
+.drop-zone .sub{font-size:.78rem;color:var(--text2)}
+.drop-zone input{display:none}
+
+.category-select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-size:.9rem;margin-bottom:12px;-webkit-appearance:none}
+
+.file-list{margin-top:16px}
+.file-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px}
+.file-item img{width:50px;height:50px;object-fit:cover;border-radius:8px}
+.file-item .info{flex:1;min-width:0}
+.file-item .name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-item .size{font-size:.72rem;color:var(--text2)}
+.file-item .status{font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:6px}
+.status-pending{background:#1e293b;color:#94a3b8}
+.status-uploading{background:#172554;color:#60a5fa}
+.status-done{background:#052e16;color:#4ade80}
+.status-error{background:#450a0a;color:#f87171}
+.file-item .remove{background:none;border:none;color:#ef4444;font-size:1.2rem;cursor:pointer;padding:4px}
+
+.upload-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:1rem;cursor:pointer;margin-top:12px;transition:.2s}
+.upload-btn:disabled{opacity:.4;cursor:not-allowed}
+.upload-btn:not(:disabled):active{transform:scale(.98)}
+
+.user-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--surface);border-radius:10px;margin:0 16px 12px;font-size:.78rem}
+.user-bar .email{color:var(--text2)}
+.user-bar button{background:none;border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:6px;font-size:.72rem;cursor:pointer}
+
+.progress-bar{height:4px;background:var(--bg);border-radius:2px;margin-top:6px;overflow:hidden}
+.progress-bar .fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;width:0}
+
+.success-msg{text-align:center;padding:20px;margin:16px;background:#052e16;border:1px solid #16a34a;border-radius:var(--radius);display:none}
+.success-msg .icon{font-size:2.5rem;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📸 Subir archivos desde el móvil</h1>
+<p>Área II Cartagena · Sube imágenes y documentos directamente</p>
+</div>
+
+<!-- Auth panel -->
+<div id="authPanel" class="auth-panel">
+<h2>🔐 Inicia sesión</h2>
+<input id="emailInput" type="email" placeholder="Tu email" />
+<input id="passInput" type="password" placeholder="Contraseña" />
+<button class="btn-primary" onclick="signIn()">Entrar</button>
+<div class="divider">o bien</div>
+<button class="btn-google" onclick="signInGoogle()">
+<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+Continuar con Google
+</button>
+<p id="authError" style="color:#f87171;font-size:.78rem;margin-top:8px;display:none"></p>
+</div>
+
+<!-- Upload area (hidden until auth) -->
+<div id="uploadArea" style="display:none">
+<div class="user-bar">
+<span>👤 <span class="email" id="userEmail"></span></span>
+<button onclick="signOut()">Cerrar sesión</button>
+</div>
+
+<div class="upload-area">
+<select id="categorySelect" class="category-select">
+<option value="">-- Categoría --</option>
+<option value="Urgencias Hospitalarias">🏥 Urgencias Hospitalarias</option>
+<option value="Cardiología">❤️ Cardiología</option>
+<option value="Dermatología">🩹 Dermatología</option>
+<option value="Digestivo">🍽️ Digestivo</option>
+<option value="Endocrinología">🧬 Endocrinología</option>
+<option value="Geriatría">👴 Geriatría</option>
+<option value="Ginecología">🤰 Ginecología</option>
+<option value="Neurología">🧠 Neurología</option>
+<option value="Neumología">💨 Neumología</option>
+<option value="Pediatría">👶 Pediatría</option>
+<option value="Traumatología">🦴 Traumatología</option>
+<option value="Urología">🫘 Urología</option>
+<option value="ORL">👂 ORL</option>
+<option value="Oftalmología">👁️ Oftalmología</option>
+<option value="Psiquiatría">🧠 Psiquiatría</option>
+<option value="Hematología">🩸 Hematología</option>
+<option value="Nefrología">💧 Nefrología</option>
+<option value="Reumatología">🦿 Reumatología</option>
+<option value="Urgencias">🚨 Urgencias</option>
+<option value="Infecciosas">🦠 Infecciosas</option>
+<option value="Alergología">🤧 Alergología</option>
+<option value="Cirugía Menor">🩹 Cirugía Menor</option>
+<option value="Paliativos">🕊️ Paliativos</option>
+<option value="Protocolos Médicos">📋 Protocolos Médicos</option>
+</select>
+
+<div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+<span class="icon">📸</span>
+<div class="label">Toca aquí para elegir archivos</div>
+<div class="sub">o arrastra imágenes / PDFs aquí</div>
+<input type="file" id="fileInput" multiple accept="image/*,.pdf,.docx,.xlsx,.pptx,.txt" capture="environment">
+</div>
+
+<div class="file-list" id="fileList"></div>
+
+<button class="upload-btn" id="uploadBtn" disabled onclick="uploadAll()">
+📤 Subir archivos
+</button>
+
+<div class="success-msg" id="successMsg">
+<div class="icon">✅</div>
+<p style="font-weight:700;font-size:1rem;margin-bottom:4px">¡Archivos subidos!</p>
+<p style="font-size:.82rem;color:var(--text2)">Ya están disponibles en la webapp</p>
+<button onclick="resetUpload()" style="margin-top:12px;padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer">Subir más</button>
+</div>
+</div>
+</div>
+
+<script>
+// Firebase config (same as main app)
+firebase.initializeApp({
+  apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
+  authDomain:"docenciacartagenaeste.firebaseapp.com",
+  projectId:"docenciacartagenaeste",
+  storageBucket:"docenciacartagenaeste.firebasestorage.app",
+  messagingSenderId:"1056320755107",
+  appId:"1:1056320755107:web:126637bf63c13bbb297616"
+});
+</script>
+<script>
+(function(){
+  var auth = firebase.auth();
+  var storage = firebase.storage();
+  var pendingFiles = [];
+
+  // Auth state
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      document.getElementById('authPanel').style.display = 'none';
+      document.getElementById('uploadArea').style.display = 'block';
+      document.getElementById('userEmail').textContent = user.email;
+    } else {
+      document.getElementById('authPanel').style.display = 'block';
+      document.getElementById('uploadArea').style.display = 'none';
+    }
+  });
+
+  // Sign in
+  window.signIn = function() {
+    var email = document.getElementById('emailInput').value.trim();
+    var pass = document.getElementById('passInput').value;
+    if (!email || !pass) return;
+    auth.signInWithEmailAndPassword(email, pass).catch(function(e) {
+      var err = document.getElementById('authError');
+      err.style.display = 'block';
+      err.textContent = e.message;
+    });
+  };
+
+  window.signInGoogle = function() {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e) {
+      var err = document.getElementById('authError');
+      err.style.display = 'block';
+      err.textContent = e.message;
+    });
+  };
+
+  window.signOut = function() {
+    auth.signOut();
+  };
+
+  // Drop zone
+  var dropZone = document.getElementById('dropZone');
+  var fileInput = document.getElementById('fileInput');
+
+  ['dragenter','dragover'].forEach(function(e) {
+    dropZone.addEventListener(e, function(ev) { ev.preventDefault(); dropZone.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(function(e) {
+    dropZone.addEventListener(e, function(ev) { ev.preventDefault(); dropZone.classList.remove('dragover'); });
+  });
+  dropZone.addEventListener('drop', function(ev) {
+    if (ev.dataTransfer.files.length) addFiles(ev.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', function() {
+    if (this.files.length) addFiles(this.files);
+    this.value = '';
+  });
+
+  function addFiles(fileList) {
+    for (var i = 0; i < fileList.length; i++) {
+      var f = fileList[i];
+      if (f.size > 50 * 1024 * 1024) {
+        alert(f.name + ' es demasiado grande (máx 50MB)');
+        continue;
+      }
+      pendingFiles.push({ file: f, status: 'pending' });
+    }
+    renderFileList();
+    document.getElementById('uploadBtn').disabled = pendingFiles.length === 0;
+  }
+
+  function renderFileList() {
+    var list = document.getElementById('fileList');
+    list.innerHTML = '';
+    pendingFiles.forEach(function(item, idx) {
+      var div = document.createElement('div');
+      div.className = 'file-item';
+
+      // Thumbnail
+      var thumb = document.createElement('div');
+      if (item.file.type.startsWith('image/')) {
+        var img = document.createElement('img');
+        img.src = URL.createObjectURL(item.file);
+        thumb.appendChild(img);
+      } else {
+        thumb.innerHTML = '<div style="width:50px;height:50px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📄</div>';
+      }
+      div.appendChild(thumb);
+
+      // Info
+      var info = document.createElement('div');
+      info.className = 'info';
+      info.innerHTML = '<div class="name">' + item.file.name + '</div>' +
+        '<div class="size">' + (item.file.size / 1024 / 1024).toFixed(1) + ' MB</div>';
+      if (item.progressBar) {
+        info.appendChild(item.progressBar);
+      }
+      div.appendChild(info);
+
+      // Status
+      var status = document.createElement('span');
+      status.className = 'status status-' + item.status;
+      status.textContent = item.status === 'pending' ? 'Listo' :
+        item.status === 'uploading' ? 'Subiendo...' :
+        item.status === 'done' ? '✓' : '✗';
+      status.id = 'status-' + idx;
+      div.appendChild(status);
+
+      // Remove button (only if pending)
+      if (item.status === 'pending') {
+        var rm = document.createElement('button');
+        rm.className = 'remove';
+        rm.innerHTML = '✕';
+        rm.onclick = (function(i) { return function() { pendingFiles.splice(i, 1); renderFileList(); document.getElementById('uploadBtn').disabled = pendingFiles.length === 0; }; })(idx);
+        div.appendChild(rm);
+      }
+
+      list.appendChild(div);
+    });
+  }
+
+  window.uploadAll = async function() {
+    var cat = document.getElementById('categorySelect').value;
+    if (!cat) { alert('Selecciona una categoría'); return; }
+    if (pendingFiles.length === 0) return;
+
+    var btn = document.getElementById('uploadBtn');
+    btn.disabled = true;
+    btn.textContent = 'Subiendo...';
+
+    var allDone = true;
+    for (var i = 0; i < pendingFiles.length; i++) {
+      var item = pendingFiles[i];
+      if (item.status === 'done') continue;
+      item.status = 'uploading';
+      renderFileList();
+
+      try {
+        var timestamp = Date.now();
+        var path = cat + '/' + timestamp + '_' + item.file.name;
+        var ref = storage.ref(path);
+        await ref.put(item.file);
+        item.status = 'done';
+      } catch (e) {
+        item.status = 'error';
+        allDone = false;
+        console.error('Upload error:', e);
+      }
+      renderFileList();
+    }
+
+    if (allDone) {
+      document.getElementById('successMsg').style.display = 'block';
+      document.getElementById('dropZone').style.display = 'none';
+      document.getElementById('fileList').style.display = 'none';
+      btn.style.display = 'none';
+    } else {
+      btn.textContent = '📤 Reintentar fallidos';
+      btn.disabled = false;
+    }
+  };
+
+  window.resetUpload = function() {
+    pendingFiles = [];
+    renderFileList();
+    document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('dropZone').style.display = 'flex';
+    document.getElementById('fileList').style.display = 'block';
+    var btn = document.getElementById('uploadBtn');
+    btn.style.display = 'block';
+    btn.disabled = true;
+    btn.textContent = '📤 Subir archivos';
+  };
+})();
+</script>
+</body>
+</html>
