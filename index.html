@@ -4166,13 +4166,14 @@ function megaDispatch(question) {
 
     var msgs = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:"user",content:question}];
 
-    // OpenRouter with free model fallback chain
-    megaCallOpenRouter(sp, msgs, 0, btn);
+    // Pollinations first (no rate limit), then OpenRouter fallback
+    megaCallPollinations(sp, msgs, btn, true);
 }
 
 // ═══ OPENROUTER — 3-tier model chain ═══
-// Nivel 1: Modelos :free (50/día sin créditos, 1000/día con $10)
-// Nivel 2: DeepSeek directo (sin :free) — ~$0.27/M tokens, prácticamente gratis
+// Nivel 1: Pollinations (sin límite, primer intento)
+// Nivel 2: Modelos :free (50/día sin créditos, 1000/día con $10)
+// Nivel 3: DeepSeek directo (sin :free) — ~$0.27/M tokens
 // Nivel 3: Pollinations (último recurso, sin key)
 var MEGA_OR_KEY = "REDACTED_OPENROUTER_3_2026-04";
 var MEGA_OR_MODELS = [
@@ -4246,8 +4247,8 @@ function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
 }
 
 // ═══ POLLINATIONS — Last resort fallback (no key needed) ═══
-function megaCallPollinations(sp, msgs, btn) {
-    if (btn) btn.textContent = "Reintentando...";
+function megaCallPollinations(sp, msgs, btn, tryORonFail) {
+    if (btn) btn.textContent = "Pensando...";
     var allMsgs = [{role:"system", content:sp}].concat(msgs);
     fetch("https://text.pollinations.ai/openai", {
         method: "POST",
@@ -4270,8 +4271,13 @@ function megaCallPollinations(sp, msgs, btn) {
         megaOnAnswer(ans, btn);
     })
     .catch(function(e) {
-        megaAppendMsg("system","⚠️ No se pudo conectar con la IA. Posibles causas:\n• Conexión a internet inestable\n• Servidores de IA temporalmente saturados\n\n<button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
-        megaReset(btn);
+        if (tryORonFail) {
+            // Pollinations failed, try OpenRouter
+            megaCallOpenRouter(sp, msgs, 0, btn);
+        } else {
+            megaAppendMsg("system","⚠️ No se pudo conectar con la IA. Posibles causas:\n• Conexión a internet inestable\n• Servidores de IA temporalmente saturados\n\n<button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
+            megaReset(btn);
+        }
     });
 }
 

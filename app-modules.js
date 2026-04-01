@@ -34,11 +34,19 @@ var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:
 
 async function enfCallOR(prompt,sysPrompt,idx){
   idx=idx||0;
-  if(idx>=ENF_OR_MODELS.length){
-    try{var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:[{role:'system',content:sysPrompt},{role:'user',content:prompt}],seed:Math.floor(Math.random()*9999)})});var dp=await rp.json();return(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:null;}catch(e){return null;}
+  var msgs=[{role:'system',content:sysPrompt},{role:'user',content:prompt}];
+  // Try Pollinations first (no rate limit)
+  if(idx===0){
+    try{
+      var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:msgs,seed:Math.floor(Math.random()*9999),private:true})});
+      if(rp.ok){var dp=await rp.json();var pa=(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:null;if(pa)return pa;}
+    }catch(e){}
   }
+  // Then try OpenRouter models
+  var orIdx=(idx===0)?0:idx-1;
+  if(orIdx>=ENF_OR_MODELS.length) return null;
   try{
-    var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+enfGetKey(),'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Enfermeria Area II Cartagena'},body:JSON.stringify({model:ENF_OR_MODELS[idx],messages:[{role:'system',content:sysPrompt},{role:'user',content:prompt}],max_tokens:2000,temperature:0.3})});
+    var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+enfGetKey(),'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Enfermeria Area II Cartagena'},body:JSON.stringify({model:ENF_OR_MODELS[orIdx],messages:msgs,max_tokens:2000,temperature:0.3})});
     if(r.status===429||r.status===502||r.status===503||r.status===402)return enfCallOR(prompt,sysPrompt,idx+1);
     if(!r.ok)return enfCallOR(prompt,sysPrompt,idx+1);
     var d=await r.json();var ans=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
@@ -830,18 +838,24 @@ async function trIASend(){
 
     // Try OpenRouter models in sequence
     async function trIATryModel(idx) {
-        if (idx >= trIAModels.length) {
-            // Last resort: Pollinations
+        // Try Pollinations FIRST (no rate limit)
+        if (idx === 0) {
             try {
                 var rp = await fetch('https://text.pollinations.ai/openai', {
                     method:'POST',
                     headers:{'Content-Type':'application/json'},
                     body:JSON.stringify({model:'openai-large',messages:messages,seed:Math.floor(Math.random()*9999),private:true})
                 });
-                var dp = await rp.json();
-                return (dp.choices && dp.choices[0] && dp.choices[0].message) ? dp.choices[0].message.content : null;
-            } catch(e) { return null; }
+                if (rp.ok) {
+                    var dp = await rp.json();
+                    var pa = (dp.choices && dp.choices[0] && dp.choices[0].message) ? dp.choices[0].message.content : null;
+                    if (pa) return pa;
+                }
+            } catch(e) { /* fall through to OpenRouter */ }
         }
+        // Then OpenRouter models
+        var orIdx = (idx === 0) ? 0 : idx - 1;
+        if (orIdx >= trIAModels.length) return null;
         try {
             var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method:'POST',
@@ -851,9 +865,9 @@ async function trIASend(){
                     'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/',
                     'X-Title':'Autotriaje Area II Cartagena'
                 },
-                body:JSON.stringify({model:trIAModels[idx],messages:messages,max_tokens:500,temperature:0.3})
+                body:JSON.stringify({model:trIAModels[orIdx],messages:messages,max_tokens:500,temperature:0.3})
             });
-            if (r.status === 429 || r.status === 502 || r.status === 503) return trIATryModel(idx+1);
+            if (r.status === 429 || r.status === 502 || r.status === 503 || r.status === 402) return trIATryModel(idx+1);
             if (!r.ok) return trIATryModel(idx+1);
             var d = await r.json();
             var ans = (d.choices && d.choices[0] && d.choices[0].message) ? d.choices[0].message.content : null;

@@ -618,30 +618,53 @@ function cambiarProvider(){var v=document.getElementById("cfgProvider").value;do
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 async function llamarIA(up,sp){
   var OR_KEY='REDACTED_OPENROUTER_3_2026-04';
-  var OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','meta-llama/llama-4-maverick:free','deepseek/deepseek-chat-v3-0324'];
-  async function tryOR(idx){
-    if(idx>=OR_MODELS.length){
-      // Last resort: Pollinations
-      try{
-        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},15000);
-        var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:[{role:'system',content:sp||'Eres un asistente médico. Responde en español.'},{role:'user',content:up}],seed:Math.floor(Math.random()*9999)}),signal:ctrl.signal});
-        var dp=await rp.json();return(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:'Sin respuesta';
-      }catch(e){return'⚠️ No se pudo conectar con la IA. Comprueba tu conexión e inténtalo de nuevo.';}
-    }
+  // Strategy: Pollinations first (no limit), then OpenRouter models as fallback
+  var providers=[
+    {type:'poll'},
+    {type:'or',model:'deepseek/deepseek-chat-v3-0324:free'},
+    {type:'or',model:'google/gemma-3-27b-it:free'},
+    {type:'or',model:'meta-llama/llama-4-maverick:free'},
+    {type:'or',model:'deepseek/deepseek-chat-v3-0324'}
+  ];
+  var sysMsg=sp||'Eres un asistente médico. Responde en español.';
+  var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
+
+  for(var i=0;i<providers.length;i++){
     try{
-      var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},12000);
-      var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Profesionales Area II'},body:JSON.stringify({model:OR_MODELS[idx],messages:[{role:'system',content:sp||'Eres un asistente médico. Responde en español.'},{role:'user',content:up}],max_tokens:2000,temperature:0.3}),signal:ctrl.signal});
-      if(r.status===429||r.status===502||r.status===503||r.status===402)return tryOR(idx+1);
-      if(!r.ok)return tryOR(idx+1);
-      var d=await r.json();var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
-      if(!c)return tryOR(idx+1);
-      c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim()||'Sin respuesta';
+      var p=providers[i];
+      var ctrl=new AbortController();
+      var tid=setTimeout(function(){ctrl.abort();},p.type==='poll'?18000:12000);
+      var r;
+
+      if(p.type==='poll'){
+        r=await fetch('https://text.pollinations.ai/openai',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({model:'openai-large',messages:msgs,seed:Math.floor(Math.random()*9999),private:true}),
+          signal:ctrl.signal
+        });
+      } else {
+        r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,
+            'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Profesionales Area II'},
+          body:JSON.stringify({model:p.model,messages:msgs,max_tokens:2000,temperature:0.3}),
+          signal:ctrl.signal
+        });
+      }
+      clearTimeout(tid);
+
+      if(r.status===429||r.status===502||r.status===503||r.status===402) continue;
+      if(!r.ok) continue;
+      var d=await r.json();
+      var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
+      if(!c) continue;
+      c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+      if(!c) continue;
+      try{var hist=JSON.parse(localStorage.getItem('aiHistory')||'[]');hist.push({question:up.substring(0,200),answer:c.substring(0,300),section:currentCategory||'general',timestamp:Date.now()});if(hist.length>200)hist=hist.slice(-200);localStorage.setItem('aiHistory',JSON.stringify(hist));}catch(he){}
       return c;
-    }catch(e){return tryOR(idx+1);}
+    }catch(e){continue;}
   }
-  var result=await tryOR(0);
-  try{var hist=JSON.parse(localStorage.getItem('aiHistory')||'[]');hist.push({question:up.substring(0,200),answer:result.substring(0,300),section:currentCategory||'general',timestamp:Date.now()});if(hist.length>200)hist=hist.slice(-200);localStorage.setItem('aiHistory',JSON.stringify(hist));}catch(he){}
-  return result;
+  return '⚠️ No se pudo conectar con la IA. Comprueba tu conexión a internet e inténtalo de nuevo.';
 }
 async function hacerPregunta(){var input=document.getElementById("preguntaInput"),q=input.value.trim();if(!q||isProcessing)return;isProcessing=true;document.getElementById("btnPreguntar").disabled=true;if(!preguntas[currentCategory])preguntas[currentCategory]=[];var idx=preguntas[currentCategory].length;preguntas[currentCategory].push({pregunta:q,respuesta:"⏳ Consultando...",fecha:new Date().toLocaleString("es-ES")});input.value="";actualizarUI();var docs=documents[currentCategory]||[];var dc=docs.map(function(d){return"- "+d.name}).join("\n");var sys="Eres un asistente médico especializado en "+currentCategory+". Responde en español."+(dc?"\nDocs:\n"+dc:"");var r=await llamarIA(q,sys);preguntas[currentCategory][idx].respuesta=r;guardarDatos();actualizarUI();isProcessing=false;document.getElementById("btnPreguntar").disabled=false;}
 var studioPrompts={resumen:{title:"📋 Resumen — ",prompt:"Resumen ejecutivo sobre {cat}: patologías, diagnósticos, tratamientos."},faq:{title:"❓ FAQ — ",prompt:"8 preguntas frecuentes sobre {cat} con respuestas."},guia:{title:"📖 Guía — ",prompt:"Guía de estudio {cat}: conceptos, clasificaciones, fármacos, dosis."},diagnostico:{title:"🩺 Dx — ",prompt:"Diagnóstico diferencial de {cat}: síntomas, pruebas, red flags."},farmacologia:{title:"💊 Farma — ",prompt:"Farmacología {cat}: grupos, mecanismo, dosis, efectos adversos."},emergencia:{title:"🚨 Urgencia — ",prompt:"Protocolos emergencia {cat}: reconocimiento, tratamiento, dosis."}};
