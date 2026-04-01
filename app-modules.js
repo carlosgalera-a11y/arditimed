@@ -781,6 +781,15 @@ async function trIASend(){
             if(hist.length>200) hist=hist.slice(-200);
             localStorage.setItem('aiHistory',JSON.stringify(hist));
         }catch(e){}
+
+        // Detect triage level in the response and offer QR generation
+        var nivelMatch = answer.match(/NIVEL\s*(\d)/i);
+        if (nivelMatch) {
+            var nivel = parseInt(nivelMatch[1]);
+            if (nivel >= 1 && nivel <= 5) {
+                trIAShowQRButton(nivel, answer);
+            }
+        }
     }catch(err){
         var t2=document.getElementById('trIATyping');if(t2)t2.remove();
         trIAAddMsg('bot','❌ Error de conexión: '+err.message+'\n\nPuedes intentar de nuevo o usar el triaje clásico.');
@@ -827,3 +836,160 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 });
 // ══════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════
+// TRIAJE QR — Genera ficha en Firestore + QR para enfermería
+// ══════════════════════════════════════════════════════
+
+function trIAShowQRButton(nivel, recomendacion) {
+    var chat = document.getElementById('trIAChat');
+    if (!chat) return;
+
+    // Remove any existing QR button
+    var existing = document.getElementById('trQRButtonBlock');
+    if (existing) existing.remove();
+
+    var NIVEL_COLORS = {
+        1: { bg: '#dc2626', label: 'EMERGENCIA' },
+        2: { bg: '#ea580c', label: 'URGENCIA ALTA' },
+        3: { bg: '#ca8a04', label: 'URGENCIA MEDIA' },
+        4: { bg: '#16a34a', label: 'PREFERENTE' },
+        5: { bg: '#2563eb', label: 'NO URGENTE' }
+    };
+    var cfg = NIVEL_COLORS[nivel] || NIVEL_COLORS[3];
+
+    var block = document.createElement('div');
+    block.id = 'trQRButtonBlock';
+    block.style.cssText = 'margin:12px 0;padding:16px;background:linear-gradient(135deg,' + cfg.bg + '11,' + cfg.bg + '22);border:2px solid ' + cfg.bg + '44;border-radius:14px;text-align:center;';
+    block.innerHTML =
+        '<p style="font-size:.9rem;font-weight:700;color:' + cfg.bg + ';margin-bottom:8px;">🏥 Triaje completado — Nivel ' + nivel + ' (' + cfg.label + ')</p>' +
+        '<p style="font-size:.82rem;color:#555;margin-bottom:12px;">Genera un QR para que enfermería lea tu triaje al llegar al hospital</p>' +
+        '<button onclick="trIAGenerateQR(' + nivel + ')" id="trQRGenBtn" style="padding:12px 24px;background:' + cfg.bg + ';color:#fff;border:none;border-radius:10px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;">📱 Generar QR para el hospital</button>' +
+        '<div id="trQRExtraFields" style="display:none;margin-top:12px;text-align:left;">' +
+            '<p style="font-size:.82rem;color:#555;margin-bottom:8px;font-weight:600;">Información adicional (opcional):</p>' +
+            '<input id="trQRAlergias" placeholder="Alergias conocidas" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;font-size:.85rem;" />' +
+            '<input id="trQRMedicacion" placeholder="Medicación habitual" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;font-size:.85rem;" />' +
+            '<input id="trQRConstantes" placeholder="Constantes: TA, FC, Tª, SatO2 (si las tienes)" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;font-size:.85rem;" />' +
+            '<button onclick="trIASaveAndShowQR(' + nivel + ')" style="width:100%;padding:12px;background:' + cfg.bg + ';color:#fff;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:.95rem;">✅ Generar QR ahora</button>' +
+        '</div>' +
+        '<div id="trQRResult" style="display:none;margin-top:16px;"></div>';
+
+    chat.appendChild(block);
+    chat.scrollTop = chat.scrollHeight;
+
+    // Store recommendation for later
+    window._trLastRecomendacion = recomendacion;
+}
+
+function trIAGenerateQR(nivel) {
+    // Show extra fields
+    document.getElementById('trQRExtraFields').style.display = 'block';
+    document.getElementById('trQRGenBtn').style.display = 'none';
+}
+
+async function trIASaveAndShowQR(nivel) {
+    var btn = event.target;
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    // Generate 6-digit verification code
+    var verifyCode = String(Math.floor(100000 + Math.random() * 900000));
+
+    // Extract motivo from first user message
+    var motivo = '';
+    var sintomas = '';
+    for (var i = 0; i < trIAHistory.length; i++) {
+        if (trIAHistory[i].role === 'user') {
+            if (!motivo) motivo = trIAHistory[i].content;
+            sintomas += trIAHistory[i].content + '\n';
+        }
+    }
+
+    // Build triage card data
+    var fichaData = {
+        nivel: nivel,
+        verifyCode: verifyCode,
+        motivo: motivo.substring(0, 500),
+        sintomas: sintomas.trim().substring(0, 2000),
+        recomendacion: (window._trLastRecomendacion || '').substring(0, 2000),
+        alergias: (document.getElementById('trQRAlergias').value || '').trim(),
+        medicacion: (document.getElementById('trQRMedicacion').value || '').trim(),
+        constantes: (document.getElementById('trQRConstantes').value || '').trim(),
+        conversacion: trIAHistory.slice(-12).map(function(m) {
+            return { role: m.role, content: m.content.substring(0, 500) };
+        }),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+    };
+
+    try {
+        // Save to Firestore
+        var docRef = await db.collection('triajes').add(fichaData);
+        var fichaId = docRef.id;
+
+        // Build URL for the QR
+        var baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '');
+        var fichaUrl = baseUrl + 'triaje-ficha.html?id=' + fichaId;
+
+        // Show QR and verification code
+        var result = document.getElementById('trQRResult');
+        result.style.display = 'block';
+        document.getElementById('trQRExtraFields').style.display = 'none';
+
+        var NIVEL_ICONS = { 1: '🔴', 2: '🟠', 3: '🟡', 4: '🟢', 5: '🔵' };
+
+        result.innerHTML =
+            '<div style="background:#fff;border-radius:14px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,.1);">' +
+                '<p style="font-size:1rem;font-weight:800;text-align:center;margin-bottom:4px;">' + (NIVEL_ICONS[nivel] || '') + ' QR de Triaje — Nivel ' + nivel + '</p>' +
+                '<p style="font-size:.78rem;color:#888;text-align:center;margin-bottom:14px;">Muestra este QR al llegar al hospital</p>' +
+                '<div style="text-align:center;margin-bottom:14px;">' +
+                    '<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(fichaUrl) + '" alt="QR Triaje" style="width:220px;height:220px;border-radius:12px;border:3px solid #e0e0e0;" />' +
+                '</div>' +
+                '<div style="text-align:center;margin-bottom:14px;">' +
+                    '<p style="font-size:.78rem;color:#888;margin-bottom:4px;">Código de verificación:</p>' +
+                    '<div style="font-family:monospace;font-size:2rem;letter-spacing:.3em;font-weight:900;color:#0d47a1;padding:10px;background:#eff6ff;border-radius:10px;border:2px dashed #93c5fd;">' + verifyCode + '</div>' +
+                    '<p style="font-size:.72rem;color:#888;margin-top:4px;">Enfermería le pedirá este código al escanear el QR</p>' +
+                '</div>' +
+                '<div style="display:flex;gap:8px;">' +
+                    '<button onclick="trIAPrintQR()" style="flex:1;padding:10px;background:#0d47a1;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;">🖨️ Imprimir</button>' +
+                    '<button onclick="trIAShareQR(\'' + fichaUrl + '\')" style="flex:1;padding:10px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;">📤 Compartir</button>' +
+                '</div>' +
+                '<p style="font-size:.72rem;color:#888;text-align:center;margin-top:10px;">⏱️ Válido 24 horas · 🔒 Solo accesible para profesionales</p>' +
+            '</div>';
+
+        // Also add a message to the chat
+        trIAAddMsg('bot', '✅ <strong>QR generado.</strong> Muéstralo al personal de enfermería cuando llegues al hospital.\n\n🔑 Tu código de verificación es: <strong>' + verifyCode + '</strong>\n\n⏱️ El QR es válido durante 24 horas.');
+
+    } catch(e) {
+        btn.disabled = false;
+        btn.textContent = '✅ Generar QR ahora';
+        alert('Error al guardar: ' + e.message);
+        console.error(e);
+    }
+}
+
+function trIAPrintQR() {
+    var result = document.getElementById('trQRResult');
+    if (!result) return;
+    var w = window.open('', '_blank');
+    w.document.write('<html><head><title>QR Triaje</title><style>body{font-family:system-ui,sans-serif;padding:40px;text-align:center}img{margin:20px auto}</style></head><body>');
+    w.document.write(result.innerHTML);
+    w.document.write('<p style="font-size:10pt;color:#888;margin-top:20px;">Área II Cartagena · Centro de Salud Virgen de la Caridad · Autotriaje</p>');
+    w.document.write('</body></html>');
+    w.document.close();
+    setTimeout(function() { w.print(); }, 500);
+}
+
+function trIAShareQR(url) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Mi ficha de triaje — Área II Cartagena',
+            text: 'Ficha de autotriaje para urgencias',
+            url: url
+        });
+    } else {
+        navigator.clipboard.writeText(url).then(function() {
+            alert('Enlace copiado al portapapeles');
+        });
+    }
+}

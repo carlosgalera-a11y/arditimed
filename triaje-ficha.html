@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de Triaje — Área II Cartagena</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,system-ui,'Segoe UI',sans-serif;background:#f0f2f5;min-height:100vh}
+.auth-wall{max-width:400px;margin:60px auto;padding:24px;text-align:center;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.auth-wall h2{margin-bottom:12px}
+.auth-wall input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:.9rem}
+.auth-wall button{width:100%;padding:12px;border:none;border-radius:10px;font-weight:700;cursor:pointer;margin-bottom:6px;font-size:.9rem}
+.btn-blue{background:#0d47a1;color:#fff}
+.btn-google{background:#fff;color:#333;border:1px solid #ddd!important;display:flex;align-items:center;justify-content:center;gap:8px}
+
+.ficha{max-width:600px;margin:20px auto;padding:0 16px}
+.ficha-header{padding:20px;border-radius:16px 16px 0 0;color:#fff;text-align:center}
+.ficha-header h1{font-size:1.4rem;margin-bottom:4px}
+.ficha-header .nivel{font-size:2.5rem;font-weight:900;margin:8px 0}
+.ficha-header .nivel-text{font-size:1.1rem;font-weight:700}
+
+.ficha-body{background:#fff;border-radius:0 0 16px 16px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.ficha-section{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #f0f0f0}
+.ficha-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.ficha-section h3{font-size:.82rem;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.ficha-section .value{font-size:.95rem;line-height:1.7;color:#1a1a2e}
+.ficha-section .value strong{color:#0d47a1}
+
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700}
+.badge-red{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+.badge-orange{background:#fff7ed;color:#ea580c;border:1px solid #fdba74}
+.badge-yellow{background:#fefce8;color:#a16207;border:1px solid #fde047}
+.badge-green{background:#f0fdf4;color:#16a34a;border:1px solid #86efac}
+.badge-blue{background:#eff6ff;color:#2563eb;border:1px solid #93c5fd}
+
+.meta{display:flex;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#888}
+.meta span{display:flex;align-items:center;gap:4px}
+
+.verify-code{font-family:'Courier New',monospace;font-size:1.8rem;letter-spacing:.3em;font-weight:900;color:#0d47a1;text-align:center;padding:12px;background:#eff6ff;border-radius:12px;border:2px dashed #93c5fd}
+
+.expired{text-align:center;padding:40px;background:#fff;border-radius:16px;max-width:400px;margin:60px auto}
+.expired .icon{font-size:3rem;margin-bottom:12px}
+
+.loading{text-align:center;padding:60px;font-size:1rem;color:#888}
+
+.conversation{max-height:300px;overflow-y:auto;background:#f8fafc;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.6}
+.conv-msg{margin-bottom:8px;padding:8px 12px;border-radius:10px}
+.conv-user{background:#e3f2fd;margin-left:20%}
+.conv-bot{background:#f0f0f0;margin-right:20%}
+
+@media print{
+  body{background:#fff}
+  .ficha{margin:0;max-width:100%}
+  .no-print{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading">⏳ Cargando ficha de triaje...</div>
+<div id="authWall" class="auth-wall" style="display:none">
+  <div style="font-size:2.5rem;margin-bottom:8px">🔐</div>
+  <h2>Acceso profesional</h2>
+  <p style="font-size:.85rem;color:#666;margin-bottom:16px">Inicia sesión para ver la ficha de triaje del paciente</p>
+  <input id="fEmail" type="email" placeholder="Email profesional" />
+  <input id="fPass" type="password" placeholder="Contraseña" />
+  <button class="btn-blue" onclick="fichaSignIn()">Entrar</button>
+  <div style="text-align:center;margin:10px 0;font-size:.78rem;color:#888">o bien</div>
+  <button class="btn-google" onclick="fichaSignInGoogle()">
+    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+    Continuar con Google
+  </button>
+  <p id="fAuthErr" style="color:#dc2626;font-size:.78rem;margin-top:8px;display:none"></p>
+</div>
+
+<div id="fichaContainer" style="display:none"></div>
+
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
+  authDomain:"docenciacartagenaeste.firebaseapp.com",
+  projectId:"docenciacartagenaeste",
+  storageBucket:"docenciacartagenaeste.firebasestorage.app",
+  messagingSenderId:"1056320755107",
+  appId:"1:1056320755107:web:126637bf63c13bbb297616"
+});
+var db = firebase.firestore();
+var auth = firebase.auth();
+
+// Get triage ID from URL
+var params = new URLSearchParams(window.location.search);
+var fichaId = params.get('id');
+
+if (!fichaId) {
+  document.getElementById('loading').innerHTML = '<div class="expired"><div class="icon">❌</div><h2>Enlace inválido</h2><p style="color:#666;margin-top:8px">No se encontró un ID de ficha de triaje en la URL.</p></div>';
+}
+
+auth.onAuthStateChanged(function(user) {
+  document.getElementById('loading').style.display = 'none';
+  if (user && fichaId) {
+    loadFicha(fichaId);
+  } else if (!user) {
+    document.getElementById('authWall').style.display = 'block';
+  }
+});
+
+window.fichaSignIn = function() {
+  var email = document.getElementById('fEmail').value.trim();
+  var pass = document.getElementById('fPass').value;
+  auth.signInWithEmailAndPassword(email, pass).catch(function(e) {
+    document.getElementById('fAuthErr').style.display = 'block';
+    document.getElementById('fAuthErr').textContent = e.message;
+  });
+};
+
+window.fichaSignInGoogle = function() {
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+};
+
+var NIVEL_CONFIG = {
+  1: { color: '#dc2626', bg: 'linear-gradient(135deg,#dc2626,#991b1b)', text: 'EMERGENCIA VITAL', badge: 'badge-red', icon: '🔴' },
+  2: { color: '#ea580c', bg: 'linear-gradient(135deg,#ea580c,#c2410c)', text: 'URGENCIA ALTA', badge: 'badge-orange', icon: '🟠' },
+  3: { color: '#ca8a04', bg: 'linear-gradient(135deg,#ca8a04,#a16207)', text: 'URGENCIA MEDIA', badge: 'badge-yellow', icon: '🟡' },
+  4: { color: '#16a34a', bg: 'linear-gradient(135deg,#16a34a,#15803d)', text: 'PREFERENTE', badge: 'badge-green', icon: '🟢' },
+  5: { color: '#2563eb', bg: 'linear-gradient(135deg,#2563eb,#1d4ed8)', text: 'NO URGENTE', badge: 'badge-blue', icon: '🔵' }
+};
+
+async function loadFicha(id) {
+  document.getElementById('authWall').style.display = 'none';
+  var container = document.getElementById('fichaContainer');
+  container.style.display = 'block';
+
+  try {
+    var doc = await db.collection('triajes').doc(id).get();
+    if (!doc.exists) {
+      container.innerHTML = '<div class="expired"><div class="icon">🔍</div><h2>Ficha no encontrada</h2><p style="color:#666;margin-top:8px">Esta ficha puede haber caducado o el ID es incorrecto.</p></div>';
+      return;
+    }
+
+    var data = doc.data();
+
+    // Check expiry (24h)
+    var createdAt = data.createdAt ? data.createdAt.toDate() : new Date();
+    var now = new Date();
+    var hoursElapsed = (now - createdAt) / (1000 * 60 * 60);
+    if (hoursElapsed > 24) {
+      container.innerHTML = '<div class="expired"><div class="icon">⏰</div><h2>Ficha caducada</h2><p style="color:#666;margin-top:8px">Esta ficha de triaje ha superado las 24 horas y ya no es válida.</p><p style="color:#888;font-size:.82rem;margin-top:8px">Creada: ' + createdAt.toLocaleString('es-ES') + '</p></div>';
+      return;
+    }
+
+    var nivel = data.nivel || 3;
+    var cfg = NIVEL_CONFIG[nivel] || NIVEL_CONFIG[3];
+    var fecha = createdAt.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+    var html = '<div class="ficha">';
+    // Header with priority level
+    html += '<div class="ficha-header" style="background:' + cfg.bg + '">';
+    html += '<div style="font-size:.78rem;opacity:.7">FICHA DE TRIAJE · ÁREA II CARTAGENA</div>';
+    html += '<div class="nivel">' + cfg.icon + ' NIVEL ' + nivel + '</div>';
+    html += '<div class="nivel-text">' + cfg.text + '</div>';
+    html += '</div>';
+
+    html += '<div class="ficha-body">';
+
+    // Verification code
+    html += '<div class="ficha-section">';
+    html += '<h3>🔑 Código de verificación</h3>';
+    html += '<div class="verify-code">' + (data.verifyCode || '------') + '</div>';
+    html += '<p style="font-size:.72rem;color:#888;text-align:center;margin-top:6px">Pida al paciente que confirme este código</p>';
+    html += '</div>';
+
+    // Main complaint
+    if (data.motivo) {
+      html += '<div class="ficha-section">';
+      html += '<h3>📋 Motivo de consulta</h3>';
+      html += '<div class="value">' + escapeHtml(data.motivo) + '</div>';
+      html += '</div>';
+    }
+
+    // AI recommendation
+    if (data.recomendacion) {
+      html += '<div class="ficha-section">';
+      html += '<h3>🤖 Orientación del triaje IA</h3>';
+      html += '<div class="value">' + escapeHtml(data.recomendacion).replace(/\n/g, '<br>') + '</div>';
+      html += '</div>';
+    }
+
+    // Symptoms
+    if (data.sintomas) {
+      html += '<div class="ficha-section">';
+      html += '<h3>🩺 Síntomas reportados</h3>';
+      html += '<div class="value">' + escapeHtml(data.sintomas).replace(/\n/g, '<br>') + '</div>';
+      html += '</div>';
+    }
+
+    // Vitals
+    if (data.constantes) {
+      html += '<div class="ficha-section">';
+      html += '<h3>📊 Constantes vitales (auto-reportadas)</h3>';
+      html += '<div class="value">' + escapeHtml(data.constantes).replace(/\n/g, '<br>') + '</div>';
+      html += '</div>';
+    }
+
+    // Allergies
+    if (data.alergias) {
+      html += '<div class="ficha-section">';
+      html += '<h3>⚠️ Alergias</h3>';
+      html += '<div class="value" style="color:#dc2626;font-weight:600">' + escapeHtml(data.alergias) + '</div>';
+      html += '</div>';
+    }
+
+    // Medication
+    if (data.medicacion) {
+      html += '<div class="ficha-section">';
+      html += '<h3>💊 Medicación habitual</h3>';
+      html += '<div class="value">' + escapeHtml(data.medicacion) + '</div>';
+      html += '</div>';
+    }
+
+    // Conversation history
+    if (data.conversacion && data.conversacion.length > 0) {
+      html += '<div class="ficha-section">';
+      html += '<h3>💬 Conversación del triaje</h3>';
+      html += '<div class="conversation">';
+      data.conversacion.forEach(function(msg) {
+        var cls = msg.role === 'user' ? 'conv-user' : 'conv-bot';
+        var label = msg.role === 'user' ? '👤 Paciente' : '🤖 IA';
+        html += '<div class="conv-msg ' + cls + '"><strong>' + label + ':</strong> ' + escapeHtml(msg.content).replace(/\n/g, '<br>') + '</div>';
+      });
+      html += '</div>';
+      html += '</div>';
+    }
+
+    // Metadata
+    html += '<div class="ficha-section">';
+    html += '<h3>ℹ️ Información de la ficha</h3>';
+    html += '<div class="meta">';
+    html += '<span>🕐 ' + fecha + '</span>';
+    html += '<span>🏥 Área II Cartagena</span>';
+    html += '<span>📱 Autotriaje online</span>';
+    html += '</div>';
+    html += '<p style="font-size:.72rem;color:#888;margin-top:8px">ID: ' + id + '</p>';
+    html += '<p style="font-size:.72rem;color:#888">Caduca: ' + new Date(createdAt.getTime() + 24*60*60*1000).toLocaleString('es-ES') + '</p>';
+    html += '</div>';
+
+    html += '</div>'; // ficha-body
+
+    // Action buttons
+    html += '<div class="no-print" style="display:flex;gap:8px;margin-top:16px;padding-bottom:30px">';
+    html += '<button onclick="window.print()" style="flex:1;padding:12px;background:#0d47a1;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer">🖨️ Imprimir</button>';
+    html += '<button onclick="window.close()" style="flex:1;padding:12px;background:#f0f2f5;color:#333;border:1px solid #ddd;border-radius:10px;font-weight:600;cursor:pointer">Cerrar</button>';
+    html += '</div>';
+
+    html += '</div>'; // ficha
+
+    // Disclaimer
+    html += '<div class="no-print" style="text-align:center;padding:12px;font-size:.72rem;color:#888;max-width:500px;margin:0 auto 20px">⚠️ Esta ficha es orientativa y ha sido generada por IA. No constituye un diagnóstico médico. La valoración clínica profesional prevalece siempre.</div>';
+
+    container.innerHTML = html;
+
+  } catch(e) {
+    container.innerHTML = '<div class="expired"><div class="icon">❌</div><h2>Error al cargar</h2><p style="color:#666;margin-top:8px">' + e.message + '</p></div>';
+  }
+}
+
+function escapeHtml(text) {
+  var div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
