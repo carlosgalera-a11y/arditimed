@@ -427,9 +427,11 @@
     ],
     "Urología": [
       {
-        "title": "ITU no complicada — Protocolo AP",
-        "description": "Manejo de infección urinaria baja en mujer. Fosfomicina, nitrofurantoína. Criterios derivación.",
+        "name": "ITU no complicada — Protocolo AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Manejo de infección urinaria baja en mujer. Fosfomicina, nitrofurantoína. Criterios derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia",
         "tags": [
           "itu",
           "cistitis",
@@ -437,9 +439,11 @@
         ]
       },
       {
-        "title": "Cólico renal — Actuación en Urgencias",
-        "description": "Diagnóstico, analgesia (Dexketoprofeno, metamizol), criterios de ingreso, indicación eco/TAC.",
+        "name": "Cólico renal — Actuación en Urgencias",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Diagnóstico, analgesia (Dexketoprofeno, metamizol), criterios de ingreso, indicación eco/TAC.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia",
         "tags": [
           "colico renal",
           "litiasis",
@@ -447,9 +451,11 @@
         ]
       },
       {
-        "title": "Retención aguda de orina (RAO)",
-        "description": "Sondaje vesical, causas, manejo farmacológico con tamsulosina, criterios derivación urología.",
+        "name": "Retención aguda de orina (RAO)",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Sondaje vesical, causas, manejo farmacológico con tamsulosina, criterios derivación urología.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia",
         "tags": [
           "rao",
           "sondaje",
@@ -457,9 +463,11 @@
         ]
       },
       {
-        "title": "HBP — Hiperplasia benigna de próstata",
-        "description": "Escala IPSS, alfa-bloqueantes, inhibidores 5-alfa-reductasa, criterios derivación.",
+        "name": "HBP — Hiperplasia benigna de próstata",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Escala IPSS, alfa-bloqueantes, inhibidores 5-alfa-reductasa, criterios derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia",
         "tags": [
           "prostata",
           "hbp",
@@ -467,9 +475,11 @@
         ]
       },
       {
-        "title": "Hematuria — Algoritmo diagnóstico",
-        "description": "Hematuria macro/micro, estudio básico AP, derivación urgente vs preferente.",
+        "name": "Hematuria — Algoritmo diagnóstico",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Hematuria macro/micro, estudio básico AP, derivación urgente vs preferente.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia",
         "tags": [
           "hematuria",
           "derivacion"
@@ -478,9 +488,11 @@
     ],
     "ORL": [
       {
-        "title": "Otitis media aguda — Manejo AP",
-        "description": "Criterios antibiótico vs espera vigilante. Amoxicilina dosis altas. OMA recurrente.",
+        "name": "Otitis media aguda — Manejo AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Criterios antibiótico vs espera vigilante. Amoxicilina dosis altas. OMA recurrente.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl",
         "tags": [
           "otitis",
           "oma",
@@ -488,9 +500,11 @@
         ]
       },
       {
-        "title": "Faringoamigdalitis aguda",
-        "description": "Criterios de Centor/McIsaac, test rápido estreptococo, tratamiento antibiótico.",
+        "name": "Faringoamigdalitis aguda",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Criterios de Centor/McIsaac, test rápido estreptococo, tratamiento antibiótico.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl",
         "tags": [
           "amigdalitis",
           "faringitis",
@@ -498,18 +512,22 @@
         ]
       },
       {
-        "title": "Epistaxis — Protocolo de actuación",
-        "description": "Taponamiento anterior, cauterización, epistaxis posterior, criterios derivación ORL.",
+        "name": "Epistaxis — Protocolo de actuación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Taponamiento anterior, cauterización, epistaxis posterior, criterios derivación ORL.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl",
         "tags": [
           "epistaxis",
           "hemorragia nasal"
         ]
       },
       {
-        "title": "Vértigo — Diagnóstico diferencial",
-        "description": "VPPB (Dix-Hallpike, Epley), neuronitis vestibular, Menière. Banderas rojas.",
+        "name": "Vértigo — Diagnóstico diferencial",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "VPPB (Dix-Hallpike, Epley), neuronitis vestibular, Menière. Banderas rojas.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl",
         "tags": [
           "vertigo",
           "vppb",
@@ -517,9 +535,11 @@
         ]
       },
       {
-        "title": "Hipoacusia súbita",
-        "description": "Urgencia ORL, corticoides, derivación inmediata, diagnóstico diferencial.",
+        "name": "Hipoacusia súbita",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Urgencia ORL, corticoides, derivación inmediata, diagnóstico diferencial.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl",
         "tags": [
           "hipoacusia",
           "sordera"
@@ -528,9 +548,11 @@
     ],
     "Oftalmología": [
       {
-        "title": "Ojo rojo — Algoritmo diagnóstico",
-        "description": "Conjuntivitis vs uveítis vs glaucoma agudo. Banderas rojas. Derivación urgente.",
+        "name": "Ojo rojo — Algoritmo diagnóstico",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Conjuntivitis vs uveítis vs glaucoma agudo. Banderas rojas. Derivación urgente.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia",
         "tags": [
           "ojo rojo",
           "conjuntivitis",
@@ -538,36 +560,44 @@
         ]
       },
       {
-        "title": "Cuerpo extraño corneal",
-        "description": "Extracción, tinción fluoresceína, anillo de óxido, cobertura antibiótica, derivación.",
+        "name": "Cuerpo extraño corneal",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Extracción, tinción fluoresceína, anillo de óxido, cobertura antibiótica, derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia",
         "tags": [
           "cuerpo extrano",
           "cornea"
         ]
       },
       {
-        "title": "Glaucoma agudo de ángulo cerrado",
-        "description": "Urgencia oftalmológica. Clínica, tratamiento inicial (timolol, pilocarpina), derivación.",
+        "name": "Glaucoma agudo de ángulo cerrado",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Urgencia oftalmológica. Clínica, tratamiento inicial (timolol, pilocarpina), derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia",
         "tags": [
           "glaucoma",
           "urgencia"
         ]
       },
       {
-        "title": "Herpes ocular",
-        "description": "Queratitis herpética dendrítica, aciclovir tópico, contraindicación corticoides, seguimiento.",
+        "name": "Herpes ocular",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Queratitis herpética dendrítica, aciclovir tópico, contraindicación corticoides, seguimiento.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia",
         "tags": [
           "herpes",
           "queratitis"
         ]
       },
       {
-        "title": "Pérdida brusca de visión",
-        "description": "Oclusión arteria/vena central retina, desprendimiento retina. Derivación urgente.",
+        "name": "Pérdida brusca de visión",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Oclusión arteria/vena central retina, desprendimiento retina. Derivación urgente.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia",
         "tags": [
           "vision",
           "retina",
@@ -577,9 +607,11 @@
     ],
     "Psiquiatría": [
       {
-        "title": "Crisis de ansiedad / Ataque de pánico",
-        "description": "Manejo no farmacológico, benzodiacepinas (alprazolam, lorazepam), derivación salud mental.",
+        "name": "Crisis de ansiedad / Ataque de pánico",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Manejo no farmacológico, benzodiacepinas (alprazolam, lorazepam), derivación salud mental.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria",
         "tags": [
           "ansiedad",
           "panico",
@@ -587,9 +619,11 @@
         ]
       },
       {
-        "title": "Agitación psicomotriz — Protocolo",
-        "description": "Contención verbal, haloperidol + midazolam, olanzapina IM, medidas de seguridad.",
+        "name": "Agitación psicomotriz — Protocolo",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Contención verbal, haloperidol + midazolam, olanzapina IM, medidas de seguridad.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria",
         "tags": [
           "agitacion",
           "haloperidol",
@@ -597,9 +631,11 @@
         ]
       },
       {
-        "title": "Ideación suicida — Evaluación y manejo",
-        "description": "Escala Columbia (C-SSRS), factores riesgo/protección, decisión ingreso, plan de seguridad.",
+        "name": "Ideación suicida — Evaluación y manejo",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Escala Columbia (C-SSRS), factores riesgo/protección, decisión ingreso, plan de seguridad.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria",
         "tags": [
           "suicidio",
           "columbia",
@@ -607,9 +643,11 @@
         ]
       },
       {
-        "title": "Insomnio — Manejo en AP",
-        "description": "Higiene del sueño, terapia cognitivo-conductual, fármacos (zolpidem, trazodona, melatonina).",
+        "name": "Insomnio — Manejo en AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Higiene del sueño, terapia cognitivo-conductual, fármacos (zolpidem, trazodona, melatonina).",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria",
         "tags": [
           "insomnio",
           "sueno",
@@ -617,9 +655,11 @@
         ]
       },
       {
-        "title": "Depresión — Guía rápida AP",
-        "description": "PHQ-9, ISRS primera línea (sertralina, escitalopram), criterios derivación, seguimiento.",
+        "name": "Depresión — Guía rápida AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "PHQ-9, ISRS primera línea (sertralina, escitalopram), criterios derivación, seguimiento.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria",
         "tags": [
           "depresion",
           "isrs",
@@ -629,9 +669,11 @@
     ],
     "Hematología": [
       {
-        "title": "Anemia ferropénica — Estudio y tratamiento",
-        "description": "Ferritina, hierro oral vs IV, causas, indicación colonoscopia, derivación.",
+        "name": "Anemia ferropénica — Estudio y tratamiento",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Ferritina, hierro oral vs IV, causas, indicación colonoscopia, derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia",
         "tags": [
           "anemia",
           "ferritina",
@@ -639,9 +681,11 @@
         ]
       },
       {
-        "title": "Anticoagulación oral — Manejo en AP",
-        "description": "ACODs vs acenocumarol, INR, interacciones, manejo perioperatorio, reversión.",
+        "name": "Anticoagulación oral — Manejo en AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "ACODs vs acenocumarol, INR, interacciones, manejo perioperatorio, reversión.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia",
         "tags": [
           "anticoagulacion",
           "sintrom",
@@ -649,9 +693,11 @@
         ]
       },
       {
-        "title": "TVP / TEP — Diagnóstico y actuación",
-        "description": "Escala de Wells, D-dímero, eco-doppler, HBPM, criterios ingreso.",
+        "name": "TVP / TEP — Diagnóstico y actuación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Escala de Wells, D-dímero, eco-doppler, HBPM, criterios ingreso.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia",
         "tags": [
           "trombosis",
           "tvp",
@@ -660,18 +706,22 @@
         ]
       },
       {
-        "title": "Leucocitosis / Leucopenia — Estudio básico",
-        "description": "Hemograma, frotis, causas frecuentes, derivación hematología.",
+        "name": "Leucocitosis / Leucopenia — Estudio básico",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Hemograma, frotis, causas frecuentes, derivación hematología.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia",
         "tags": [
           "leucocitos",
           "hemograma"
         ]
       },
       {
-        "title": "Trombocitopenia — Algoritmo",
-        "description": "Causas (PTI, fármacos, hiperesplenismo), estudio, criterios transfusión.",
+        "name": "Trombocitopenia — Algoritmo",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Causas (PTI, fármacos, hiperesplenismo), estudio, criterios transfusión.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia",
         "tags": [
           "plaquetas",
           "trombocitopenia"
@@ -680,9 +730,11 @@
     ],
     "Nefrología": [
       {
-        "title": "ERC — Clasificación y manejo AP",
-        "description": "Estadios KDIGO, FGe, albuminuria, IECA/ARA-II, iSGLT2, derivación nefrología.",
+        "name": "ERC — Clasificación y manejo AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Estadios KDIGO, FGe, albuminuria, IECA/ARA-II, iSGLT2, derivación nefrología.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia",
         "tags": [
           "erc",
           "kdigo",
@@ -690,9 +742,11 @@
         ]
       },
       {
-        "title": "Hiperpotasemia — Protocolo urgente",
-        "description": "ECG, gluconato cálcico, insulina+glucosa, salbutamol, resinas, diálisis.",
+        "name": "Hiperpotasemia — Protocolo urgente",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "ECG, gluconato cálcico, insulina+glucosa, salbutamol, resinas, diálisis.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia",
         "tags": [
           "potasio",
           "hiperpotasemia",
@@ -700,9 +754,11 @@
         ]
       },
       {
-        "title": "Hiponatremia — Diagnóstico y manejo",
-        "description": "Algoritmo osmolalidad, SIADH, restricción hídrica, suero salino hipertónico.",
+        "name": "Hiponatremia — Diagnóstico y manejo",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Algoritmo osmolalidad, SIADH, restricción hídrica, suero salino hipertónico.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia",
         "tags": [
           "sodio",
           "hiponatremia",
@@ -710,18 +766,22 @@
         ]
       },
       {
-        "title": "Fracaso renal agudo — Actuación",
-        "description": "Pre-renal, renal, post-renal. Fluidoterapia, ecografía, criterios derivación/diálisis.",
+        "name": "Fracaso renal agudo — Actuación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Pre-renal, renal, post-renal. Fluidoterapia, ecografía, criterios derivación/diálisis.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia",
         "tags": [
           "fra",
           "insuficiencia renal aguda"
         ]
       },
       {
-        "title": "Proteinuria / Síndrome nefrótico",
-        "description": "Cociente albúmina/creatinina, estudio básico, edemas, derivación.",
+        "name": "Proteinuria / Síndrome nefrótico",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Cociente albúmina/creatinina, estudio básico, edemas, derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia",
         "tags": [
           "proteinuria",
           "nefrotico"
@@ -730,9 +790,11 @@
     ],
     "Reumatología": [
       {
-        "title": "Gota aguda — Manejo en AP/Urgencias",
-        "description": "Colchicina, AINEs, corticoides, febuxostat/alopurinol profilaxis, dieta.",
+        "name": "Gota aguda — Manejo en AP/Urgencias",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Colchicina, AINEs, corticoides, febuxostat/alopurinol profilaxis, dieta.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia",
         "tags": [
           "gota",
           "colchicina",
@@ -740,9 +802,11 @@
         ]
       },
       {
-        "title": "Artritis reumatoide — Sospecha y derivación",
-        "description": "Criterios ACR/EULAR, FR, anti-CCP, derivación precoz reumatología.",
+        "name": "Artritis reumatoide — Sospecha y derivación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Criterios ACR/EULAR, FR, anti-CCP, derivación precoz reumatología.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia",
         "tags": [
           "artritis",
           "reumatoide",
@@ -750,27 +814,33 @@
         ]
       },
       {
-        "title": "Lumbalgia — Protocolo AP",
-        "description": "Banderas rojas, tratamiento conservador, AINEs, criterios imagen, derivación.",
+        "name": "Lumbalgia — Protocolo AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Banderas rojas, tratamiento conservador, AINEs, criterios imagen, derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia",
         "tags": [
           "lumbalgia",
           "dolor espalda"
         ]
       },
       {
-        "title": "Fibromialgia — Manejo integral",
-        "description": "Criterios diagnósticos, ejercicio, duloxetina/pregabalina, abordaje multidisciplinar.",
+        "name": "Fibromialgia — Manejo integral",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Criterios diagnósticos, ejercicio, duloxetina/pregabalina, abordaje multidisciplinar.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia",
         "tags": [
           "fibromialgia",
           "dolor cronico"
         ]
       },
       {
-        "title": "Osteoporosis — Cribado y tratamiento",
-        "description": "FRAX, densitometría, calcio/vitamina D, bifosfonatos, denosumab.",
+        "name": "Osteoporosis — Cribado y tratamiento",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "FRAX, densitometría, calcio/vitamina D, bifosfonatos, denosumab.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia",
         "tags": [
           "osteoporosis",
           "frax",
@@ -780,9 +850,11 @@
     ],
     "Urgencias": [
       {
-        "title": "PCR — Soporte vital avanzado",
-        "description": "Algoritmo SVA/SVB, desfibrilación, adrenalina, amiodarona, causas reversibles (4H/4T).",
+        "name": "PCR — Soporte vital avanzado",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Algoritmo SVA/SVB, desfibrilación, adrenalina, amiodarona, causas reversibles (4H/4T).",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias",
         "tags": [
           "pcr",
           "rcp",
@@ -790,18 +862,22 @@
         ]
       },
       {
-        "title": "Shock — Clasificación y manejo inicial",
-        "description": "Hipovolémico, cardiogénico, distributivo, obstructivo. Fluidoterapia, vasopresores.",
+        "name": "Shock — Clasificación y manejo inicial",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Hipovolémico, cardiogénico, distributivo, obstructivo. Fluidoterapia, vasopresores.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias",
         "tags": [
           "shock",
           "noradrenalina"
         ]
       },
       {
-        "title": "Politraumatizado — ABCDE",
-        "description": "Evaluación primaria y secundaria, vía aérea, neumotórax, hemorragia, inmovilización.",
+        "name": "Politraumatizado — ABCDE",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Evaluación primaria y secundaria, vía aérea, neumotórax, hemorragia, inmovilización.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias",
         "tags": [
           "trauma",
           "abcde",
@@ -809,9 +885,11 @@
         ]
       },
       {
-        "title": "Dolor torácico — Algoritmo urgencias",
-        "description": "SCA vs TEP vs disección vs neumotórax. ECG, troponina, escala HEART.",
+        "name": "Dolor torácico — Algoritmo urgencias",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "SCA vs TEP vs disección vs neumotórax. ECG, troponina, escala HEART.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias",
         "tags": [
           "dolor toracico",
           "sca",
@@ -819,18 +897,22 @@
         ]
       },
       {
-        "title": "Intoxicación aguda — Manejo general",
-        "description": "Carbón activado, lavado gástrico, antídotos específicos, criterios UCI.",
+        "name": "Intoxicación aguda — Manejo general",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Carbón activado, lavado gástrico, antídotos específicos, criterios UCI.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias",
         "tags": [
           "intoxicacion",
           "antidoto"
         ]
       },
       {
-        "title": "Cetoacidosis diabética — Protocolo",
-        "description": "Fluidoterapia, insulina IV, potasio, bicarbonato, monitorización.",
+        "name": "Cetoacidosis diabética — Protocolo",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Fluidoterapia, insulina IV, potasio, bicarbonato, monitorización.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias",
         "tags": [
           "cetoacidosis",
           "cad",
@@ -840,18 +922,22 @@
     ],
     "Infecciosas": [
       {
-        "title": "COVID-19 — Manejo actualizado 2025",
-        "description": "Variantes actuales, antivirales (nirmatrelvir/ritonavir), vacunación, grupos riesgo.",
+        "name": "COVID-19 — Manejo actualizado 2025",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Variantes actuales, antivirales (nirmatrelvir/ritonavir), vacunación, grupos riesgo.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas",
         "tags": [
           "covid",
           "paxlovid"
         ]
       },
       {
-        "title": "Gripe — Protocolo AP y Urgencias",
-        "description": "Diagnóstico clínico, oseltamivir, indicaciones ingreso, vacunación.",
+        "name": "Gripe — Protocolo AP y Urgencias",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Diagnóstico clínico, oseltamivir, indicaciones ingreso, vacunación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas",
         "tags": [
           "gripe",
           "influenza",
@@ -859,27 +945,33 @@
         ]
       },
       {
-        "title": "Infecciones oportunistas — Inmunodeprimidos",
-        "description": "Profilaxis, CMV, PCP, toxoplasma, cribado pre-biológicos.",
+        "name": "Infecciones oportunistas — Inmunodeprimidos",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Profilaxis, CMV, PCP, toxoplasma, cribado pre-biológicos.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas",
         "tags": [
           "oportunistas",
           "inmunodeprimido"
         ]
       },
       {
-        "title": "Herpes zóster — Manejo AP",
-        "description": "Valaciclovir/aciclovir, dolor neuropático, vacuna Shingrix, neuralgia postherpética.",
+        "name": "Herpes zóster — Manejo AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Valaciclovir/aciclovir, dolor neuropático, vacuna Shingrix, neuralgia postherpética.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas",
         "tags": [
           "herpes zoster",
           "valaciclovir"
         ]
       },
       {
-        "title": "Infección por VIH — Sospecha y derivación",
-        "description": "Test rápido, indicadores clínicos, derivación a unidad VIH, PrEP/PEP.",
+        "name": "Infección por VIH — Sospecha y derivación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Test rápido, indicadores clínicos, derivación a unidad VIH, PrEP/PEP.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas",
         "tags": [
           "vih",
           "sida",
@@ -889,9 +981,11 @@
     ],
     "Alergología": [
       {
-        "title": "Anafilaxia — Protocolo de actuación",
-        "description": "Adrenalina IM 0.3-0.5mg, posición Trendelenburg, observación 6-8h, auto-inyector.",
+        "name": "Anafilaxia — Protocolo de actuación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Adrenalina IM 0.3-0.5mg, posición Trendelenburg, observación 6-8h, auto-inyector.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia",
         "tags": [
           "anafilaxia",
           "adrenalina",
@@ -899,36 +993,44 @@
         ]
       },
       {
-        "title": "Urticaria aguda / Angioedema",
-        "description": "Antihistamínicos, corticoides, angioedema por IECA (suspender), derivación alergología.",
+        "name": "Urticaria aguda / Angioedema",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Antihistamínicos, corticoides, angioedema por IECA (suspender), derivación alergología.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia",
         "tags": [
           "urticaria",
           "angioedema"
         ]
       },
       {
-        "title": "Rinitis alérgica — Manejo AP",
-        "description": "Corticoides nasales, antihistamínicos, inmunoterapia, derivación alergología.",
+        "name": "Rinitis alérgica — Manejo AP",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Corticoides nasales, antihistamínicos, inmunoterapia, derivación alergología.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia",
         "tags": [
           "rinitis",
           "alergia"
         ]
       },
       {
-        "title": "Alergia medicamentosa — Actuación",
-        "description": "Reacciones inmediatas vs tardías, registro en historia clínica, alternativas, derivación.",
+        "name": "Alergia medicamentosa — Actuación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Reacciones inmediatas vs tardías, registro en historia clínica, alternativas, derivación.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia",
         "tags": [
           "alergia farmacos",
           "penicilina"
         ]
       },
       {
-        "title": "Picaduras / Reacciones alérgicas",
-        "description": "Himenópteros, manejo local, indicación adrenalina, derivación inmunoterapia veneno.",
+        "name": "Picaduras / Reacciones alérgicas",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Himenópteros, manejo local, indicación adrenalina, derivación inmunoterapia veneno.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia",
         "tags": [
           "picadura",
           "avispa",
@@ -938,9 +1040,11 @@
     ],
     "Cirugía Menor": [
       {
-        "title": "Incisión y drenaje de abscesos",
-        "description": "Técnica, anestesia local, indicaciones antibiótico, curas posteriores.",
+        "name": "Incisión y drenaje de abscesos",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Técnica, anestesia local, indicaciones antibiótico, curas posteriores.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor",
         "tags": [
           "absceso",
           "drenaje",
@@ -948,18 +1052,22 @@
         ]
       },
       {
-        "title": "Uña incarnata — Cirugía ungueal",
-        "description": "Matricectomía parcial, fenolización, cuidados postoperatorios.",
+        "name": "Uña incarnata — Cirugía ungueal",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Matricectomía parcial, fenolización, cuidados postoperatorios.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor",
         "tags": [
           "una incarnata",
           "onicocriptosis"
         ]
       },
       {
-        "title": "Sutura de heridas — Técnicas básicas",
-        "description": "Puntos simples, colchonero, intradérmico, materiales, tiempos de retirada.",
+        "name": "Sutura de heridas — Técnicas básicas",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Puntos simples, colchonero, intradérmico, materiales, tiempos de retirada.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor",
         "tags": [
           "sutura",
           "herida",
@@ -967,18 +1075,22 @@
         ]
       },
       {
-        "title": "Quemaduras — Manejo inicial",
-        "description": "Clasificación (grado/extensión), Wallace, curas, criterios derivación grandes quemados.",
+        "name": "Quemaduras — Manejo inicial",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Clasificación (grado/extensión), Wallace, curas, criterios derivación grandes quemados.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor",
         "tags": [
           "quemadura",
           "wallace"
         ]
       },
       {
-        "title": "Extracción de cuerpos extraños",
-        "description": "Anzuelos, astillas, anillos, técnicas, anestesia local.",
+        "name": "Extracción de cuerpos extraños",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Anzuelos, astillas, anillos, técnicas, anestesia local.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor",
         "tags": [
           "cuerpo extrano",
           "extraccion"
@@ -987,9 +1099,11 @@
     ],
     "Paliativos": [
       {
-        "title": "Manejo del dolor — Escalera analgésica OMS",
-        "description": "Paracetamol, AINEs, tramadol, morfina, fentanilo, coadyuvantes, rotación opioides.",
+        "name": "Manejo del dolor — Escalera analgésica OMS",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Paracetamol, AINEs, tramadol, morfina, fentanilo, coadyuvantes, rotación opioides.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos",
         "tags": [
           "dolor",
           "morfina",
@@ -997,9 +1111,11 @@
         ]
       },
       {
-        "title": "Sedación paliativa — Protocolo",
-        "description": "Midazolam, levomepromazina, indicaciones, consentimiento, registro, aspectos éticos.",
+        "name": "Sedación paliativa — Protocolo",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Midazolam, levomepromazina, indicaciones, consentimiento, registro, aspectos éticos.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos",
         "tags": [
           "sedacion",
           "paliativa",
@@ -1007,27 +1123,33 @@
         ]
       },
       {
-        "title": "Control de síntomas — Guía rápida",
-        "description": "Náuseas, disnea, estreñimiento, delirium, estertores, vía subcutánea.",
+        "name": "Control de síntomas — Guía rápida",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Náuseas, disnea, estreñimiento, delirium, estertores, vía subcutánea.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos",
         "tags": [
           "sintomas",
           "via subcutanea"
         ]
       },
       {
-        "title": "Vía subcutánea — Técnica y fármacos",
-        "description": "Palomilla, infusor elastomérico, fármacos compatibles, mezclas, cuidados.",
+        "name": "Vía subcutánea — Técnica y fármacos",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Palomilla, infusor elastomérico, fármacos compatibles, mezclas, cuidados.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos",
         "tags": [
           "subcutanea",
           "infusor"
         ]
       },
       {
-        "title": "Atención al final de la vida",
-        "description": "Agonía, signos, comunicación con familia, medidas de confort, aspectos legales.",
+        "name": "Atención al final de la vida",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Agonía, signos, comunicación con familia, medidas de confort, aspectos legales.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos",
         "tags": [
           "final vida",
           "agonia",
@@ -1037,9 +1159,11 @@
     ],
     "Urgencias Hospitalarias": [
       {
-        "title": "Evaluación primaria del politraumatizado — Guía xABCDE",
-        "description": "Algoritmo xABCDE para la evaluación inicial del paciente traumatizado: control de hemorragia exsanguinante, vía aérea, ventilación, circulación, discapacidad neurológica y exposición.",
+        "name": "Evaluación primaria del politraumatizado — Guía xABCDE",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Algoritmo xABCDE para la evaluación inicial del paciente traumatizado: control de hemorragia exsanguinante, vía aérea, ventilación, circulación, discapacidad neurológica y exposición.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "xabcde",
           "politrauma",
@@ -1048,9 +1172,11 @@
         ]
       },
       {
-        "title": "Control de hemorragia externa exsanguinante (x)",
-        "description": "Presión directa, empaquetamiento de heridas y torniquete. Indicaciones, técnica de aplicación y tiempo máximo. Conversión de torniquete.",
+        "name": "Control de hemorragia externa exsanguinante (x)",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Presión directa, empaquetamiento de heridas y torniquete. Indicaciones, técnica de aplicación y tiempo máximo. Conversión de torniquete.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "hemorragia",
           "torniquete",
@@ -1059,9 +1185,11 @@
         ]
       },
       {
-        "title": "Manejo de la vía aérea en trauma (A)",
-        "description": "Evaluación de permeabilidad, maniobras básicas (tracción mandibular, cánulas), dispositivos supraglóticos, ISR modificada, cricotiroidotomía. Restricción de movimiento cervical.",
+        "name": "Manejo de la vía aérea en trauma (A)",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Evaluación de permeabilidad, maniobras básicas (tracción mandibular, cánulas), dispositivos supraglóticos, ISR modificada, cricotiroidotomía. Restricción de movimiento cervical.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "via aerea",
           "intubacion",
@@ -1071,9 +1199,11 @@
         ]
       },
       {
-        "title": "Ventilación y lesiones torácicas (B)",
-        "description": "Neumotórax a tensión, hemotórax masivo, neumotórax abierto, contusión pulmonar. Descompresión con aguja, toracostomía con dedo, drenaje torácico.",
+        "name": "Ventilación y lesiones torácicas (B)",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Neumotórax a tensión, hemotórax masivo, neumotórax abierto, contusión pulmonar. Descompresión con aguja, toracostomía con dedo, drenaje torácico.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "neumotorax",
           "hemotorax",
@@ -1083,9 +1213,11 @@
         ]
       },
       {
-        "title": "Circulación, shock y resucitación con volumen (C)",
-        "description": "Diagnóstico de shock (hemorrágico, obstructivo, distributivo, cardiogénico). Hipotensión permisiva. Protocolo de transfusión masiva. FAST y eFAST. Estabilización pélvica.",
+        "name": "Circulación, shock y resucitación con volumen (C)",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Diagnóstico de shock (hemorrágico, obstructivo, distributivo, cardiogénico). Hipotensión permisiva. Protocolo de transfusión masiva. FAST y eFAST. Estabilización pélvica.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "shock",
           "hemorragia",
@@ -1096,9 +1228,11 @@
         ]
       },
       {
-        "title": "Evaluación neurológica y TCE (D)",
-        "description": "Glasgow Coma Scale, pupilas, signos de lateralización. Prevención de lesión cerebral secundaria. Manejo de hipertensión intracraneal. Lesión medular.",
+        "name": "Evaluación neurológica y TCE (D)",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Glasgow Coma Scale, pupilas, signos de lateralización. Prevención de lesión cerebral secundaria. Manejo de hipertensión intracraneal. Lesión medular.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "glasgow",
           "tce",
@@ -1108,9 +1242,11 @@
         ]
       },
       {
-        "title": "Exposición y control ambiental (E)",
-        "description": "Prevención de hipotermia, tríada letal (hipotermia-acidosis-coagulopatía). Exposición completa preservando dignidad. Calentamiento activo.",
+        "name": "Exposición y control ambiental (E)",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Prevención de hipotermia, tríada letal (hipotermia-acidosis-coagulopatía). Exposición completa preservando dignidad. Calentamiento activo.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "hipotermia",
           "triada letal",
@@ -1119,9 +1255,11 @@
         ]
       },
       {
-        "title": "Trauma en poblaciones especiales",
-        "description": "Particularidades en pediatría (reserva fisiológica, dosis por peso), embarazo (desplazamiento uterino, cesárea perimortem), ancianos (fragilidad, anticoagulantes) y obesos.",
+        "name": "Trauma en poblaciones especiales",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Particularidades en pediatría (reserva fisiológica, dosis por peso), embarazo (desplazamiento uterino, cesárea perimortem), ancianos (fragilidad, anticoagulantes) y obesos.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "pediatria",
           "embarazo",
@@ -1131,9 +1269,11 @@
         ]
       },
       {
-        "title": "Comunicación y trabajo en equipo — Resucitación trauma",
-        "description": "Liderazgo, asertividad graduada (CUS), comunicación en bucle cerrado, huddle pre-llegada, MIST, S-xABCDE-BAR, debriefing post-evento.",
+        "name": "Comunicación y trabajo en equipo — Resucitación trauma",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Liderazgo, asertividad graduada (CUS), comunicación en bucle cerrado, huddle pre-llegada, MIST, S-xABCDE-BAR, debriefing post-evento.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "comunicacion",
           "equipo",
@@ -1144,9 +1284,11 @@
         ]
       },
       {
-        "title": "Quemaduras — Evaluación inicial y resucitación",
-        "description": "Regla de los 9, fórmula de Parkland, manejo de vía aérea en quemado, escarotomías, criterios de derivación a unidad de quemados.",
+        "name": "Quemaduras — Evaluación inicial y resucitación",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Regla de los 9, fórmula de Parkland, manejo de vía aérea en quemado, escarotomías, criterios de derivación a unidad de quemados.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "quemadura",
           "parkland",
@@ -1155,9 +1297,11 @@
         ]
       },
       {
-        "title": "Trauma musculoesquelético",
-        "description": "Fracturas abiertas (Gustilo-Anderson), síndrome compartimental, luxaciones con compromiso vascular, inmovilización, tracción.",
+        "name": "Trauma musculoesquelético",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Fracturas abiertas (Gustilo-Anderson), síndrome compartimental, luxaciones con compromiso vascular, inmovilización, tracción.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "fractura",
           "compartimental",
@@ -1166,9 +1310,11 @@
         ]
       },
       {
-        "title": "Transferencia a cuidados definitivos — S-xABCDE-BAR",
-        "description": "Criterios de transferencia, herramienta de comunicación S-xABCDE-BAR, documentación, preparación del traslado.",
+        "name": "Transferencia a cuidados definitivos — S-xABCDE-BAR",
         "type": "protocolo",
+        "size_mb": 0,
+        "description": "Criterios de transferencia, herramienta de comunicación S-xABCDE-BAR, documentación, preparación del traslado.",
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias",
         "tags": [
           "transferencia",
           "traslado",
