@@ -27,26 +27,34 @@ function switchEnfTab(id,btn){
 }
 
 function enfGetKey(){
-  var k=localStorage.getItem('groqApiKey');
-  if(k)return k;
-  // Fallback to embedded key
-  try{return atob(['Z3NrX0dUVHFmVFhwQzV','IR3lNSFRrRzByV0dkeW','IzRllPSHNnVVRBOE5Za','lVWVDROOVd5ak1NeFQ='].join(''));}catch(e){return null;}
+  return 'REDACTED_OPENROUTER_3_2026-04';
+}
+
+var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','meta-llama/llama-4-maverick:free'];
+
+async function enfCallOR(prompt,sysPrompt,idx){
+  idx=idx||0;
+  if(idx>=ENF_OR_MODELS.length){
+    try{var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:[{role:'system',content:sysPrompt},{role:'user',content:prompt}],seed:Math.floor(Math.random()*9999)})});var dp=await rp.json();return(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:null;}catch(e){return null;}
+  }
+  try{
+    var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+enfGetKey(),'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Enfermeria Area II Cartagena'},body:JSON.stringify({model:ENF_OR_MODELS[idx],messages:[{role:'system',content:sysPrompt},{role:'user',content:prompt}],max_tokens:2000,temperature:0.3})});
+    if(r.status===429||r.status===502||r.status===503)return enfCallOR(prompt,sysPrompt,idx+1);
+    if(!r.ok)return enfCallOR(prompt,sysPrompt,idx+1);
+    var d=await r.json();var ans=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
+    return ans||enfCallOR(prompt,sysPrompt,idx+1);
+  }catch(e){return enfCallOR(prompt,sysPrompt,idx+1);}
 }
 
 async function enfCallAI(prompt,resultDiv,titleDiv,titleText){
-  var key=enfGetKey();
-  if(!key){alert('Configura una API key de Groq primero');return;}
   if(titleDiv)document.getElementById(titleDiv).textContent=titleText||'Resultado';
   document.getElementById(resultDiv).style.display='block';
   var contentDiv=resultDiv.replace('Result','Content');
   document.getElementById(contentDiv).innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);">⏳ Generando respuesta...</div>';
-  try{
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:enfModel,messages:[{role:'system',content:'Eres un experto en enfermería clínica española. Responde en español de forma clara, estructurada y práctica. Usa formato con secciones numeradas. Incluye indicaciones, contraindicaciones y precauciones cuando sea relevante. Enfocado a enfermería de Atención Primaria y urgencias.'},{role:'user',content:prompt}],max_tokens:4096,temperature:0.4})});
-    if(!res.ok)throw new Error('Error API: '+res.status);
-    var data=await res.json();
-    var text=data.choices[0]?.message?.content||'Sin respuesta';
-    document.getElementById(contentDiv).textContent=text;
-  }catch(e){document.getElementById(contentDiv).innerHTML='<span style="color:#ef4444;">❌ '+e.message+'</span>';}
+  var sys='Eres un experto en enfermería clínica española. Responde en español de forma clara, estructurada y práctica. Usa formato con secciones numeradas. Incluye indicaciones, contraindicaciones y precauciones cuando sea relevante. Enfocado a enfermería de Atención Primaria y urgencias.';
+  var text=await enfCallOR(prompt,sys,0);
+  if(text){document.getElementById(contentDiv).textContent=text;}
+  else{document.getElementById(contentDiv).innerHTML='<span style="color:#ef4444;">⚠️ No se pudo conectar con la IA. Comprueba tu conexión.</span>';}
 }
 
 async function enfHacerPregunta(){
@@ -59,15 +67,10 @@ async function enfHacerPregunta(){
   qDiv.innerHTML='<div class="question-text">'+text+'</div><div class="answer-text" style="color:var(--text-muted);">⏳ Pensando...</div><div class="note-time">'+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'</div>';
   if(list.querySelector('.empty-state'))list.innerHTML='';
   list.prepend(qDiv);
-  var key=enfGetKey();
-  if(!key){qDiv.querySelector('.answer-text').innerHTML='❌ Configura API key en Config';return;}
-  try{
-    var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:enfModel,messages:[{role:'system',content:'Eres un experto en enfermería clínica española. Responde en español de forma clara y práctica para profesionales de enfermería de Atención Primaria y urgencias.'},{role:'user',content:text}],max_tokens:4096,temperature:0.4})});
-    if(!res.ok)throw new Error('Error: '+res.status);
-    var data=await res.json();
-    qDiv.querySelector('.answer-text').textContent=data.choices[0]?.message?.content||'Sin respuesta';
-    qDiv.querySelector('.answer-text').style.color='';
-  }catch(e){qDiv.querySelector('.answer-text').innerHTML='<span style="color:#ef4444;">❌ '+e.message+'</span>';}
+  var sys='Eres un experto en enfermería clínica española. Responde en español de forma clara y práctica para profesionales de enfermería de Atención Primaria y urgencias.';
+  var ans=await enfCallOR(text,sys,0);
+  if(ans){qDiv.querySelector('.answer-text').textContent=ans;qDiv.querySelector('.answer-text').style.color='';}
+  else{qDiv.querySelector('.answer-text').innerHTML='<span style="color:#ef4444;">⚠️ No se pudo conectar. Reintenta en unos segundos.</span>';}
 }
 
 function enfAskAI(prompt){enfCallAI(prompt,'enfTecnicaResult','enfTecnicaTitle',prompt.substring(0,60)+'...');}
