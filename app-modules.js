@@ -30,7 +30,7 @@ function enfGetKey(){
   return 'REDACTED_OPENROUTER_3_2026-04';
 }
 
-var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','meta-llama/llama-4-maverick:free'];
+var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','meta-llama/llama-4-maverick:free','deepseek/deepseek-chat-v3-0324'];
 
 async function enfCallOR(prompt,sysPrompt,idx){
   idx=idx||0;
@@ -39,7 +39,7 @@ async function enfCallOR(prompt,sysPrompt,idx){
   }
   try{
     var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+enfGetKey(),'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Enfermeria Area II Cartagena'},body:JSON.stringify({model:ENF_OR_MODELS[idx],messages:[{role:'system',content:sysPrompt},{role:'user',content:prompt}],max_tokens:2000,temperature:0.3})});
-    if(r.status===429||r.status===502||r.status===503)return enfCallOR(prompt,sysPrompt,idx+1);
+    if(r.status===429||r.status===502||r.status===503||r.status===402)return enfCallOR(prompt,sysPrompt,idx+1);
     if(!r.ok)return enfCallOR(prompt,sysPrompt,idx+1);
     var d=await r.json();var ans=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
     return ans||enfCallOR(prompt,sysPrompt,idx+1);
@@ -803,7 +803,8 @@ async function trIASend(){
     var trIAModels = [
         'deepseek/deepseek-chat-v3-0324:free',
         'google/gemma-3-27b-it:free',
-        'meta-llama/llama-4-maverick:free'
+        'meta-llama/llama-4-maverick:free',
+        'deepseek/deepseek-chat-v3-0324'
     ];
     var trIAKey = 'REDACTED_OPENROUTER_3_2026-04';
 

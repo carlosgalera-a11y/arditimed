@@ -618,14 +618,20 @@ function cambiarProvider(){var v=document.getElementById("cfgProvider").value;do
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 async function llamarIA(up,sp){
   var OR_KEY='REDACTED_OPENROUTER_3_2026-04';
-  var OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','meta-llama/llama-4-maverick:free'];
+  var OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','meta-llama/llama-4-maverick:free','deepseek/deepseek-chat-v3-0324'];
   async function tryOR(idx){
     if(idx>=OR_MODELS.length){
-      try{var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:[{role:'system',content:sp||'Eres un asistente médico. Responde en español.'},{role:'user',content:up}],seed:Math.floor(Math.random()*9999)})});var dp=await rp.json();return(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:'Sin respuesta';}catch(e){return'⚠️ No se pudo conectar con la IA.';}
+      // Last resort: Pollinations
+      try{
+        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},15000);
+        var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:[{role:'system',content:sp||'Eres un asistente médico. Responde en español.'},{role:'user',content:up}],seed:Math.floor(Math.random()*9999)}),signal:ctrl.signal});
+        var dp=await rp.json();return(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:'Sin respuesta';
+      }catch(e){return'⚠️ No se pudo conectar con la IA. Comprueba tu conexión e inténtalo de nuevo.';}
     }
     try{
-      var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Profesionales Area II'},body:JSON.stringify({model:OR_MODELS[idx],messages:[{role:'system',content:sp||'Eres un asistente médico. Responde en español.'},{role:'user',content:up}],max_tokens:2000,temperature:0.3})});
-      if(r.status===429||r.status===502||r.status===503)return tryOR(idx+1);
+      var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},12000);
+      var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Profesionales Area II'},body:JSON.stringify({model:OR_MODELS[idx],messages:[{role:'system',content:sp||'Eres un asistente médico. Responde en español.'},{role:'user',content:up}],max_tokens:2000,temperature:0.3}),signal:ctrl.signal});
+      if(r.status===429||r.status===502||r.status===503||r.status===402)return tryOR(idx+1);
       if(!r.ok)return tryOR(idx+1);
       var d=await r.json();var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
       if(!c)return tryOR(idx+1);
@@ -2129,7 +2135,7 @@ function tradTranslateText(text,who){
 
 // DeepL Free API (500k chars/month free)
 function tradCallDeepL(text,srcLang,tgtLang){
-    var DEEPL_KEY=localStorage.getItem('deeplApiKey')||'';
+    var DEEPL_KEY=localStorage.getItem('deeplApiKey')||'REDACTED_DEEPL_2026-04';
     if(!DEEPL_KEY) return Promise.reject('no key');
 
     var body={text:[text],target_lang:tgtLang};
