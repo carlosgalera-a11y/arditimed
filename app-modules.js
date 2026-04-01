@@ -726,15 +726,13 @@ async function trIASend(){
     trIAHistory.push({role:'user',content:q});
     trIAAddTyping();
 
-    var key='';
-    try{var cfg=JSON.parse(localStorage.getItem('notebook_ai_cfg_v3')||'{}');key=cfg.groqKey||'';}catch(e){}
-    if(!key) key=EMBEDDED_GROQ_KEY||'';
-
-    if(!key){
-        var t=document.getElementById('trIATyping');if(t)t.remove();
-        trIAAddMsg('bot','⚠️ Para usar el triaje con IA necesitas configurar una API Key de Groq en la sección <b>Profesionales → Config</b>.\n\nMientras tanto, puedes usar el <b>triaje clásico</b> que funciona sin IA.');
-        return;
-    }
+    // Use OpenRouter (same as MegaCuaderno) — no Groq key needed
+    var trIAModels = [
+        'deepseek/deepseek-chat-v3-0324:free',
+        'google/gemma-3-27b-it:free',
+        'meta-llama/llama-4-maverick:free'
+    ];
+    var trIAKey = 'REDACTED_OPENROUTER_3_2026-04';
 
     var sysPrompt='Eres un asistente de triaje médico del Área II de Cartagena (Hospital Santa Lucía, España). Tu función es evaluar síntomas y orientar al paciente según el Sistema Español de Triaje (SET) con 5 niveles:\n\n'+
     'Nivel 1 (ROJO): Emergencia vital → 112\n'+
@@ -756,15 +754,48 @@ async function trIASend(){
 
     var messages=[{role:'system',content:sysPrompt}].concat(trIAHistory.slice(-10));
 
+    // Try OpenRouter models in sequence
+    async function trIATryModel(idx) {
+        if (idx >= trIAModels.length) {
+            // Last resort: Pollinations
+            try {
+                var rp = await fetch('https://text.pollinations.ai/openai', {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({model:'openai-large',messages:messages,seed:Math.floor(Math.random()*9999),private:true})
+                });
+                var dp = await rp.json();
+                return (dp.choices && dp.choices[0] && dp.choices[0].message) ? dp.choices[0].message.content : null;
+            } catch(e) { return null; }
+        }
+        try {
+            var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'Authorization':'Bearer ' + trIAKey,
+                    'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/',
+                    'X-Title':'Autotriaje Area II Cartagena'
+                },
+                body:JSON.stringify({model:trIAModels[idx],messages:messages,max_tokens:500,temperature:0.3})
+            });
+            if (r.status === 429 || r.status === 502 || r.status === 503) return trIATryModel(idx+1);
+            if (!r.ok) return trIATryModel(idx+1);
+            var d = await r.json();
+            var ans = (d.choices && d.choices[0] && d.choices[0].message) ? d.choices[0].message.content : null;
+            return ans || trIATryModel(idx+1);
+        } catch(e) { return trIATryModel(idx+1); }
+    }
+
     try{
-        var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-            body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:messages,max_tokens:400,temperature:0.3})
-        });
-        var data=await r.json();
-        var answer=data.choices[0].message.content;
+        var answer = await trIATryModel(0);
         var t=document.getElementById('trIATyping');if(t)t.remove();
+
+        if (!answer) {
+            trIAAddMsg('bot','⚠️ No se pudo conectar con la IA. Comprueba tu conexión a internet e inténtalo de nuevo.\n\nSi el problema persiste, usa el <b>triaje clásico</b> (cuestionario paso a paso).');
+            return;
+        }
+
         trIAAddMsg('bot',answer);
         trIAHistory.push({role:'assistant',content:answer});
 

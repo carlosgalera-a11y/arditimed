@@ -4248,9 +4248,23 @@ function megaCallPollinations(sp, msgs, btn) {
         megaOnAnswer(ans, btn);
     })
     .catch(function(e) {
-        megaAppendMsg("system","No se pudo conectar con ninguna IA. Comprueba tu conexion a internet.");
+        megaAppendMsg("system","⚠️ No se pudo conectar con la IA. Posibles causas:\n• Conexión a internet inestable\n• Servidores de IA temporalmente saturados\n\n<button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
         megaReset(btn);
     });
+}
+
+function megaRetryLast() {
+    if (megaHistory.length > 0) {
+        var lastUserMsg = '';
+        for (var i = megaHistory.length - 1; i >= 0; i--) {
+            if (megaHistory[i].role === 'user') { lastUserMsg = megaHistory[i].content; break; }
+        }
+        if (lastUserMsg) {
+            // Remove last user message to avoid duplicate
+            megaHistory.pop();
+            megaDispatch(lastUserMsg);
+        }
+    }
 }
 
 function megaOnAnswer(ans, btn) {
