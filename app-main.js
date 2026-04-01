@@ -2100,24 +2100,104 @@ function tradTranslateText(text,who){
     var srcLang=(who==='doc')?fromLang:toLang;
     var tgtLang=(who==='doc')?toLang:fromLang;
 
-    // Use free translation API (MyMemory or LibreTranslate fallback)
-    var url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(text)+'&langpair='+srcLang+'|'+tgtLang;
+    document.getElementById('tradLiveBox').style.display='block';
+    document.getElementById('tradOriginal').textContent=text;
+    document.getElementById('tradTranslated').innerHTML='<span style="color:#888;">⏳ Traduciendo...</span>';
 
-    fetch(url).then(function(r){return r.json();}).then(function(data){
-        var translated=(data.responseData&&data.responseData.translatedText)?data.responseData.translatedText:text;
-        tradLastTranslated=translated;
+    // DeepL language code mapping (DeepL uses uppercase, some need special handling)
+    var DEEPL_LANGS={es:'ES',en:'EN',fr:'FR',de:'DE',it:'IT',pt:'PT',ro:'RO',pl:'PL',bg:'BG',zh:'ZH',ru:'RU',uk:'UK',ar:'AR',nl:'NL',ja:'JA',ko:'KO'};
+    var deeplSrc=DEEPL_LANGS[srcLang]||srcLang.toUpperCase();
+    var deeplTgt=DEEPL_LANGS[tgtLang]||tgtLang.toUpperCase();
 
-        document.getElementById('tradLiveBox').style.display='block';
-        document.getElementById('tradOriginal').textContent=text;
-        document.getElementById('tradTranslated').textContent=translated;
-
-        var entry={who:who,original:text,translated:translated,srcLang:srcLang,tgtLang:tgtLang,time:new Date().toLocaleTimeString()};
-        tradConversation.push(entry);
-        tradRenderHistory();
-    }).catch(function(err){
-        console.error('Translation error:',err);
-        document.getElementById('tradTranslated').textContent='[Error de traducción] '+text;
+    // 1. Try DeepL Free API first
+    tradCallDeepL(text,deeplSrc,deeplTgt).then(function(result){
+        tradShowResult(text,result.text,result.provider,who,srcLang,tgtLang);
+    }).catch(function(){
+        // 2. Fallback: OpenRouter AI translation
+        tradCallOpenRouterTranslate(text,srcLang,tgtLang).then(function(result){
+            tradShowResult(text,result.text,result.provider,who,srcLang,tgtLang);
+        }).catch(function(){
+            // 3. Last resort: MyMemory
+            tradCallMyMemory(text,srcLang,tgtLang).then(function(result){
+                tradShowResult(text,result.text,result.provider,who,srcLang,tgtLang);
+            }).catch(function(){
+                document.getElementById('tradTranslated').textContent='[Error de traducción] '+text;
+            });
+        });
     });
+}
+
+// DeepL Free API (500k chars/month free)
+function tradCallDeepL(text,srcLang,tgtLang){
+    var DEEPL_KEY=localStorage.getItem('deeplApiKey')||'';
+    if(!DEEPL_KEY) return Promise.reject('no key');
+
+    var body={text:[text],target_lang:tgtLang};
+    if(srcLang) body.source_lang=srcLang;
+
+    return fetch('https://api-free.deepl.com/v2/translate',{
+        method:'POST',
+        headers:{'Authorization':'DeepL-Auth-Key '+DEEPL_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+    }).then(function(r){
+        if(r.status===456) throw new Error('quota');
+        if(!r.ok) throw new Error('deepl-'+r.status);
+        return r.json();
+    }).then(function(d){
+        return {text:d.translations[0].text,provider:'deepl'};
+    });
+}
+
+// OpenRouter AI translation (free, good quality)
+function tradCallOpenRouterTranslate(text,srcLang,tgtLang){
+    var OR_KEY='REDACTED_OPENROUTER_3_2026-04';
+    var LANG_NAMES={es:'español',en:'inglés',fr:'francés',de:'alemán',it:'italiano',pt:'portugués',ro:'rumano',ar:'árabe',zh:'chino mandarín',ru:'ruso',uk:'ucraniano',pl:'polaco',bg:'búlgaro',wo:'wolof',ha:'hausa',am:'amárico',sw:'suajili',ur:'urdu',hi:'hindi',bn:'bengalí',ta:'tamil'};
+    var srcName=LANG_NAMES[srcLang]||srcLang;
+    var tgtName=LANG_NAMES[tgtLang]||tgtLang;
+
+    var models=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free'];
+    function tryModel(idx){
+        if(idx>=models.length) return Promise.reject('all failed');
+        return fetch('https://openrouter.ai/api/v1/chat/completions',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Traductor Area II'},
+            body:JSON.stringify({model:models[idx],messages:[
+                {role:'system',content:'Eres un traductor médico profesional. Traduce el siguiente texto de '+srcName+' a '+tgtName+'. SOLO devuelve la traducción, sin explicaciones ni notas adicionales. Mantén la terminología médica precisa.'},
+                {role:'user',content:text}
+            ],max_tokens:1000,temperature:0.1})
+        }).then(function(r){
+            if(r.status===429||r.status===502||r.status===503) return tryModel(idx+1);
+            if(!r.ok) return tryModel(idx+1);
+            return r.json();
+        }).then(function(d){
+            var ans=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
+            if(!ans) return tryModel(idx+1);
+            return {text:ans.trim(),provider:'ia'};
+        });
+    }
+    return tryModel(0);
+}
+
+// MyMemory fallback (basic, free)
+function tradCallMyMemory(text,srcLang,tgtLang){
+    return fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(text)+'&langpair='+srcLang+'|'+tgtLang)
+    .then(function(r){return r.json();})
+    .then(function(data){
+        var t=(data.responseData&&data.responseData.translatedText)?data.responseData.translatedText:null;
+        if(!t) throw new Error('no result');
+        return {text:t,provider:'mymemory'};
+    });
+}
+
+function tradShowResult(original,translated,provider,who,srcLang,tgtLang){
+    tradLastTranslated=translated;
+    document.getElementById('tradOriginal').textContent=original;
+    var providerBadge=provider==='deepl'?'✦ DeepL':provider==='ia'?'🤖 IA':'○ MyMemory';
+    document.getElementById('tradTranslated').innerHTML=translated+'<br><small style="color:#888;font-size:.72rem;font-weight:400;">Motor: '+providerBadge+'</small>';
+
+    var entry={who:who,original:original,translated:translated,srcLang:srcLang,tgtLang:tgtLang,provider:provider,time:new Date().toLocaleTimeString()};
+    tradConversation.push(entry);
+    tradRenderHistory();
 }
 
 function tradSpeak(){
@@ -2174,6 +2254,27 @@ function tradClearAll(){
     document.getElementById('tradLiveBox').style.display='none';
     tradRenderHistory();
 }
+
+function tradTranslateManual(){
+    var input=document.getElementById('tradTextInput');
+    var text=input.value.trim();
+    if(!text) return;
+    tradTranslateText(text,'doc');
+}
+
+function saveDeeplKey(){
+    var key=document.getElementById('deeplKeyInput').value.trim();
+    if(key){
+        localStorage.setItem('deeplApiKey',key);
+        document.getElementById('deeplKeyStatus').innerHTML='<span style="color:#16a34a;">✅ Key guardada. Se usará DeepL como motor principal.</span>';
+    } else {
+        localStorage.removeItem('deeplApiKey');
+        document.getElementById('deeplKeyStatus').innerHTML='<span style="color:#888;">Key eliminada. Se usará IA como motor principal.</span>';
+    }
+}
+
+// Load DeepL key on init
+(function(){var k=localStorage.getItem('deeplApiKey');if(k){var el=document.getElementById('deeplKeyInput');if(el)el.value=k;}})();
 
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){var im=document.getElementById("instruccionesModal");if(im&&im.style.display==="flex"){im.style.display="none";return;}var ap=document.getElementById("adminPanel");if(ap&&ap.style.display!=="none"){ap.style.display="none";return;}var sl=document.getElementById("scanLoginModal");if(sl&&sl.style.display==="flex"){sl.style.display="none";return;}var mn=document.getElementById("modalNotebooks");if(mn&&mn.style.display==="flex"){mn.style.display="none";return;}}});
 document.addEventListener("DOMContentLoaded",function(){

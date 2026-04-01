@@ -537,6 +537,15 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
             </div>
         </div>
 
+        <!-- Text input for manual translation -->
+        <div style="margin-bottom:16px;">
+            <label style="font-size:.75rem;font-weight:600;color:#555;display:block;margin-bottom:4px;">✍️ Escribir texto para traducir</label>
+            <div style="display:flex;gap:8px;">
+                <textarea id="tradTextInput" placeholder="Escribe o pega aquí un texto para traducir..." rows="2" style="flex:1;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:var(--font-body);resize:vertical;background:var(--bg-card);color:var(--text);"></textarea>
+                <button onclick="tradTranslateManual()" style="padding:12px 18px;background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:.88rem;white-space:nowrap;">🌍 Traducir</button>
+            </div>
+        </div>
+
         <!-- Mic buttons -->
         <div style="display:flex;gap:12px;margin-bottom:20px;">
             <button id="tradBtnDoc" onclick="tradStartListening('doc')" style="flex:1;padding:14px;border:2px solid #e65100;background:#fff;color:#e65100;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:all .2s;">
@@ -577,9 +586,22 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
         </div>
 
         <div style="margin-top:16px;padding:12px;background:#f1f8e9;border-radius:8px;font-size:.75rem;color:#33691e;text-align:center;">
-            🔒 Todo se procesa en tu dispositivo. No se envían datos a servidores externos.<br>
-            Compatible con Chrome, Edge y Safari. Requiere micrófono.
+            🔒 Traducción por voz procesada en tu dispositivo · Traducción de texto vía DeepL/IA<br>
+            Compatible con Chrome, Edge y Safari. Requiere micrófono para voz.
         </div>
+
+        <!-- DeepL API Key config (optional, improves quality) -->
+        <details style="margin-top:12px;">
+            <summary style="cursor:pointer;font-size:.82rem;color:#888;font-weight:600;">⚙️ Configurar DeepL (opcional — mejora la calidad)</summary>
+            <div style="padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-top:8px;">
+                <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px;">Obtén tu key gratuita en <a href="https://www.deepl.com/pro#developer" target="_blank" style="color:#0066cc;">deepl.com/pro</a> (500.000 caracteres/mes gratis)</p>
+                <div style="display:flex;gap:8px;">
+                    <input id="deeplKeyInput" type="password" placeholder="Tu DeepL API Key" value="" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.82rem;background:var(--bg-card);color:var(--text);" />
+                    <button onclick="saveDeeplKey()" style="padding:8px 14px;background:#0066cc;color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;">Guardar</button>
+                </div>
+                <div id="deeplKeyStatus" style="font-size:.72rem;margin-top:4px;color:var(--text-muted);"></div>
+            </div>
+        </details>
     </div>
 </div>
 
