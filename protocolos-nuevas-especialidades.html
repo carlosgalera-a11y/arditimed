@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Protocolos Clínicos — Nuevas Especialidades | Área II Cartagena</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;line-height:1.7;color:#1a1a2e;background:#f0f2f5;min-height:100vh}
+.header{background:linear-gradient(135deg,#0a1628,#1a3050);color:#fff;padding:32px 20px;text-align:center}
+.header h1{font-size:1.8rem;margin-bottom:6px}
+.header p{opacity:.75;font-size:.9rem}
+.nav{background:#fff;border-bottom:1px solid #e0e0e0;padding:10px 20px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;position:sticky;top:0;z-index:10}
+.nav a{padding:6px 14px;border-radius:20px;font-size:.78rem;text-decoration:none;color:#555;border:1px solid #e0e0e0;font-weight:600;white-space:nowrap;transition:.2s}
+.nav a:hover,.nav a.active{background:#0d47a1;color:#fff;border-color:#0d47a1}
+.container{max-width:900px;margin:20px auto;padding:0 16px}
+.specialty{margin-bottom:40px}
+.specialty h2{font-size:1.3rem;color:#0d47a1;border-left:4px solid #0d47a1;padding:8px 16px;background:#e3f2fd;border-radius:0 8px 8px 0;margin-bottom:16px}
+.protocol{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:3px solid #1565c0}
+.protocol h3{font-size:1.05rem;color:#1a1a2e;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.protocol h3 .badge{font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase}
+.badge-urgente{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+.badge-ap{background:#f0fdf4;color:#16a34a;border:1px solid #86efac}
+.badge-derivar{background:#fffbeb;color:#d97706;border:1px solid #fcd34d}
+.protocol p{font-size:.88rem;color:#444;margin-bottom:8px}
+.protocol .farmaco{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;font-size:.82rem;margin:6px 0;font-family:'Courier New',monospace;color:#1e293b}
+.protocol .alerta{background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:8px 12px;font-size:.82rem;margin:6px 0;color:#991b1b}
+.protocol .tip{background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:8px 12px;font-size:.82rem;margin:6px 0;color:#166534}
+.back{display:inline-block;margin:20px auto;padding:10px 20px;background:#0d47a1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:.9rem}
+.footer{text-align:center;padding:20px;font-size:.75rem;color:#888}
+@media(max-width:600px){.header h1{font-size:1.3rem}.protocol{padding:14px 16px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📋 Protocolos Clínicos — Nuevas Especialidades</h1>
+<p>Área II Cartagena · Centro de Salud Virgen de la Caridad · Uso docente</p>
+</div>
+
+<div class="nav" id="nav">
+<a href="#urologia">🫘 Urología</a>
+<a href="#orl">👂 ORL</a>
+<a href="#oftalmo">👁️ Oftalmo</a>
+<a href="#psiquiatria">🧠 Psiquiatría</a>
+<a href="#hemato">🩸 Hemato</a>
+<a href="#nefro">💧 Nefro</a>
+<a href="#reuma">🦿 Reuma</a>
+<a href="#urgencias">🚨 Urgencias</a>
+<a href="#infecciosas">🦠 Infecciosas</a>
+<a href="#alergologia">🤧 Alergo</a>
+<a href="#cirugia">🩹 Cir. Menor</a>
+<a href="#paliativos">🕊️ Paliativos</a>
+</div>
+
+<div class="container">
+
+<!-- ═══ UROLOGÍA ═══ -->
+<div class="specialty" id="urologia">
+<h2>🫘 Urología</h2>
+
+<div class="protocol">
+<h3>ITU no complicada en mujer <span class="badge badge-ap">AP</span></h3>
+<p>Cistitis aguda: disuria, polaquiuria, urgencia miccional, sin fiebre ni dolor lumbar.</p>
+<div class="farmaco">1ª línea: Fosfomicina 3g vía oral, dosis única<br>Alternativa: Nitrofurantoína 100mg/12h × 5 días</div>
+<p>Urocultivo no necesario en primer episodio no complicado. Sí en recurrente, embarazo o varón.</p>
+<div class="alerta">⚠️ Si fiebre >38°C, dolor lumbar o afectación general → sospechar pielonefritis → derivar urgencias</div>
+</div>
+
+<div class="protocol">
+<h3>Cólico renal <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Dolor cólico en fosa lumbar irradiado a ingle/genitales. Puñopercusión +. Hematuria.</p>
+<div class="farmaco">Analgesia: Dexketoprofeno 50mg IV/IM + Metamizol 2g IV<br>Si no cede: Morfina 3-5mg IV titulada<br>Terapia expulsiva: Tamsulosina 0.4mg/día (litiasis 5-10mm)</div>
+<div class="alerta">⚠️ Eco URGENTE si: fiebre + litiasis (pionefrosis), riñón único, anuria, dolor refractario</div>
+</div>
+
+<div class="protocol">
+<h3>Retención aguda de orina (RAO) <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Globo vesical palpable, incapacidad para orinar. Frecuente en varones >60 años (HBP).</p>
+<div class="farmaco">Sondaje vesical: Foley 16-18 Fr<br>Iniciar Tamsulosina 0.4mg/día<br>Si retira sonda y recidiva → derivar urología</div>
+<div class="tip">💡 Descomprimir de forma gradual (500ml cada vez) para evitar hematuria ex vacuo</div>
+</div>
+</div>
+
+<!-- ═══ ORL ═══ -->
+<div class="specialty" id="orl">
+<h2>👂 Otorrinolaringología</h2>
+
+<div class="protocol">
+<h3>Otitis media aguda (OMA) <span class="badge badge-ap">AP</span></h3>
+<p>Otalgia + abombamiento timpánico. Niños: irritabilidad + tocarse la oreja.</p>
+<div class="farmaco">Antibiótico (si indicado):<br>- Adultos: Amoxicilina 1g/8h × 7 días<br>- Niños: Amoxicilina 80mg/kg/día en 3 dosis × 7 días<br>- Alérgicos: Azitromicina 10mg/kg/día × 3 días</div>
+<p>Espera vigilante 48-72h si >2 años, OMA unilateral y leve (solo analgesia).</p>
+<div class="alerta">⚠️ Derivar ORL urgente si: mastoiditis (tumefacción retroauricular), parálisis facial, vértigo</div>
+</div>
+
+<div class="protocol">
+<h3>Epistaxis <span class="badge badge-urgente">URGENTE</span></h3>
+<p>90% anteriores (plexo de Kiesselbach). Causas: sequedad, HTA, anticoagulantes.</p>
+<div class="farmaco">1. Compresión digital alar bilateral 10-15 min (inclinado hacia delante)<br>2. Si no cede: taponamiento anterior (Merocel / gasa con vaselina)<br>3. Si bilateral/posterior: balón neumático o sonda Foley → derivar ORL</div>
+<div class="tip">💡 Controlar TA. Si toma anticoagulantes: valorar INR/ACODs. No suspender sin consultar</div>
+</div>
+
+<div class="protocol">
+<h3>Vértigo — Diagnóstico diferencial <span class="badge badge-ap">AP</span></h3>
+<p>VPPB (más frecuente): episodios breves con cambios posturales. Dix-Hallpike +.</p>
+<div class="farmaco">VPPB: Maniobra de Epley (no fármacos crónicos)<br>Neuronitis vestibular: Sulpiride 50mg/8h + Dimenhidrinato 50mg/8h × 3-5 días<br>Menière: Betahistina 16mg/8h, dieta hiposódica</div>
+<div class="alerta">⚠️ Banderas rojas → derivar urgente: focalidad neurológica, cefalea intensa, hipoacusia súbita bilateral</div>
+</div>
+</div>
+
+<!-- ═══ OFTALMOLOGÍA ═══ -->
+<div class="specialty" id="oftalmo">
+<h2>👁️ Oftalmología</h2>
+
+<div class="protocol">
+<h3>Ojo rojo — Algoritmo <span class="badge badge-ap">AP</span></h3>
+<p>Diferencial clave: conjuntivitis vs uveítis vs glaucoma agudo vs queratitis.</p>
+<div class="farmaco">Conjuntivitis bacteriana: Tobramicina colirio 1 gota/4h × 7 días<br>Conjuntivitis alérgica: Olopatadina colirio/12h + antiH1 oral</div>
+<div class="alerta">⚠️ DERIVAR URGENTE si: dolor intenso, disminución agudeza visual, inyección ciliar (periquerática), pupila en midriasis fija, hipopion</div>
+</div>
+
+<div class="protocol">
+<h3>Glaucoma agudo de ángulo cerrado <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Dolor ocular intenso + ojo rojo + visión borrosa + halos + náuseas/vómitos. Ojo duro a palpación. Pupila en midriasis media arreactiva.</p>
+<div class="farmaco">Tratamiento INICIAL mientras se deriva:<br>- Timolol 0.5% colirio 1 gota<br>- Pilocarpina 2% colirio 1 gota/15min × 4 dosis<br>- Acetazolamida 250mg IV o 500mg VO<br>→ DERIVAR OFTALMOLOGÍA URGENTE</div>
+</div>
+</div>
+
+<!-- ═══ PSIQUIATRÍA ═══ -->
+<div class="specialty" id="psiquiatria">
+<h2>🧠 Psiquiatría / Salud Mental</h2>
+
+<div class="protocol">
+<h3>Crisis de ansiedad / Ataque de pánico <span class="badge badge-ap">AP</span></h3>
+<p>Palpitaciones, disnea, parestesias, sensación de muerte inminente. Exploración normal.</p>
+<div class="farmaco">1. Manejo no farmacológico: respiración diafragmática, ambiente tranquilo<br>2. Si no cede: Alprazolam 0.25-0.5mg SL o Lorazepam 1mg SL/VO<br>3. Si recurrente: derivar Salud Mental para valorar ISRS</div>
+<div class="tip">💡 Descartar siempre: hipertiroidismo, arritmia, TEP, hipoglucemia, sustancias</div>
+</div>
+
+<div class="protocol">
+<h3>Agitación psicomotriz <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Hiperactividad motora + agresividad verbal/física + desconexión.</p>
+<div class="farmaco">1. Contención verbal (90% de las veces suficiente)<br>2. Farmacológica: Haloperidol 5mg IM + Midazolam 5mg IM<br>   Alternativa: Olanzapina 10mg IM (no combinar con BZD IM)<br>3. Contención mecánica: ÚLTIMO recurso, con protocolo y registro</div>
+<div class="alerta">⚠️ Descartar siempre causa orgánica: hipoglucemia, hipoxia, ACV, intoxicación, delirium</div>
+</div>
+
+<div class="protocol">
+<h3>Valoración riesgo suicida <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Preguntar siempre de forma directa. No aumenta el riesgo, sí lo reduce.</p>
+<div class="farmaco">Escala Columbia (C-SSRS): Evaluar ideación, plan, intención, acceso a medios<br>Riesgo alto: plan + medios + intención → INGRESO INVOLUNTARIO si necesario<br>Riesgo medio: derivar Salud Mental urgente + plan de seguridad<br>Riesgo bajo: seguimiento estrecho AP + contacto telefónico 48h</div>
+<div class="alerta">⚠️ Retirar acceso a medios letales (armas, fármacos). Implicar a familia. No dejar solo</div>
+</div>
+</div>
+
+<!-- ═══ HEMATOLOGÍA ═══ -->
+<div class="specialty" id="hemato">
+<h2>🩸 Hematología</h2>
+
+<div class="protocol">
+<h3>Anticoagulación oral — Manejo AP <span class="badge badge-ap">AP</span></h3>
+<p>ACODs de elección sobre acenocumarol en FA no valvular (salvo prótesis mecánica o estenosis mitral).</p>
+<div class="farmaco">Apixaban: 5mg/12h (2.5mg/12h si ≥2: edad≥80, peso≤60kg, Cr≥1.5)<br>Rivaroxaban: 20mg/24h con comida (15mg si ClCr 15-50)<br>Edoxaban: 60mg/24h (30mg si ClCr 15-50 o peso≤60kg)</div>
+<div class="tip">💡 No precisan INR. Función renal cada 6-12m. Interacciones: rifampicina, antiepilépticos, azoles</div>
+</div>
+
+<div class="protocol">
+<h3>TVP — Diagnóstico y manejo <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Edema unilateral + dolor pantorrilla + signo de Homans. Wells ≥2: probabilidad intermedia-alta.</p>
+<div class="farmaco">Wells ≥2: eco-doppler urgente<br>Wells <2 + D-dímero negativo: descartada<br>Tratamiento: Enoxaparina 1mg/kg/12h SC → después ACOD<br>Si TEP: misma HBPM + TAC helicoidal + ingreso</div>
+</div>
+</div>
+
+<!-- ═══ NEFROLOGÍA ═══ -->
+<div class="specialty" id="nefro">
+<h2>💧 Nefrología</h2>
+
+<div class="protocol">
+<h3>Hiperpotasemia <span class="badge badge-urgente">URGENTE</span></h3>
+<p>K⁺ >5.5 mEq/L. ECG: ondas T picudas, ensanchamiento QRS, bradicardia.</p>
+<div class="farmaco">K⁺ >6.5 o cambios ECG:<br>1. Gluconato cálcico 10% 10ml IV en 2-3min (cardioprotector)<br>2. Insulina rápida 10 UI + Glucosa 50% 50ml IV<br>3. Salbutamol 20mg nebulizado<br>4. Resinas: Patiromer o Poliestireno sulfonato<br>5. Si refractaria: DIÁLISIS</div>
+<div class="alerta">⚠️ Monitorización ECG continua. Suspender IECA/ARA-II/espironolactona/AINEs</div>
+</div>
+
+<div class="protocol">
+<h3>ERC — Manejo en AP <span class="badge badge-ap">AP</span></h3>
+<p>Estadios KDIGO por FGe y albuminuria. Control TA <130/80.</p>
+<div class="farmaco">IECA/ARA-II si albuminuria (Enalapril 20mg/d o Losartán 100mg/d)<br>iSGLT2: Dapagliflozina 10mg/d si FGe ≥20 (cardio + renoprotección)<br>Finerenona si DM2 + albuminuria<br>Derivar nefrología si: FGe <30, albuminuria >300, deterioro rápido</div>
+</div>
+</div>
+
+<!-- ═══ REUMATOLOGÍA ═══ -->
+<div class="specialty" id="reuma">
+<h2>🦿 Reumatología</h2>
+
+<div class="protocol">
+<h3>Gota aguda <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Monoartritis (1ª MTF típica). Inicio brusco, eritema intenso, impotencia funcional.</p>
+<div class="farmaco">Brote agudo:<br>- Colchicina 0.5mg/8h × 3 días (iniciar <12h)<br>- AINE: Indometacina 50mg/8h o Naproxeno 500mg/12h<br>- Si CI AINEs: Prednisona 30-35mg/d × 5 días<br><br>⚠️ NO iniciar alopurinol/febuxostat durante el brote</div>
+<div class="tip">💡 Profilaxis (tras 2+ brotes): Febuxostat 80mg o Alopurinol 100→300mg. Objetivo: ácido úrico <6mg/dL</div>
+</div>
+
+<div class="protocol">
+<h3>Lumbalgia — Manejo AP <span class="badge badge-ap">AP</span></h3>
+<p>95% inespecífica. Actividad precoz. No reposo en cama. No imagen <6 semanas si no banderas rojas.</p>
+<div class="farmaco">1ª línea: Paracetamol 1g/8h + AINE (Ibuprofeno 600mg/8h)<br>2ª línea: Relajante muscular (Ciclobenzaprina 10mg noche) × max 7 días<br>No opioides de inicio. Derivar si >6 sem sin mejoría</div>
+<div class="alerta">⚠️ Banderas rojas: <20 o >55 años, trauma, déficit neurológico progresivo, fiebre, pérdida peso, antecedente oncológico, síndrome cola de caballo (retención urinaria)</div>
+</div>
+</div>
+
+<!-- ═══ URGENCIAS ═══ -->
+<div class="specialty" id="urgencias">
+<h2>🚨 Urgencias / Emergencias</h2>
+
+<div class="protocol">
+<h3>PCR — Soporte Vital Avanzado <span class="badge badge-urgente">URGENTE</span></h3>
+<div class="farmaco">Ritmo DESFIBRILABLE (FV/TVSP):<br>1. Descarga 200J bifásica → RCP 2 min<br>2. 2ª descarga → Adrenalina 1mg IV<br>3. 3ª descarga → Amiodarona 300mg IV<br>4. Adrenalina 1mg/3-5min. Amiodarona 150mg tras 5ª descarga<br><br>NO desfibrilable (Asistolia/AESP):<br>1. RCP + Adrenalina 1mg IV inmediata<br>2. Adrenalina 1mg/3-5min<br>3. Buscar causas reversibles: 4H (Hipoxia, Hipovolemia, Hipo/Hiperpotasemia, Hipotermia) + 4T (Neumotórax a Tensión, Taponamiento, Tóxicos, TEP)</div>
+</div>
+
+<div class="protocol">
+<h3>Anafilaxia <span class="badge badge-urgente">URGENTE</span></h3>
+<div class="farmaco">ADRENALINA IM 0.3-0.5mg (muslo anterolateral) — REPETIR cada 5-15 min<br>+ Dexclorfeniramina 5mg IV<br>+ Metilprednisolona 1-2mg/kg IV<br>+ Cristaloides 20ml/kg si hipotensión<br>+ Salbutamol nebulizado si broncoespasmo<br><br>Observación mínimo 6-8h (riesgo bifásica)<br>Al alta: prescribir auto-inyector adrenalina + derivar alergología</div>
+</div>
+
+<div class="protocol">
+<h3>Cetoacidosis diabética (CAD) <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Glucemia >250 + pH <7.3 + cetonemia/cetonuria + Bicarbonato <18.</p>
+<div class="farmaco">1. SSF 0.9% 1000ml/h × 1h, después 500ml/h<br>2. Insulina rápida IV: 0.1 UI/kg/h en perfusión<br>3. KCl: si K⁺ <5.5 → 20-40 mEq/L en fluidos<br>4. Bicarbonato SOLO si pH <6.9<br>5. Glucemia horaria. Gasometría cada 2-4h</div>
+<div class="alerta">⚠️ No bajar glucemia >70mg/dL/h. Cuando glucemia <250: cambiar a SG 5% + mantener insulina</div>
+</div>
+</div>
+
+<!-- ═══ INFECCIOSAS ═══ -->
+<div class="specialty" id="infecciosas">
+<h2>🦠 Infecciosas</h2>
+
+<div class="protocol">
+<h3>COVID-19 — Manejo actualizado <span class="badge badge-ap">AP</span></h3>
+<div class="farmaco">Paxlovid (Nirmatrelvir/Ritonavir): 300/100mg/12h × 5 días<br>Indicación: primeras 5 días + factores riesgo (>65, inmunodeprimido, comorbilidades)<br>⚠️ Revisar SIEMPRE interacciones (CYP3A4): estatinas, anticoagulantes, inmunosupresores</div>
+<div class="tip">💡 Vacunación actualizada: bivalente adaptada. Especial atención a inmunodeprimidos y >65 años</div>
+</div>
+
+<div class="protocol">
+<h3>Herpes zóster <span class="badge badge-ap">AP</span></h3>
+<div class="farmaco">Antiviral (iniciar <72h del inicio):<br>- Valaciclovir 1000mg/8h × 7 días (preferido)<br>- Aciclovir 800mg × 5/día × 7 días<br>Dolor: Paracetamol + AINE. Si neuropático: Pregabalina 75-150mg/12h<br>Vacuna Shingrix: 2 dosis (0 y 2-6 meses) en >50 años</div>
+</div>
+</div>
+
+<!-- ═══ ALERGOLOGÍA ═══ -->
+<div class="specialty" id="alergologia">
+<h2>🤧 Alergología</h2>
+
+<div class="protocol">
+<h3>Angioedema por IECA <span class="badge badge-urgente">URGENTE</span></h3>
+<p>Edema de labios, lengua, úvula. No responde a antihistamínicos ni corticoides (mecanismo bradicinina).</p>
+<div class="farmaco">1. SUSPENDER IECA para SIEMPRE (puede ocurrir años después de iniciarlo)<br>2. Si compromiso vía aérea: Icatibant 30mg SC o Ácido tranexámico 1g IV<br>3. Adrenalina si anafilaxia asociada<br>4. Observación prolongada (puede empeorar horas después)<br>5. NO cambiar a ARA-II sin valorar (reactividad cruzada rara pero posible)</div>
+</div>
+</div>
+
+<!-- ═══ CIRUGÍA MENOR ═══ -->
+<div class="specialty" id="cirugia">
+<h2>🩹 Cirugía Menor</h2>
+
+<div class="protocol">
+<h3>Sutura de heridas — Tiempos de retirada <span class="badge badge-ap">AP</span></h3>
+<div class="farmaco">Cara: 4-5 días<br>Cuero cabelludo: 7 días (grapas)<br>Tronco: 7-10 días<br>Extremidades superiores: 10 días<br>Extremidades inferiores: 10-14 días<br>Articulaciones: 14 días<br><br>Material: Seda/Nylon en piel. Absorbible (Vicryl) en profundidad<br>Profilaxis tétanos: si >5 años última dosis o dudas → Td + IGT si herida sucia</div>
+</div>
+
+<div class="protocol">
+<h3>Incisión y drenaje de abscesos <span class="badge badge-ap">AP</span></h3>
+<div class="farmaco">1. Anestesia local: Mepivacaína 2% en abanico perilesional<br>2. Incisión en el punto de máxima fluctuación<br>3. Desbridamiento digital + lavado con SSF<br>4. Mecha/tira de gasa. Cura diaria<br>5. ATB solo si celulitis perilesional: Amox-Clavulánico 875/125mg/8h × 7 días</div>
+<div class="tip">💡 No aspirar con aguja (insuficiente). La incisión debe ser suficiente para drenar completamente</div>
+</div>
+</div>
+
+<!-- ═══ PALIATIVOS ═══ -->
+<div class="specialty" id="paliativos">
+<h2>🕊️ Cuidados Paliativos</h2>
+
+<div class="protocol">
+<h3>Escalera analgésica OMS + Rotación de opioides <span class="badge badge-ap">AP</span></h3>
+<div class="farmaco">Escalón 1: Paracetamol 1g/6-8h ± AINE<br>Escalón 2: + Tramadol 50-100mg/6-8h (max 400mg/d)<br>Escalón 3: Morfina oral liberación rápida 5-10mg/4h. Rescate: 1/6 de dosis diaria total<br><br>Rotación opioides (tabla rápida):<br>Morfina VO 60mg/d = Morfina SC 30mg/d = Fentanilo TD 25mcg/h = Oxicodona VO 30mg/d</div>
+<div class="tip">💡 SIEMPRE asociar laxante (Lactulosa, Polietilenglicol) + antiemético primeros días (Metoclopramida 10mg/8h)</div>
+</div>
+
+<div class="protocol">
+<h3>Sedación paliativa <span class="badge badge-derivar">PROTOCOLO</span></h3>
+<p>Indicación: síntoma refractario (no responde a tratamiento convencional) en situación de últimos días.</p>
+<div class="farmaco">Midazolam SC: Bolo 2.5-5mg + Perfusión 0.5-1mg/h (infusor elastomérico)<br>Si agitación/delirium: Levomepromazina 12.5-25mg SC/8-12h<br>Mantener analgesia (Morfina SC compatible en misma jeringa)<br>Butilescopolamina 20mg SC/6h para estertores</div>
+<div class="alerta">⚠️ Requisitos: consentimiento informado (paciente/representante), registro en HC, indicación por equipo médico, evaluación periódica del nivel de sedación (Ramsay)</div>
+</div>
+
+<div class="protocol">
+<h3>Vía subcutánea — Guía rápida <span class="badge badge-ap">AP</span></h3>
+<div class="farmaco">Palomilla 21-23G en: pectoral, deltoides, abdomen, muslo<br>Cambiar cada 5-7 días. Volumen máx: 2ml en bolo, 1500ml/24h en infusión<br><br>Fármacos compatibles en misma jeringa:<br>✅ Morfina + Midazolam + Butilescopolamina<br>✅ Morfina + Haloperidol + Butilescopolamina<br>❌ NO mezclar: Dexametasona (precipita con casi todo), Diazepam, Metamizol</div>
+</div>
+</div>
+
+</div>
+
+<div style="text-align:center;padding:20px">
+<a href="index.html" class="back">← Volver a la webapp</a>
+</div>
+
+<div class="footer">
+Centro de Salud Virgen de la Caridad · Área II Cartagena · Servicio Murciano de Salud<br>
+Uso exclusivamente docente e informativo. No sustituye el juicio clínico profesional.
+</div>
+
+</body>
+</html>
