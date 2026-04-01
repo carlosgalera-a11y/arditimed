@@ -1207,6 +1207,87 @@ function scanProcessFile(f){if(!f.type.startsWith("image/")){alert("Selecciona u
 
 function scanClear(){scanB64=null;document.getElementById("scanImgPreview").style.display="none";document.getElementById("scanImgPreview").src="";document.getElementById("scanDropContent").style.display="block";document.getElementById("scanDropZone").style.borderStyle="dashed";document.getElementById("scanDropZone").style.borderColor="var(--border)";document.getElementById("scanFileIn").value="";document.getElementById("scanCtx").value="";document.getElementById("scanBtnGo").disabled=true;document.getElementById("scanResult").innerHTML="";}
 
+// Show/hide QR section based on login
+function scanInitQR(){
+  var user=firebase.auth().currentUser;
+  var section=document.getElementById("scanQRSection");
+  if(section) section.style.display=user?"block":"none";
+}
+
+function scanShowQR(){
+  var user=firebase.auth().currentUser;
+  if(!user){alert("Inicia sesión para generar tu QR personal");return;}
+  var baseUrl=window.location.origin+window.location.pathname.replace(/[^\/]*$/,'');
+  var url=baseUrl+'scan-upload.html?uid='+user.uid;
+  var display=document.getElementById("scanQRDisplay");
+  display.style.display="block";
+  document.getElementById("scanQRImg").innerHTML='<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent(url)+'" style="width:180px;height:180px;border-radius:10px;border:3px solid #fff;" />';
+  document.getElementById("scanQRCode").textContent=url;
+  document.getElementById("scanQRBtn").textContent="✅ QR generado";
+}
+
+async function scanCheckUploads(){
+  var user=firebase.auth().currentUser;
+  if(!user){alert("Inicia sesión primero");return;}
+  var list=document.getElementById("scanUploadedList");
+  list.style.display="block";
+  list.innerHTML='<p style="font-size:.82rem;color:#888;">⏳ Buscando imágenes...</p>';
+  try{
+    var snap=await db.collection("scan_uploads").where("uid","==",user.uid).where("status","==","pending").orderBy("createdAt","desc").limit(10).get();
+    if(snap.empty){
+      list.innerHTML='<p style="font-size:.82rem;color:#888;">No hay imágenes pendientes. Escanea el QR y sube desde el móvil.</p>';
+      return;
+    }
+    var html='<p style="font-size:.82rem;font-weight:700;color:#1e40af;margin-bottom:8px;">📸 '+snap.size+' imagen(es) recibida(s):</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;">';
+    snap.forEach(function(doc){
+      var d=doc.data();
+      var thumb=d.imageData?d.imageData.substring(0,500000):'';
+      html+='<div style="position:relative;border-radius:8px;overflow:hidden;border:2px solid #3b82f6;cursor:pointer;" onclick="scanLoadUploaded(\''+doc.id+'\')">';
+      if(thumb) html+='<img src="'+thumb+'" style="width:100%;aspect-ratio:1;object-fit:cover;" />';
+      html+='<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:3px 6px;font-size:.68rem;color:#fff;">'+({derma:'🩹 Derma',torax:'🫁 Tórax',osea:'🦴 Ósea',abdomen:'🔬 Abdomen',ecg:'💓 ECG',eco:'🫀 Eco'}[d.type]||d.type)+'</div>';
+      html+='</div>';
+    });
+    html+='</div><p style="font-size:.72rem;color:#888;margin-top:6px;">Toca una imagen para cargarla en el analizador</p>';
+    list.innerHTML=html;
+  }catch(e){
+    list.innerHTML='<p style="font-size:.82rem;color:#f87171;">Error: '+e.message+'</p><p style="font-size:.72rem;color:#888;">Si es un error de índice, ve a Firebase Console → Firestore → Indexes y crea un índice compuesto para scan_uploads (uid ASC, status ASC, createdAt DESC)</p>';
+  }
+}
+
+async function scanLoadUploaded(docId){
+  try{
+    var doc=await db.collection("scan_uploads").doc(docId).get();
+    if(!doc.exists)return;
+    var d=doc.data();
+    // Load image into the scan analyzer
+    var imgData=d.imageData||'';
+    if(imgData){
+      scanB64=imgData.split(',')[1]||imgData;
+      document.getElementById("scanImgPreview").src=imgData;
+      document.getElementById("scanImgPreview").style.display="block";
+      document.getElementById("scanDropContent").style.display="none";
+      document.getElementById("scanDropZone").style.borderStyle="solid";
+      document.getElementById("scanDropZone").style.borderColor="#0066cc";
+      document.getElementById("scanBtnGo").disabled=false;
+      if(d.context) document.getElementById("scanCtx").value=d.context;
+      // Set scan type
+      var typeMap={derma:'derma',torax:'torax',osea:'osea',abdomen:'abdomen',ecg:'ecg',eco:'eco'};
+      if(typeMap[d.type]){
+        var btns=document.querySelectorAll(".scan-mode-btn");
+        btns.forEach(function(b){
+          if(b.textContent.toLowerCase().indexOf(d.type)>=0||b.onclick.toString().indexOf("'"+d.type+"'")>=0){
+            scanSetType(d.type,b);
+          }
+        });
+      }
+      // Mark as loaded
+      await db.collection("scan_uploads").doc(docId).update({status:'loaded'});
+      // Scroll to analyzer
+      document.getElementById("scanDropZone").scrollIntoView({behavior:'smooth'});
+    }
+  }catch(e){console.error(e);}
+}
+
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
@@ -1891,6 +1972,7 @@ firebase.auth().onAuthStateChanged(function(user){
             btn.textContent="👤 "+nombre;
             btn.style.background="rgba(255,255,255,.2)";
         });
+        if(typeof scanInitQR==='function') scanInitQR();
         loadModeradoresFromFirestore(function(){
             isAdminLoggedIn=isAdmin();
             apShowAdminTab(isAdminLoggedIn);

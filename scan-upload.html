@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>📸 Subir Imagen — Scan IA Área II</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,system-ui,sans-serif;background:#0a1628;color:#f1f5f9;min-height:100vh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.header{text-align:center;padding:20px 16px 12px}
+.header h1{font-size:1.2rem;font-weight:800}
+.header p{font-size:.78rem;color:#94a3b8}
+.card{max-width:440px;margin:12px auto;padding:20px;background:#1a2744;border:1px solid #2d3f5e;border-radius:14px}
+.card h2{font-size:1rem;margin-bottom:8px}
+.drop{border:3px dashed #2d3f5e;border-radius:14px;padding:40px 16px;text-align:center;cursor:pointer;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:.3s}
+.drop.over{border-color:#3b82f6;background:rgba(59,130,246,.08)}
+.drop .icon{font-size:3rem}
+.drop input{display:none}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px}
+.preview-item{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1}
+.preview-item img{width:100%;height:100%;object-fit:cover}
+.preview-item .rm{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:.8rem;cursor:pointer}
+select,button{font-family:inherit}
+.type-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px}
+.type-btn{padding:10px 4px;border:2px solid #2d3f5e;border-radius:8px;background:#0a1628;color:#94a3b8;font-size:.78rem;font-weight:600;cursor:pointer;text-align:center;transition:.2s}
+.type-btn.active{border-color:#3b82f6;background:rgba(59,130,246,.1);color:#60a5fa}
+.btn-upload{width:100%;padding:14px;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:1rem;cursor:pointer;margin-top:12px}
+.btn-upload:disabled{opacity:.4;cursor:not-allowed}
+.status{text-align:center;padding:8px;font-size:.82rem;border-radius:8px;margin-top:8px}
+.status-ok{background:#052e16;color:#4ade80;border:1px solid #16a34a}
+.status-err{background:#450a0a;color:#f87171;border:1px solid #dc2626}
+.info{font-size:.72rem;color:#64748b;text-align:center;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📸 Subir imagen para Scan IA</h1>
+<p>Área II Cartagena · Las imágenes se envían a tu cuenta</p>
+</div>
+
+<div class="card">
+<h2>📋 Tipo de análisis</h2>
+<div class="type-grid" id="typeGrid">
+<div class="type-btn active" onclick="selType('derma',this)">🩹 Derma</div>
+<div class="type-btn" onclick="selType('torax',this)">🫁 Rx Tórax</div>
+<div class="type-btn" onclick="selType('osea',this)">🦴 Rx Ósea</div>
+<div class="type-btn" onclick="selType('abdomen',this)">🔬 Abdomen</div>
+<div class="type-btn" onclick="selType('ecg',this)">💓 ECG</div>
+<div class="type-btn" onclick="selType('eco',this)">🫀 Eco</div>
+</div>
+
+<div class="drop" id="dropZone" onclick="document.getElementById('fileIn').click()">
+<span class="icon">📸</span>
+<div>Toca para hacer foto o elegir imagen</div>
+<div style="font-size:.78rem;color:#64748b">JPG, PNG · Fotos clínicas, Rx, ECG</div>
+<input type="file" id="fileIn" accept="image/*" capture="environment" multiple>
+</div>
+<div class="preview-grid" id="previews"></div>
+
+<input id="ctxInput" placeholder="Contexto: edad, sexo, síntomas..." style="width:100%;padding:10px 12px;border:1px solid #2d3f5e;border-radius:8px;margin-top:12px;font-size:.85rem;background:#0a1628;color:#f1f5f9;">
+
+<button class="btn-upload" id="uploadBtn" disabled onclick="uploadAll()">📤 Enviar para análisis</button>
+
+<div id="statusMsg" style="display:none"></div>
+<p class="info">⏱️ Las imágenes aparecerán en tu Scan IA de la webapp</p>
+</div>
+
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
+  authDomain:"docenciacartagenaeste.firebaseapp.com",
+  projectId:"docenciacartagenaeste",
+  storageBucket:"docenciacartagenaeste.firebasestorage.app",
+  messagingSenderId:"1056320755107",
+  appId:"1:1056320755107:web:126637bf63c13bbb297616"
+});
+var db=firebase.firestore();
+var params=new URLSearchParams(window.location.search);
+var uid=params.get('uid');
+var selectedType='derma';
+var pendingFiles=[];
+
+if(!uid){
+  document.querySelector('.card').innerHTML='<div style="text-align:center;padding:30px"><div style="font-size:2.5rem;margin-bottom:12px">❌</div><p style="font-weight:700">Enlace inválido</p><p style="font-size:.82rem;color:#94a3b8;margin-top:8px">Este QR no contiene un ID de usuario válido. Genera un nuevo QR desde la webapp.</p></div>';
+}
+
+function selType(t,el){
+  selectedType=t;
+  document.querySelectorAll('.type-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+}
+
+var drop=document.getElementById('dropZone');
+var fileIn=document.getElementById('fileIn');
+if(drop){
+  ['dragenter','dragover'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add('over');});});
+  ['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('over');});});
+  drop.addEventListener('drop',function(ev){if(ev.dataTransfer.files.length)addFiles(ev.dataTransfer.files);});
+  fileIn.addEventListener('change',function(){if(this.files.length)addFiles(this.files);this.value='';});
+}
+
+function addFiles(fl){
+  for(var i=0;i<fl.length;i++){
+    if(fl[i].size>20*1024*1024){alert('Máximo 20MB por imagen');continue;}
+    pendingFiles.push(fl[i]);
+  }
+  renderPreviews();
+  document.getElementById('uploadBtn').disabled=pendingFiles.length===0;
+}
+
+function renderPreviews(){
+  var cont=document.getElementById('previews');
+  cont.innerHTML='';
+  pendingFiles.forEach(function(f,idx){
+    var div=document.createElement('div');div.className='preview-item';
+    var img=document.createElement('img');img.src=URL.createObjectURL(f);
+    var rm=document.createElement('button');rm.className='rm';rm.textContent='✕';
+    rm.onclick=function(e){e.stopPropagation();pendingFiles.splice(idx,1);renderPreviews();document.getElementById('uploadBtn').disabled=pendingFiles.length===0;};
+    div.appendChild(img);div.appendChild(rm);cont.appendChild(div);
+  });
+}
+
+async function uploadAll(){
+  if(!uid||pendingFiles.length===0)return;
+  var btn=document.getElementById('uploadBtn');
+  btn.disabled=true;btn.textContent='⏳ Enviando...';
+  var ctx=document.getElementById('ctxInput').value.trim();
+  var ok=0,fail=0;
+
+  for(var i=0;i<pendingFiles.length;i++){
+    try{
+      // Convert to base64
+      var b64=await fileToBase64(pendingFiles[i]);
+      // Save to Firestore under user's scan_uploads collection
+      await db.collection('scan_uploads').add({
+        uid:uid,
+        type:selectedType,
+        context:ctx,
+        imageData:b64.substring(0,500000), // Firestore doc limit ~1MB
+        imageName:pendingFiles[i].name,
+        imageSize:pendingFiles[i].size,
+        status:'pending',
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      ok++;
+    }catch(e){fail++;console.error(e);}
+  }
+
+  var msg=document.getElementById('statusMsg');
+  msg.style.display='block';
+  if(fail===0){
+    msg.className='status status-ok';
+    msg.textContent='✅ '+ok+' imagen(es) enviada(s). Abre la webapp para analizarlas.';
+    pendingFiles=[];renderPreviews();
+    btn.textContent='📤 Enviar para análisis';
+  }else{
+    msg.className='status status-err';
+    msg.textContent='⚠️ '+ok+' enviadas, '+fail+' fallidas. Reintenta las fallidas.';
+    btn.disabled=false;btn.textContent='📤 Reintentar';
+  }
+}
+
+function fileToBase64(file){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(){resolve(reader.result);};
+    reader.onerror=function(){reject(new Error('Error leyendo archivo'));};
+    reader.readAsDataURL(file);
+  });
+}
+</script>
+</body>
+</html>
