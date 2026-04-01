@@ -2165,15 +2165,46 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
               <div style="background:linear-gradient(135deg,#0a1628,#1a3050);border-radius:var(--radius);padding:22px 24px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;">
                 <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.12;">📋</div>
                 <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:6px;">📋 Plantilla de pacientes</h2>
-                <p style="opacity:.75;font-size:.88rem;font-weight:300;margin:0;">Registro de seguimiento durante la guardia. Los datos se guardan en este navegador y no se envían a ningún servidor.</p>
+                <p style="opacity:.75;font-size:.88rem;font-weight:300;margin:0;">Registro de seguimiento durante la guardia. Tus datos se sincronizan en la nube y solo tú puedes verlos.</p>
+              </div>
+
+              <!-- Supabase Auth Panel -->
+              <div id="sbAuthPanel" style="display:block;background:var(--bg-card);border:2px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">🔐</div>
+                <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;color:var(--text);">Inicia sesión para acceder</h3>
+                <p style="font-size:.82rem;color:var(--text-light);margin-bottom:16px;">Tus pacientes se guardan de forma privada en la nube. Nadie más puede verlos.</p>
+                
+                <div style="max-width:340px;margin:0 auto;">
+                  <input id="sbEmail" type="email" placeholder="Email profesional" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:var(--font-body);margin-bottom:8px;background:var(--bg-card);color:var(--text);box-sizing:border-box;" />
+                  <input id="sbPass" type="password" placeholder="Contraseña (min. 6 caracteres)" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:var(--font-body);margin-bottom:12px;background:var(--bg-card);color:var(--text);box-sizing:border-box;" />
+                  <div style="display:flex;gap:8px;margin-bottom:12px;">
+                    <button id="sbSignInBtn" onclick="sbSignIn()" style="flex:1;padding:10px;background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);">Entrar</button>
+                    <button id="sbSignUpBtn" onclick="sbSignUp()" style="flex:1;padding:10px;background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;font-family:var(--font-body);">Registrarse</button>
+                  </div>
+                  <div style="position:relative;text-align:center;margin:12px 0;"><span style="background:var(--bg-card);padding:0 12px;font-size:.78rem;color:var(--text-light);position:relative;z-index:1;">o bien</span><div style="position:absolute;top:50%;left:0;right:0;border-top:1px solid var(--border);"></div></div>
+                  <button onclick="sbSignInGoogle()" style="width:100%;padding:10px;background:#fff;color:#333;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;font-family:var(--font-body);display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+                    Continuar con Google
+                  </button>
+                </div>
+              </div>
+
+              <!-- Data panel (visible after login) -->
+              <div id="sbDataPanel" style="display:none;">
+              
+              <!-- User info bar -->
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 14px;background:var(--bg-subtle);border-radius:8px;font-size:.82rem;">
+                <span style="color:var(--text-light);">👤 <strong id="sbUserInfo"></strong></span>
+                <span id="sbStatus" style="color:var(--text-light);font-size:.75rem;margin-left:auto;"></span>
+                <button onclick="sbSignOut()" style="padding:4px 12px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.78rem;color:var(--text-light);font-family:var(--font-body);">Cerrar sesión</button>
               </div>
 
               <!-- Toolbar -->
               <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
-                <button onclick="ptAddRow()" style="background:linear-gradient(135deg,#0d6b4a,#1a8b60);color:#fff;border:none;padding:8px 16px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);display:flex;align-items:center;gap:6px;">➕ Añadir paciente</button>
-                <button onclick="ptExportCSV()" title="Exportar tabla a CSV" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">⬇️ Exportar CSV</button>
-                <button onclick="ptPrint()" title="Imprimir tabla" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🖨️ Imprimir</button>
-                <button onclick="ptClear()" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🗑️ Limpiar</button>
+                <button onclick="sbAddPaciente()" style="background:linear-gradient(135deg,#0d6b4a,#1a8b60);color:#fff;border:none;padding:8px 16px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);display:flex;align-items:center;gap:6px;">➕ Añadir paciente</button>
+                <button onclick="sbExportCSV()" title="Exportar tabla a CSV" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">⬇️ Exportar CSV</button>
+                <button onclick="sbPrint()" title="Imprimir tabla" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🖨️ Imprimir</button>
+                <button onclick="sbClearAll()" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🗑️ Limpiar</button>
               </div>
               <!-- Contador alertas + filtros -->
               <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
@@ -2431,6 +2462,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 };
               })();
               </script>
+              </div><!-- end sbDataPanel -->
             </div><!-- end panelPlantillas -->
 
 
@@ -4747,6 +4779,10 @@ if(typeof MEGA_KB !== 'undefined') {
     '';
 }
 </script>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-plantillas.js?v=20260401"></script>
 
 </body>
 </html>
