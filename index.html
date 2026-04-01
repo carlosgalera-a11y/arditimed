@@ -3246,6 +3246,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                     <option value="Alergología">🤧 Alergología</option>
                     <option value="Cirugía Menor">🩹 Cirugía Menor</option>
                     <option value="Paliativos">🕊️ Paliativos</option>
+                    <option value="Urgencias Hospitalarias">🏥 Urgencias Hospitalarias</option>
                     <option value="Protocolos Médicos">📋 Protocolos Médicos</option>
                 </select>
             </div>
@@ -4111,12 +4112,74 @@ function megaDispatch(question) {
 
     var msgs = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:"user",content:question}];
 
-    // Try Pollinations first (no key, unlimited, free)
-    // Falls back to Groq if needed
-    megaCallPollinations(sp, msgs, question, btn);
+    // OpenRouter with free model fallback chain
+    megaCallOpenRouter(sp, msgs, 0, btn);
 }
 
-function megaCallPollinations(sp, msgs, question, btn) {
+// ═══ OPENROUTER — Free models fallback chain ═══
+var MEGA_OR_MODELS = [
+    "deepseek/deepseek-chat-v3-0324",
+    "google/gemma-3-27b-it:free",
+    "meta-llama/llama-4-maverick:free"
+];
+
+function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
+    var model = MEGA_OR_MODELS[modelIdx];
+    if (!model) {
+        // All OpenRouter models failed, try Pollinations as last resort
+        megaCallPollinations(sp, msgs, btn);
+        return;
+    }
+
+    if (btn) btn.textContent = "Pensando...";
+
+    fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://carlosgalera-a11y.github.io/Cartagenaeste/",
+            "X-Title": "MegaCuaderno Clinico Area II Cartagena"
+        },
+        body: JSON.stringify({
+            model: model,
+            messages: [{role:"system",content:sp}].concat(msgs),
+            max_tokens: 1200,
+            temperature: 0.3
+        })
+    })
+    .then(function(r) {
+        if (r.status === 429 || r.status === 503 || r.status === 502) {
+            // Rate limit or model down — try next
+            if (modelIdx + 1 < MEGA_OR_MODELS.length) {
+                setTimeout(function(){ megaCallOpenRouter(sp, msgs, modelIdx+1, btn); }, 1000);
+            } else {
+                megaCallPollinations(sp, msgs, btn);
+            }
+            return null;
+        }
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+    })
+    .then(function(d) {
+        if (!d) return;
+        var ans = (d.choices && d.choices[0] && d.choices[0].message)
+            ? d.choices[0].message.content : null;
+        if (!ans) throw new Error("empty");
+        megaOnAnswer(ans, btn);
+    })
+    .catch(function(e) {
+        // Try next model on error
+        if (modelIdx + 1 < MEGA_OR_MODELS.length) {
+            megaCallOpenRouter(sp, msgs, modelIdx+1, btn);
+        } else {
+            megaCallPollinations(sp, msgs, btn);
+        }
+    });
+}
+
+// ═══ POLLINATIONS — Last resort fallback (no key needed) ═══
+function megaCallPollinations(sp, msgs, btn) {
+    if (btn) btn.textContent = "Reintentando...";
     var allMsgs = [{role:"system", content:sp}].concat(msgs);
     fetch("https://text.pollinations.ai/openai", {
         method: "POST",
@@ -4138,52 +4201,8 @@ function megaCallPollinations(sp, msgs, question, btn) {
         if (!ans) throw new Error("empty");
         megaOnAnswer(ans, btn);
     })
-    .catch(function() {
-        // Fallback: Groq
-        megaCallGroq(sp, msgs, 0, btn);
-    });
-}
-
-function megaCallGroq(sp, msgs, modelIdx, btn) {
-    var model = MEGA_MODELS[modelIdx] || MEGA_MODELS[0];
-    // Try user key first, then embedded
-    var key = "";
-    try { key = getScanGroqKey(); } catch(e) {}
-    if (!key) key = _mgk;
-
-    fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {"Content-Type":"application/json","Authorization":"Bearer " + key},
-        body: JSON.stringify({
-            model: model,
-            messages: [{role:"system",content:sp}].concat(msgs),
-            max_tokens: 900,
-            temperature: 0.2
-        })
-    })
-    .then(function(r) {
-        if (r.status === 429) {
-            // Try next model
-            if (modelIdx + 1 < MEGA_MODELS.length) {
-                setTimeout(function(){ megaCallGroq(sp, msgs, modelIdx+1, btn); }, 1500);
-            } else {
-                megaAppendMsg("system","API temporalmente saturada. Intenta de nuevo en 30 segundos.");
-                megaReset(btn);
-            }
-            return;
-        }
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-    })
-    .then(function(d) {
-        if (!d) return;
-        var ans = (d.choices && d.choices[0] && d.choices[0].message)
-            ? d.choices[0].message.content : null;
-        if (!ans) throw new Error("empty");
-        megaOnAnswer(ans, btn);
-    })
     .catch(function(e) {
-        megaAppendMsg("system","Error: " + (e.message||"desconocido") + ". Comprueba la conexion.");
+        megaAppendMsg("system","No se pudo conectar con ninguna IA. Comprueba tu conexion a internet.");
         megaReset(btn);
     });
 }

@@ -1034,6 +1034,148 @@
           "confort"
         ]
       }
+    ],
+    "Urgencias Hospitalarias": [
+      {
+        "title": "Evaluación primaria del politraumatizado — Guía xABCDE",
+        "description": "Algoritmo xABCDE para la evaluación inicial del paciente traumatizado: control de hemorragia exsanguinante, vía aérea, ventilación, circulación, discapacidad neurológica y exposición.",
+        "type": "protocolo",
+        "tags": [
+          "xabcde",
+          "politrauma",
+          "evaluacion primaria",
+          "trauma"
+        ]
+      },
+      {
+        "title": "Control de hemorragia externa exsanguinante (x)",
+        "description": "Presión directa, empaquetamiento de heridas y torniquete. Indicaciones, técnica de aplicación y tiempo máximo. Conversión de torniquete.",
+        "type": "protocolo",
+        "tags": [
+          "hemorragia",
+          "torniquete",
+          "x",
+          "sangrado"
+        ]
+      },
+      {
+        "title": "Manejo de la vía aérea en trauma (A)",
+        "description": "Evaluación de permeabilidad, maniobras básicas (tracción mandibular, cánulas), dispositivos supraglóticos, ISR modificada, cricotiroidotomía. Restricción de movimiento cervical.",
+        "type": "protocolo",
+        "tags": [
+          "via aerea",
+          "intubacion",
+          "isr",
+          "cricotiroidotomia",
+          "airway"
+        ]
+      },
+      {
+        "title": "Ventilación y lesiones torácicas (B)",
+        "description": "Neumotórax a tensión, hemotórax masivo, neumotórax abierto, contusión pulmonar. Descompresión con aguja, toracostomía con dedo, drenaje torácico.",
+        "type": "protocolo",
+        "tags": [
+          "neumotorax",
+          "hemotorax",
+          "torax",
+          "breathing",
+          "drenaje"
+        ]
+      },
+      {
+        "title": "Circulación, shock y resucitación con volumen (C)",
+        "description": "Diagnóstico de shock (hemorrágico, obstructivo, distributivo, cardiogénico). Hipotensión permisiva. Protocolo de transfusión masiva. FAST y eFAST. Estabilización pélvica.",
+        "type": "protocolo",
+        "tags": [
+          "shock",
+          "hemorragia",
+          "transfusion masiva",
+          "fast",
+          "pelvis",
+          "circulation"
+        ]
+      },
+      {
+        "title": "Evaluación neurológica y TCE (D)",
+        "description": "Glasgow Coma Scale, pupilas, signos de lateralización. Prevención de lesión cerebral secundaria. Manejo de hipertensión intracraneal. Lesión medular.",
+        "type": "protocolo",
+        "tags": [
+          "glasgow",
+          "tce",
+          "neurologia",
+          "medular",
+          "disability"
+        ]
+      },
+      {
+        "title": "Exposición y control ambiental (E)",
+        "description": "Prevención de hipotermia, tríada letal (hipotermia-acidosis-coagulopatía). Exposición completa preservando dignidad. Calentamiento activo.",
+        "type": "protocolo",
+        "tags": [
+          "hipotermia",
+          "triada letal",
+          "exposicion",
+          "environment"
+        ]
+      },
+      {
+        "title": "Trauma en poblaciones especiales",
+        "description": "Particularidades en pediatría (reserva fisiológica, dosis por peso), embarazo (desplazamiento uterino, cesárea perimortem), ancianos (fragilidad, anticoagulantes) y obesos.",
+        "type": "protocolo",
+        "tags": [
+          "pediatria",
+          "embarazo",
+          "anciano",
+          "obeso",
+          "especiales"
+        ]
+      },
+      {
+        "title": "Comunicación y trabajo en equipo — Resucitación trauma",
+        "description": "Liderazgo, asertividad graduada (CUS), comunicación en bucle cerrado, huddle pre-llegada, MIST, S-xABCDE-BAR, debriefing post-evento.",
+        "type": "protocolo",
+        "tags": [
+          "comunicacion",
+          "equipo",
+          "mist",
+          "sbar",
+          "debriefing",
+          "teamwork"
+        ]
+      },
+      {
+        "title": "Quemaduras — Evaluación inicial y resucitación",
+        "description": "Regla de los 9, fórmula de Parkland, manejo de vía aérea en quemado, escarotomías, criterios de derivación a unidad de quemados.",
+        "type": "protocolo",
+        "tags": [
+          "quemadura",
+          "parkland",
+          "escarotomia",
+          "burn"
+        ]
+      },
+      {
+        "title": "Trauma musculoesquelético",
+        "description": "Fracturas abiertas (Gustilo-Anderson), síndrome compartimental, luxaciones con compromiso vascular, inmovilización, tracción.",
+        "type": "protocolo",
+        "tags": [
+          "fractura",
+          "compartimental",
+          "musculoesqueletico",
+          "inmovilizacion"
+        ]
+      },
+      {
+        "title": "Transferencia a cuidados definitivos — S-xABCDE-BAR",
+        "description": "Criterios de transferencia, herramienta de comunicación S-xABCDE-BAR, documentación, preparación del traslado.",
+        "type": "protocolo",
+        "tags": [
+          "transferencia",
+          "traslado",
+          "sxabcdebar",
+          "definitivo"
+        ]
+      }
     ]
   }
 }
