@@ -4116,30 +4116,41 @@ function megaDispatch(question) {
     megaCallOpenRouter(sp, msgs, 0, btn);
 }
 
-// ═══ OPENROUTER — Free models fallback chain ═══
+// ═══ OPENROUTER — 3-tier model chain ═══
+// Nivel 1: Modelos :free (50/día sin créditos, 1000/día con $10)
+// Nivel 2: DeepSeek directo (sin :free) — ~$0.27/M tokens, prácticamente gratis
+// Nivel 3: Pollinations (último recurso, sin key)
+var MEGA_OR_KEY = "REDACTED_OPENROUTER_3_2026-04";
 var MEGA_OR_MODELS = [
-    "deepseek/deepseek-chat-v3-0324",
+    "deepseek/deepseek-chat-v3-0324:free",
     "google/gemma-3-27b-it:free",
-    "meta-llama/llama-4-maverick:free"
+    "meta-llama/llama-4-maverick:free",
+    "deepseek/deepseek-chat-v3-0324"
 ];
 
 function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
     var model = MEGA_OR_MODELS[modelIdx];
     if (!model) {
-        // All OpenRouter models failed, try Pollinations as last resort
         megaCallPollinations(sp, msgs, btn);
         return;
     }
 
-    if (btn) btn.textContent = "Pensando...";
+    var isFree = model.indexOf(":free") >= 0;
+    if (btn) btn.textContent = isFree ? "Pensando..." : "Consultando DeepSeek...";
+
+    var headers = {
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://carlosgalera-a11y.github.io/Cartagenaeste/",
+        "X-Title": "MegaCuaderno Clinico Area II Cartagena"
+    };
+    // Add auth header — needed for both free (higher limits) and paid models
+    if (MEGA_OR_KEY) {
+        headers["Authorization"] = "Bearer " + MEGA_OR_KEY;
+    }
 
     fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://carlosgalera-a11y.github.io/Cartagenaeste/",
-            "X-Title": "MegaCuaderno Clinico Area II Cartagena"
-        },
+        headers: headers,
         body: JSON.stringify({
             model: model,
             messages: [{role:"system",content:sp}].concat(msgs),
@@ -4149,12 +4160,16 @@ function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
     })
     .then(function(r) {
         if (r.status === 429 || r.status === 503 || r.status === 502) {
-            // Rate limit or model down — try next
             if (modelIdx + 1 < MEGA_OR_MODELS.length) {
-                setTimeout(function(){ megaCallOpenRouter(sp, msgs, modelIdx+1, btn); }, 1000);
+                setTimeout(function(){ megaCallOpenRouter(sp, msgs, modelIdx+1, btn); }, 800);
             } else {
                 megaCallPollinations(sp, msgs, btn);
             }
+            return null;
+        }
+        if (r.status === 402) {
+            // No credits — skip paid models, go to Pollinations
+            megaCallPollinations(sp, msgs, btn);
             return null;
         }
         if (!r.ok) throw new Error("HTTP " + r.status);
@@ -4168,7 +4183,6 @@ function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
         megaOnAnswer(ans, btn);
     })
     .catch(function(e) {
-        // Try next model on error
         if (modelIdx + 1 < MEGA_OR_MODELS.length) {
             megaCallOpenRouter(sp, msgs, modelIdx+1, btn);
         } else {
