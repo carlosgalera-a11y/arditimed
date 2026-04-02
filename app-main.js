@@ -1,6 +1,6 @@
 
 // ── API KEY PROTECTION ───────────────────────────────
-var _KP=["c2stb3ItdjEtYjc4YzZjM2YzZ","Dg5YmY3MWU3MjBkNzNiZjg1ND","FiNDNmYTBkMjY5YWQ3MTM5MTY","2OGNiYTg4MDkzMzQ2Mzk5MQ=="];
+var _KP=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
 function _dk(){try{return atob(_KP.join(""));}catch(e){return "";}}
 
 // ── CALCULADORAS MÉDICAS ──────────────────────────────
