@@ -1386,52 +1386,54 @@ async function scanLoadUploaded(docId){
 
 var GEMINI_KEY="AIzaSyC1sWG4JvoIbbrkawlp6wOG8UxVwbUye1A";
 var GEMINI_MODEL="gemini-2.5-flash-preview-05-20";
+var SCAN_VISION_MODELS=["qwen/qwen-2.5-vl-32b-instruct:free","google/gemma-3-27b-it:free"];
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
-    btn.disabled=true;btn.innerHTML="⏳ Analizando con Gemini...";
-    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Gemini 2.5 Flash procesando. Puede tardar unos segundos...</div></div>';
+    btn.disabled=true;btn.innerHTML="⏳ Analizando...";
+    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA de visión...</div></div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
-    
-    // Try Gemini first, then OpenRouter as fallback
     var txt=null;var usedModel="";
-    
-    // 1. Gemini 2.5 Flash (free, 15 req/min, vision)
-    if(!txt && GEMINI_KEY){
+    var OR_KEY="REDACTED_OPENROUTER_3_2026-04";
+
+    // 1. Try OpenRouter vision models (Qwen2.5-VL-32B first)
+    for(var mi=0;mi<SCAN_VISION_MODELS.length&&!txt;mi++){
       try{
+        var vm=SCAN_VISION_MODELS[mi];
+        res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
+        var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+          method:"POST",
+          headers:{"Content-Type":"application/json","Authorization":"Bearer "+OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
+          body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})
+        });
+        if(r.status===429||r.status===502||r.status===503)continue;
+        if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
+      }catch(e){continue;}
+    }
+
+    // 2. Gemini 2.5 Flash fallback
+    if(!txt&&GEMINI_KEY){
+      try{
+        res.querySelector('div:last-child').textContent='Probando Gemini Flash...';
         var gr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+GEMINI_MODEL+":generateContent?key="+GEMINI_KEY,{
           method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            contents:[{parts:[
-              {text:sys+"\n\n"+(ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática.")},
-              {inline_data:{mime_type:mt,data:scanB64}}
-            ]}],
-            generationConfig:{maxOutputTokens:2000,temperature:0.3}
-          })
+          body:JSON.stringify({contents:[{parts:[{text:sys+"\n\n"+(ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática.")},{inline_data:{mime_type:mt,data:scanB64}}]}],generationConfig:{maxOutputTokens:2000,temperature:0.3}})
         });
         if(gr.ok){var gd=await gr.json();txt=gd.candidates?.[0]?.content?.parts?.[0]?.text||null;if(txt)usedModel="Gemini 2.5 Flash";}
       }catch(e){}
     }
-    
-    // 2. OpenRouter fallback (vision models)
-    if(!txt){
-      try{
-        var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+getScanGroqKey(),"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},body:JSON.stringify({model:SCAN_GROQ_MODEL,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})});
-        if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel=SCAN_GROQ_MODEL;}
-      }catch(e){}
-    }
-    
+
     if(txt){
-        var fmt=txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-        var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por inteligencia artificial y <strong>NO constituye un diagnóstico médico</strong>, acto clínico ni base para decisiones terapéuticas. Clasificación: sistema de IA de alto riesgo en contexto sanitario. Uso restringido a formación y docencia. El diagnóstico definitivo requiere valoración presencial por un profesional sanitario.</div>';
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
+        var fmt=typeof fmtClinical==='function'?fmtClinical(txt):txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+        var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por inteligencia artificial y <strong>NO constituye un diagnóstico médico</strong>, acto clínico ni base para decisiones terapéuticas.</div>';
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div>'+fmt+"</div>";
         scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
     }else{
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen. Comprueba tu conexión e inténtalo de nuevo.</div></div>';
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen. Los modelos de visión pueden estar saturados. Inténtalo de nuevo en unos segundos.</div></div>';
     }
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
 }
