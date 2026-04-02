@@ -1384,7 +1384,7 @@ async function scanLoadUploaded(docId){
   }catch(e){console.error(e);}
 }
 
-var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];var SCAN_OR_KEY="REDACTED_OPENROUTER_2_2026-04";
+var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];var SCAN_OR_KEY="REDACTED_OPENROUTER_3_2026-04";
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
