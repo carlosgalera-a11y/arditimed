@@ -232,9 +232,23 @@
         </div>
     </footer>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script>
-        // Datos de documentos por categoría
-        const documentos = {
+        // Firebase config (same as app.html)
+        firebase.initializeApp({
+            apiKey: "AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
+            authDomain: "docenciacartagenaeste.firebaseapp.com",
+            projectId: "docenciacartagenaeste",
+            storageBucket: "docenciacartagenaeste.firebasestorage.app",
+            messagingSenderId: "1056320755107",
+            appId: "1:1056320755107:web:126637bf63c13bbb297616"
+        });
+        var db = firebase.firestore();
+
+        // Datos ESTÁTICOS de documentos por categoría (existentes en el repo)
+        const documentosEstaticos = {
             "Cardiologia": {
                 icon: "❤️",
                 docs: [
@@ -260,7 +274,7 @@
                 ]
             },
             "Endocrinologia": {
-                icon: "🩺",
+                icon: "🔬",
                 docs: [
                     "DM2-Algoritmo-2026.pdf",
                     "Disfuncion-Tiroidea.pdf",
@@ -340,57 +354,137 @@
             }
         };
 
+        // Iconos por categoría para docs aprobados de Firebase
+        const iconosCategorias = {
+            "Cardiología":"❤️","Dermatología":"🩺","Digestivo":"🫁","Endocrinología":"🔬",
+            "Geriatría":"👴","Ginecología":"🤰","Hematología":"🩸","Infecciosas":"🦠",
+            "Nefrología":"🫘","Neumología":"🫁","Neurología":"🧠","ORL":"👂",
+            "Oftalmología":"👁️","Pediatría":"👶","Psiquiatría":"🧠","Reumatología":"🦴",
+            "Traumatología":"🦴","Urología":"🔬","Alergología":"🤧","Paliativos":"🕊️",
+            "Urgencias":"🚨","Urgencias Hospitalarias":"🏥","Protocolos Médicos":"📋",
+            "Cirugía Menor":"🔪","Enfermería":"👩‍⚕️","Pacientes":"👤","Otro":"📌"
+        };
+
+        // Documentos aprobados desde Firebase (se cargan dinámicamente)
+        let docsAprobados = {}; // { categoria: [{titulo, url, fileName, sizeMB, autorNombre, fechaAprobacion}] }
+
         function formatearNombre(nombre) {
-            return nombre.replace(/-/g, ' ').replace('.pdf', '');
+            return nombre.replace(/-/g, ' ').replace('.pdf', '').replace('.PDF', '');
         }
 
         function obtenerUrlDescarga(categoria, doc) {
-            return `https://carlosgalera-a11y.github.io/Cartagenaeste/pdfs/${categoria.replace(' ', '_').toLowerCase()}/${doc}`;
+            return `https://carlosgalera-a11y.github.io/Cartagenaeste/pdfs/${categoria.replace(/ /g, '_').toLowerCase()}/${doc}`;
         }
 
-        function renderizarDocumentos(filtro = '') {
+        function renderizarDocumentos(filtro) {
+            filtro = filtro || '';
             const grid = document.getElementById('categoriasGrid');
             const filtroLower = filtro.toLowerCase();
             
             let totalDocs = 0;
+            let totalCats = 0;
             let html = '';
 
-            for (const [cat, data] of Object.entries(documentos).sort()) {
+            // 1. Renderizar categorías estáticas
+            for (const [cat, data] of Object.entries(documentosEstaticos).sort()) {
                 const docsFiltrados = data.docs.filter(d => 
                     cat.toLowerCase().includes(filtroLower) || 
                     d.toLowerCase().includes(filtroLower)
                 );
-
                 if (docsFiltrados.length === 0 && filtro) continue;
 
-                totalDocs += data.docs.length;
+                // Buscar si hay docs aprobados en esta misma categoría (sin tilde)
+                const catNorm = cat.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                let aprobadosEnCat = [];
+                for (const [aCat, aDocs] of Object.entries(docsAprobados)) {
+                    const aCatNorm = aCat.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                    if (aCatNorm === catNorm) {
+                        aprobadosEnCat = aDocs.filter(d => 
+                            !filtro || cat.toLowerCase().includes(filtroLower) || 
+                            (d.titulo||'').toLowerCase().includes(filtroLower) ||
+                            (d.fileName||'').toLowerCase().includes(filtroLower)
+                        );
+                    }
+                }
 
-                html += `
-                    <div class="categoria-card">
-                        <div class="categoria-titulo">
-                            <span class="categoria-icon">${data.icon}</span>
-                            <span>${cat}</span>
-                            <span class="doc-count">${data.docs.length}</span>
-                        </div>
-                        <div class="documentos-list">
-                `;
+                const totalEnCat = data.docs.length + aprobadosEnCat.length;
+                totalDocs += totalEnCat;
+                totalCats++;
+
+                html += `<div class="categoria-card">
+                    <div class="categoria-titulo">
+                        <span class="categoria-icon">${data.icon}</span>
+                        <span>${cat}</span>
+                        <span class="doc-count">${totalEnCat}</span>
+                    </div>
+                    <div class="documentos-list">`;
 
                 data.docs.forEach(doc => {
                     const nombreFormato = formatearNombre(doc);
                     const url = obtenerUrlDescarga(cat, doc);
-                    
-                    html += `
-                        <div class="documento-item">
-                            <span class="documento-nombre">📄 ${nombreFormato}</span>
-                            <a href="${url}" target="_blank" class="documento-btn">Descargar</a>
-                        </div>
-                    `;
+                    html += `<div class="documento-item">
+                        <span class="documento-nombre">📄 ${nombreFormato}</span>
+                        <a href="${url}" target="_blank" class="documento-btn">Descargar</a>
+                    </div>`;
                 });
 
-                html += `
+                // Docs aprobados en esta categoría
+                aprobadosEnCat.forEach(doc => {
+                    html += `<div class="documento-item" style="border-left:3px solid #22c55e;">
+                        <div style="flex:1;">
+                            <span class="documento-nombre">📄 ${escHtml(doc.titulo || doc.fileName)}</span>
+                            <div style="font-size:.72rem;color:#16a34a;margin-top:2px;">✅ Aprobado${doc.autorNombre ? ' · por '+escHtml(doc.autorNombre) : ''}</div>
                         </div>
+                        <a href="${doc.url}" target="_blank" class="documento-btn" style="background:#16a34a;">Abrir</a>
+                    </div>`;
+                });
+
+                // Marcar esta categoría como ya procesada para evitar duplicados
+                for (const aCat of Object.keys(docsAprobados)) {
+                    const aCatNorm = aCat.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                    if (aCatNorm === catNorm) {
+                        docsAprobados['__rendered_' + aCat] = true;
+                    }
+                }
+
+                html += `</div></div>`;
+            }
+
+            // 2. Renderizar categorías que SOLO existen en Firebase (no estáticas)
+            for (const [cat, docs] of Object.entries(docsAprobados)) {
+                if (cat.startsWith('__rendered_') || docsAprobados['__rendered_' + cat]) continue;
+                if (!Array.isArray(docs) || docs.length === 0) continue;
+
+                const docsFiltrados = docs.filter(d => 
+                    !filtro || cat.toLowerCase().includes(filtroLower) || 
+                    (d.titulo||'').toLowerCase().includes(filtroLower) ||
+                    (d.fileName||'').toLowerCase().includes(filtroLower)
+                );
+                if (docsFiltrados.length === 0 && filtro) continue;
+
+                totalDocs += docsFiltrados.length;
+                totalCats++;
+                const icon = iconosCategorias[cat] || '📂';
+
+                html += `<div class="categoria-card" style="border-color:#22c55e;">
+                    <div class="categoria-titulo">
+                        <span class="categoria-icon">${icon}</span>
+                        <span>${escHtml(cat)}</span>
+                        <span class="doc-count" style="background:#16a34a;">${docsFiltrados.length}</span>
                     </div>
-                `;
+                    <div class="documentos-list">`;
+
+                docsFiltrados.forEach(doc => {
+                    html += `<div class="documento-item" style="border-left:3px solid #22c55e;">
+                        <div style="flex:1;">
+                            <span class="documento-nombre">📄 ${escHtml(doc.titulo || doc.fileName)}</span>
+                            <div style="font-size:.72rem;color:#16a34a;margin-top:2px;">✅ Aprobado${doc.autorNombre ? ' · por '+escHtml(doc.autorNombre) : ''}</div>
+                        </div>
+                        <a href="${doc.url}" target="_blank" class="documento-btn" style="background:#16a34a;">Abrir</a>
+                    </div>`;
+                });
+
+                html += `</div></div>`;
             }
 
             if (!html) {
@@ -398,10 +492,13 @@
             }
 
             grid.innerHTML = html;
+            document.getElementById('statsText').innerHTML = 
+                `<strong>${totalCats}</strong> categorías | <strong>${totalDocs}</strong> documentos disponibles`;
+        }
 
-            // Actualizar estadísticas
-            const stats = `<strong>${Object.keys(documentos).length}</strong> categorías | <strong>${totalDocs}</strong> documentos disponibles`;
-            document.getElementById('statsText').innerHTML = stats;
+        function escHtml(t) {
+            if (!t) return '';
+            return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
 
         function buscar() {
@@ -409,14 +506,44 @@
             renderizarDocumentos(query);
         }
 
+        // Cargar documentos aprobados de Firebase
+        function cargarDocsAprobados() {
+            db.collection("documentos_aprobados")
+                .where("visible", "==", true)
+                .orderBy("fechaAprobacion", "desc")
+                .get()
+                .then(function(snap) {
+                    docsAprobados = {};
+                    snap.forEach(function(doc) {
+                        var d = doc.data();
+                        var cat = d.categoria || "Otro";
+                        if (!docsAprobados[cat]) docsAprobados[cat] = [];
+                        docsAprobados[cat].push({
+                            titulo: d.titulo,
+                            url: d.url,
+                            fileName: d.fileName,
+                            sizeMB: d.sizeMB,
+                            autorNombre: d.autorNombre,
+                            fechaAprobacion: d.fechaAprobacion
+                        });
+                    });
+                    renderizarDocumentos(document.getElementById('searchInput').value);
+                })
+                .catch(function(err) {
+                    console.warn("No se pudieron cargar docs aprobados:", err.message);
+                    renderizarDocumentos('');
+                });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            renderizarDocumentos();
+            // Primero render estático, luego carga Firebase
+            renderizarDocumentos('');
+            cargarDocsAprobados();
             
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 renderizarDocumentos(e.target.value);
             });
 
-            // Menú hamburguesa
             document.getElementById('menuBtn')?.addEventListener('click', () => {
                 document.getElementById('mainNav').classList.toggle('active');
             });

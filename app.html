@@ -2151,12 +2151,37 @@
             <div style="margin-bottom:14px;">
                 <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">📂 Sección de destino *</label>
                 <select id="subirSeccion" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.9rem;font-family:var(--font-body);background:#fff;">
-                    <option value="">-- Selecciona una sección --</option>
-                    <option value="Protocolos AP">📋 Protocolos Atención Primaria</option>
-                    <option value="Protocolos Urgencias">🚨 Protocolos Urgencias</option>
-                    <option value="Profesionales">🩺 Profesionales / Cuaderno IA</option>
+                    <option value="">-- Selecciona una categoría --</option>
+                    <optgroup label="📚 Especialidades Médicas">
+                    <option value="Cardiología">❤️ Cardiología</option>
+                    <option value="Dermatología">🩺 Dermatología</option>
+                    <option value="Digestivo">🫁 Digestivo</option>
+                    <option value="Endocrinología">🔬 Endocrinología</option>
+                    <option value="Geriatría">👴 Geriatría</option>
+                    <option value="Ginecología">🤰 Ginecología</option>
+                    <option value="Hematología">🩸 Hematología</option>
+                    <option value="Infecciosas">🦠 Infecciosas</option>
+                    <option value="Nefrología">🫘 Nefrología</option>
+                    <option value="Neumología">🫁 Neumología</option>
+                    <option value="Neurología">🧠 Neurología</option>
+                    <option value="ORL">👂 ORL</option>
+                    <option value="Oftalmología">👁️ Oftalmología</option>
+                    <option value="Pediatría">👶 Pediatría</option>
+                    <option value="Psiquiatría">🧠 Psiquiatría</option>
+                    <option value="Reumatología">🦴 Reumatología</option>
+                    <option value="Traumatología">🦴 Traumatología</option>
+                    <option value="Urología">🔬 Urología</option>
+                    <option value="Alergología">🤧 Alergología</option>
+                    <option value="Paliativos">🕊️ Paliativos</option>
+                    </optgroup>
+                    <optgroup label="🏥 Áreas Asistenciales">
+                    <option value="Urgencias">🚨 Urgencias</option>
+                    <option value="Urgencias Hospitalarias">🏥 Urgencias Hospitalarias</option>
+                    <option value="Protocolos Médicos">📋 Protocolos Médicos</option>
+                    <option value="Cirugía Menor">🔪 Cirugía Menor</option>
                     <option value="Enfermería">👩‍⚕️ Enfermería</option>
                     <option value="Pacientes">👤 Pacientes</option>
+                    </optgroup>
                     <option value="Otro">📌 Otro (especifica en descripción)</option>
                 </select>
             </div>
@@ -3792,8 +3817,36 @@ function moderarPropuesta(docId, nuevoEstado, motivo){
             cargarPropuestas(modFiltroActual);
             contarPendientes();
             if(nuevoEstado==="aprobado"){
-                // Notificar en consola (en producción se enviaría email via Cloud Function)
-                console.log("✅ Propuesta aprobada:", docId);
+                // Guardar en documentos_aprobados para que aparezca en categorías
+                db.collection("propuestas_contenido").doc(docId).get().then(function(snap){
+                    if(!snap.exists) return;
+                    var p = snap.data();
+                    var docAprobado = {
+                        titulo:          p.titulo || p.fileName || "Documento",
+                        categoria:       p.seccion || "Otro",
+                        url:             p.url || "",
+                        fileName:        p.fileName || "",
+                        tipo:            p.tipo || "archivo",
+                        sizeMB:          parseFloat(p.sizeMB) || 0,
+                        descripcion:     p.descripcion || "",
+                        autorEmail:      p.email || "",
+                        autorNombre:     p.nombre || "",
+                        aprobadoPor:     user.email,
+                        aprobadoNombre:  user.displayName || user.email,
+                        fechaAprobacion: new Date(),
+                        propuestaId:     docId,
+                        visible:         true
+                    };
+                    db.collection("documentos_aprobados").add(docAprobado).then(function(){
+                        console.log("✅ Documento guardado en categoría:", docAprobado.categoria);
+                    }).catch(function(e){ console.error("Error guardando doc aprobado:", e); });
+                });
+            }
+            if(nuevoEstado==="rechazado"){
+                // Si se revierte una aprobación, ocultar el documento de la colección
+                db.collection("documentos_aprobados").where("propuestaId","==",docId).get().then(function(snap){
+                    snap.forEach(function(doc){ doc.ref.update({visible:false}); });
+                }).catch(function(){});
             }
         })
         .catch(function(err){ alert("Error: "+err.message); });

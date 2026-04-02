@@ -52,6 +52,13 @@ service cloud.firestore {
       allow write: if isSuperAdmin();
     }
 
+    // === DOCUMENTOS APROBADOS (público lectura, solo moderadores escriben) ===
+    match /documentos_aprobados/{docId} {
+      allow read: if true;
+      allow create, update: if isAuth();
+      allow delete: if isSuperAdmin();
+    }
+
     // === GUARDIA_CAMBIOS ===
     match /guardia_cambios/{docId} {
       allow read, write: if isAuth();

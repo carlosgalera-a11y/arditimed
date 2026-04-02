@@ -8,6 +8,14 @@
         { "fieldPath": "timestamp", "order": "DESCENDING" },
         { "fieldPath": "__name__", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "documentos_aprobados",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visible", "order": "ASCENDING" },
+        { "fieldPath": "fechaAprobacion", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
