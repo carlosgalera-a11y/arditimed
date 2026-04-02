@@ -617,7 +617,7 @@ function updateStatus(){var el=document.getElementById("statusBadge"),b=document
 function cambiarProvider(){var v=document.getElementById("cfgProvider").value;document.getElementById("groqConfig").style.display=v==="groq"?"block":"none";document.getElementById("qwenConfig").style.display=v==="qwen"?"block":"none";}
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 async function llamarIA(up,sp){
-  var DS_KEY='';// DeepSeek API key - set below after registration
+  var DS_KEY='REDACTED_DEEPSEEK_OLD_2026-04';// DeepSeek API key - set below after registration
   var OR_KEY='REDACTED_OPENROUTER_3_2026-04';
   var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
   var isHTTPS=location.protocol==='https:';

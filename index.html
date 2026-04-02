@@ -4188,7 +4188,7 @@ function megaDispatch(question) {
 
 function megaCallNAS(sp, msgs, btn) {
     // Only try NAS on HTTP (HTTPS blocks mixed content)
-    if(location.protocol==='https:'){megaCallPollinations(sp,msgs,btn,true);return;}
+    if(location.protocol==='https:'){megaCallDeepSeek(sp,msgs,btn);return;}
     var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
     if (btn) btn.textContent = "Pensando...";
     fetch(NAS_URL+'/ai/chat', {
@@ -4206,6 +4206,32 @@ function megaCallNAS(sp, msgs, btn) {
         megaAppendMsg('bot',c);
         megaIsBusy=false;
         if(btn){btn.disabled=false;btn.textContent='Enviar';}
+    }).catch(function(){
+        megaCallPollinations(sp, msgs, btn, true);
+    });
+}
+
+var MEGA_DS_KEY = "REDACTED_DEEPSEEK_OLD_2026-04";
+
+function megaCallDeepSeek(sp, msgs, btn) {
+    if (!MEGA_DS_KEY) { megaCallPollinations(sp, msgs, btn, true); return; }
+    if (btn) btn.textContent = "Consultando DeepSeek...";
+    fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: {"Content-Type":"application/json","Authorization":"Bearer "+MEGA_DS_KEY},
+        body: JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:sp}].concat(msgs),max_tokens:1200,temperature:0.3})
+    }).then(function(r){
+        if(!r.ok) throw new Error("DS error "+r.status);
+        return r.json();
+    }).then(function(d){
+        var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
+        if(!c) throw new Error("No content");
+        c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+        if(!c) throw new Error("Empty");
+        megaHistory.push({role:"assistant",content:c});
+        megaAppendMsg("bot",c);
+        megaIsBusy=false;
+        if(btn){btn.disabled=false;btn.textContent="Enviar";}
     }).catch(function(){
         megaCallPollinations(sp, msgs, btn, true);
     });

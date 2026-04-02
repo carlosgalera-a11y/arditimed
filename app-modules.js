@@ -35,13 +35,20 @@ var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:
 async function enfCallOR(prompt,sysPrompt,idx){
   idx=idx||0;
   var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
-  var DS_KEY='';
+  var DS_KEY='REDACTED_DEEPSEEK_OLD_2026-04';
   var msgs=[{role:'system',content:sysPrompt},{role:'user',content:prompt}];
   // Try NAS first (keys hidden) — only on HTTP to avoid mixed content
   if(idx===0 && location.protocol!=='https:'){
     try{
       var rn=await fetch(NAS_URL+'/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3})});
       if(rn.ok){var dn=await rn.json();var na=(dn.choices&&dn.choices[0]&&dn.choices[0].message)?dn.choices[0].message.content:null;if(na)return na;}
+    }catch(e){}
+  }
+  // Try DeepSeek direct (5M free tokens, no rate limit)
+  if(idx<=1 && DS_KEY){
+    try{
+      var rd=await fetch('https://api.deepseek.com/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},body:JSON.stringify({model:'deepseek-chat',messages:msgs,max_tokens:2000,temperature:0.3})});
+      if(rd.ok){var dd=await rd.json();var da=(dd.choices&&dd.choices[0]&&dd.choices[0].message)?dd.choices[0].message.content:null;if(da)return da;}
     }catch(e){}
   }
   // Try Pollinations (no rate limit)
@@ -848,7 +855,7 @@ async function trIASend(){
     // Try OpenRouter models in sequence
     async function trIATryModel(idx) {
         var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
-  var DS_KEY='';
+  var DS_KEY='REDACTED_DEEPSEEK_OLD_2026-04';
         // Try NAS FIRST (keys hidden) — only on HTTP
         if (idx === 0 && location.protocol!=='https:') {
             try {
@@ -860,6 +867,21 @@ async function trIASend(){
                     var dn = await rn.json();
                     var na = (dn.choices && dn.choices[0] && dn.choices[0].message) ? dn.choices[0].message.content : null;
                     if (na) return na;
+                }
+            } catch(e) { /* fall through */ }
+        }
+        // Try DeepSeek direct (5M free tokens, no rate limit)
+        if (idx <= 1 && DS_KEY) {
+            try {
+                var rd = await fetch('https://api.deepseek.com/chat/completions', {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+                    body:JSON.stringify({model:'deepseek-chat',messages:messages,max_tokens:500,temperature:0.3})
+                });
+                if (rd.ok) {
+                    var dd = await rd.json();
+                    var da = (dd.choices && dd.choices[0] && dd.choices[0].message) ? dd.choices[0].message.content : null;
+                    if (da) return da;
                 }
             } catch(e) { /* fall through */ }
         }
