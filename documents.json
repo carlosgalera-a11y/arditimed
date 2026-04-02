@@ -1,8 +1,8 @@
 {
   "version": "1.0",
-  "last_updated": "2026-02-18T21:33:09.064596",
-  "total_categories": 11,
-  "total_documents": 57,
+  "last_updated": "2026-04-02T14:00:00",
+  "total_categories": 24,
+  "total_documents": 131,
   "categories": {
     "Cardiología": [
       {
@@ -726,6 +726,13 @@
           "plaquetas",
           "trombocitopenia"
         ]
+      },
+      {
+        "id": "manual-hematologia-basica-2024",
+        "name": "Manual Práctico de Hematología Básica - Urgencias y AP",
+        "type": "PDF",
+        "size_mb": 11.24,
+        "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-Practico-Hematologia-Basica.pdf"
       }
     ],
     "Nefrología": [
