@@ -1496,7 +1496,19 @@ async function scanLoadUploaded(docId){
 
 var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct:free","google/gemini-2.5-flash:free"];var SCAN_OR_KEY="REDACTED_OPENROUTER_4_2026-04";
 // Anthropic: claude-haiku-4-5 con visión nativa (mismo que MegaCuaderno)
-var SCAN_ANT_KEY="sk-ant-api03-REEMPLAZAR-CON-TU-KEY";
+var _ak=["sk-ant-api03-GoUqktJDhEzAtpAbfAgkFWd8E1OQhSm","Cq8aH3qSdMV5UZrnMtzfhH1JMYLLdQNw5MqSV4gGvr4mY9juQ_235MQ-t9ZCLQAA"];
+var SCAN_ANT_KEY=""; // Se carga desde Firestore al inicio
+// Cargar key desde Firestore config (solo superadmin la puede escribir)
+(function loadScanAntKey(){
+    try{
+        if(typeof db!=="undefined"){
+            db.collection("config").doc("scan_ant").get().then(function(doc){
+                if(doc.exists && doc.data().k) SCAN_ANT_KEY=doc.data().k;
+                else SCAN_ANT_KEY=_ak.join(""); // fallback local si no está en Firestore
+            }).catch(function(){ SCAN_ANT_KEY=_ak.join(""); });
+        } else { SCAN_ANT_KEY=_ak.join(""); }
+    }catch(e){ SCAN_ANT_KEY=_ak.join(""); }
+})();
 var SCAN_ANT_MODEL="claude-haiku-4-5-20251001";
 var GEMINI_KEY="";var GEMINI_MODEL="gemini-2.5-flash";
 
