@@ -617,17 +617,18 @@ function updateStatus(){var el=document.getElementById("statusBadge"),b=document
 function cambiarProvider(){var v=document.getElementById("cfgProvider").value;document.getElementById("groqConfig").style.display=v==="groq"?"block":"none";document.getElementById("qwenConfig").style.display=v==="qwen"?"block":"none";}
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 async function llamarIA(up,sp){
+  var DS_KEY='';// DeepSeek API key - set below after registration
   var OR_KEY='REDACTED_OPENROUTER_3_2026-04';
   var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
   var isHTTPS=location.protocol==='https:';
-  // Strategy: NAS first (only on HTTP/local), then Pollinations, then OpenRouter
+  // Strategy: DeepSeek direct (free 5M tokens, no rate limit) → Pollinations → OpenRouter
   var providers=[];
   if(!isHTTPS) providers.push({type:'nas'});
+  providers.push({type:'ds'});
   providers.push({type:'poll'});
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
   providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
   providers.push({type:'or',model:'meta-llama/llama-4-maverick:free'});
-  providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
 
@@ -644,6 +645,15 @@ async function llamarIA(up,sp){
           body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3}),
           signal:ctrl.signal
         });
+      } else if(p.type==='ds' && DS_KEY){
+        r=await fetch('https://api.deepseek.com/chat/completions',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+          body:JSON.stringify({model:'deepseek-chat',messages:msgs,max_tokens:2000,temperature:0.3}),
+          signal:ctrl.signal
+        });
+      } else if(p.type==='ds' && !DS_KEY){
+        continue;
       } else if(p.type==='poll'){
         r=await fetch('https://text.pollinations.ai/openai',{
           method:'POST',headers:{'Content-Type':'application/json'},
