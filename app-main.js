@@ -1495,10 +1495,8 @@ async function scanLoadUploaded(docId){
 }
 
 var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","google/gemini-2.5-flash:free","qwen/qwen2.5-vl-72b-instruct:free"];
-// Usar la misma key OR que el MegaCuaderno (ya está en el proyecto)
-var SCAN_OR_KEY="";
-setTimeout(function(){ if(typeof MEGA_OR_KEY!=="undefined") SCAN_OR_KEY=MEGA_OR_KEY; },500);
-// Anthropic claude-haiku (visión nativa) como primario
+// Key OR original del módulo de dermatología (la que funcionaba)
+var SCAN_OR_KEY="REDACTED_OPENROUTER_2_2026-04";
 var _ak=["sk-ant-api03-GoUqktJDhEzAtpAbfAgkFWd8E1OQhSm","Cq8aH3qSdMV5UZrnMtzfhH1JMYLLdQNw5MqSV4gGvr4mY9juQ_235MQ-t9ZCLQAA"];
 var SCAN_ANT_KEY="";
 setTimeout(function(){ SCAN_ANT_KEY=_ak.join(""); },200);
