@@ -79,6 +79,17 @@ var SEARCH_INDEX=[
     {tipo:'🔬 Herramienta',titulo:'Calculadora Wells TVP',tags:'wells tvp trombosis calculadora',page:'pageScanIA',tab:'calc'},
     {tipo:'🔬 Herramienta',titulo:'Glasgow',tags:'glasgow gcs conciencia neurologia',page:'pageScanIA',tab:'calc'},
     {tipo:'🔬 Herramienta',titulo:'NIHSS Ictus',tags:'nihss ictus stroke calculadora neurologia',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Escala Fine PORT PSI Neumonía',tags:'fine port psi neumonia mortalidad ingreso calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'PESI Embolismo Pulmonar',tags:'pesi embolismo pulmonar tep tromboembolismo calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Índice BODE EPOC',tags:'bode epoc pronostico supervivencia fev1 calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'CRB-65 Neumonía',tags:'crb65 neumonia comunitaria ambulatorio calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'BAP-65 EPOC',tags:'bap65 epoc exacerbacion agudizacion calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Wood-Downes-Ferrés Bronquiolitis',tags:'wood downes ferres bronquiolitis pediatria lactante calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Taussig Crup Laringitis',tags:'taussig crup laringitis estridor pediatria calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'DECAF EPOC agudizada',tags:'decaf epoc agudizada mortalidad intrahospitalaria calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'CAUDA-70 EPOC mortalidad',tags:'cauda 70 epoc mortalidad intrahospitalaria calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Riesgo fracaso VNI EPOC',tags:'vni ventilacion no invasiva epoc fracaso calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🔬 Herramienta',titulo:'Escala Pisa TEP Rx',tags:'pisa tep embolismo pulmonar radiografia torax calculadora',page:'pageScanIA',tab:'calc'},
 ];
 function abrirBuscador(){
     var m=document.getElementById('modalBuscador');if(!m)return;

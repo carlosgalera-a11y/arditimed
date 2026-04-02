@@ -2031,6 +2031,186 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 </div>
 
               </div>
+            <!-- separator -->
+<div style="margin:24px 0 16px;padding:12px 16px;background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:10px;color:#fff;font-weight:700;font-size:.95rem;">🏥 Escalas Clínicas Avanzadas</div>
+
+<!-- 1. FINE / PORT (PSI) -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 Escala Fine / PORT (PSI) <span style="font-size:.75rem;font-weight:400;color:#64748b;">Neumonía comunitaria</span></h3>
+  <div style="margin-bottom:8px;">
+    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Edad del paciente</label>
+    <input type="number" id="fineAge" placeholder="Edad" onchange="calcFine()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+  </div>
+  <div style="margin-bottom:8px;">
+    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Sexo</label>
+    <select id="fineSex" onchange="calcFine()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+      <option value="M">Varón</option><option value="F">Mujer (−10 pts)</option>
+    </select>
+  </div>
+  <div style="font-size:.8rem;font-weight:600;color:#334155;margin:10px 0 4px;">Comorbilidades</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Asilo/residencia (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="30" onchange="calcFine()"> Neoplasia (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="20" onchange="calcFine()"> Hepatopatía (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Insuficiencia cardíaca (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Enfermedad cerebrovascular (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Enfermedad renal (+10)</label>
+  <div style="font-size:.8rem;font-weight:600;color:#334155;margin:10px 0 4px;">Exploración física</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="20" onchange="calcFine()"> Alteración conciencia (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="20" onchange="calcFine()"> FR ≥30/min (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="20" onchange="calcFine()"> TAS <90 mmHg (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="10" onchange="calcFine()"> Tª <35 o ≥40°C (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="10" onchange="calcFine()"> FC ≥125 lpm (+10)</label>
+  <div style="font-size:.8rem;font-weight:600;color:#334155;margin:10px 0 4px;">Laboratorio / Radiología</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="30" onchange="calcFine()"> pH arterial <7.35 (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="20" onchange="calcFine()"> Urea ≥64 mg/dL (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="20" onchange="calcFine()"> Sodio <130 mEq/L (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> Glucosa ≥250 mg/dL (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> Hematocrito <30% (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> pO₂ <60 mmHg (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> Derrame pleural (+10)</label>
+  <div id="fineResult" style="margin-top:12px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;line-height:1.4;">Introduce edad para calcular</div>
+</div>
+
+<!-- 2. PESI -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫀 PESI <span style="font-size:.75rem;font-weight:400;color:#64748b;">Severidad Embolismo Pulmonar</span></h3>
+  <div style="margin-bottom:8px;">
+    <label style="font-size:.8rem;color:#64748b;">Edad</label>
+    <input type="number" id="pesiAge" placeholder="Edad" onchange="calcPESI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+  </div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="10" onchange="calcPESI()"> Sexo masculino (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="30" onchange="calcPESI()"> Cáncer (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="10" onchange="calcPESI()"> Insuficiencia cardíaca (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="10" onchange="calcPESI()"> Enfermedad pulmonar crónica (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> FC ≥110 lpm (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="30" onchange="calcPESI()"> TAS <100 mmHg (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> FR ≥30/min (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> Tª <36°C (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="60" onchange="calcPESI()"> Alteración estado mental (+60)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> SatO₂ <90% (+20)</label>
+  <div id="pesiResult" style="margin-top:12px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">Introduce edad para calcular</div>
+</div>
+
+<!-- 3. BODE -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 Índice BODE <span style="font-size:.75rem;font-weight:400;color:#64748b;">Pronóstico EPOC</span></h3>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">FEV1 (% predicho)</label>
+    <select id="bodeFEV1" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">≥65% (0)</option><option value="1">50-64% (1)</option><option value="2">36-49% (2)</option><option value="3">≤35% (3)</option></select></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Test marcha 6 min (metros)</label>
+    <select id="bode6MWT" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">≥350m (0)</option><option value="1">250-349m (1)</option><option value="2">150-249m (2)</option><option value="3">≤149m (3)</option></select></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Disnea mMRC</label>
+    <select id="bodeMRC" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">0-1 (0)</option><option value="1">2 (1)</option><option value="2">3 (2)</option><option value="3">4 (3)</option></select></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">IMC</label>
+    <select id="bodeBMI" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">≥21 (0)</option><option value="1">&lt;21 (1)</option></select></div>
+  <div id="bodeResult" style="margin-top:12px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">BODE: 0/10</div>
+</div>
+
+<!-- 4. CRB-65 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 CRB-65 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Neumonía comunitaria (sin analítica)</span></h3>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> Confusión mental</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> FR ≥30/min</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> TAS &lt;90 o TAD ≤60 mmHg</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> Edad ≥65 años</label>
+  <div id="crb65Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">CRB-65: 0/4</div>
+</div>
+
+<!-- 5. BAP-65 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 BAP-65 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Exacerbación EPOC</span></h3>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="bap65-chk" onchange="calcBAP65()"> BUN ≥25 mg/dL (Urea elevada)</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="bap65-chk" onchange="calcBAP65()"> Alteración del estado mental</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="bap65-chk" onchange="calcBAP65()"> FC ≥109 lpm</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" id="bap65Age" onchange="calcBAP65()"> Edad ≥65 años</label>
+  <div id="bap65Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">BAP-65: Clase I</div>
+</div>
+
+<!-- 6. Wood-Downes-Ferrés -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👶 Wood-Downes-Ferrés <span style="font-size:.75rem;font-weight:400;color:#64748b;">Bronquiolitis</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Sibilancias</label>
+    <select id="wdSibilancias" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Final espiración (1)</option><option value="2">Toda espiración (2)</option><option value="3">Inspiración + espiración (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Tiraje</label>
+    <select id="wdTiraje" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Subcostal + intercostal inferior (1)</option><option value="2">+ supraclavicular + aleteo nasal (2)</option><option value="3">+ intercostal superior + supraesternal (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Entrada de aire</label>
+    <select id="wdEntrada" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Regular (1)</option><option value="2">Disminuida (2)</option><option value="3">Muy disminuida / ausente (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Cianosis</label>
+    <select id="wdCianosis" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Frecuencia respiratoria</label>
+    <select id="wdFR" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Aumentada (1)</option><option value="2">Muy aumentada (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Frecuencia cardíaca</label>
+    <select id="wdFC" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Aumentada (1)</option><option value="2">Muy aumentada (2)</option></select></div>
+  <div id="wdResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Wood-Downes-Ferrés: 0/14</div>
+</div>
+
+<!-- 7. Taussig Score -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👶 Taussig <span style="font-size:.75rem;font-weight:400;color:#64748b;">Valoración del Crup</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Estridor</label>
+    <select id="taussigEstridor" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Ausente (0)</option><option value="1">En actividad (1)</option><option value="2">En reposo (2)</option><option value="3">En reposo, bifásico (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Tiraje</label>
+    <select id="taussigTiraje" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Ausente (0)</option><option value="1">Leve (1)</option><option value="2">Moderado (2)</option><option value="3">Grave (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Entrada de aire</label>
+    <select id="taussigEntrada" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Levemente disminuida (1)</option><option value="2">Disminuida (2)</option><option value="3">Muy disminuida (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Color</label>
+    <select id="taussigColor" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Pálido (1)</option><option value="2">Cianótico (2)</option><option value="3">Cianosis central (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Nivel de conciencia</label>
+    <select id="taussigConciencia" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Agitado si molesto (1)</option><option value="2">Agitado en reposo (2)</option><option value="3">Letárgico (3)</option></select></div>
+  <div id="taussigResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Taussig: 0/15</div>
+</div>
+
+<!-- 8. DECAF -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 DECAF <span style="font-size:.75rem;font-weight:400;color:#64748b;">Mortalidad EPOC agudizada</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Disnea eMRCD 5a (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="2" onchange="calcDECAF()"> Disnea eMRCD 5b — confinado en cama (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Eosinopenia &lt;0.05×10⁹/L (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Consolidación en Rx tórax (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Acidosis: pH &lt;7.30 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> FA en ECG (+1)</label>
+  <div id="decafResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">DECAF: 0/6</div>
+</div>
+
+<!-- 9. CAUDA-70 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 CAUDA-70 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Mortalidad intrahospitalaria EPOC</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Confusión (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Acidosis pH &lt;7.35 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Urea &gt;30 mg/dL (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Disnea basal mMRC ≥3 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Albúmina &lt;3.5 g/dL (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Edad ≥70 años (+1)</label>
+  <div id="cauda70Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">CAUDA-70: 0</div>
+</div>
+
+<!-- 10. Riesgo fracaso VNI en EPOC -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 Riesgo Fracaso VNI <span style="font-size:.75rem;font-weight:400;color:#64748b;">EPOC agudizada</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> pH &lt;7.25 al ingreso (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> GCS &lt;11 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> FR &gt;35/min tras 1h VNI (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> pH no mejora tras 1h VNI (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> APACHE II ≥20 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> Neumonía como causa (+1)</label>
+  <div id="vniResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Riesgo fracaso VNI: 0</div>
+</div>
+
+<!-- 11. Escala de Pisa -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫀 Estudio de Pisa <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo TEP con hallazgos Rx</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> Edad ≥65 años (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="25" onchange="calcPisa()"> Inmovilización / cirugía reciente (+25)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> TVP previa (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> FC ≥100 lpm (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="10" onchange="calcPisa()"> Disnea de inicio súbito (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> Dolor torácico pleurítico (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> Hallazgos Rx tórax compatibles con TEP (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="10" onchange="calcPisa()"> Hipoxemia PaO₂ &lt;80 mmHg (+10)</label>
+  <div id="pisaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Pisa: 0%</div>
+</div>
+
+
+              </div>
             </div><!-- end panelCalc -->
 
             <!-- TAB 4: MEGACUADERNO IA -->
@@ -3983,7 +4163,8 @@ function infDescargar(formato){
 
 
 <script src="https://js.puter.com/v2/"></script>
-<script src="app-main.js?v=20260402h"></script>
+<script src="app-main.js?v=20260402i"></script>
+<script src="escalas-clinicas.js?v=20260402a"></script>
 <!-- PWA Install Banner -->
 <div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f6b4a,#0a4f36);color:#fff;padding:14px 18px;z-index:99999;box-shadow:0 -4px 20px rgba(0,0,0,.4);font-family:var(--font-display,system-ui);animation:slideUpPWA .4s ease;">
 <div style="display:flex;align-items:center;gap:12px;max-width:600px;margin:0 auto;">
