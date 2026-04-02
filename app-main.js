@@ -1526,7 +1526,29 @@ async function scanAnalyze(){
         else errors.push("Pollinations: HTTP "+r.status);
     }catch(e){errors.push("Pollinations: "+e.message);}
 
-    // ── 2. Puter.js img2txt (Gemini gratis) ──
+    // ── 2. OpenRouter — Llama 4 Scout vision (fallback) ──
+    if(!txt){
+        try{
+            var orKey=_dk();
+            if(orKey){
+                var orModels=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];
+                for(var mi=0;mi<orModels.length&&!txt;mi++){
+                    var vm=orModels[mi];
+                    res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
+                    var r2=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+                        method:"POST",
+                        headers:{"Content-Type":"application/json","Authorization":"Bearer "+orKey,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
+                        body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}],max_tokens:2000,temperature:0.3})
+                    });
+                    var d2=await r2.json();
+                    if(r2.ok&&d2.choices&&d2.choices[0]&&d2.choices[0].message){txt=d2.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
+                    else{errors.push(vm.split('/')[1]+": HTTP "+r2.status+" "+(d2.error?.message||""));if(r2.status===429||r2.status===502||r2.status===503)continue;}
+                }
+            }
+        }catch(e){errors.push("OpenRouter: "+e.message);}
+    }
+
+    // ── 3. Puter.js img2txt (Gemini gratis) ──
     if(!txt && typeof puter!=="undefined" && puter.ai && puter.ai.img2txt){
         try{
             var pr=await puter.ai.img2txt(dataUrl,sys+"\n\n"+userText,{model:"gemini-2.5-flash"});
