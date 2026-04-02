@@ -165,3 +165,254 @@ function calcPisa(){
     el.style.background=bg;el.style.color=fg;
     el.innerHTML='<strong>Pisa: '+pts+'%</strong><br>'+txt;
 }
+
+// ═══ ESCALAS ADICIONALES — Bloque 2 ═══
+
+// ── 12. HEART Score — Dolor torácico ──
+function calcHEART(){
+    var pts=0;
+    document.querySelectorAll('.heart-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('heartResult');
+    var txt,bg,fg;
+    if(pts<=3){txt='Bajo riesgo (1.7%) — Alta con seguimiento ambulatorio';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=6){txt='Riesgo moderado (12%) — Observación + troponina seriada';bg='#fefce8';fg='#854d0e';}
+    else{txt='Alto riesgo (65%) — Ingreso + cardio urgente';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>HEART: '+pts+'/10</strong><br>'+txt;
+}
+
+// ── 13. CHA₂DS₂-VASc — Riesgo ictus en FA ──
+function calcCHADS(){
+    var pts=0;
+    document.querySelectorAll('.chads-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+    var el=document.getElementById('chadsResult');
+    var txt,bg,fg;
+    if(pts===0){txt='Bajo riesgo — No anticoagular';bg='#f0fdf4';fg='#166534';}
+    else if(pts===1){txt='Riesgo intermedio — Considerar anticoagulación';bg='#fefce8';fg='#854d0e';}
+    else{txt='Alto riesgo ('+[0,1.3,2.2,3.2,4.0,6.7,9.8,9.6,6.7,15.2][Math.min(pts,9)]+'%/año) — Anticoagular';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>CHA₂DS₂-VASc: '+pts+'/9</strong><br>'+txt;
+}
+
+// ── 14. HAS-BLED — Riesgo hemorrágico ──
+function calcHASBLED(){
+    var pts=[...document.querySelectorAll('.hasbled-chk')].filter(c=>c.checked).length;
+    var el=document.getElementById('hasbResult');
+    var txt,bg,fg;
+    if(pts<=2){txt='Bajo riesgo hemorrágico — Anticoagulación segura';bg='#f0fdf4';fg='#166534';}
+    else{txt='Alto riesgo hemorrágico — Precaución, no contraindica ACO pero monitorizar';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>HAS-BLED: '+pts+'/9</strong><br>'+txt;
+}
+
+// ── 15. NEWS2 — Early Warning Score ──
+function calcNEWS2(){
+    var pts=0;
+    document.querySelectorAll('.news2-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('news2Result');
+    var txt,bg,fg;
+    if(pts<=4){txt='Bajo riesgo — Monitorización habitual';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=6){txt='Riesgo medio — Valoración urgente por médico';bg='#fefce8';fg='#854d0e';}
+    else{txt='Alto riesgo — Activar equipo de respuesta rápida';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>NEWS2: '+pts+'</strong><br>'+txt;
+}
+
+// ── 16. SOFA — Sequential Organ Failure Assessment ──
+function calcSOFA(){
+    var pts=0;
+    document.querySelectorAll('.sofa-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('sofaResult');
+    var mort=[0,0,6.4,20.2,21.5,33.3,50,71.4,71.4,80,80,90,95,95,95,95,95,95,95,95,95,95,100,100,100];
+    var m=mort[Math.min(pts,23)]||0;
+    var txt,bg,fg;
+    if(pts<=5){txt='Mortalidad ~'+m+'%';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=10){txt='Mortalidad ~'+m+'%';bg='#fefce8';fg='#854d0e';}
+    else if(pts<=15){txt='Mortalidad ~'+m+'%';bg='#fff7ed';fg='#9a3412';}
+    else{txt='Mortalidad ~'+m+'%';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>SOFA: '+pts+'/24</strong><br>'+txt;
+}
+
+// ── 17. Glasgow-Blatchford — Hemorragia digestiva alta ──
+function calcBlatchford(){
+    var pts=0;
+    document.querySelectorAll('.blatch-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    document.querySelectorAll('.blatch-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+    var el=document.getElementById('blatchResult');
+    var txt,bg,fg;
+    if(pts===0){txt='Muy bajo riesgo — Alta precoz sin endoscopia';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=5){txt='Bajo riesgo — Endoscopia preferente';bg='#fefce8';fg='#854d0e';}
+    else if(pts<=10){txt='Riesgo moderado — Endoscopia urgente';bg='#fff7ed';fg='#9a3412';}
+    else{txt='Alto riesgo — Endoscopia emergente + UCI';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>Glasgow-Blatchford: '+pts+'/23</strong><br>'+txt;
+}
+
+// ── 18. Child-Pugh — Cirrosis ──
+function calcChildPugh(){
+    var pts=0;
+    document.querySelectorAll('.childp-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('childpResult');
+    var clase,txt,bg,fg;
+    if(pts<=6){clase='A';txt='Bien compensada — Supervivencia 1a: 100%, 2a: 85%';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=9){clase='B';txt='Compromiso funcional — Supervivencia 1a: 81%, 2a: 57%';bg='#fefce8';fg='#854d0e';}
+    else{clase='C';txt='Descompensada — Supervivencia 1a: 45%, 2a: 35%';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>Child-Pugh: '+pts+' — Clase '+clase+'</strong><br>'+txt;
+}
+
+// ── 19. Alvarado — Apendicitis ──
+function calcAlvarado(){
+    var pts=0;
+    document.querySelectorAll('.alva-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+    var el=document.getElementById('alvaResult');
+    var txt,bg,fg;
+    if(pts<=4){txt='Apendicitis poco probable — Observación';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=6){txt='Apendicitis posible — Pruebas complementarias';bg='#fefce8';fg='#854d0e';}
+    else if(pts<=8){txt='Apendicitis probable — Cirugía';bg='#fff7ed';fg='#9a3412';}
+    else{txt='Apendicitis muy probable — Cirugía urgente';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>Alvarado: '+pts+'/10</strong><br>'+txt;
+}
+
+// ── 20. PHQ-9 — Depresión ──
+function calcPHQ9(){
+    var pts=0;
+    document.querySelectorAll('.phq9-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('phq9Result');
+    var txt,bg,fg;
+    if(pts<=4){txt='Mínima — No tratamiento';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=9){txt='Leve — Vigilancia, activación conductual';bg='#dbeafe';fg='#1e40af';}
+    else if(pts<=14){txt='Moderada — Considerar ISRS';bg='#fefce8';fg='#854d0e';}
+    else if(pts<=19){txt='Moderada-grave — ISRS + terapia';bg='#fff7ed';fg='#9a3412';}
+    else{txt='Grave — Tratamiento urgente + derivar Salud Mental';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>PHQ-9: '+pts+'/27</strong><br>'+txt;
+}
+
+// ── 21. GAD-7 — Ansiedad ──
+function calcGAD7(){
+    var pts=0;
+    document.querySelectorAll('.gad7-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('gad7Result');
+    var txt,bg,fg;
+    if(pts<=4){txt='Mínima — No tratamiento';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=9){txt='Leve — Monitorizar';bg='#dbeafe';fg='#1e40af';}
+    else if(pts<=14){txt='Moderada — Considerar tratamiento';bg='#fefce8';fg='#854d0e';}
+    else{txt='Grave — Tratamiento + derivar Salud Mental';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>GAD-7: '+pts+'/21</strong><br>'+txt;
+}
+
+// ── 22. Barthel — Dependencia funcional ──
+function calcBarthel(){
+    var pts=0;
+    document.querySelectorAll('.barthel-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('barthelResult');
+    var txt,bg,fg;
+    if(pts===100){txt='Independiente';bg='#f0fdf4';fg='#166534';}
+    else if(pts>=60){txt='Dependencia leve';bg='#dbeafe';fg='#1e40af';}
+    else if(pts>=40){txt='Dependencia moderada';bg='#fefce8';fg='#854d0e';}
+    else if(pts>=20){txt='Dependencia grave';bg='#fff7ed';fg='#9a3412';}
+    else{txt='Dependencia total';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>Barthel: '+pts+'/100</strong><br>'+txt;
+}
+
+// ── 23. CKD-EPI — Filtrado glomerular estimado ──
+function calcCKDEPI(){
+    var cr=parseFloat(document.getElementById('ckdCreat').value)||0;
+    var age=parseInt(document.getElementById('ckdAge').value)||0;
+    var sex=document.getElementById('ckdSex').value;
+    if(!cr||!age){document.getElementById('ckdResult').textContent='Introduce creatinina y edad';return;}
+    // CKD-EPI 2021 (race-free)
+    var k=sex==='F'?0.7:0.9;
+    var a=sex==='F'?-0.241:-0.302;
+    var f=sex==='F'?1.012:1.0;
+    var gfr=142*Math.pow(Math.min(cr/k,1),a)*Math.pow(Math.max(cr/k,1),-1.200)*Math.pow(0.9938,age)*f;
+    gfr=Math.round(gfr);
+    var el=document.getElementById('ckdResult');
+    var txt,bg,fg,estadio;
+    if(gfr>=90){estadio='G1';txt='Normal o alto';bg='#f0fdf4';fg='#166534';}
+    else if(gfr>=60){estadio='G2';txt='Ligeramente disminuido';bg='#dbeafe';fg='#1e40af';}
+    else if(gfr>=45){estadio='G3a';txt='Leve-moderadamente disminuido';bg='#fefce8';fg='#854d0e';}
+    else if(gfr>=30){estadio='G3b';txt='Moderada-gravemente disminuido';bg='#fff7ed';fg='#9a3412';}
+    else if(gfr>=15){estadio='G4';txt='Gravemente disminuido — Derivar Nefrología';bg='#fef2f2';fg='#991b1b';}
+    else{estadio='G5';txt='Fallo renal — Diálisis/trasplante';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>FGe (CKD-EPI 2021): '+gfr+' mL/min/1.73m² — '+estadio+'</strong><br>'+txt;
+}
+
+// ── 24. Ottawa Tobillo — ¿Necesita Rx? ──
+function calcOttawa(){
+    var needs=[...document.querySelectorAll('.ottawa-chk')].some(c=>c.checked);
+    var el=document.getElementById('ottawaResult');
+    if(needs){el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Rx indicada</strong><br>Cumple criterios Ottawa — Solicitar radiografía';}
+    else{el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Rx NO indicada</strong><br>No cumple criterios Ottawa — Sensibilidad ~98%';}
+}
+
+// ── 25. ABCD2 — Riesgo ictus tras AIT ──
+function calcABCD2(){
+    var pts=0;
+    document.querySelectorAll('.abcd2-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+    document.querySelectorAll('.abcd2-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('abcd2Result');
+    var txt,bg,fg;
+    if(pts<=3){txt='Bajo riesgo — Ictus a 2d: 1%, 7d: 1.2%';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=5){txt='Riesgo moderado — Ictus a 2d: 4.1%, 7d: 5.9%';bg='#fefce8';fg='#854d0e';}
+    else{txt='Alto riesgo — Ictus a 2d: 8.1%, 7d: 11.7% — Ingreso';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>ABCD²: '+pts+'/7</strong><br>'+txt;
+}
+
+// ── 26. Ranson — Pancreatitis aguda ──
+function calcRanson(){
+    var pts=0;
+    document.querySelectorAll('.ranson-chk').forEach(function(c){if(c.checked)pts+=1;});
+    var el=document.getElementById('ransonResult');
+    var txt,bg,fg;
+    if(pts<=2){txt='Pancreatitis leve — Mortalidad ~1%';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=4){txt='Mortalidad ~16%';bg='#fefce8';fg='#854d0e';}
+    else if(pts<=6){txt='Mortalidad ~40%';bg='#fff7ed';fg='#9a3412';}
+    else{txt='Mortalidad >99% — UCI';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>Ranson: '+pts+'/11</strong><br>'+txt;
+}
+
+// ── 27. Downton — Riesgo de caídas ──
+function calcDownton(){
+    var pts=0;
+    document.querySelectorAll('.downton-chk').forEach(function(c){if(c.checked)pts+=1;});
+    var el=document.getElementById('downtonResult');
+    if(pts>=3){el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Downton: '+pts+'</strong><br>Alto riesgo de caídas — Medidas preventivas';}
+    else if(pts>=2){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>Downton: '+pts+'</strong><br>Riesgo moderado';}
+    else{el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Downton: '+pts+'</strong><br>Bajo riesgo de caídas';}
+}
+
+// ── 28. Fagerström — Dependencia nicotínica ──
+function calcFagerstrom(){
+    var pts=0;
+    document.querySelectorAll('.fager-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('fagerResult');
+    var txt,bg,fg;
+    if(pts<=3){txt='Dependencia baja';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=6){txt='Dependencia moderada';bg='#fefce8';fg='#854d0e';}
+    else{txt='Dependencia alta — TSN + Vareniclina/Bupropion';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>Fagerström: '+pts+'/10</strong><br>'+txt;
+}
+
+// ── 29. Epworth — Somnolencia (SAOS) ──
+function calcEpworth(){
+    var pts=0;
+    document.querySelectorAll('.epworth-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+    var el=document.getElementById('epworthResult');
+    var txt,bg,fg;
+    if(pts<=10){txt='Somnolencia normal';bg='#f0fdf4';fg='#166534';}
+    else if(pts<=14){txt='Somnolencia leve';bg='#fefce8';fg='#854d0e';}
+    else if(pts<=18){txt='Somnolencia moderada — Valorar polisomnografía';bg='#fff7ed';fg='#9a3412';}
+    else{txt='Somnolencia grave — Estudio urgente SAOS';bg='#fef2f2';fg='#991b1b';}
+    el.style.background=bg;el.style.color=fg;
+    el.innerHTML='<strong>Epworth: '+pts+'/24</strong><br>'+txt;
+}

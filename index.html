@@ -2212,6 +2212,248 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
 
               </div>
+            <!-- 12. HEART Score -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">❤️ HEART Score <span style="font-size:.75rem;font-weight:400;color:#64748b;">Dolor torácico — ¿SCA?</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Historia clínica</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Poco sospechosa (0)</option><option value="1">Moderadamente sospechosa (1)</option><option value="2">Altamente sospechosa (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">ECG</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Alteración inespecífica (1)</option><option value="2">Desviación ST significativa (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Edad</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;45 años (0)</option><option value="1">45-64 años (1)</option><option value="2">≥65 años (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Factores de riesgo</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Ninguno (0)</option><option value="1">1-2 FRCV (1)</option><option value="2">≥3 FRCV o ateroesclerosis conocida (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Troponina</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">1-3x límite superior (1)</option><option value="2">&gt;3x límite superior (2)</option></select></div>
+  <div id="heartResult" style="margin-top:10px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">HEART: 0/10</div>
+</div>
+
+<!-- 13. CHA2DS2-VASc -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💓 CHA₂DS₂-VASc <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo ictus en FA</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> ICC (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> HTA (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="2" onchange="calcCHADS()"> Edad ≥75 años (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Diabetes (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="2" onchange="calcCHADS()"> Ictus/AIT/tromboembolismo previo (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Enfermedad vascular (IAM, aorta, arteriopatía periférica) (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Edad 65-74 años (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Sexo femenino (+1)</label>
+  <div id="chadsResult" style="margin-top:10px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">CHA₂DS₂-VASc: 0/9</div>
+</div>
+
+<!-- 14. HAS-BLED -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🩸 HAS-BLED <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo hemorrágico en ACO</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> HTA no controlada (TAS >160)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Alteración renal (diálisis, trasplante, Cr >2.26)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Alteración hepática (cirrosis, bilirrubina >2x, GOT/GPT >3x)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Ictus previo</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Hemorragia previa o predisposición</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> INR lábil (TTR &lt;60%)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Edad &gt;65 años</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Fármacos (antiagregantes, AINEs)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Alcohol (≥8 bebidas/semana)</label>
+  <div id="hasbResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">HAS-BLED: 0/9</div>
+</div>
+
+<!-- 15. NEWS2 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🏥 NEWS2 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Early Warning Score</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">FR (resp/min)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">12-20</option><option value="1">9-11</option><option value="2">21-24</option><option value="3">≤8 o ≥25</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">SpO₂ (%)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥96</option><option value="1">94-95</option><option value="2">92-93</option><option value="3">≤91</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">TAS (mmHg)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">111-219</option><option value="1">101-110</option><option value="2">91-100</option><option value="3">≤90 o ≥220</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">FC (lpm)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">51-90</option><option value="1">41-50 o 91-110</option><option value="2">111-130</option><option value="3">≤40 o ≥131</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Conciencia</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Alerta</option><option value="3">CVPU (Confusión/Voz/Dolor/Arrespuesta)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Temperatura (°C)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">36.1-38.0</option><option value="1">35.1-36.0 o 38.1-39.0</option><option value="2">≥39.1</option><option value="3">≤35.0</option></select></div>
+  <div id="news2Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">NEWS2: 0</div>
+</div>
+
+<!-- 16. SOFA -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🏥 SOFA <span style="font-size:.75rem;font-weight:400;color:#64748b;">Fallo orgánico secuencial</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">PaO₂/FiO₂</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥400 (0)</option><option value="1">300-399 (1)</option><option value="2">200-299 (2)</option><option value="3">100-199 con VM (3)</option><option value="4">&lt;100 con VM (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Plaquetas (×10³/µL)</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥150 (0)</option><option value="1">100-149 (1)</option><option value="2">50-99 (2)</option><option value="3">20-49 (3)</option><option value="4">&lt;20 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Bilirrubina (mg/dL)</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;1.2 (0)</option><option value="1">1.2-1.9 (1)</option><option value="2">2.0-5.9 (2)</option><option value="3">6.0-11.9 (3)</option><option value="4">≥12 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Hipotensión (PAM/vasopresores)</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">PAM ≥70 (0)</option><option value="1">PAM &lt;70 (1)</option><option value="2">Dopa ≤5 o dobutamina (2)</option><option value="3">Dopa &gt;5 o NA ≤0.1 (3)</option><option value="4">Dopa &gt;15 o NA &gt;0.1 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Glasgow</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">15 (0)</option><option value="1">13-14 (1)</option><option value="2">10-12 (2)</option><option value="3">6-9 (3)</option><option value="4">&lt;6 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Creatinina (mg/dL) o diuresis</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;1.2 (0)</option><option value="1">1.2-1.9 (1)</option><option value="2">2.0-3.4 (2)</option><option value="3">3.5-4.9 o diuresis &lt;500ml/d (3)</option><option value="4">≥5.0 o diuresis &lt;200ml/d (4)</option></select></div>
+  <div id="sofaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">SOFA: 0/24</div>
+</div>
+
+<!-- 17. Glasgow-Blatchford -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🩸 Glasgow-Blatchford <span style="font-size:.75rem;font-weight:400;color:#64748b;">Hemorragia digestiva alta</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Urea (mg/dL)</label><select class="blatch-sel" onchange="calcBlatchford()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;39 (0)</option><option value="2">39-48 (2)</option><option value="3">49-59 (3)</option><option value="4">60-149 (4)</option><option value="6">≥150 (6)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Hemoglobina varón (g/dL)</label><select class="blatch-sel" onchange="calcBlatchford()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥13 (0)</option><option value="1">12-12.9 (1)</option><option value="3">10-11.9 (3)</option><option value="6">&lt;10 (6)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">TAS (mmHg)</label><select class="blatch-sel" onchange="calcBlatchford()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥110 (0)</option><option value="1">100-109 (1)</option><option value="2">90-99 (2)</option><option value="3">&lt;90 (3)</option></select></div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="1" onchange="calcBlatchford()"> FC ≥100 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Melenas (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Síncope (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Enfermedad hepática (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Insuficiencia cardíaca (+2)</label>
+  <div id="blatchResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Glasgow-Blatchford: 0/23</div>
+</div>
+
+<!-- 18. Child-Pugh -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 Child-Pugh <span style="font-size:.75rem;font-weight:400;color:#64748b;">Estadificación cirrosis</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Bilirrubina (mg/dL)</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">&lt;2 (1)</option><option value="2">2-3 (2)</option><option value="3">&gt;3 (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Albúmina (g/dL)</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">&gt;3.5 (1)</option><option value="2">2.8-3.5 (2)</option><option value="3">&lt;2.8 (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">INR / TP</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">&lt;1.7 (1)</option><option value="2">1.7-2.3 (2)</option><option value="3">&gt;2.3 (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Ascitis</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">Ausente (1)</option><option value="2">Leve (2)</option><option value="3">Moderada-grave (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Encefalopatía</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">Ausente (1)</option><option value="2">Grado I-II (2)</option><option value="3">Grado III-IV (3)</option></select></div>
+  <div id="childpResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Child-Pugh: 5 — Clase A</div>
+</div>
+
+<!-- 19. Alvarado -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🔬 Alvarado <span style="font-size:.75rem;font-weight:400;color:#64748b;">Sospecha de apendicitis</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Dolor migratorio a FID (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Anorexia (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Náuseas / vómitos (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="2" onchange="calcAlvarado()"> Dolor en FID a la palpación (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Rebote (Blumberg +) (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Temperatura ≥37.3°C (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="2" onchange="calcAlvarado()"> Leucocitosis &gt;10.000 (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Desviación izquierda (neutrofilia) (+1)</label>
+  <div id="alvaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Alvarado: 0/10</div>
+</div>
+
+<!-- 20. PHQ-9 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 PHQ-9 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Depresión</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">En las últimas 2 semanas, ¿con qué frecuencia le han molestado?</div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">1. Poco interés o placer</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">2. Ánimo bajo, deprimido, sin esperanza</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">3. Problemas de sueño</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">4. Cansancio o poca energía</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">5. Apetito alterado</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">6. Sentirse mal consigo mismo</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">7. Dificultad para concentrarse</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">8. Moverse/hablar lento o inquieto</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">9. Pensamientos de muerte o autolesión</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div id="phq9Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">PHQ-9: 0/27</div>
+</div>
+
+<!-- 21. GAD-7 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 GAD-7 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Ansiedad</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">En las últimas 2 semanas, ¿con qué frecuencia?</div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">1. Nerviosismo o ansiedad</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">2. No poder dejar de preocuparse</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">3. Preocupación excesiva por distintas cosas</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">4. Dificultad para relajarse</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">5. Inquietud, no poder estar quieto</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">6. Irritabilidad</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">7. Miedo a que algo terrible ocurra</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div id="gad7Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">GAD-7: 0/21</div>
+</div>
+
+<!-- 22. Barthel -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👴 Barthel <span style="font-size:.75rem;font-weight:400;color:#64748b;">Dependencia funcional</span></h3>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Comer</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Trasladarse sillón-cama</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="15">Independiente (15)</option><option value="10">Mínima ayuda (10)</option><option value="5">Gran ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Aseo personal</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="5">Independiente (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Uso del retrete</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Bañarse</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="5">Independiente (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Desplazarse</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="15">Independiente (15)</option><option value="10">Necesita ayuda (10)</option><option value="5">Silla de ruedas (5)</option><option value="0">Inmóvil (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Escaleras</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Incapaz (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Vestirse</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Control de heces</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Continente (10)</option><option value="5">Accidente ocasional (5)</option><option value="0">Incontinente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Control de orina</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Continente (10)</option><option value="5">Accidente ocasional (5)</option><option value="0">Incontinente (0)</option></select></div>
+  <div id="barthelResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Barthel: 100/100 — Independiente</div>
+</div>
+
+<!-- 23. CKD-EPI -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💧 CKD-EPI 2021 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Filtrado glomerular estimado</span></h3>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Creatinina sérica (mg/dL)</label><input type="number" step="0.01" id="ckdCreat" placeholder="Ej: 1.2" oninput="calcCKDEPI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Edad</label><input type="number" id="ckdAge" placeholder="Edad" oninput="calcCKDEPI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Sexo</label><select id="ckdSex" onchange="calcCKDEPI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="M">Varón</option><option value="F">Mujer</option></select></div>
+  <div id="ckdResult" style="margin-top:10px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">Introduce creatinina y edad</div>
+</div>
+
+<!-- 24. Ottawa Tobillo/Pie -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🦴 Regla de Ottawa <span style="font-size:.75rem;font-weight:400;color:#64748b;">¿Necesita Rx tobillo/pie?</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">Rx indicada si cumple CUALQUIERA:</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Dolor en los últimos 6 cm del maléolo posterior (peroné o tibia)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Incapacidad para cargar peso (4 pasos) inmediato y en urgencias</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Dolor en base del 5° metatarsiano</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Dolor en escafoides (navicular)</label>
+  <div id="ottawaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f0fdf4;color:#166534;"><strong>Rx NO indicada</strong><br>No cumple criterios Ottawa — Sensibilidad ~98%</div>
+</div>
+
+<!-- 25. ABCD2 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 ABCD² <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo ictus tras AIT</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="abcd2-chk" data-pts="1" onchange="calcABCD2()"> Edad ≥60 años (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="abcd2-chk" data-pts="1" onchange="calcABCD2()"> TA ≥140/90 (+1)</label>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Clínica</label><select class="abcd2-sel" onchange="calcABCD2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Otros síntomas (0)</option><option value="1">Alteración del habla sin debilidad (1)</option><option value="2">Debilidad unilateral (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Duración</label><select class="abcd2-sel" onchange="calcABCD2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;10 min (0)</option><option value="1">10-59 min (1)</option><option value="2">≥60 min (2)</option></select></div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="abcd2-chk" data-pts="1" onchange="calcABCD2()"> Diabetes (+1)</label>
+  <div id="abcd2Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">ABCD²: 0/7</div>
+</div>
+
+<!-- 26. Ranson -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🔬 Ranson <span style="font-size:.75rem;font-weight:400;color:#64748b;">Gravedad pancreatitis aguda</span></h3>
+  <div style="font-size:.78rem;font-weight:600;color:#334155;margin-bottom:4px;">Al ingreso</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Edad &gt;55 años</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Leucocitos &gt;16.000</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Glucosa &gt;200 mg/dL</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> LDH &gt;350 UI/L</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> GOT &gt;250 UI/L</label>
+  <div style="font-size:.78rem;font-weight:600;color:#334155;margin:8px 0 4px;">A las 48 horas</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Caída Hto &gt;10%</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Aumento BUN &gt;5 mg/dL</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Ca² &lt;8 mg/dL</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> PaO₂ &lt;60 mmHg</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Déficit bases &gt;4 mEq/L</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Secuestro líquidos &gt;6L</label>
+  <div id="ransonResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Ranson: 0/11</div>
+</div>
+
+<!-- 27. Downton -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👴 Downton <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo de caídas</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Caídas previas</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma sedantes/hipnóticos</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma antihipertensivos (no diuréticos)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma antiparkinsonianos</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma antidepresivos</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Déficit sensorial (visual/auditivo)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Alteración cognitiva</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Marcha insegura (con o sin ayuda)</label>
+  <div id="downtonResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Downton: 0</div>
+</div>
+
+<!-- 28. Fagerström -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🚬 Fagerström <span style="font-size:.75rem;font-weight:400;color:#64748b;">Dependencia nicotínica</span></h3>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Cuánto tarda en fumar tras despertar?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="3">≤5 min (3)</option><option value="2">6-30 min (2)</option><option value="1">31-60 min (1)</option><option value="0">&gt;60 min (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Cigarrillos/día?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≤10 (0)</option><option value="1">11-20 (1)</option><option value="2">21-30 (2)</option><option value="3">&gt;30 (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Fuma más por la mañana?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Dificultad para no fumar en sitios prohibidos?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Cuál le costaría más dejar?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Cualquiera (0)</option><option value="1">El primero de la mañana (1)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Fuma estando enfermo en cama?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div id="fagerResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Fagerström: 0/10</div>
+</div>
+
+<!-- 29. Epworth -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">😴 Epworth <span style="font-size:.75rem;font-weight:400;color:#64748b;">Somnolencia diurna (SAOS)</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">Probabilidad de quedarse dormido (0=nunca, 1=escasa, 2=moderada, 3=elevada)</div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado leyendo</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Viendo la televisión</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado en lugar público</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Pasajero en coche (1h)</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Tumbado por la tarde</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado hablando con alguien</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado tras comida sin alcohol</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">En coche parado (tráfico)</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div id="epworthResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Epworth: 0/24</div>
+</div>
+
+
+              </div>
             </div><!-- end panelCalc -->
 
             <!-- TAB 4: MEGACUADERNO IA -->
@@ -4210,8 +4452,8 @@ function infDescargar(formato){
 
 
 <script src="https://js.puter.com/v2/"></script>
-<script src="app-main.js?v=20260402i"></script>
-<script src="escalas-clinicas.js?v=20260402a"></script>
+<script src="app-main.js?v=20260402j"></script>
+<script src="escalas-clinicas.js?v=20260402b"></script>
 <script src="triaje-ia.js?v=20260402a"></script>
 <!-- PWA Install Banner -->
 <div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f6b4a,#0a4f36);color:#fff;padding:14px 18px;z-index:99999;box-shadow:0 -4px 20px rgba(0,0,0,.4);font-family:var(--font-display,system-ui);animation:slideUpPWA .4s ease;">
