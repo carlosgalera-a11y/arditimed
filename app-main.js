@@ -1384,9 +1384,7 @@ async function scanLoadUploaded(docId){
   }catch(e){console.error(e);}
 }
 
-var GEMINI_KEY="AIzaSyC1sWG4JvoIbbrkawlp6wOG8UxVwbUye1A";
-var GEMINI_MODEL="gemini-2.5-flash-preview-05-20";
-var SCAN_VISION_MODELS=["qwen/qwen-2.5-vl-32b-instruct:free","google/gemma-3-27b-it:free"];
+var SCAN_VISION_MODELS=["qwen/qwen-2.5-vl-32b-instruct:free"];
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
@@ -1411,18 +1409,6 @@ async function scanAnalyze(){
         if(r.status===429||r.status===502||r.status===503)continue;
         if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
       }catch(e){continue;}
-    }
-
-    // 2. Gemini 2.5 Flash fallback
-    if(!txt&&GEMINI_KEY){
-      try{
-        res.querySelector('div:last-child').textContent='Probando Gemini Flash...';
-        var gr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+GEMINI_MODEL+":generateContent?key="+GEMINI_KEY,{
-          method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({contents:[{parts:[{text:sys+"\n\n"+(ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática.")},{inline_data:{mime_type:mt,data:scanB64}}]}],generationConfig:{maxOutputTokens:2000,temperature:0.3}})
-        });
-        if(gr.ok){var gd=await gr.json();txt=gd.candidates?.[0]?.content?.parts?.[0]?.text||null;if(txt)usedModel="Gemini 2.5 Flash";}
-      }catch(e){}
     }
 
     if(txt){
