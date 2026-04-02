@@ -1302,6 +1302,31 @@ var SCAN_GROQ_MODEL_DEFAULT="google/gemma-3-27b-it:free";
 function getScanGroqKey(){return _dk();}
 function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 
+// ── Vision Config: save/load from Firestore for ALL users ──
+var VISION_CONFIG={
+    fallbackChain:["pollinations","openrouter","puter"],
+    openrouterModels:["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"],
+    pollinationsModel:"openai",
+    puterModel:"gemini-2.5-flash",
+    maxTokens:2000,
+    temperature:0.3,
+    version:"20260402"
+};
+function saveVisionConfigToFirestore(){
+    try{db.collection("config").doc("vision_scan_config").set({
+        config:JSON.stringify(VISION_CONFIG),
+        updatedAt:new Date(),
+        updatedBy:(firebase.auth().currentUser||{}).email||"system"
+    },{merge:true});console.log("Vision config saved to Firestore");}catch(e){console.error("Vision config save error:",e);}
+}
+function loadVisionConfigFromFirestore(){
+    try{db.collection("config").doc("vision_scan_config").get().then(function(doc){
+        if(doc.exists&&doc.data().config){
+            try{Object.assign(VISION_CONFIG,JSON.parse(doc.data().config));console.log("Vision config loaded from Firestore v"+VISION_CONFIG.version);}catch(e){}
+        }
+    }).catch(function(e){console.log("No vision config in Firestore, using defaults");});}catch(e){}
+}
+
 // Guardar/cargar key de referencia en Firestore
 function saveGroqKeyToFirestore(key){
     if(!key)return;
@@ -1531,7 +1556,7 @@ async function scanAnalyze(){
         try{
             var orKey=_dk();
             if(orKey){
-                var orModels=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];
+                var orModels=VISION_CONFIG.openrouterModels||["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];
                 for(var mi=0;mi<orModels.length&&!txt;mi++){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
@@ -2224,6 +2249,12 @@ function gpClearAll(suffix){
 
 // Cargar key de referencia desde Firestore
 loadGroqKeyFromFirestore();
+
+// Cargar configuración de visión desde Firestore (para todos los perfiles)
+loadVisionConfigFromFirestore();
+
+// Guardar config de visión por defecto si es admin (primera vez)
+firebase.auth().onAuthStateChanged(function(u){if(u){try{db.collection("config").doc("vision_scan_config").get().then(function(d){if(!d.exists)saveVisionConfigToFirestore();});}catch(e){}}});
 
 // Cuando admin inicia sesión, si no hay key en Firestore, pedir que la introduzca
 firebase.auth().onAuthStateChanged(function(user){
