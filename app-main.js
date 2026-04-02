@@ -1395,19 +1395,21 @@ async function scanAnalyze(){
     var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
     var txt=null;var usedModel="";
     var OR_KEY=SCAN_OR_KEY;
-    // 1. Try OpenRouter vision models (Qwen2.5-VL-32B first)
+    var lastErr="";
+    // 1. Try OpenRouter vision models
     for(var mi=0;mi<SCAN_VISION_MODELS.length&&!txt;mi++){
       try{
         var vm=SCAN_VISION_MODELS[mi];
-        res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
+        res.querySelector('div:last-child').textContent='Analizando con '+vm.split('/')[1].split(':')[0]+'...';
         var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
           method:"POST",
           headers:{"Content-Type":"application/json","Authorization":"Bearer "+OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
           body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})
         });
-        if(r.status===429||r.status===502||r.status===503)continue;
-        if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
-      }catch(e){continue;}
+        var d=await r.json();
+        if(r.ok&&d.choices&&d.choices[0]&&d.choices[0].message){txt=d.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
+        else{lastErr="HTTP "+r.status+": "+(d.error?.message||d.error?.code||JSON.stringify(d).substring(0,200));if(r.status===429||r.status===502||r.status===503)continue;}
+      }catch(e){lastErr="Exception: "+e.message;continue;}
     }
 
     if(txt){
@@ -1418,7 +1420,7 @@ async function scanAnalyze(){
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
     }else{
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen. Los modelos de visión pueden estar saturados. Inténtalo de nuevo en unos segundos.</div></div>';
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen.</div>'+(lastErr?'<div style="margin-top:8px;padding:8px;background:var(--bg-section);border-radius:6px;font-size:.78rem;color:var(--text-muted);font-family:monospace;word-break:break-all;">'+lastErr+'</div>':'')+'</div>';
     }
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
 }
