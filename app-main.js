@@ -1495,82 +1495,92 @@ async function scanLoadUploaded(docId){
 }
 
 var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct:free","google/gemini-2.5-flash:free"];var SCAN_OR_KEY="REDACTED_OPENROUTER_4_2026-04";
-var SCAN_PUTER_MODELS=["gemini-2.5-flash","gemini-2.5-pro","claude-sonnet-4-5"];
-var GEMINI_KEY="AIzaSyC1sWG4JvoIbbrkawlp6wOG8UxVwbUye1A";
+// Gemini key directa eliminada — fue reportada como leaked por Google
+var GEMINI_KEY="";
 var GEMINI_MODEL="gemini-2.5-flash";
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
-    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA. Puede tardar unos segundos...</div></div>';
+
+    var setStatus=function(msg){
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">'+msg+'</div></div>';
+    };
+    setStatus("Iniciando análisis con IA de visión...");
+
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
-
-    // Try Gemini first, then OpenRouter as fallback
     var txt=null;var usedModel="";var errors=[];
 
-    // 1. Gemini 2.5 Flash directo (Google AI Studio, gratis)
-    if(!txt && GEMINI_KEY){
-      try{
-        var gr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+GEMINI_MODEL+":generateContent?key="+GEMINI_KEY,{
-          method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            contents:[{parts:[
-              {text:sys+"\n\n"+(ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática.")},
-              {inline_data:{mime_type:mt,data:scanB64}}
-            ]}],
-            generationConfig:{maxOutputTokens:2000,temperature:0.3}
-          })
-        });
-        if(gr.ok){var gd=await gr.json();txt=gd.candidates?.[0]?.content?.parts?.[0]?.text||null;if(txt)usedModel="Gemini 2.5 Flash";}
-        else{var ge=await gr.json().catch(function(){return{}});errors.push("Gemini: "+(ge.error?.message||gr.status));console.warn("Gemini error:",ge);}
-      }catch(e){errors.push("Gemini: "+e.message);console.warn("Gemini catch:",e);}
-    }
-
-    // 2. Puter.js fallback (Gemini gratis sin API key)
-    if(!txt && typeof puter!=="undefined"&&puter.ai&&puter.ai.chat){
-      try{
-        var puterResp=await puter.ai.chat(
-          [{role:"user",content:[
-            {type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},
-            {type:"text",text:sys+"\n\n"+(ctx?"Contexto: "+ctx+"\n\n":"")+"Analiza esta imagen médica de forma sistemática."}
-          ]}],
-          {model:"gemini-2.5-flash"}
-        );
-        var puterTxt=null;
-        if(typeof puterResp==="string")puterTxt=puterResp;
-        else if(puterResp&&puterResp.message&&puterResp.message.content)puterTxt=puterResp.message.content;
-        else if(puterResp&&puterResp.content)puterTxt=puterResp.content;
-        if(puterTxt&&puterTxt.length>30){txt=puterTxt;usedModel="Gemini 2.5 Flash (Puter)";}
-      }catch(e){errors.push("Puter: "+e.message);console.warn("Puter catch:",e);}
-    }
-
-    // 3. OpenRouter fallback — probar múltiples modelos de visión
-    if(!txt){
-      for(var mi=0;mi<SCAN_VISION_MODELS.length&&!txt;mi++){
+    // ── 1. Puter.js img2txt (función nativa para visión, gratuita sin API key) ──
+    if(!txt && typeof puter!=="undefined" && puter.ai && puter.ai.img2txt){
         try{
-          var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SCAN_OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},body:JSON.stringify({model:SCAN_VISION_MODELS[mi],messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})});
-          if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel=SCAN_VISION_MODELS[mi].split('/')[1].split(':')[0];}
-          else{var oe=await r.json().catch(function(){return{}});errors.push("OR "+SCAN_VISION_MODELS[mi]+": "+(oe.error?.message||r.status));console.warn("OpenRouter error:",SCAN_VISION_MODELS[mi],oe);}
-        }catch(e){errors.push("OR: "+e.message);}
-      }
+            setStatus("Analizando con Gemini (Puter · sin API key)...");
+            var dataUrl="data:"+mt+";base64,"+scanB64;
+            var prompt=sys+"\n\n"+(ctx?"Contexto clínico: "+ctx+"\n\n":"")+"Analiza esta imagen médica de forma sistemática y detallada.";
+            var pr=await puter.ai.img2txt(dataUrl,prompt,{model:"gemini-2.5-flash"});
+            if(pr&&typeof pr==="string"&&pr.length>20){txt=pr;usedModel="Gemini 2.5 Flash (Puter)";}
+            else if(pr&&pr.text&&pr.text.length>20){txt=pr.text;usedModel="Gemini 2.5 Flash (Puter)";}
+        }catch(e){errors.push("Puter/img2txt: "+e.message);}
     }
+
+    // ── 2. Puter.js chat con imagen (modelos alternativos) ──
+    if(!txt && typeof puter!=="undefined" && puter.ai && puter.ai.chat){
+        var pm2=["gemini-2.5-flash","claude-sonnet-4-5","gpt-4o"];
+        for(var pi=0;pi<pm2.length&&!txt;pi++){
+            try{
+                setStatus("Analizando con "+pm2[pi]+" (Puter)...");
+                var pr2=await puter.ai.chat(
+                    [{role:"user",content:[
+                        {type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},
+                        {type:"text",text:sys+"\n\n"+(ctx?"Contexto: "+ctx+"\n\n":"")+"Analiza esta imagen médica de forma sistemática."}
+                    ]}],
+                    {model:pm2[pi]}
+                );
+                var t2=null;
+                if(typeof pr2==="string")t2=pr2;
+                else if(pr2&&pr2.message&&pr2.message.content)t2=typeof pr2.message.content==="string"?pr2.message.content:((pr2.message.content[0]&&pr2.message.content[0].text)||null);
+                else if(pr2&&pr2.content)t2=typeof pr2.content==="string"?pr2.content:null;
+                if(t2&&t2.length>20){txt=t2;usedModel=pm2[pi]+" (Puter)";}
+            }catch(e){errors.push("Puter/"+pm2[pi]+": "+e.message);}
+        }
+    }
+
+    // ── 3. OpenRouter fallback ──
+    if(!txt){
+        for(var oi=0;oi<SCAN_VISION_MODELS.length&&!txt;oi++){
+            try{
+                setStatus("Fallback OpenRouter: "+SCAN_VISION_MODELS[oi].split('/')[1].split(':')[0]+"...");
+                var or=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+                    method:"POST",
+                    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SCAN_OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
+                    body:JSON.stringify({model:SCAN_VISION_MODELS[oi],messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})
+                });
+                var od=await or.json();
+                if(or.ok&&od.choices&&od.choices[0]&&od.choices[0].message&&od.choices[0].message.content){txt=od.choices[0].message.content;usedModel=SCAN_VISION_MODELS[oi].split('/')[1].split(':')[0]+" (OR)";}
+                else errors.push("OR/"+SCAN_VISION_MODELS[oi].split('/')[1]+": "+(od.error?.message||"HTTP "+or.status));
+            }catch(e){errors.push("OR/"+SCAN_VISION_MODELS[oi].split('/')[1]+": "+e.message);}
+        }
+    }
+
+    var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por IA y <strong>NO constituye diagnóstico médico</strong> ni base para decisiones terapéuticas. Requiere valoración presencial por profesional sanitario.</div>';
 
     if(txt){
-        var fmt=typeof fmtClinical==='function'?fmtClinical(txt):txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-        var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por inteligencia artificial y <strong>NO constituye un diagnóstico médico</strong>, acto clínico ni base para decisiones terapéuticas. Clasificación: sistema de IA de alto riesgo en contexto sanitario. Uso restringido a formación y docencia. El diagnóstico definitivo requiere valoración presencial por un profesional sanitario.</div>';
+        var fmt=typeof fmtClinical==="function"?fmtClinical(txt):txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
         res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
         scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
     }else{
-        var errDetail=errors.length?'<div style="font-size:.78rem;color:#6b7280;margin-top:8px;">Detalles: '+errors.join(' | ')+'</div>':"";
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen. Se intentaron 3 proveedores (Gemini, Puter, OpenRouter).</div>'+errDetail+'</div>';
-        console.error("ScanIA: todos los proveedores fallaron",errors);
+        var errDetail=errors.length?errors.join(" | "):"Sin detalles";
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;margin-bottom:8px;">No se pudo analizar la imagen. Se intentaron '+errors.length+' proveedores.</div><div style="font-size:.75rem;color:var(--text-muted);font-family:monospace;background:var(--bg-subtle);padding:8px;border-radius:6px;word-break:break-all;line-height:1.6;">'+escMod(errDetail)+'</div></div>';
     }
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
-}
+}var SCAN_PUTER_MODELS=["gemini-2.5-flash","gemini-2.5-pro","claude-sonnet-4-5"];
+var GEMINI_KEY="AIzaSyC1sWG4JvoIbbrkawlp6wOG8UxVwbUye1A";
+var GEMINI_MODEL="gemini-2.5-flash";
+
 
 function scanRenderHist(){
     var l=document.getElementById("scanHistList");if(!l)return;
