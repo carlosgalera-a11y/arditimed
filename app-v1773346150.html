@@ -3764,8 +3764,23 @@ function moderarPropuesta(docId, nuevoEstado, motivo){
             cargarPropuestas(modFiltroActual);
             contarPendientes();
             if(nuevoEstado==="aprobado"){
-                // Notificar en consola (en producción se enviaría email via Cloud Function)
-                console.log("✅ Propuesta aprobada:", docId);
+                db.collection("propuestas_contenido").doc(docId).get().then(function(snap){
+                    if(!snap.exists) return;
+                    var p = snap.data();
+                    db.collection("documentos_aprobados").add({
+                        titulo: p.titulo||p.fileName||"Documento", categoria: p.seccion||"Otro",
+                        url: p.url||"", fileName: p.fileName||"", tipo: p.tipo||"archivo",
+                        sizeMB: parseFloat(p.sizeMB)||0, descripcion: p.descripcion||"",
+                        autorEmail: p.email||"", autorNombre: p.nombre||"",
+                        aprobadoPor: user.email, aprobadoNombre: user.displayName||user.email,
+                        fechaAprobacion: new Date(), propuestaId: docId, visible: true
+                    }).catch(function(e){ console.error("Error:",e); });
+                });
+            }
+            if(nuevoEstado==="rechazado"){
+                db.collection("documentos_aprobados").where("propuestaId","==",docId).get().then(function(snap){
+                    snap.forEach(function(doc){ doc.ref.update({visible:false}); });
+                }).catch(function(){});
             }
         })
         .catch(function(err){ alert("Error: "+err.message); });

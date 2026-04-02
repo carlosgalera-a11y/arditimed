@@ -1126,9 +1126,39 @@ function moderarPropuesta(docId, nuevoEstado, motivo){
             contarPendientes();
             if(nuevoEstado==="aprobado"){
                 console.log("✅ Propuesta aprobada:", docId);
-                // Refrescar bloque en sección si coincide con categoría actual
+                // Guardar en documentos_aprobados para categorias-docs.html
+                db.collection("propuestas_contenido").doc(docId).get().then(function(snap){
+                    if(!snap.exists) return;
+                    var p = snap.data();
+                    var docAprobado = {
+                        titulo:          p.titulo || p.fileName || "Documento",
+                        categoria:       p.seccion || "Otro",
+                        url:             p.url || "",
+                        fileName:        p.fileName || "",
+                        tipo:            p.tipo || "archivo",
+                        sizeMB:          parseFloat(p.sizeMB) || 0,
+                        descripcion:     p.descripcion || "",
+                        autorEmail:      p.email || "",
+                        autorNombre:     p.nombre || "",
+                        aprobadoPor:     user.email,
+                        aprobadoNombre:  user.displayName || user.email,
+                        fechaAprobacion: new Date(),
+                        propuestaId:     docId,
+                        visible:         true
+                    };
+                    db.collection("documentos_aprobados").add(docAprobado).then(function(){
+                        console.log("✅ Documento guardado en categoría:", docAprobado.categoria);
+                    }).catch(function(e){ console.error("Error guardando doc aprobado:", e); });
+                });
+                // Refrescar bloque en sección si coincide
                 var propBlock = document.getElementById("propuestasAprobadasBlock");
                 if(propBlock) cargarPropuestasEnSeccion(currentCategory, propBlock);
+            }
+            if(nuevoEstado==="rechazado"){
+                // Ocultar documento de la colección aprobados
+                db.collection("documentos_aprobados").where("propuestaId","==",docId).get().then(function(snap){
+                    snap.forEach(function(doc){ doc.ref.update({visible:false}); });
+                }).catch(function(){});
             }
         })
         .catch(function(err){ alert("Error: "+err.message); });
