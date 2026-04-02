@@ -775,7 +775,50 @@ function cambiarCategoria(c,b){currentCategory=c;document.querySelectorAll(".cat
 function openMobileSidebar(){var sb=document.getElementById("sidebarLeft");var ov=document.getElementById("sidebarOverlay");if(sb)sb.classList.add("open");if(ov)ov.classList.add("open");document.body.style.overflow="hidden";}
 function closeMobileSidebar(){var sb=document.getElementById("sidebarLeft");var ov=document.getElementById("sidebarOverlay");if(sb)sb.classList.remove("open");if(ov)ov.classList.remove("open");document.body.style.overflow="";}
 function esc(t){if(!t)return"";return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-function actualizarUI(){var docs=documents[currentCategory]||[];document.getElementById("documentosList").innerHTML=docs.length===0?'<div class="empty-state"><div class="empty-state-icon">📄</div><p>No hay documentos</p></div>':docs.map(function(d,i){var isExternal=d.url&&(d.url.endsWith('.pdf')||d.url.startsWith('http'))&&d.url.indexOf('protocolos-nuevas-especialidades')<0;var btn=isExternal?'<a href="'+d.url+'" target="_blank" class="doc-btn">Abrir</a>':'<button onclick="openDocModal('+i+')" class="doc-btn" style="border:none;cursor:pointer;">Ver</button>';return'<div class="doc-item"><div><div class="doc-name">'+d.name+'</div><div class="doc-size">'+(d.size_mb||0)+' MB · '+(d.type||'protocolo')+'</div></div>'+btn+'</div>'}).join("");document.getElementById("docsCount").textContent=docs.length;document.getElementById("preguntasCount").textContent=(preguntas[currentCategory]||[]).length;document.getElementById("notasCount").textContent=(notas[currentCategory]||[]).length;var pa=preguntas[currentCategory]||[],pl=document.getElementById("preguntasList");pl.innerHTML=pa.length===0?'<div class="empty-state"><div class="empty-state-icon">🩺</div><p>Haz tu primera pregunta</p></div>':pa.map(function(p){return'<div class="question-box"><div class="question-text">'+esc(p.pregunta)+'</div><div class="answer-text">'+esc(p.respuesta)+'</div><div class="note-time">'+p.fecha+'</div></div>'}).join("");var na=notas[currentCategory]||[],nl=document.getElementById("notasList");nl.innerHTML=na.length===0?'<div class="empty-state"><div class="empty-state-icon">📝</div><p>Sin notas</p></div>':na.map(function(n,i){return'<div class="question-box" style="border-left-color:var(--accent)"><div style="font-size:.92rem;white-space:pre-wrap;padding-right:30px;font-weight:300;line-height:1.6">'+esc(n.texto)+'</div><div class="note-time">'+n.fecha+'</div><button onclick="eliminarNota('+i+')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;opacity:.35">🗑️</button></div>'}).join("");}
+function actualizarUI(){var docs=documents[currentCategory]||[];document.getElementById("documentosList").innerHTML=docs.length===0?'<div class="empty-state"><div class="empty-state-icon">📄</div><p>No hay documentos</p></div>':docs.map(function(d,i){var isExternal=d.url&&(d.url.endsWith('.pdf')||d.url.startsWith('http'))&&d.url.indexOf('protocolos-nuevas-especialidades')<0;var btn=isExternal?'<a href="'+d.url+'" target="_blank" class="doc-btn">Abrir</a>':'<button onclick="openDocModal('+i+')" class="doc-btn" style="border:none;cursor:pointer;">Ver</button>';return'<div class="doc-item"><div><div class="doc-name">'+d.name+'</div><div class="doc-size">'+(d.size_mb||0)+' MB · '+(d.type||'protocolo')+'</div></div>'+btn+'</div>'}).join("");
+    // Añadir bloque de propuestas aprobadas de la comunidad
+    var propBlock = document.getElementById("propuestasAprobadasBlock");
+    if(!propBlock){
+        propBlock = document.createElement("div");
+        propBlock.id = "propuestasAprobadasBlock";
+        document.getElementById("documentosList").appendChild(propBlock);
+    } else {
+        document.getElementById("documentosList").appendChild(propBlock);
+    }
+    cargarPropuestasEnSeccion(currentCategory, propBlock);
+    document.getElementById("docsCount").textContent=docs.length;document.getElementById("preguntasCount").textContent=(preguntas[currentCategory]||[]).length;document.getElementById("notasCount").textContent=(notas[currentCategory]||[]).length;var pa=preguntas[currentCategory]||[],pl=document.getElementById("preguntasList");pl.innerHTML=pa.length===0?'<div class="empty-state"><div class="empty-state-icon">🩺</div><p>Haz tu primera pregunta</p></div>':pa.map(function(p){return'<div class="question-box"><div class="question-text">'+esc(p.pregunta)+'</div><div class="answer-text">'+esc(p.respuesta)+'</div><div class="note-time">'+p.fecha+'</div></div>'}).join("");var na=notas[currentCategory]||[],nl=document.getElementById("notasList");nl.innerHTML=na.length===0?'<div class="empty-state"><div class="empty-state-icon">📝</div><p>Sin notas</p></div>':na.map(function(n,i){return'<div class="question-box" style="border-left-color:var(--accent)"><div style="font-size:.92rem;white-space:pre-wrap;padding-right:30px;font-weight:300;line-height:1.6">'+esc(n.texto)+'</div><div class="note-time">'+n.fecha+'</div><button onclick="eliminarNota('+i+')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;opacity:.35">🗑️</button></div>'}).join("");}
+
+function cargarPropuestasEnSeccion(seccion, container){
+    if(!container) return;
+    if(typeof db === "undefined") return;
+    db.collection("propuestas_contenido")
+        .where("estado","==","aprobado")
+        .where("seccion","==",seccion)
+        .orderBy("fechaModeracion","desc")
+        .limit(20)
+        .get()
+        .then(function(snap){
+            if(snap.empty){ container.innerHTML=""; return; }
+            var html = '<div style="margin-top:20px;border-top:2px solid var(--border);padding-top:16px;">';
+            html += '<div style="font-size:.78rem;font-weight:700;color:#0066cc;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">📤 Aportaciones de la comunidad</div>';
+            snap.forEach(function(doc){
+                var d = doc.data();
+                var icon = d.tipo==="url" ? "🔗" : "📄";
+                var fechaMod = d.fechaModeracion ? new Date(d.fechaModeracion.seconds*1000).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"}) : "";
+                var accion = d.url
+                    ? '<a href="'+escMod(d.url)+'" target="_blank" class="doc-btn" style="font-size:.78rem;padding:5px 10px;text-decoration:none;">Abrir</a>'
+                    : "";
+                html += '<div class="doc-item" style="border-left:3px solid #0ea5e9;">';
+                html += '<div><div class="doc-name">'+icon+' '+escMod(d.titulo)+'</div>';
+                html += '<div class="doc-size">👤 '+escMod(d.nombre||d.email||"Anónimo")+(fechaMod?' · '+fechaMod:'')+'</div>';
+                if(d.descripcion) html += '<div style="font-size:.75rem;color:var(--text-muted);margin-top:2px;">'+escMod(d.descripcion)+'</div>';
+                html += '</div>'+accion+'</div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        })
+        .catch(function(){ container.innerHTML = ""; });
+}
 function guardarConfig(){CONFIG.provider=document.getElementById("cfgProvider").value;CONFIG.groqKey=document.getElementById("cfgGroqKey").value.trim();CONFIG.groqModel=document.getElementById("cfgGroqModel").value;CONFIG.qwenKey=document.getElementById("cfgQwenKey").value.trim();CONFIG.qwenModel=document.getElementById("cfgQwenModel").value;localStorage.setItem("notebook_ai_cfg_v3",JSON.stringify(CONFIG));if(CONFIG.groqKey&&isAdmin())saveGroqKeyToFirestore(CONFIG.groqKey);updateStatus();document.getElementById("cfgStatus").innerHTML='<span style="color:var(--primary)">✅ Guardado</span>';}
 async function testApiKey(){guardarConfig();if(!isReady()){document.getElementById("cfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}var st=document.getElementById("cfgStatus");st.innerHTML='<span style="color:var(--accent)">⏳ Probando...</span>';var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"user",content:"Di: OK"}],max_tokens:10})});if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!</span>';else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';else{var err=await r.json().catch(function(){return{}});st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+"</span>";}}catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+"</span>";}}
 function guardarDatos(){localStorage.setItem("cartagena_preguntas",JSON.stringify(preguntas));localStorage.setItem("cartagena_notas",JSON.stringify(notas));}
@@ -1079,8 +1122,10 @@ function moderarPropuesta(docId, nuevoEstado, motivo){
             cargarPropuestas(modFiltroActual);
             contarPendientes();
             if(nuevoEstado==="aprobado"){
-                // Notificar en consola (en producción se enviaría email via Cloud Function)
                 console.log("✅ Propuesta aprobada:", docId);
+                // Refrescar bloque en sección si coincide con categoría actual
+                var propBlock = document.getElementById("propuestasAprobadasBlock");
+                if(propBlock) cargarPropuestasEnSeccion(currentCategory, propBlock);
             }
         })
         .catch(function(err){ alert("Error: "+err.message); });
