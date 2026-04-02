@@ -1495,9 +1495,115 @@ async function scanLoadUploaded(docId){
 }
 
 var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct:free","google/gemini-2.5-flash:free"];var SCAN_OR_KEY="REDACTED_OPENROUTER_4_2026-04";
-// Gemini key directa eliminada — fue reportada como leaked por Google
-var GEMINI_KEY="";
-var GEMINI_MODEL="gemini-2.5-flash";
+// Anthropic: claude-haiku-4-5 con visión nativa (mismo que MegaCuaderno)
+var SCAN_ANT_KEY="sk-ant-api03-REEMPLAZAR-CON-TU-KEY";
+var SCAN_ANT_MODEL="claude-haiku-4-5-20251001";
+var GEMINI_KEY="";var GEMINI_MODEL="gemini-2.5-flash";
+
+async function scanAnalyze(){
+    if(!scanB64){alert("Sube una imagen primero");return;}
+    var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
+    btn.disabled=true;btn.innerHTML="⏳ Analizando...";
+
+    var setStatus=function(msg){
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">'+msg+'</div></div>';
+    };
+    setStatus("Iniciando análisis con IA de visión...");
+
+    var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
+    var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
+    var txt=null;var usedModel="";var errors=[];
+
+    // ── 1. Anthropic claude-haiku (visión nativa, mismo backend que MegaCuaderno) ──
+    if(!txt && SCAN_ANT_KEY && !SCAN_ANT_KEY.includes("REEMPLAZAR")){
+        try{
+            setStatus("Analizando con Claude Haiku (Anthropic)...");
+            var ar=await fetch("https://api.anthropic.com/v1/messages",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                    "x-api-key":SCAN_ANT_KEY,
+                    "anthropic-version":"2023-06-01",
+                    "anthropic-dangerous-direct-browser-access":"true"
+                },
+                body:JSON.stringify({
+                    model:SCAN_ANT_MODEL,
+                    max_tokens:2000,
+                    system:sys,
+                    messages:[{role:"user",content:[
+                        {type:"image",source:{type:"base64",media_type:mt,data:scanB64}},
+                        {type:"text",text:ctx?"Analiza esta imagen. Contexto clínico: "+ctx:"Analiza esta imagen médica de forma sistemática y detallada."}
+                    ]}]
+                })
+            });
+            var ad=await ar.json();
+            if(ar.ok&&ad.content&&ad.content[0]&&ad.content[0].text){txt=ad.content[0].text;usedModel="Claude Haiku (Anthropic)";}
+            else errors.push("Anthropic: "+(ad.error?.message||"HTTP "+ar.status));
+        }catch(e){errors.push("Anthropic: "+e.message);}
+    }
+
+    // ── 2. Puter.js img2txt (Gemini gratis, sin API key) ──
+    if(!txt && typeof puter!=="undefined" && puter.ai && puter.ai.img2txt){
+        try{
+            setStatus("Analizando con Gemini (Puter · sin API key)...");
+            var prompt=sys+"\n\n"+(ctx?"Contexto clínico: "+ctx+"\n\n":"")+"Analiza esta imagen médica de forma sistemática.";
+            var pr=await puter.ai.img2txt("data:"+mt+";base64,"+scanB64,prompt,{model:"gemini-2.5-flash"});
+            var pt=typeof pr==="string"?pr:(pr&&pr.text?pr.text:null);
+            if(pt&&pt.length>20){txt=pt;usedModel="Gemini 2.5 Flash (Puter)";}
+        }catch(e){errors.push("Puter/img2txt: "+e.message);}
+    }
+
+    // ── 3. Puter.js chat con imagen ──
+    if(!txt && typeof puter!=="undefined" && puter.ai && puter.ai.chat){
+        var pm=["gemini-2.5-flash","claude-sonnet-4-5","gpt-4o"];
+        for(var pi=0;pi<pm.length&&!txt;pi++){
+            try{
+                setStatus("Analizando con "+pm[pi]+" (Puter)...");
+                var pr2=await puter.ai.chat(
+                    [{role:"user",content:[
+                        {type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},
+                        {type:"text",text:sys+"\n\n"+(ctx?"Contexto: "+ctx+"\n\n":"")+"Analiza esta imagen médica."}
+                    ]}],
+                    {model:pm[pi]}
+                );
+                var t2=typeof pr2==="string"?pr2:(pr2&&pr2.message&&pr2.message.content?
+                    (typeof pr2.message.content==="string"?pr2.message.content:(pr2.message.content[0]&&pr2.message.content[0].text)||null):null);
+                if(t2&&t2.length>20){txt=t2;usedModel=pm[pi]+" (Puter)";}
+            }catch(e){errors.push("Puter/"+pm[pi]+": "+e.message);}
+        }
+    }
+
+    // ── 4. OpenRouter fallback ──
+    if(!txt){
+        for(var oi=0;oi<SCAN_VISION_MODELS.length&&!txt;oi++){
+            try{
+                setStatus("Fallback OpenRouter: "+SCAN_VISION_MODELS[oi].split('/')[1].split(':')[0]+"...");
+                var or=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+                    method:"POST",
+                    headers:{"Content-Type":"application/json","Authorization":"Bearer "+SCAN_OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
+                    body:JSON.stringify({model:SCAN_VISION_MODELS[oi],messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Contexto: "+ctx+". Analiza la imagen.":"Analiza esta imagen médica."}]}],max_tokens:2000,temperature:0.3})
+                });
+                var od=await or.json();
+                if(or.ok&&od.choices&&od.choices[0]&&od.choices[0].message&&od.choices[0].message.content){txt=od.choices[0].message.content;usedModel=SCAN_VISION_MODELS[oi].split('/')[1].split(':')[0]+" (OR)";}
+                else errors.push("OR/"+SCAN_VISION_MODELS[oi].split('/')[1]+": "+(od.error?.message||"HTTP "+or.status));
+            }catch(e){errors.push("OR/"+SCAN_VISION_MODELS[oi].split('/')[1]+": "+e.message);}
+        }
+    }
+
+    var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por IA y <strong>NO constituye diagnóstico médico</strong> ni base para decisiones terapéuticas. Requiere valoración presencial por profesional sanitario.</div>';
+
+    if(txt){
+        var fmt=typeof fmtClinical==="function"?fmtClinical(txt):txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
+        scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
+        if(scanHist.length>30)scanHist=scanHist.slice(0,30);
+        localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
+    }else{
+        var errDetail=errors.join(" | ")||"Sin detalles";
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;margin-bottom:8px;">No se pudo analizar la imagen ('+errors.length+' proveedores).</div><div style="font-size:.75rem;color:var(--text-muted);font-family:monospace;background:var(--bg-subtle);padding:8px;border-radius:6px;word-break:break-all;line-height:1.6;">'+escMod(errDetail)+'</div></div>';
+    }
+    btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
+}
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
