@@ -791,6 +791,7 @@ function actualizarUI(){var docs=documents[currentCategory]||[];document.getElem
 function cargarPropuestasEnSeccion(seccion, container){
     if(!container) return;
     if(typeof db === "undefined") return;
+    // Buscar propuestas aprobadas cuya seccion coincida exactamente con la categoría
     db.collection("propuestas_contenido")
         .where("estado","==","aprobado")
         .where("seccion","==",seccion)
@@ -900,7 +901,9 @@ function abrirModalSubir(seccionPreset){
     var user = firebase.auth().currentUser;
     if(!user){ pendingPageAfterLogin=null; document.getElementById("scanLoginModal").style.display="flex"; resetDisclaimerCheck(); return; }
     // Resetear formulario
-    document.getElementById("subirSeccion").value = seccionPreset || "";
+    // Si no se pasa preset, usar la categoría actual del Cuaderno IA
+    var seccion = seccionPreset || currentCategory || "";
+    document.getElementById("subirSeccion").value = seccion;
     document.getElementById("subirTitulo").value = "";
     document.getElementById("subirDescripcion").value = "";
     document.getElementById("inputArchivoSubir").value = "";
@@ -1222,6 +1225,38 @@ function reactivarModerador(docId){
 }
 
 // Fin sistema de moderación
+
+// ── Migración: corregir propuestas con seccion genérica ──
+// Ejecutar una sola vez desde consola: migrarSeccionPropuestas()
+function migrarSeccionPropuestas(){
+    if(!isSuperAdmin()){ alert("Solo superadmin"); return; }
+    var cats = Object.keys(categories||{});
+    db.collection("propuestas_contenido").where("estado","==","aprobado").get().then(function(snap){
+        var batch = db.batch();
+        var n=0;
+        snap.forEach(function(doc){
+            var d=doc.data();
+            // Si la sección es genérica ("Profesionales", "Otro", etc.) y el título menciona una categoría conocida, corregir
+            var seccionActual = d.seccion||"";
+            if(cats.indexOf(seccionActual)>=0) return; // Ya tiene categoría correcta
+            // Intentar inferir categoría del título o descripción
+            var txt = ((d.titulo||"")+" "+(d.descripcion||"")).toLowerCase();
+            var catDetectada = null;
+            cats.forEach(function(cat){
+                if(txt.indexOf(cat.toLowerCase())>=0) catDetectada=cat;
+            });
+            if(catDetectada){
+                batch.update(doc.ref, {seccion: catDetectada});
+                n++;
+                console.log("Migrando '"+d.titulo+"' → "+catDetectada);
+            }
+        });
+        if(n===0){ alert("No hay propuestas que migrar automáticamente."); return; }
+        batch.commit().then(function(){ alert("✅ Migradas "+n+" propuestas. Recarga la página."); })
+            .catch(function(err){ alert("Error: "+err.message); });
+    });
+}
+
 
 // ═══ SCAN IA MODULE ═══
 var SCAN_PWD="gmail";

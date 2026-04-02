@@ -2948,12 +2948,39 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <label style="display:block;font-weight:600;font-size:.88rem;color:#374151;margin-bottom:6px;">📂 Sección de destino *</label>
                 <select id="subirSeccion" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.9rem;font-family:var(--font-body);background:#fff;">
                     <option value="">-- Selecciona una sección --</option>
-                    <option value="Protocolos AP">📋 Protocolos Atención Primaria</option>
-                    <option value="Protocolos Urgencias">🚨 Protocolos Urgencias</option>
-                    <option value="Profesionales">🩺 Profesionales / Cuaderno IA</option>
-                    <option value="Enfermería">👩‍⚕️ Enfermería</option>
-                    <option value="Pacientes">👤 Pacientes</option>
-                    <option value="Otro">📌 Otro (especifica en descripción)</option>
+                    <optgroup label="📚 Cuaderno IA · Especialidades">
+                        <option value="Cardiología">❤️ Cardiología</option>
+                        <option value="Dermatología">🩹 Dermatología</option>
+                        <option value="Digestivo">🍽️ Digestivo</option>
+                        <option value="Endocrinología">🧬 Endocrinología</option>
+                        <option value="Geriatría">👴 Geriatría</option>
+                        <option value="Ginecología">🤰 Ginecología</option>
+                        <option value="Neurología">🧠 Neurología</option>
+                        <option value="Neumología">💨 Neumología</option>
+                        <option value="Pediatría">👶 Pediatría</option>
+                        <option value="Traumatología">🦴 Traumatología</option>
+                        <option value="Urología">🫘 Urología</option>
+                        <option value="ORL">👂 ORL</option>
+                        <option value="Oftalmología">👁️ Oftalmología</option>
+                        <option value="Psiquiatría">🧠 Psiquiatría</option>
+                        <option value="Hematología">🩸 Hematología</option>
+                        <option value="Nefrología">💧 Nefrología</option>
+                        <option value="Reumatología">🦿 Reumatología</option>
+                        <option value="Urgencias">🚨 Urgencias</option>
+                        <option value="Infecciosas">🦠 Infecciosas</option>
+                        <option value="Alergología">🤧 Alergología</option>
+                        <option value="Cirugía Menor">🩹 Cirugía Menor</option>
+                        <option value="Paliativos">🕊️ Paliativos</option>
+                        <option value="Urgencias Hospitalarias">🏥 Urgencias Hospitalarias</option>
+                        <option value="Protocolos Médicos">📋 Protocolos Médicos</option>
+                    </optgroup>
+                    <optgroup label="📂 Otras secciones">
+                        <option value="Protocolos AP">📋 Protocolos Atención Primaria</option>
+                        <option value="Protocolos Urgencias">🚨 Protocolos Urgencias</option>
+                        <option value="Enfermería">👩‍⚕️ Enfermería</option>
+                        <option value="Pacientes">👤 Pacientes</option>
+                        <option value="Otro">📌 Otro (especifica en descripción)</option>
+                    </optgroup>
                 </select>
             </div>
             <!-- Tipo de aportación -->
@@ -3926,7 +3953,7 @@ function infDescargar(formato){
 
 
 <script src="https://js.puter.com/v2/"></script>
-<script src="app-main.js?v=20260402e"></script>
+<script src="app-main.js?v=20260402f"></script>
 <!-- PWA Install Banner -->
 <div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f6b4a,#0a4f36);color:#fff;padding:14px 18px;z-index:99999;box-shadow:0 -4px 20px rgba(0,0,0,.4);font-family:var(--font-display,system-ui);animation:slideUpPWA .4s ease;">
 <div style="display:flex;align-items:center;gap:12px;max-width:600px;margin:0 auto;">
