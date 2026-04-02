@@ -1839,9 +1839,9 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <span style="font-size:1.2rem;">🤖</span>
                 <span id="scanModelRef">Modelo: <strong>Vision Transformers (ViT)</strong> · Dataset: <strong>ISIC Archive</strong> · Arquitectura sugerida: ViT · Análisis por Llama 4 Scout (Groq)</span>
             </div>
-            <div id="scanDropZone" onclick="document.getElementById('scanFileIn').click()" style="border:2px dashed var(--border);border-radius:var(--radius);padding:48px 20px;text-align:center;cursor:pointer;background:var(--bg-card);margin-bottom:20px;transition:.3s;">
+            <div id="scanDropZone" onclick="document.getElementById('scanFileIn').click()" style="border:2px dashed var(--border);border-radius:var(--radius);padding:48px 20px;text-align:center;cursor:pointer;background:var(--bg-card);margin-bottom:20px;transition:.3s;" tabindex="0">
                 <input type="file" id="scanFileIn" accept="image/*" style="display:none" onchange="scanHandleFile(event)">
-                <div id="scanDropContent"><div style="font-size:3rem;margin-bottom:12px;opacity:.5;">📷</div><div style="color:var(--text-light);font-size:.95rem;margin-bottom:4px;">Arrastra una imagen o haz clic para seleccionar</div><div style="color:var(--text-muted);font-size:.82rem;">JPG, PNG · Fotos clínicas, radiografías o ECGs</div></div>
+                <div id="scanDropContent"><div style="font-size:3rem;margin-bottom:12px;opacity:.5;">📷</div><div style="color:var(--text-light);font-size:.95rem;margin-bottom:4px;">Arrastra, haz clic, o <strong>pega (Ctrl+V)</strong> una imagen</div><div style="color:var(--text-muted);font-size:.82rem;">JPG, PNG · Capturas de pantalla, fotos clínicas, radiografías o ECGs</div><div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--bg-section);border-radius:6px;font-size:.78rem;color:var(--text-muted);"><span style="font-size:1.1rem;">⌨️</span> Ctrl+V / Cmd+V para pegar desde portapapeles</div></div>
                 <img id="scanImgPreview" style="display:none;max-width:100%;max-height:380px;border-radius:8px;object-fit:contain;margin:0 auto;" alt="Preview">
             </div>
             <input type="text" id="scanCtx" placeholder="Contexto clínico (opcional): edad, sexo, síntomas, localización..." style="width:100%;padding:13px 18px;border:2px solid var(--border);border-radius:var(--radius);font-size:.92rem;font-family:var(--font-body);margin-bottom:16px;background:var(--bg-card);">
@@ -3983,7 +3983,7 @@ function infDescargar(formato){
 
 
 <script src="https://js.puter.com/v2/"></script>
-<script src="app-main.js?v=20260402g"></script>
+<script src="app-main.js?v=20260402h"></script>
 <!-- PWA Install Banner -->
 <div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f6b4a,#0a4f36);color:#fff;padding:14px 18px;z-index:99999;box-shadow:0 -4px 20px rgba(0,0,0,.4);font-family:var(--font-display,system-ui);animation:slideUpPWA .4s ease;">
 <div style="display:flex;align-items:center;gap:12px;max-width:600px;margin:0 auto;">

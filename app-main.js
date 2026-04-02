@@ -1440,6 +1440,35 @@ function scanHandleFile(e){var f=e.target.files[0];if(f)scanProcessFile(f);}
 function scanProcessFile(f){if(!f.type.startsWith("image/")){alert("Selecciona una imagen");return;}var r=new FileReader();r.onload=function(e){var d=e.target.result;scanB64=d.split(",")[1];document.getElementById("scanImgPreview").src=d;document.getElementById("scanImgPreview").style.display="block";document.getElementById("scanDropContent").style.display="none";document.getElementById("scanDropZone").style.borderStyle="solid";document.getElementById("scanDropZone").style.borderColor="#0066cc";document.getElementById("scanBtnGo").disabled=false;};r.readAsDataURL(f);}
 (function(){var z=document.getElementById("scanDropZone");if(z){z.addEventListener("dragover",function(e){e.preventDefault();z.style.borderColor="#0066cc";z.style.background="rgba(0,102,204,.04)";});z.addEventListener("dragleave",function(){z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";});z.addEventListener("drop",function(e){e.preventDefault();z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";if(e.dataTransfer.files.length)scanProcessFile(e.dataTransfer.files[0]);});}})();
 
+// ── Clipboard paste support (Ctrl+V / Cmd+V) ──
+(function(){
+    function handlePaste(e){
+        var items=e.clipboardData&&e.clipboardData.items;if(!items)return;
+        for(var i=0;i<items.length;i++){
+            if(items[i].type.indexOf("image")!==-1){
+                e.preventDefault();
+                var blob=items[i].getAsFile();
+                if(blob)scanProcessFile(blob);
+                // Visual feedback
+                var z=document.getElementById("scanDropZone");
+                if(z){z.style.borderColor="#0066cc";z.style.background="rgba(0,102,204,.08)";setTimeout(function(){z.style.background="var(--bg-card)";},300);}
+                return;
+            }
+        }
+    }
+    // Listen on the drop zone itself
+    var z=document.getElementById("scanDropZone");
+    if(z){z.addEventListener("paste",handlePaste);}
+    // Also listen globally so paste works anywhere on the page when scan tab is active
+    document.addEventListener("paste",function(e){
+        // Only intercept if scan module is visible and no text input is focused
+        var active=document.activeElement;
+        if(active&&(active.tagName==="INPUT"||active.tagName==="TEXTAREA"||active.isContentEditable))return;
+        var scanTab=document.getElementById("scanDropZone");
+        if(scanTab&&scanTab.offsetParent!==null)handlePaste(e);
+    });
+})();
+
 function scanClear(){scanB64=null;document.getElementById("scanImgPreview").style.display="none";document.getElementById("scanImgPreview").src="";document.getElementById("scanDropContent").style.display="block";document.getElementById("scanDropZone").style.borderStyle="dashed";document.getElementById("scanDropZone").style.borderColor="var(--border)";document.getElementById("scanFileIn").value="";document.getElementById("scanCtx").value="";document.getElementById("scanBtnGo").disabled=true;document.getElementById("scanResult").innerHTML="";}
 
 // Show/hide QR section based on login
