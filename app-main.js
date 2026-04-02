@@ -1384,7 +1384,7 @@ async function scanLoadUploaded(docId){
   }catch(e){console.error(e);}
 }
 
-var SCAN_VISION_MODELS=["qwen/qwen-2.5-vl-32b-instruct:free"];
+var SCAN_VISION_MODELS=["qwen/qwen2.5-vl-32b-instruct"];
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
