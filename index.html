@@ -2992,7 +2992,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
     </div>
     <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;background:var(--bg-main);">
         <div style="padding:16px 28px 0;">
-            <div class="tab-buttons"><button class="tab-btn active" onclick="switchEnfTab('enf-ia',this)">🤖 Preguntas IA</button><button class="tab-btn" onclick="switchEnfTab('enf-protocolos',this)">📋 Protocolos</button><button class="tab-btn" onclick="switchEnfTab('enf-tecnicas',this)">💉 Técnicas</button><button class="tab-btn" onclick="switchEnfTab('enf-farmacos',this)">💊 Fármacos</button><button class="tab-btn" onclick="switchEnfTab('enf-escalas',this)">📊 Escalas</button><button class="tab-btn" onclick="switchEnfTab('enf-docs',this)">📄 Documentos</button><button class="tab-btn" onclick="switchEnfTab('enf-recursos',this)">📚 Recursos</button><button class="tab-btn" onclick="switchEnfTab('enf-config',this)">⚙️ Config</button></div>
+            <div class="tab-buttons"><button class="tab-btn active" onclick="switchEnfTab('enf-ia',this)">🤖 Preguntas IA</button><button class="tab-btn" onclick="switchEnfTab('enf-protocolos',this)">📋 Protocolos</button><button class="tab-btn" onclick="switchEnfTab('enf-tecnicas',this)">💉 Técnicas</button><button class="tab-btn" onclick="switchEnfTab('enf-farmacos',this)">💊 Fármacos</button><button class="tab-btn" onclick="switchEnfTab('enf-escalas',this)">📊 Escalas</button><button class="tab-btn" onclick="switchEnfTab('enf-curas',this)">🩹 Curas</button><button class="tab-btn" onclick="switchEnfTab('enf-docs',this)">📄 Documentos</button><button class="tab-btn" onclick="switchEnfTab('enf-recursos',this)">📚 Recursos</button><button class="tab-btn" onclick="switchEnfTab('enf-config',this)">⚙️ Config</button></div>
         </div>
         <div style="flex:1;overflow-y:auto;padding:16px 28px 28px;">
 
@@ -3076,6 +3076,99 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
             </div>
 
             <!-- TAB: Documentos -->
+            <div id="enf-curas" class="enf-tab-content" style="display:none;">
+                <div style="background:linear-gradient(135deg,#7c2d12,#9a3412);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:1.8rem;">🩹</span>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;">Guías Prácticas de Heridas — SERGAS</div>
+                            <div style="font-size:.78rem;opacity:.85;">Colección «Úlceras Fóra» · Servicio Gallego de Salud · 8 guías basadas en evidencia</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:grid;gap:12px;">
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/Documents/93/GU%C3%8DA%20N%C2%BA1%20UPP%20cast.pdf" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #dc2626;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#991b1b';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#dc2626';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#dc2626;font-size:.9rem;">1</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Úlceras por Presión (UPP)</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Prevención, clasificación, tratamiento. Escalas Norton/Braden. Superficies especiales.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/Documents/8/GUIA-2-ULCERAS%20EXTREMIDAD%20INFERIOR-PUF-139D-%20Publicada-2024-CAST.pdf" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #ea580c;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#c2410c';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#ea580c';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fff7ed;display:flex;align-items:center;justify-content:center;font-weight:800;color:#ea580c;font-size:.9rem;">2</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Úlceras de la Extremidad Inferior <span style="background:#dbeafe;color:#1d4ed8;padding:1px 6px;border-radius:4px;font-size:.7rem;font-weight:600;">ACTUALIZADA 2024</span></div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Úlceras venosas, arteriales y mixtas. ITB. Terapia compresiva. Cura en ambiente húmedo.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G3_ULCERAS_PIE_DIABETICO?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #eab308;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#ca8a04';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#eab308';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fefce8;display:flex;align-items:center;justify-content:center;font-weight:800;color:#ca8a04;font-size:.9rem;">3</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Úlceras del Pie Diabético</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Clasificación Wagner/Texas. Exploración neuropática. Descarga. Pie de riesgo.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G4_LESIONES_CUTANEAS_NEOPLASICAS?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #7c3aed;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#6d28d9';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#7c3aed';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;font-weight:800;color:#7c3aed;font-size:.9rem;">4</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Lesiones Cutáneas Neoplásicas</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Heridas tumorales. Manejo del exudado, olor y sangrado. Cuidados paliativos.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G5_LESIONES_POR_QUEMADURA?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #dc2626;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#991b1b';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#dc2626';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#dc2626;font-size:.9rem;">5</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Lesiones por Quemadura <span style="background:#f0fdf4;color:#166534;padding:1px 6px;border-radius:4px;font-size:.7rem;font-weight:600;">2ª EDICIÓN</span></div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Clasificación por profundidad. Regla de los 9. Fórmula de Parkland. Cura local.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G6_HERIDA_QUIRURGICA_AGUDA?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0284c7;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#0369a1';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#0284c7';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0284c7;font-size:.9rem;">6</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Herida Quirúrgica Aguda</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Clasificación herida quirúrgica. Infección sitio quirúrgico. Dehiscencia. Cuidados.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G7_LESIONES_CUTANEAS_ASOCIADAS_A_LA_HUMEDAD?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #059669;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#047857';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#059669';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;font-weight:800;color:#059669;font-size:.9rem;">7</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Lesiones Cutáneas Asociadas a la Humedad</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">LESCAH. Dermatitis por incontinencia. Diferenciación UPP vs LESCAH. Prevención.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G8_HERIDAS_TRAUMATICAS?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #475569;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#334155';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#475569';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-weight:800;color:#475569;font-size:.9rem;">8</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Heridas Traumáticas de Partes Blandas</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Abrasiones, laceraciones, contusiones, mordeduras. Limpieza. Cierre. Profilaxis tétanos.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                </div>
+
+                <div style="margin-top:16px;padding:12px 16px;background:var(--bg-subtle);border-radius:var(--radius-sm);font-size:.78rem;color:var(--text-muted);line-height:1.5;">
+                    <strong>Fuente:</strong> Programa «Úlceras Fóra» — Servicio Gallego de Salud (SERGAS). Colección de Guías Prácticas de Heridas. Xunta de Galicia.<br>
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G0_COLECCI%C3%93N%20GU%C3%8DAS%20PR%C3%81CTICAS?idioma=es" target="_blank" style="color:#0066cc;">Ver colección completa en ulcerasfora.sergas.gal</a>
+                </div>
+            </div>
+
             <div id="enf-docs" class="enf-tab-content" style="display:none;">
                 <div class="studio-intro" style="background:linear-gradient(135deg,#880e4f,#ad1457);"><h4>📄 Documentos y Bibliografía</h4><p>Artículos científicos, guías clínicas, protocolos de vacunación y documentación de referencia</p></div>
                 
@@ -4448,7 +4541,7 @@ function infDescargar(formato){
 
 
 <script src="https://js.puter.com/v2/"></script>
-<script src="app-main.js?v=20260402m"></script>
+<script src="app-main.js?v=20260402n"></script>
 <script src="escalas-clinicas.js?v=20260402c"></script>
 <script src="triaje-ia.js?v=20260402b"></script>
 <!-- PWA Install Banner -->
