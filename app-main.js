@@ -1494,23 +1494,23 @@ async function scanLoadUploaded(docId){
   }catch(e){console.error(e);}
 }
 
-var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];var SCAN_OR_KEY="REDACTED_OPENROUTER_4_2026-04";
+var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct:free","google/gemini-2.5-flash:free"];var SCAN_OR_KEY="REDACTED_OPENROUTER_4_2026-04";
 var SCAN_PUTER_MODELS=["gemini-2.5-flash","gemini-2.5-pro","claude-sonnet-4-5"];
 var GEMINI_KEY="AIzaSyC1sWG4JvoIbbrkawlp6wOG8UxVwbUye1A";
-var GEMINI_MODEL="gemini-2.5-flash-preview-05-20";
+var GEMINI_MODEL="gemini-2.5-flash";
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
-    btn.disabled=true;btn.innerHTML="⏳ Analizando con Gemini...";
-    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Gemini 2.5 Flash procesando. Puede tardar unos segundos...</div></div>';
+    btn.disabled=true;btn.innerHTML="⏳ Analizando...";
+    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA. Puede tardar unos segundos...</div></div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
 
     // Try Gemini first, then OpenRouter as fallback
-    var txt=null;var usedModel="";
+    var txt=null;var usedModel="";var errors=[];
 
-    // 1. Gemini 2.5 Flash directo (Google AI Studio, gratis 15 req/min, con visión)
+    // 1. Gemini 2.5 Flash directo (Google AI Studio, gratis)
     if(!txt && GEMINI_KEY){
       try{
         var gr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+GEMINI_MODEL+":generateContent?key="+GEMINI_KEY,{
@@ -1524,7 +1524,8 @@ async function scanAnalyze(){
           })
         });
         if(gr.ok){var gd=await gr.json();txt=gd.candidates?.[0]?.content?.parts?.[0]?.text||null;if(txt)usedModel="Gemini 2.5 Flash";}
-      }catch(e){}
+        else{var ge=await gr.json().catch(function(){return{}});errors.push("Gemini: "+(ge.error?.message||gr.status));console.warn("Gemini error:",ge);}
+      }catch(e){errors.push("Gemini: "+e.message);console.warn("Gemini catch:",e);}
     }
 
     // 2. Puter.js fallback (Gemini gratis sin API key)
@@ -1542,15 +1543,18 @@ async function scanAnalyze(){
         else if(puterResp&&puterResp.message&&puterResp.message.content)puterTxt=puterResp.message.content;
         else if(puterResp&&puterResp.content)puterTxt=puterResp.content;
         if(puterTxt&&puterTxt.length>30){txt=puterTxt;usedModel="Gemini 2.5 Flash (Puter)";}
-      }catch(e){}
+      }catch(e){errors.push("Puter: "+e.message);console.warn("Puter catch:",e);}
     }
 
-    // 3. OpenRouter fallback (vision models)
+    // 3. OpenRouter fallback — probar múltiples modelos de visión
     if(!txt){
-      try{
-        var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SCAN_OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},body:JSON.stringify({model:SCAN_VISION_MODELS[0],messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})});
-        if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel=SCAN_VISION_MODELS[0].split('/')[1].split(':')[0];}
-      }catch(e){}
+      for(var mi=0;mi<SCAN_VISION_MODELS.length&&!txt;mi++){
+        try{
+          var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SCAN_OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},body:JSON.stringify({model:SCAN_VISION_MODELS[mi],messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})});
+          if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel=SCAN_VISION_MODELS[mi].split('/')[1].split(':')[0];}
+          else{var oe=await r.json().catch(function(){return{}});errors.push("OR "+SCAN_VISION_MODELS[mi]+": "+(oe.error?.message||r.status));console.warn("OpenRouter error:",SCAN_VISION_MODELS[mi],oe);}
+        }catch(e){errors.push("OR: "+e.message);}
+      }
     }
 
     if(txt){
@@ -1561,7 +1565,9 @@ async function scanAnalyze(){
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
     }else{
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen. Comprueba tu conexión e inténtalo de nuevo.</div></div>';
+        var errDetail=errors.length?'<div style="font-size:.78rem;color:#6b7280;margin-top:8px;">Detalles: '+errors.join(' | ')+'</div>':"";
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen. Se intentaron 3 proveedores (Gemini, Puter, OpenRouter).</div>'+errDetail+'</div>';
+        console.error("ScanIA: todos los proveedores fallaron",errors);
     }
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
 }
