@@ -186,7 +186,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 <!-- ═══════ LANDING PAGE ═══════ -->
 <div class="page active" id="pageLanding">
     <div class="landing">
-        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button id="loginBtnLanding" onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button></div></nav>
+        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button id="loginBtnLanding" onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-mi-guardia" onclick="openGuardiaNotas()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0d9488,#0f766e);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);">📋 Mi Guardia</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button></div></nav>
         <div class="hero">
             <div class="hero-bg"></div>
             <div class="hero-overlay"></div>
@@ -3433,6 +3433,11 @@ function updateModBadgeAll(){
         var user=firebase.auth().currentUser;
         el.style.display=(user&&firebase.auth().currentUser)?"inline-flex":"none";
     });
+    // Actualizar botón Mi Guardia
+    document.querySelectorAll(".btn-mi-guardia").forEach(function(el){
+        var user=firebase.auth().currentUser;
+        el.style.display=user?"inline-flex":"none";
+    });
     // Mostrar panel de moderación pendiente si es moderador
     var pendEl=document.getElementById("modBadgePendiente");
     if(pendEl&&isAdmin()){
@@ -5007,6 +5012,7 @@ if(typeof MEGA_KB !== 'undefined') {
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="guardia-notas.js?v=20260402"></script>
 <script src="supabase-plantillas.js?v=20260401"></script>
 
 </body>
