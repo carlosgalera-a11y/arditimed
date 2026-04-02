@@ -27,7 +27,7 @@ function switchEnfTab(id,btn){
 }
 
 function enfGetKey(){
-  return 'REDACTED_OPENROUTER_3_2026-04';
+  return _dk();
 }
 
 var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','meta-llama/llama-4-maverick:free','deepseek/deepseek-chat-v3-0324'];
@@ -830,7 +830,7 @@ async function trIASend(){
         'meta-llama/llama-4-maverick:free',
         'deepseek/deepseek-chat-v3-0324'
     ];
-    var trIAKey = 'REDACTED_OPENROUTER_3_2026-04';
+    var trIAKey = _dk();
 
     var sysPrompt='Eres un asistente de triaje médico del Área II de Cartagena (Hospital Santa Lucía, España). Tu función es evaluar síntomas y orientar al paciente según el Sistema Español de Triaje (SET) con 5 niveles:\n\n'+
     'Nivel 1 (ROJO): Emergencia vital → 112\n'+
