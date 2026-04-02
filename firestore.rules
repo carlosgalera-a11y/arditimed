@@ -59,6 +59,13 @@ service cloud.firestore {
       allow delete: if isSuperAdmin();
     }
 
+    // === DOCUMENTOS (registro de archivos subidos por admin) ===
+    match /documentos/{docId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update, delete: if isSuperAdmin();
+    }
+
     // === GUARDIA_CAMBIOS ===
     match /guardia_cambios/{docId} {
       allow read, write: if isAuth();

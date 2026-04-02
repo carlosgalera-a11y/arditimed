@@ -3645,15 +3645,42 @@ function showUploadError(msg){
 }
 
 function saveDocumentMetadata(category,fileName,downloadURL,fileSize){
+    var user = firebase.auth().currentUser;
+    var sizeMB = (fileSize/1024/1024).toFixed(2);
+    
+    // Guardar en colección documentos (registro interno)
     db.collection("documentos").add({
         categoria:category,
         nombre:fileName,
         url:downloadURL,
         tamaño:fileSize,
+        sizeMB:parseFloat(sizeMB),
         uploadedAt:new Date(),
-        uploadedBy:"admin"
+        uploadedBy:user?user.email:"admin"
     }).catch(function(error){
-        console.error("Error guardando metadata: "+error.message);
+        console.warn("Metadata documentos:", error.message);
+    });
+    
+    // Guardar en documentos_aprobados (para que aparezca en categorías públicas)
+    db.collection("documentos_aprobados").add({
+        titulo:          fileName.replace(/^\d+_/, '').replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+        categoria:       category,
+        url:             downloadURL,
+        fileName:        fileName,
+        tipo:            "archivo",
+        sizeMB:          parseFloat(sizeMB),
+        descripcion:     "Subido por administrador",
+        autorEmail:      user?user.email:"admin",
+        autorNombre:     user?user.displayName||user.email:"Administrador",
+        aprobadoPor:     user?user.email:"admin",
+        aprobadoNombre:  user?user.displayName||user.email:"Administrador",
+        fechaAprobacion: new Date(),
+        propuestaId:     "admin_upload_"+Date.now(),
+        visible:         true
+    }).then(function(){
+        console.log("✅ Documento guardado en categoría:", category);
+    }).catch(function(error){
+        console.error("Error guardando en documentos_aprobados:", error.message);
     });
 }
 function addCategory(){if(!isAdmin()){alert("⛔ Solo el administrador puede añadir categorías. Inicia sesión con la cuenta autorizada.");return;}var name=document.getElementById("catName").value;var emoji=document.getElementById("catEmoji").value;if(!name||!emoji){alert("Completa todos los campos");return}if(categories[name]){alert("Esa categoría ya existe");return}categories[name]=emoji;document.getElementById("catName").value="";document.getElementById("catEmoji").value="";var statusDiv=document.getElementById("categoryStatus");statusDiv.textContent="✅ Categoría '"+name+"' creada correctamente";statusDiv.style.display="block";setTimeout(function(){statusDiv.style.display="none"},3000);actualizarUI()}
