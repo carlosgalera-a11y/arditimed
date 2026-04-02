@@ -2,236 +2,250 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | Área II Cartagena</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Dashboard Hospitalario | Área II Cartagena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#080c14;--surface:#0f1629;--surface2:#161d33;--border:#1e2a45;--text:#e8ecf4;--muted:#7b8ba8;--accent:#3b82f6;--accent2:#22d3ee;--green:#34d399;--yellow:#fbbf24;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--radius:14px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
-.nav{background:rgba(15,23,42,.95);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;border-bottom:1px solid #1e293b}
-.nav h1{font-size:1.05rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
-.container{max-width:900px;margin:0 auto;padding:16px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.stat-card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;text-align:center}
-.stat-card .val{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat-card .lbl{font-size:.72rem;color:#94a3b8;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
-.section{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;margin-bottom:16px}
-.section h3{font-size:1rem;color:#60a5fa;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.tab-row{display:flex;gap:4px;margin-bottom:14px;background:#0f172a;border-radius:8px;padding:3px}
-.tab-row button{flex:1;padding:8px;border:none;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;font-family:inherit;background:transparent;color:#94a3b8}
-.tab-row button.active{background:#3b82f6;color:#fff}
-.history-item{display:flex;gap:10px;padding:12px;border-bottom:1px solid #334155;align-items:flex-start}
-.history-item:last-child{border-bottom:none}
-.history-item .time{font-size:.7rem;color:#64748b;white-space:nowrap;min-width:50px}
-.history-item .q{font-size:.85rem;color:#e2e8f0;font-weight:600}
-.history-item .a{font-size:.8rem;color:#94a3b8;margin-top:4px;line-height:1.5;max-height:60px;overflow:hidden}
-.bar-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:10px 0}
-.bar{flex:1;background:linear-gradient(to top,#3b82f6,#60a5fa);border-radius:4px 4px 0 0;min-height:4px;position:relative;transition:height .5s}
-.bar .bar-lbl{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.6rem;color:#64748b;white-space:nowrap}
-.bar .bar-val{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:.65rem;color:#60a5fa;font-weight:700}
-.empty{text-align:center;padding:30px;color:#64748b;font-size:.85rem}
-.btn{padding:8px 16px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid #334155}
-.btn-red{background:#7f1d1d;color:#fca5a5;border-color:#991b1b}
-.btn-blue{background:#1e3a5f;color:#93c5fd;border-color:#1d4ed8}
-.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.top-list{display:flex;flex-direction:column;gap:6px}
-.top-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#0f172a;border-radius:8px}
-.top-item .rank{font-size:.8rem;font-weight:800;color:#64748b;width:20px}
-.top-item .name{flex:1;font-size:.85rem}
-.top-item .count{font-size:.82rem;font-weight:700;color:#60a5fa}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--accent2);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,12,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:14px}
+.topbar h1{font-size:1rem;font-weight:700;flex:1}
+.topbar .badge{font-size:.65rem;padding:3px 10px;border-radius:20px;font-weight:700;letter-spacing:.5px}
+.badge-live{background:rgba(52,211,153,.15);color:var(--green);animation:pulse 2s infinite}
+.badge-offline{background:rgba(248,113,113,.15);color:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.container{max-width:1100px;margin:0 auto;padding:16px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.blue::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.kpi.green::before{background:linear-gradient(90deg,var(--green),#6ee7b7)}
+.kpi.yellow::before{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.kpi.red::before{background:linear-gradient(90deg,var(--red),#fca5a5)}
+.kpi.purple::before{background:linear-gradient(90deg,var(--purple),#c4b5fd)}
+.kpi .icon{font-size:1.5rem;margin-bottom:6px}
+.kpi .val{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:800;line-height:1}
+.kpi .lbl{font-size:.7rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.8px;font-weight:500}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;overflow:hidden}
+.card h3{font-size:.88rem;color:var(--accent2);margin-bottom:14px;display:flex;align-items:center;gap:8px;font-weight:700}
+.card h3 .sub{font-size:.68rem;color:var(--muted);font-weight:400;margin-left:auto}
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:130px;padding:8px 0 24px}
+.chart-bars .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.chart-bars .bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .6s cubic-bezier(.4,0,.2,1);background:linear-gradient(to top,var(--accent),var(--accent2))}
+.chart-bars .bar.today{background:linear-gradient(to top,var(--green),#6ee7b7)}
+.chart-bars .bar-v{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--accent2);font-weight:700}
+.chart-bars .bar-l{font-size:.58rem;color:var(--muted);margin-top:2px}
+.triage-levels{display:flex;flex-direction:column;gap:8px}
+.triage-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border-radius:10px}
+.triage-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.triage-row .name{flex:1;font-size:.82rem;font-weight:500}
+.triage-row .count{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700}
+.triage-bar{flex:2;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.triage-bar-fill{height:100%;border-radius:3px;transition:width .8s}
+.feed{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.feed::-webkit-scrollbar{width:4px}
+.feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.feed-item{display:flex;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:10px;align-items:center;font-size:.8rem}
+.feed-item .time{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);white-space:nowrap}
+.feed-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.feed-item .msg{flex:1;color:var(--text)}
+.nas-status{display:flex;align-items:center;gap:10px;padding:12px;background:var(--surface2);border-radius:10px;font-size:.82rem;margin-bottom:14px}
+.nas-status .indicator{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.model-row{display:flex;align-items:center;gap:10px;padding:6px 10px;background:var(--surface2);border-radius:8px;font-size:.78rem;margin-bottom:6px}
+.model-row .rank{color:var(--muted);font-family:'JetBrains Mono',monospace;font-weight:700;width:24px}
+.model-row .name{flex:1}
+.model-row .count{font-family:'JetBrains Mono',monospace;color:var(--accent2);font-weight:700}
+.loading{text-align:center;padding:30px;color:var(--muted);font-size:.82rem}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{text-align:center;padding:20px;font-size:.7rem;color:var(--muted);margin-top:20px}
 </style>
 </head>
 <body>
-<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>📊 Dashboard</h1></div>
-<div class="container">
-    <div class="stats-grid" id="statsGrid"></div>
-
-    <div class="section">
-        <h3>📈 Actividad semanal</h3>
-        <div class="bar-chart" id="weekChart"></div>
-    </div>
-
-    <div class="section">
-        <h3>🏆 Más consultados</h3>
-        <div class="tab-row">
-            <button class="active" onclick="showTop('protocolos',this)">Protocolos</button>
-            <button onclick="showTop('herramientas',this)">Herramientas</button>
-            <button onclick="showTop('busquedas',this)">Búsquedas</button>
-        </div>
-        <div class="top-list" id="topList"></div>
-    </div>
-
-    <div class="section">
-        <h3>🤖 Historial de consultas IA</h3>
-        <div class="tab-row">
-            <button class="active" onclick="showHistory('all',this)">Todas</button>
-            <button onclick="showHistory('cuaderno',this)">Cuaderno</button>
-            <button onclick="showHistory('urgencias',this)">Urgencias</button>
-            <button onclick="showHistory('enfermeria',this)">Enfermería</button>
-        </div>
-        <div id="historyList" style="max-height:400px;overflow-y:auto;"></div>
-        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
-            <button class="btn btn-blue" onclick="exportHistory()">📋 Exportar</button>
-            <button class="btn btn-red" onclick="clearHistory()">🗑️ Borrar historial</button>
-        </div>
-    </div>
-
-    <div class="section">
-        <h3>💾 Almacenamiento local</h3>
-        <div id="storageInfo" style="font-size:.85rem;color:#94a3b8;"></div>
-        <button class="btn btn-red" onclick="if(confirm('¿Borrar TODOS los datos locales? (favoritos, configuración, notas, historial)')){localStorage.clear();location.reload();}" style="margin-top:10px;">🗑️ Borrar todos los datos locales</button>
-    </div>
+<div class="topbar">
+  <a href="index.html" style="font-size:.82rem">← Volver</a>
+  <h1>📊 Dashboard Hospitalario</h1>
+  <span class="badge badge-offline" id="nasBadge">NAS OFFLINE</span>
+  <span class="badge" style="background:rgba(59,130,246,.15);color:var(--accent)">v2.0</span>
 </div>
+<div class="container">
+  <div class="kpi-row">
+    <div class="kpi blue"><div class="icon">🏥</div><div class="val" id="kpiTriajes">—</div><div class="lbl">Triajes generados</div></div>
+    <div class="kpi green"><div class="icon">👥</div><div class="val" id="kpiUsers">—</div><div class="lbl">Profesionales</div></div>
+    <div class="kpi yellow"><div class="icon">🤖</div><div class="val" id="kpiAI">—</div><div class="lbl">Consultas IA hoy</div></div>
+    <div class="kpi purple"><div class="icon">📄</div><div class="val" id="kpiDocs">—</div><div class="lbl">Propuestas</div></div>
+    <div class="kpi red"><div class="icon">📸</div><div class="val" id="kpiScans">—</div><div class="lbl">Imágenes analizadas</div></div>
+  </div>
+  <div class="nas-status" id="nasStatus">
+    <div class="indicator" style="background:var(--muted)"></div>
+    <span>Comprobando NAS (REDACTED_INTERNAL_IP:3100)...</span>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>📈 Actividad semanal <span class="sub" id="weekRange"></span></h3>
+      <div class="chart-bars" id="weekChart"><div class="loading"><div class="spinner"></div><br>Cargando...</div></div>
+    </div>
+    <div class="card">
+      <h3>🚦 Triajes por nivel</h3>
+      <div class="triage-levels" id="triageLevels"><div class="loading"><div class="spinner"></div><br>Cargando...</div></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔔 Actividad reciente</h3>
+      <div class="feed" id="activityFeed"><div class="loading"><div class="spinner"></div><br>Cargando...</div></div>
+    </div>
+    <div class="card">
+      <h3>🧠 Modelos IA más usados</h3>
+      <div id="modelList"><div class="loading"><div class="spinner"></div><br>Cargando...</div></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>💾 Almacenamiento local</h3>
+      <div id="storageInfo"></div>
+    </div>
+    <div class="card">
+      <h3>🗂️ Historial IA <span class="sub"><a href="#" onclick="exportHistory();return false">📋 Copiar</a></span></h3>
+      <div class="feed" id="historyList"></div>
+    </div>
+  </div>
+</div>
+<div class="footer">Área II Cartagena — Plataforma Clínica Digital · Dashboard v2.0</div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-// Collect stats from localStorage
-function getStats(){
-    var stats={
-        totalVisits:parseInt(localStorage.getItem('totalVisits')||'0')+1,
-        aiQueries:0,
-        protocolViews:0,
-        favCount:0,
-        guardiaPacientes:0,
-        notesCount:0
-    };
-    localStorage.setItem('totalVisits',stats.totalVisits);
+var firebaseConfig={apiKey:"AIzaSyCnCPbSM8vMOBh0QLxquGhG_K6iFCPctPU",authDomain:"docenciacartagenaeste.firebaseapp.com",projectId:"docenciacartagenaeste",storageBucket:"docenciacartagenaeste.firebasestorage.app",messagingSenderId:"874352564024",appId:"1:874352564024:web:0dc5fe16649f5f0e054d28"};
+var db;
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();}catch(e){}
 
-    // Count AI history
-    try{var h=JSON.parse(localStorage.getItem('aiHistory')||'[]');stats.aiQueries=h.length;}catch(e){}
-    // Count favorites
-    try{var f=JSON.parse(localStorage.getItem('favSecciones')||'[]');stats.favCount=f.length;}catch(e){}
-    // Count guardia patients
-    try{var g=JSON.parse(localStorage.getItem('guardias_hoy')||'[]');stats.guardiaPacientes=g.length;}catch(e){}
-    // Notes
-    var n=localStorage.getItem('guardias_notas')||'';stats.notesCount=n.length>0?1:0;
+var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
 
-    // Track daily visits
-    var today=new Date().toISOString().split('T')[0];
-    try{
-        var daily=JSON.parse(localStorage.getItem('dailyVisits')||'{}');
-        daily[today]=(daily[today]||0)+1;
-        // Keep only last 7 days
-        var keys=Object.keys(daily).sort().slice(-7);
-        var clean={};keys.forEach(function(k){clean[k]=daily[k];});
-        localStorage.setItem('dailyVisits',JSON.stringify(clean));
-    }catch(e){}
-
-    // Track page views
-    try{
-        var views=JSON.parse(localStorage.getItem('pageViews')||'{}');
-        stats.protocolViews=Object.values(views).reduce(function(a,b){return a+b;},0);
-    }catch(e){}
-
-    return stats;
-}
-
-function renderStats(){
-    var s=getStats();
-    var cards=[
-        {val:s.totalVisits,lbl:'Visitas'},
-        {val:s.aiQueries,lbl:'Consultas IA'},
-        {val:s.protocolViews,lbl:'Protocolos vistos'},
-        {val:s.favCount,lbl:'Favoritos'},
-        {val:s.guardiaPacientes,lbl:'Pac. guardia hoy'},
-        {val:s.notesCount?'✅':'—',lbl:'Notas guardia'}
-    ];
-    document.getElementById('statsGrid').innerHTML=cards.map(function(c){
-        return '<div class="stat-card"><div class="val">'+c.val+'</div><div class="lbl">'+c.lbl+'</div></div>';
-    }).join('');
-}
-
-function renderWeekChart(){
-    try{var daily=JSON.parse(localStorage.getItem('dailyVisits')||'{}');}catch(e){var daily={};}
-    var days=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-    var d=new Date();d.setDate(d.getDate()-d.getDay()+1);
-    var max=1;var data=[];
-    for(var i=0;i<7;i++){
-        var ds=d.toISOString().split('T')[0];
-        var v=daily[ds]||0;
-        if(v>max)max=v;
-        data.push({label:days[i],value:v});
-        d.setDate(d.getDate()+1);
+async function checkNAS(){
+  var badge=document.getElementById('nasBadge'),st=document.getElementById('nasStatus');
+  try{
+    var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},3000);
+    var r=await fetch(NAS_URL+'/health',{signal:ctrl.signal});
+    if(r.ok){
+      var d=await r.json();
+      badge.className='badge badge-live';badge.textContent='NAS ONLINE';
+      st.innerHTML='<div class="indicator" style="background:var(--green)"></div><span>✅ NAS conectado — Uptime: '+Math.floor(d.uptime/3600)+'h '+Math.floor((d.uptime%3600)/60)+'m · OpenRouter: '+d.services.openrouter+' · DeepL: '+d.services.deepl+'</span>';
+      loadNASStats();return;
     }
-    document.getElementById('weekChart').innerHTML=data.map(function(d){
-        var h=Math.max(4,d.value/max*100);
-        return '<div class="bar" style="height:'+h+'%"><div class="bar-val">'+d.value+'</div><div class="bar-lbl">'+d.label+'</div></div>';
-    }).join('');
+  }catch(e){}
+  badge.className='badge badge-offline';badge.textContent='NAS OFFLINE';
+  st.innerHTML='<div class="indicator" style="background:var(--red)"></div><span>NAS no accesible — Datos locales. <a href="'+NAS_URL+'/health" target="_blank">Comprobar</a></span>';
+  loadLocalAIStats();
 }
 
-function showTop(type,btn){
-    document.querySelectorAll('.tab-row button').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    try{var views=JSON.parse(localStorage.getItem('pageViews')||'{}');}catch(e){var views={};}
-    var items=Object.entries(views).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
-    if(items.length===0){
-        document.getElementById('topList').innerHTML='<div class="empty">Sin datos aún. Navega por la app para generar estadísticas.</div>';
-        return;
-    }
-    document.getElementById('topList').innerHTML=items.map(function(item,i){
-        return '<div class="top-item"><div class="rank">#'+(i+1)+'</div><div class="name">'+item[0]+'</div><div class="count">'+item[1]+' vistas</div></div>';
-    }).join('');
+async function loadNASStats(){
+  try{
+    var r=await fetch(NAS_URL+'/stats');var d=await r.json();
+    document.getElementById('kpiAI').textContent=d.today||0;
+    renderWeekChart(d.last30||{});
+    var models=Object.entries(d.models||{}).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+    if(models.length>0){
+      document.getElementById('modelList').innerHTML=models.map(function(m,i){
+        return '<div class="model-row"><div class="rank">#'+(i+1)+'</div><div class="name">'+m[0]+'</div><div class="count">'+m[1]+'</div></div>';
+      }).join('');
+    }else{document.getElementById('modelList').innerHTML='<div class="loading">Sin datos de modelos</div>';}
+  }catch(e){loadLocalAIStats();}
 }
 
-function showHistory(filter,btn){
-    if(btn){document.querySelectorAll('.tab-row button').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');}
-    try{var history=JSON.parse(localStorage.getItem('aiHistory')||'[]');}catch(e){var history=[];}
-    if(filter!=='all') history=history.filter(function(h){return h.section===filter;});
-    history=history.slice(-50).reverse();
-    if(history.length===0){
-        document.getElementById('historyList').innerHTML='<div class="empty">No hay consultas IA registradas.<br>Las consultas se guardan automáticamente cuando usas la IA.</div>';
-        return;
-    }
-    document.getElementById('historyList').innerHTML=history.map(function(h){
-        var date=new Date(h.timestamp);
-        var time=date.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})+' '+date.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-        return '<div class="history-item"><div class="time">'+time+'</div><div style="flex:1;"><div class="q">'+escapeHtml(h.question||'')+'</div>'+(h.answer?'<div class="a">'+escapeHtml(h.answer.substring(0,150))+'...</div>':'')+'</div></div>';
-    }).join('');
+function loadLocalAIStats(){
+  try{var h=JSON.parse(localStorage.getItem('aiHistory')||'[]');var today=new Date().toISOString().slice(0,10);
+    document.getElementById('kpiAI').textContent=h.filter(function(x){return(x.timestamp||'').startsWith(today);}).length;
+  }catch(e){document.getElementById('kpiAI').textContent='0';}
+  try{renderWeekChart(JSON.parse(localStorage.getItem('dailyVisits')||'{}'));}catch(e){document.getElementById('weekChart').innerHTML='<div class="loading">Sin datos</div>';}
+  document.getElementById('modelList').innerHTML='<div class="loading">Conecta el NAS para ver modelos IA</div>';
 }
 
-function escapeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-function exportHistory(){
-    try{var history=JSON.parse(localStorage.getItem('aiHistory')||'[]');}catch(e){var history=[];}
-    if(history.length===0){alert('No hay historial');return;}
-    var txt='HISTORIAL CONSULTAS IA — Área II Cartagena\n'+new Date().toLocaleString('es-ES')+'\n═══════════════════════════════\n\n';
-    history.forEach(function(h){
-        var d=new Date(h.timestamp);
-        txt+='['+d.toLocaleString('es-ES')+'] ('+h.section+')\n';
-        txt+='P: '+h.question+'\nR: '+(h.answer||'—')+'\n\n';
+async function loadFirestore(){
+  if(!db)return;
+  try{
+    var triajes=await db.collection('triajes').get();
+    document.getElementById('kpiTriajes').textContent=triajes.size;
+    var levels={1:0,2:0,3:0,4:0,5:0};var feed=[];
+    triajes.forEach(function(doc){var d=doc.data();var l=parseInt(d.nivel)||5;levels[l]=(levels[l]||0)+1;
+      if(d.timestamp)feed.push({type:'triaje',nivel:l,timestamp:d.timestamp.toDate?d.timestamp.toDate():new Date(d.timestamp),motivo:d.motivo||d.sintomas||''});
     });
-    navigator.clipboard.writeText(txt).then(function(){alert('✅ Historial copiado al portapapeles');});
+    renderTriageLevels(levels,triajes.size);
+    var acc=await db.collection('accesos_profesionales').get();document.getElementById('kpiUsers').textContent=acc.size;
+    var prop=await db.collection('propuestas_contenido').get();document.getElementById('kpiDocs').textContent=prop.size;
+    prop.forEach(function(doc){var d=doc.data();if(d.fecha)feed.push({type:'propuesta',timestamp:d.fecha.toDate?d.fecha.toDate():new Date(d.fecha),msg:'📄 '+(d.email||'Usuario')+' propuso: '+(d.titulo||'contenido')});});
+    var scans=await db.collection('scan_uploads').get();document.getElementById('kpiScans').textContent=scans.size;
+    scans.forEach(function(doc){var d=doc.data();if(d.timestamp)feed.push({type:'scan',timestamp:d.timestamp.toDate?d.timestamp.toDate():new Date(d.timestamp),msg:'📸 Imagen: '+(d.tipo||'General')});});
+    feed.sort(function(a,b){return b.timestamp-a.timestamp;});
+    renderFeed(feed.slice(0,30));
+  }catch(e){
+    document.getElementById('kpiTriajes').textContent='—';
+    document.getElementById('triageLevels').innerHTML='<div class="loading">Inicia sesión para ver datos</div>';
+    document.getElementById('activityFeed').innerHTML='<div class="loading">Inicia sesión para ver actividad</div>';
+  }
 }
 
-function clearHistory(){
-    if(!confirm('¿Borrar todo el historial de consultas IA?'))return;
-    localStorage.removeItem('aiHistory');
-    showHistory('all',document.querySelector('.tab-row button.active'));
-    renderStats();
+function renderWeekChart(daily){
+  var days=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];var d=new Date();var dow=d.getDay()||7;d.setDate(d.getDate()-dow+1);
+  var start=d.toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
+  var max=1,data=[];
+  for(var i=0;i<7;i++){var ds=d.toISOString().split('T')[0];var v=daily[ds]||0;if(v>max)max=v;
+    data.push({label:days[i],value:v,today:ds===new Date().toISOString().split('T')[0]});d.setDate(d.getDate()+1);}
+  document.getElementById('weekRange').textContent=start+' — '+new Date(d.getTime()-86400000).toLocaleDateString('es-ES',{day:'2-digit',month:'short'});
+  document.getElementById('weekChart').innerHTML=data.map(function(d){var h=Math.max(3,d.value/max*100);
+    return '<div class="col"><div class="bar-v">'+d.value+'</div><div class="bar'+(d.today?' today':'')+'" style="height:'+h+'%"></div><div class="bar-l">'+d.label+'</div></div>';}).join('');
+}
+
+function renderTriageLevels(levels,total){
+  var cfg=[{n:1,name:'Emergencia vital',c:'#ef4444'},{n:2,name:'Urgencia alta',c:'#f97316'},{n:3,name:'Urgencia media',c:'#eab308'},{n:4,name:'Preferente',c:'#22c55e'},{n:5,name:'No urgente',c:'#3b82f6'}];
+  if(total===0){document.getElementById('triageLevels').innerHTML='<div class="loading">Sin triajes registrados</div>';return;}
+  document.getElementById('triageLevels').innerHTML=cfg.map(function(x){var cnt=levels[x.n]||0;var pct=total>0?(cnt/total*100):0;
+    return '<div class="triage-row"><div class="triage-dot" style="background:'+x.c+'"></div><div class="name">N'+x.n+' · '+x.name+'</div><div class="triage-bar"><div class="triage-bar-fill" style="width:'+pct+'%;background:'+x.c+'"></div></div><div class="count" style="color:'+x.c+'">'+cnt+'</div></div>';}).join('');
+}
+
+function renderFeed(items){
+  if(!items.length){document.getElementById('activityFeed').innerHTML='<div class="loading">Sin actividad</div>';return;}
+  var colors={triaje:'var(--yellow)',propuesta:'var(--accent)',scan:'var(--purple)'};
+  document.getElementById('activityFeed').innerHTML=items.map(function(item){
+    var t=item.timestamp;var time=t.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})+' '+t.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    var msg=item.msg||'';if(item.type==='triaje'){var e={1:'🔴',2:'🟠',3:'🟡',4:'🟢',5:'🔵'};msg=(e[item.nivel]||'⚪')+' Triaje N'+item.nivel+(item.motivo?' — '+item.motivo.substring(0,60):'');}
+    return '<div class="feed-item"><div class="time">'+time+'</div><div class="dot" style="background:'+(colors[item.type]||'var(--muted)')+'"></div><div class="msg">'+esc(msg)+'</div></div>';}).join('');
 }
 
 function renderStorage(){
-    var total=0;var items=[];
-    for(var i=0;i<localStorage.length;i++){
-        var key=localStorage.key(i);
-        var val=localStorage.getItem(key);
-        var size=new Blob([val]).size;
-        total+=size;
-        items.push({key:key,size:size});
-    }
-    items.sort(function(a,b){return b.size-a.size;});
-    var h='<div style="margin-bottom:8px;"><strong>Total:</strong> '+(total/1024).toFixed(1)+' KB / ~5 MB</div>';
-    h+='<div style="background:#0f172a;border-radius:8px;height:8px;overflow:hidden;margin-bottom:10px;"><div style="height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);width:'+(total/5242880*100).toFixed(1)+'%;border-radius:8px;"></div></div>';
-    h+=items.slice(0,6).map(function(i){
-        return '<div style="display:flex;justify-content:space-between;font-size:.78rem;padding:2px 0;"><span style="color:#94a3b8;">'+i.key+'</span><span style="color:#60a5fa;">'+(i.size/1024).toFixed(1)+' KB</span></div>';
-    }).join('');
-    document.getElementById('storageInfo').innerHTML=h;
+  var total=0,items=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);var v=localStorage.getItem(k);var s=new Blob([v]).size;total+=s;items.push({key:k,size:s});}
+  items.sort(function(a,b){return b.size-a.size;});var pct=(total/5242880*100).toFixed(1);
+  var h='<div style="margin-bottom:8px;font-size:.82rem"><strong>'+(total/1024).toFixed(1)+' KB</strong> / 5 MB ('+pct+'%)</div>';
+  h+='<div style="background:var(--bg);border-radius:4px;height:6px;overflow:hidden;margin-bottom:12px"><div style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:'+pct+'%;border-radius:4px"></div></div>';
+  h+=items.slice(0,8).map(function(i){return '<div style="display:flex;justify-content:space-between;font-size:.74rem;padding:3px 0"><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;max-width:200px">'+i.key+'</span><span style="color:var(--accent2);font-family:JetBrains Mono,monospace;font-weight:700">'+(i.size/1024).toFixed(1)+' KB</span></div>';}).join('');
+  document.getElementById('storageInfo').innerHTML=h;
 }
 
-// Init
-renderStats();
-renderWeekChart();
-showTop('protocolos',document.querySelector('.tab-row button.active'));
-showHistory('all',null);
-renderStorage();
+function renderHistory(){
+  try{var h=JSON.parse(localStorage.getItem('aiHistory')||'[]');}catch(e){var h=[];}h=h.slice(-30).reverse();
+  if(!h.length){document.getElementById('historyList').innerHTML='<div class="loading">Sin consultas IA</div>';return;}
+  document.getElementById('historyList').innerHTML=h.map(function(x){var d=new Date(x.timestamp);
+    return '<div class="feed-item"><div class="time">'+d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'</div><div class="dot" style="background:var(--accent)"></div><div class="msg" style="font-size:.78rem">'+esc((x.question||'').substring(0,100))+'</div></div>';}).join('');
+}
+
+function exportHistory(){
+  try{var h=JSON.parse(localStorage.getItem('aiHistory')||'[]');}catch(e){var h=[];}if(!h.length){alert('Sin historial');return;}
+  var txt='HISTORIAL CONSULTAS IA — Área II Cartagena\n'+new Date().toLocaleString('es-ES')+'\n\n';
+  h.forEach(function(x){txt+='['+new Date(x.timestamp).toLocaleString('es-ES')+'] ('+x.section+')\nP: '+x.question+'\nR: '+(x.answer||'—')+'\n\n';});
+  navigator.clipboard.writeText(txt).then(function(){alert('✅ Copiado');});
+}
+
+function esc(t){return(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+firebase.auth().onAuthStateChanged(function(user){if(user)loadFirestore();else firebase.auth().signInAnonymously().catch(function(){});});
+checkNAS();renderStorage();renderHistory();
+setInterval(function(){checkNAS();loadFirestore();},60000);
 </script>
 </body>
 </html>
