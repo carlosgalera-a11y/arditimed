@@ -619,15 +619,15 @@ async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options
 async function llamarIA(up,sp){
   var OR_KEY='REDACTED_OPENROUTER_3_2026-04';
   var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
-  // Strategy: NAS first (keys hidden), then Pollinations, then OpenRouter direct
-  var providers=[
-    {type:'nas'},
-    {type:'poll'},
-    {type:'or',model:'deepseek/deepseek-chat-v3-0324:free'},
-    {type:'or',model:'google/gemma-3-27b-it:free'},
-    {type:'or',model:'meta-llama/llama-4-maverick:free'},
-    {type:'or',model:'deepseek/deepseek-chat-v3-0324'}
-  ];
+  var isHTTPS=location.protocol==='https:';
+  // Strategy: NAS first (only on HTTP/local), then Pollinations, then OpenRouter
+  var providers=[];
+  if(!isHTTPS) providers.push({type:'nas'});
+  providers.push({type:'poll'});
+  providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
+  providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
+  providers.push({type:'or',model:'meta-llama/llama-4-maverick:free'});
+  providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
 

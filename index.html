@@ -4187,6 +4187,8 @@ function megaDispatch(question) {
 }
 
 function megaCallNAS(sp, msgs, btn) {
+    // Only try NAS on HTTP (HTTPS blocks mixed content)
+    if(location.protocol==='https:'){megaCallPollinations(sp,msgs,btn,true);return;}
     var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
     if (btn) btn.textContent = "Pensando...";
     fetch(NAS_URL+'/ai/chat', {

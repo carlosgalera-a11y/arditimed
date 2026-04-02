@@ -36,8 +36,8 @@ async function enfCallOR(prompt,sysPrompt,idx){
   idx=idx||0;
   var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
   var msgs=[{role:'system',content:sysPrompt},{role:'user',content:prompt}];
-  // Try NAS first (keys hidden)
-  if(idx===0){
+  // Try NAS first (keys hidden) — only on HTTP to avoid mixed content
+  if(idx===0 && location.protocol!=='https:'){
     try{
       var rn=await fetch(NAS_URL+'/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3})});
       if(rn.ok){var dn=await rn.json();var na=(dn.choices&&dn.choices[0]&&dn.choices[0].message)?dn.choices[0].message.content:null;if(na)return na;}
@@ -847,8 +847,8 @@ async function trIASend(){
     // Try OpenRouter models in sequence
     async function trIATryModel(idx) {
         var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
-        // Try NAS FIRST (keys hidden)
-        if (idx === 0) {
+        // Try NAS FIRST (keys hidden) — only on HTTP
+        if (idx === 0 && location.protocol!=='https:') {
             try {
                 var rn = await fetch(NAS_URL+'/ai/chat', {
                     method:'POST',headers:{'Content-Type':'application/json'},
