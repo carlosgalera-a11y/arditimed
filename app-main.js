@@ -618,8 +618,10 @@ function cambiarProvider(){var v=document.getElementById("cfgProvider").value;do
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 async function llamarIA(up,sp){
   var OR_KEY='REDACTED_OPENROUTER_3_2026-04';
-  // Strategy: Pollinations first (no limit), then OpenRouter models as fallback
+  var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
+  // Strategy: NAS first (keys hidden), then Pollinations, then OpenRouter direct
   var providers=[
+    {type:'nas'},
     {type:'poll'},
     {type:'or',model:'deepseek/deepseek-chat-v3-0324:free'},
     {type:'or',model:'google/gemma-3-27b-it:free'},
@@ -636,7 +638,13 @@ async function llamarIA(up,sp){
       var tid=setTimeout(function(){ctrl.abort();},p.type==='poll'?18000:12000);
       var r;
 
-      if(p.type==='poll'){
+      if(p.type==='nas'){
+        r=await fetch(NAS_URL+'/ai/chat',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3}),
+          signal:ctrl.signal
+        });
+      } else if(p.type==='poll'){
         r=await fetch('https://text.pollinations.ai/openai',{
           method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({model:'openai-large',messages:msgs,seed:Math.floor(Math.random()*9999),private:true}),

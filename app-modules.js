@@ -34,9 +34,17 @@ var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:
 
 async function enfCallOR(prompt,sysPrompt,idx){
   idx=idx||0;
+  var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
   var msgs=[{role:'system',content:sysPrompt},{role:'user',content:prompt}];
-  // Try Pollinations first (no rate limit)
+  // Try NAS first (keys hidden)
   if(idx===0){
+    try{
+      var rn=await fetch(NAS_URL+'/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3})});
+      if(rn.ok){var dn=await rn.json();var na=(dn.choices&&dn.choices[0]&&dn.choices[0].message)?dn.choices[0].message.content:null;if(na)return na;}
+    }catch(e){}
+  }
+  // Try Pollinations (no rate limit)
+  if(idx<=1){
     try{
       var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:msgs,seed:Math.floor(Math.random()*9999),private:true})});
       if(rp.ok){var dp=await rp.json();var pa=(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:null;if(pa)return pa;}
@@ -838,8 +846,23 @@ async function trIASend(){
 
     // Try OpenRouter models in sequence
     async function trIATryModel(idx) {
-        // Try Pollinations FIRST (no rate limit)
+        var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
+        // Try NAS FIRST (keys hidden)
         if (idx === 0) {
+            try {
+                var rn = await fetch(NAS_URL+'/ai/chat', {
+                    method:'POST',headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({messages:messages,max_tokens:500,temperature:0.3})
+                });
+                if (rn.ok) {
+                    var dn = await rn.json();
+                    var na = (dn.choices && dn.choices[0] && dn.choices[0].message) ? dn.choices[0].message.content : null;
+                    if (na) return na;
+                }
+            } catch(e) { /* fall through */ }
+        }
+        // Try Pollinations (no rate limit)
+        if (idx <= 1) {
             try {
                 var rp = await fetch('https://text.pollinations.ai/openai', {
                     method:'POST',
