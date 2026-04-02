@@ -690,6 +690,51 @@ var lastSC="",lastST="";
 async function studioAction(t){if(!isReady()||isProcessing)return;var c=studioPrompts[t];if(!c)return;isProcessing=true;document.querySelectorAll(".studio-card").forEach(function(x){x.disabled=true});var rd=document.getElementById("studioResult"),cd=document.getElementById("studioResultContent");lastST=c.title+currentCategory;document.getElementById("studioResultTitle").textContent=lastST;cd.textContent="⏳ Generando...";rd.style.display="block";lastSC=await llamarIA(c.prompt.replace(/\{cat\}/g,currentCategory),"Experto médico. Responde en español.");cd.textContent=lastSC;isProcessing=false;document.querySelectorAll(".studio-card").forEach(function(x){x.disabled=false});}
 function guardarStudioComoNota(){if(!lastSC)return;if(!notas[currentCategory])notas[currentCategory]=[];notas[currentCategory].push({texto:lastST+"\n\n"+lastSC,fecha:new Date().toLocaleString("es-ES")});guardarDatos();actualizarUI();alert("✅ Guardado")}
 function agregarNota(){var t=document.getElementById("noteInput").value.trim();if(!t)return;if(!notas[currentCategory])notas[currentCategory]=[];notas[currentCategory].push({texto:t,fecha:new Date().toLocaleString("es-ES")});document.getElementById("noteInput").value="";guardarDatos();actualizarUI();}
+function fmtClinical(md){
+  if(!md)return'<p style="color:#888;">Sin contenido.</p>';
+  var css='<style>.cl-proto{font-family:-apple-system,system-ui,sans-serif;line-height:1.75;color:var(--text,#1e293b);font-size:.9rem}'+
+    '.cl-proto h2{font-size:1.05rem;font-weight:700;color:#0f172a;margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid #0d9488}'+
+    '.cl-proto h3{font-size:.95rem;font-weight:700;color:#0d9488;margin:16px 0 6px}'+
+    '.cl-proto h4{font-size:.88rem;font-weight:600;color:#334155;margin:12px 0 4px}'+
+    '.cl-proto p{margin:0 0 8px}'+
+    '.cl-proto strong{color:#0f172a;font-weight:600}'+
+    '.cl-proto em{color:#64748b;font-style:italic}'+
+    '.cl-proto ul,.cl-proto ol{margin:6px 0 12px 20px;padding:0}'+
+    '.cl-proto li{margin-bottom:4px}'+
+    '.cl-proto .alert-box{background:#fef2f2;border-left:4px solid #ef4444;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.84rem;color:#991b1b}'+
+    '.cl-proto .info-box{background:#eff6ff;border-left:4px solid #3b82f6;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.84rem;color:#1e40af}'+
+    '.cl-proto .drug-box{background:#f0fdf4;border-left:4px solid #22c55e;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.84rem;color:#166534}'+
+    '.cl-proto code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:.84rem;color:#0d9488;font-family:monospace}'+
+    '.cl-proto hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}'+
+    '.cl-proto table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.84rem}'+
+    '.cl-proto th{background:#f0fdfa;color:#0d9488;font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid #0d9488}'+
+    '.cl-proto td{padding:6px 10px;border-bottom:1px solid #e2e8f0}'+
+    '</style>';
+  var html=md
+    .replace(/^### (.*$)/gm,'<h3>$1</h3>')
+    .replace(/^## (.*$)/gm,'<h2>$1</h2>')
+    .replace(/^# (.*$)/gm,'<h2>$1</h2>')
+    .replace(/\*\*\*(.*?)\*\*\*/g,'<strong><em>$1</em></strong>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/`(.*?)`/g,'<code>$1</code>')
+    .replace(/^---$/gm,'<hr>')
+    .replace(/^\* (.*$)/gm,'<li>$1</li>')
+    .replace(/^- (.*$)/gm,'<li>$1</li>')
+    .replace(/^\d+\.\s+(.*$)/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,function(m){return'<ul>'+m+'</ul>';});
+  // Alert boxes for warnings
+  html=html.replace(/⚠️([^<\n]+)/g,'<div class="alert-box">⚠️$1</div>');
+  html=html.replace(/🔴([^<\n]+)/g,'<div class="alert-box">🔴$1</div>');
+  // Drug boxes for dosing
+  html=html.replace(/💊([^<\n]+)/g,'<div class="drug-box">💊$1</div>');
+  // Info boxes
+  html=html.replace(/ℹ️([^<\n]+)/g,'<div class="info-box">ℹ️$1</div>');
+  // Clean up remaining newlines into paragraphs
+  html=html.replace(/\n\n+/g,'</p><p>').replace(/\n/g,'<br>');
+  if(!html.startsWith('<'))html='<p>'+html+'</p>';
+  return css+'<div class="cl-proto">'+html+'<div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:.72rem;color:#94a3b8;">Área II Cartagena · Generado con IA · Uso exclusivamente docente · Verificar siempre con fuentes oficiales</div></div>';
+}
 function openDocModal(idx){
   var docs=documents[currentCategory]||[];
   var d=docs[idx];if(!d)return;
@@ -718,8 +763,8 @@ function openDocModal(idx){
   document.getElementById('docModalAskAI').onclick=function(){
     var content=document.getElementById('docModalContent');
     content.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted,#888);">⏳ Generando contenido con DeepSeek...</div>';
-    llamarIA('Genera un protocolo clínico detallado sobre: '+d.name+'. Incluye: indicaciones, contraindicaciones, dosis de fármacos, pasos del procedimiento, criterios de derivación y alertas. Formato estructurado con secciones numeradas.','Eres un experto médico del Área II de Cartagena. Responde en español con información clínica precisa y actualizada.').then(function(r){
-      content.innerHTML='<div style="line-height:1.8;">'+r.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')+'</div>';
+    llamarIA('Genera un protocolo clínico detallado sobre: '+d.name+'. Incluye: indicaciones, contraindicaciones, dosis de fármacos, pasos del procedimiento, criterios de derivación y alertas. Usa formato markdown con ### para secciones, ** para negritas, y listas numeradas.','Eres un experto médico del Área II de Cartagena. Responde en español con información clínica precisa y actualizada. Formato profesional y estructurado.').then(function(r){
+      content.innerHTML=fmtClinical(r);
     });
   };
 }
