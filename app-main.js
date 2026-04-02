@@ -90,6 +90,7 @@ var SEARCH_INDEX=[
     {tipo:'🔬 Herramienta',titulo:'CAUDA-70 EPOC mortalidad',tags:'cauda 70 epoc mortalidad intrahospitalaria calculadora',page:'pageScanIA',tab:'calc'},
     {tipo:'🔬 Herramienta',titulo:'Riesgo fracaso VNI EPOC',tags:'vni ventilacion no invasiva epoc fracaso calculadora',page:'pageScanIA',tab:'calc'},
     {tipo:'🔬 Herramienta',titulo:'Escala Pisa TEP Rx',tags:'pisa tep embolismo pulmonar radiografia torax calculadora',page:'pageScanIA',tab:'calc'},
+    {tipo:'🚨 Herramienta',titulo:'Triaje IA — Tabla de pacientes',tags:'triaje pacientes listado prioridad urgencias tabla captura selene florence',page:'pageScanIA',tab:'triaje'},
 ];
 function abrirBuscador(){
     var m=document.getElementById('modalBuscador');if(!m)return;
@@ -1659,6 +1660,8 @@ function switchScanTab(tab){
     var ptEl=document.getElementById("panelPlantillas");if(ptEl)ptEl.style.display=tab==="plantillas"?"block":"none";
     var ptBtn=document.getElementById("tabPlantillas");if(ptBtn){ptBtn.style.background=tab==="plantillas"?"linear-gradient(135deg,#0a1628,#1a3050)":"var(--bg-subtle)";ptBtn.style.color=tab==="plantillas"?"#fff":"var(--text)";}
     if(tab==="plantillas" && typeof ptInit==="function") ptInit();
+    var trEl=document.getElementById("panelTriaje");if(trEl)trEl.style.display=tab==="triaje"?"block":"none";
+    var trBtn=document.getElementById("tabTriaje");if(trBtn){trBtn.style.background=tab==="triaje"?"linear-gradient(135deg,#dc2626,#991b1b)":"var(--bg-subtle)";trBtn.style.color=tab==="triaje"?"#fff":"var(--text)";}
 }
 
 // ═══ NOTEBOOKLM VIEWER ═══

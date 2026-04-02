@@ -1803,6 +1803,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <button id="tabNIHQuiz" onclick="switchScanTab('nihQuiz')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧠 Quiz NIH</button>
                 <button id="tabNotebooks" onclick="switchScanTab('notebooks')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🤖 NotebookLM</button>
                 <button id="tabPlantillas" onclick="switchScanTab('plantillas')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📋 Plantillas</button>
+                <button id="tabTriaje" onclick="switchScanTab('triaje')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🚨 Triaje IA</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -2683,6 +2684,52 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
               </script>
               </div><!-- end sbDataPanel -->
             </div><!-- end panelPlantillas -->
+
+            <!-- TAB: TRIAJE IA -->
+            <div id="panelTriaje" style="display:none;">
+                <div style="background:linear-gradient(135deg,#dc2626,#991b1b);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+                        <span style="font-size:1.8rem;">🚨</span>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;">Triaje Inteligente</div>
+                            <div style="font-size:.78rem;opacity:.85;">Pega una captura del listado de pacientes y la IA genera la tabla de prioridades</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drop zone para captura -->
+                <div id="triajeDropZone" onclick="document.getElementById('triajeFileIn').click()" tabindex="0" style="border:2px dashed var(--border);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;background:var(--bg-card);margin-bottom:16px;transition:.3s;">
+                    <input type="file" id="triajeFileIn" accept="image/*" style="display:none" onchange="triajeHandleFile(event)">
+                    <div id="triajeDropContent">
+                        <div style="font-size:2.5rem;margin-bottom:10px;opacity:.5;">📋</div>
+                        <div style="color:var(--text-light);font-size:.95rem;margin-bottom:4px;">Pega (<strong>Ctrl+V</strong>) o arrastra la captura del listado</div>
+                        <div style="color:var(--text-muted);font-size:.82rem;">Selene, Florence, OCIOGEN, HCIS o cualquier listado de pacientes</div>
+                        <div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--bg-section);border-radius:6px;font-size:.78rem;color:var(--text-muted);"><span style="font-size:1.1rem;">⌨️</span> Ctrl+V / Cmd+V desde captura de pantalla</div>
+                    </div>
+                    <img id="triajeImgPreview" style="display:none;max-width:100%;max-height:300px;border-radius:8px;object-fit:contain;margin:0 auto;" alt="Preview">
+                </div>
+
+                <!-- Contexto opcional -->
+                <div style="margin-bottom:12px;">
+                    <input type="text" id="triajeCtx" placeholder="Contexto (opcional): turno de mañana, urgencias, planta 3..." style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;box-sizing:border-box;font-family:var(--font-body);">
+                </div>
+
+                <!-- Botones -->
+                <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+                    <button id="triajeBtnGo" onclick="triajeAnalyze()" disabled style="padding:12px 28px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-family:var(--font-body);font-size:.92rem;display:flex;align-items:center;gap:8px;">🚨 Generar tabla de triaje</button>
+                    <button onclick="triajeClear()" style="padding:12px 20px;background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-family:var(--font-body);font-size:.88rem;">🗑 Limpiar</button>
+                    <button id="triajeExportBtn" onclick="triajeExportCSV()" style="display:none;padding:12px 20px;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-family:var(--font-body);font-size:.88rem;">📥 Exportar CSV</button>
+                    <button id="triajePrintBtn" onclick="triajePrint()" style="display:none;padding:12px 20px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-family:var(--font-body);font-size:.88rem;">🖨 Imprimir</button>
+                </div>
+
+                <!-- Resultado -->
+                <div id="triajeResult"></div>
+
+                <!-- Disclaimer -->
+                <div style="margin-top:16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:.78rem;color:#991b1b;line-height:1.5;">
+                    <strong>⚠️ Herramienta de apoyo</strong> — La priorización por IA es orientativa. El juicio clínico del profesional prevalece siempre. Datos anonimizados en el análisis.
+                </div>
+            </div><!-- end panelTriaje -->
 
 
         </div>
@@ -4165,6 +4212,7 @@ function infDescargar(formato){
 <script src="https://js.puter.com/v2/"></script>
 <script src="app-main.js?v=20260402i"></script>
 <script src="escalas-clinicas.js?v=20260402a"></script>
+<script src="triaje-ia.js?v=20260402a"></script>
 <!-- PWA Install Banner -->
 <div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f6b4a,#0a4f36);color:#fff;padding:14px 18px;z-index:99999;box-shadow:0 -4px 20px rgba(0,0,0,.4);font-family:var(--font-display,system-ui);animation:slideUpPWA .4s ease;">
 <div style="display:flex;align-items:center;gap:12px;max-width:600px;margin:0 auto;">
