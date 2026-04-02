@@ -1385,36 +1385,62 @@ async function scanLoadUploaded(docId){
 }
 
 var SCAN_VISION_MODELS=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];var SCAN_OR_KEY="REDACTED_OPENROUTER_4_2026-04";
+var SCAN_PUTER_MODELS=["gemini-2.5-flash","gemini-2.5-pro","claude-sonnet-4-5"];
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
-    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA de visión...</div></div>';
+    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div id="scanStatusMsg" style="color:var(--text-muted);font-size:.9rem;">Iniciando análisis con IA de visión...</div></div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";var ps=document.getElementById("scanImgPreview").src;if(ps.indexOf("image/png")>-1)mt="image/png";
-    var txt=null;var usedModel="";
-    var OR_KEY=SCAN_OR_KEY;
-    var lastErr="";
-    // 1. Try OpenRouter vision models
-    for(var mi=0;mi<SCAN_VISION_MODELS.length&&!txt;mi++){
-      try{
-        var vm=SCAN_VISION_MODELS[mi];
-        res.querySelector('div:last-child').textContent='Analizando con '+vm.split('/')[1].split(':')[0]+'...';
-        var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
-          method:"POST",
-          headers:{"Content-Type":"application/json","Authorization":"Bearer "+OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
-          body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})
-        });
-        var d=await r.json();
-        if(r.ok&&d.choices&&d.choices[0]&&d.choices[0].message){txt=d.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
-        else{lastErr="HTTP "+r.status+": "+(d.error?.message||d.error?.code||JSON.stringify(d).substring(0,200));if(r.status===429||r.status===502||r.status===503)continue;}
-      }catch(e){lastErr="Exception: "+e.message;continue;}
+    var txt=null;var usedModel="";var lastErr="";
+    var setStatus=function(s){var el=document.getElementById("scanStatusMsg");if(el)el.textContent=s;};
+
+    // 1. Intentar Puter.js (Gemini gratis, sin API key)
+    if(typeof puter!=="undefined"&&puter.ai&&puter.ai.chat){
+      for(var pi=0;pi<SCAN_PUTER_MODELS.length&&!txt;pi++){
+        try{
+          var pm=SCAN_PUTER_MODELS[pi];
+          setStatus("Analizando con "+pm+" (Puter · gratuito)...");
+          var puterResp=await puter.ai.chat(
+            [{role:"user",content:[
+              {type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},
+              {type:"text",text:sys+"\n\n"+(ctx?"Contexto: "+ctx+"\n\n":"")+"Analiza esta imagen médica de forma sistemática y detallada."}
+            ]}],
+            {model:pm}
+          );
+          var puterTxt=null;
+          if(typeof puterResp==="string")puterTxt=puterResp;
+          else if(puterResp&&puterResp.message&&puterResp.message.content)puterTxt=puterResp.message.content;
+          else if(puterResp&&puterResp.content)puterTxt=puterResp.content;
+          else if(puterResp&&puterResp.text)puterTxt=puterResp.text;
+          if(puterTxt&&puterTxt.length>30){txt=puterTxt;usedModel=pm+" (Puter)";}
+        }catch(e){lastErr="Puter/"+SCAN_PUTER_MODELS[pi]+": "+e.message;continue;}
+      }
     }
 
+    // 2. Fallback: OpenRouter vision models
+    if(!txt){
+      for(var mi=0;mi<SCAN_VISION_MODELS.length&&!txt;mi++){
+        try{
+          var vm=SCAN_VISION_MODELS[mi];
+          setStatus("Fallback a "+vm.split('/')[1].split(':')[0]+" (OpenRouter)...");
+          var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+            method:"POST",
+            headers:{"Content-Type":"application/json","Authorization":"Bearer "+SCAN_OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
+            body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})
+          });
+          var d=await r.json();
+          if(r.ok&&d.choices&&d.choices[0]&&d.choices[0].message){txt=d.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0]+" (OpenRouter)";}
+          else{lastErr="OR HTTP "+r.status+": "+(d.error?.message||d.error?.code||JSON.stringify(d).substring(0,150));if(r.status===429||r.status===502||r.status===503)continue;}
+        }catch(e){lastErr="OR Exception: "+e.message;continue;}
+      }
+    }
+
+    var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por inteligencia artificial y <strong>NO constituye un diagnóstico médico</strong>, acto clínico ni base para decisiones terapéuticas.</div>';
     if(txt){
         var fmt=typeof fmtClinical==='function'?fmtClinical(txt):txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-        var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por inteligencia artificial y <strong>NO constituye un diagnóstico médico</strong>, acto clínico ni base para decisiones terapéuticas.</div>';
         res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div>'+fmt+"</div>";
         scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
