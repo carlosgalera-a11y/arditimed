@@ -1494,37 +1494,52 @@ async function scanLoadUploaded(docId){
   }catch(e){console.error(e);}
 }
 
-var SCAN_OR_KEY="REDACTED_OPENROUTER_2_2026-04";
-var SCAN_ANT_KEY="";var GEMINI_KEY="";var GEMINI_MODEL="";
+var SCAN_OR_KEY="";var SCAN_ANT_KEY="";var GEMINI_KEY="";var GEMINI_MODEL="";
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
-    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Llama 4 Scout procesando...</div></div>';
+    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA de visión...</div></div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";if(document.getElementById("scanImgPreview").src.indexOf("image/png")>-1)mt="image/png";
-    var txt=null;var lastErr="";
+    var dataUrl="data:"+mt+";base64,"+scanB64;
+    var userText=ctx?"Analiza esta imagen médica. Contexto clínico: "+ctx:"Analiza esta imagen médica de forma sistemática y detallada.";
+    var txt=null;var usedModel="";var errors=[];
+
+    // ── 1. Pollinations (GPT-4o vision, gratis sin key) ──
     try{
-        var r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
-            method:"POST",
-            headers:{"Content-Type":"application/json","Authorization":"Bearer "+SCAN_OR_KEY,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
-            body:JSON.stringify({model:"meta-llama/llama-4-scout:free",messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:"data:"+mt+";base64,"+scanB64}},{type:"text",text:ctx?"Analiza esta imagen. Contexto: "+ctx:"Analiza esta imagen médica de forma sistemática."}]}],max_tokens:2000,temperature:0.3})
+        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},25000);
+        var r=await fetch("https://text.pollinations.ai/openai",{
+            method:"POST",signal:ctrl.signal,
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({model:"openai",messages:[
+                {role:"system",content:sys},
+                {role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}
+            ],seed:Math.floor(Math.random()*99999)})
         });
-        var d=await r.json();
-        if(r.ok&&d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content) txt=d.choices[0].message.content;
-        else lastErr="HTTP "+r.status+": "+(d.error?.message||JSON.stringify(d).substring(0,200));
-    }catch(e){lastErr=e.message;}
+        if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel="GPT-4o (Pollinations)";}
+        else errors.push("Pollinations: HTTP "+r.status);
+    }catch(e){errors.push("Pollinations: "+e.message);}
+
+    // ── 2. Puter.js img2txt (Gemini gratis) ──
+    if(!txt && typeof puter!=="undefined" && puter.ai && puter.ai.img2txt){
+        try{
+            var pr=await puter.ai.img2txt(dataUrl,sys+"\n\n"+userText,{model:"gemini-2.5-flash"});
+            var pt=typeof pr==="string"?pr:(pr&&pr.text?pr.text:null);
+            if(pt&&pt.length>20){txt=pt;usedModel="Gemini 2.5 Flash (Puter)";}
+        }catch(e){errors.push("Puter: "+e.message);}
+    }
 
     var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por IA y <strong>NO constituye diagnóstico médico</strong>. Requiere valoración presencial por profesional sanitario.</div>';
     if(txt){
         var fmt=typeof fmtClinical==="function"?fmtClinical(txt):txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — Llama 4 Scout</div><div style=\"color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;\">"+fmt+"</div></div>";
-        scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:"Llama 4 Scout",ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
+        scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
     }else{
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen.</div><div style="margin-top:8px;padding:8px;background:var(--bg-subtle);border-radius:6px;font-size:.78rem;color:var(--text-muted);font-family:monospace;word-break:break-all;">'+escMod(lastErr)+'</div></div>';
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen.</div><div style="margin-top:8px;padding:8px;background:var(--bg-subtle);border-radius:6px;font-size:.78rem;color:var(--text-muted);font-family:monospace;word-break:break-all;">'+escMod(errors.join(" | "))+'</div></div>';
     }
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
 }
