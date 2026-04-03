@@ -91,6 +91,7 @@ var SEARCH_INDEX=[
     {tipo:'🔬 Herramienta',titulo:'Riesgo fracaso VNI EPOC',tags:'vni ventilacion no invasiva epoc fracaso calculadora',page:'pageScanIA',tab:'calc'},
     {tipo:'🔬 Herramienta',titulo:'Escala Pisa TEP Rx',tags:'pisa tep embolismo pulmonar radiografia torax calculadora',page:'pageScanIA',tab:'calc'},
     {tipo:'🚨 Herramienta',titulo:'Triaje IA — Tabla de pacientes',tags:'triaje pacientes listado prioridad urgencias tabla captura selene florence',page:'pageScanIA',tab:'triaje'},
+    {tipo:'⏰ Herramienta',titulo:'Turnos de Guardia',tags:'turnos guardia noche horario division reparto pac hospital urgencias partelanoche',page:'pageScanIA',tab:'turnos'},
     {tipo:'🔬 Herramienta',titulo:'HEART Score Dolor Torácico',tags:'heart score dolor toracico sca infarto troponina',page:'pageScanIA',tab:'calc'},
     {tipo:'🔬 Herramienta',titulo:'CHA2DS2-VASc FA Ictus',tags:'chads vasc fibrilacion auricular ictus anticoagulacion',page:'pageScanIA',tab:'calc'},
     {tipo:'🔬 Herramienta',titulo:'HAS-BLED Riesgo hemorrágico',tags:'hasbled hemorragia anticoagulacion riesgo sangrado',page:'pageScanIA',tab:'calc'},
@@ -1680,6 +1681,9 @@ function switchScanTab(tab){
     if(tab==="plantillas" && typeof ptInit==="function") ptInit();
     var trEl=document.getElementById("panelTriaje");if(trEl)trEl.style.display=tab==="triaje"?"block":"none";
     var trBtn=document.getElementById("tabTriaje");if(trBtn){trBtn.style.background=tab==="triaje"?"linear-gradient(135deg,#dc2626,#991b1b)":"var(--bg-subtle)";trBtn.style.color=tab==="triaje"?"#fff":"var(--text)";}
+    var tuEl=document.getElementById("panelTurnos");if(tuEl)tuEl.style.display=tab==="turnos"?"block":"none";
+    var tuBtn=document.getElementById("tabTurnos");if(tuBtn){tuBtn.style.background=tab==="turnos"?"linear-gradient(135deg,#1e40af,#1d4ed8)":"var(--bg-subtle)";tuBtn.style.color=tab==="turnos"?"#fff":"var(--text)";}
+    if(tab==="turnos")turnoCalc();
 }
 
 // ═══ NOTEBOOKLM VIEWER ═══

@@ -1804,6 +1804,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <button id="tabNotebooks" onclick="switchScanTab('notebooks')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🤖 NotebookLM</button>
                 <button id="tabPlantillas" onclick="switchScanTab('plantillas')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📋 Plantillas</button>
                 <button id="tabTriaje" onclick="switchScanTab('triaje')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🚨 Triaje IA</button>
+                <button id="tabTurnos" onclick="switchScanTab('turnos')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">⏰ Turnos</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -2968,6 +2969,67 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                     <strong>⚠️ Herramienta de apoyo</strong> — La priorización por IA es orientativa. El juicio clínico del profesional prevalece siempre. Datos anonimizados en el análisis.
                 </div>
             </div><!-- end panelTriaje -->
+
+            <!-- TAB: TURNOS DE GUARDIA -->
+            <div id="panelTurnos" style="display:none;">
+                <div style="background:linear-gradient(135deg,#1e40af,#1d4ed8);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:1.8rem;">⏰</span>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;">Calculadora de Turnos de Guardia</div>
+                            <div style="font-size:.78rem;opacity:.85;">Divide la guardia en turnos equitativos · Asigna nombres · Comparte por WhatsApp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;">
+                    <!-- Tipo de guardia -->
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:6px;">Tipo de guardia</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="turnoPresets">
+                            <button onclick="turnoPreset('17','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🌙 17h→8h (PAC)</button>
+                            <button onclick="turnoPreset('20','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🏥 20h→8h (Hospital)</button>
+                            <button onclick="turnoPreset('15','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">📋 15h→8h (24h)</button>
+                            <button onclick="turnoPreset('08','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🔄 8h→8h (24h completa)</button>
+                            <button onclick="turnoPreset('now','')" style="padding:8px 16px;border:1px solid #0066cc;border-radius:8px;background:#eff6ff;cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:#1d4ed8;">📍 Desde ahora</button>
+                        </div>
+                    </div>
+
+                    <!-- Hora inicio / fin -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                        <div>
+                            <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Inicio de guardia</label>
+                            <input type="time" id="turnoInicio" value="17:00" onchange="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:1rem;font-family:var(--font-body);font-weight:600;">
+                        </div>
+                        <div>
+                            <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Fin de guardia</label>
+                            <input type="time" id="turnoFin" value="08:00" onchange="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:1rem;font-family:var(--font-body);font-weight:600;">
+                        </div>
+                    </div>
+
+                    <!-- Número de turnos -->
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Número de turnos</label>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <button onclick="turnoChangNum(-1)" style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg-subtle);cursor:pointer;font-size:1.2rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;">−</button>
+                            <span id="turnoNumDisplay" style="font-size:1.8rem;font-weight:800;color:#1d4ed8;min-width:40px;text-align:center;">2</span>
+                            <button onclick="turnoChangNum(1)" style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg-subtle);cursor:pointer;font-size:1.2rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;">+</button>
+                            <span id="turnoDuracion" style="font-size:.88rem;color:var(--text-muted);margin-left:8px;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Nombres -->
+                    <div style="margin-bottom:16px;" id="turnoNombresBox">
+                        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Nombres (opcional, separados por coma)</label>
+                        <input type="text" id="turnoNombres" placeholder="Ej: Carlos, Ana, Pedro" oninput="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:var(--font-body);box-sizing:border-box;">
+                    </div>
+
+                    <button onclick="turnoCalc()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1e40af,#1d4ed8);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:1rem;font-family:var(--font-body);">⏰ Calcular turnos</button>
+                </div>
+
+                <!-- Resultado -->
+                <div id="turnoResult"></div>
+            </div><!-- end panelTurnos -->
 
 
         </div>
@@ -4541,8 +4603,9 @@ function infDescargar(formato){
 
 
 <script src="https://js.puter.com/v2/"></script>
-<script src="app-main.js?v=20260402n"></script>
+<script src="app-main.js?v=20260402p"></script>
 <script src="escalas-clinicas.js?v=20260402c"></script>
+<script src="turnos-guardia.js?v=20260402a"></script>
 <script src="triaje-ia.js?v=20260402b"></script>
 <!-- PWA Install Banner -->
 <div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f6b4a,#0a4f36);color:#fff;padding:14px 18px;z-index:99999;box-shadow:0 -4px 20px rgba(0,0,0,.4);font-family:var(--font-display,system-ui);animation:slideUpPWA .4s ease;">
