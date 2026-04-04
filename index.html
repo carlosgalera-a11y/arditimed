@@ -4905,52 +4905,49 @@ function infDescargar(formato){
 <!-- PWA Service Worker Registration & Install Logic -->
 <script>
 // Register Service Worker v4 — force update from old /Cartagenaeste/ paths
-if ('serviceWorker' in navigator && location.hostname === 'carlosgalera-a11y.github.io') {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    // First: unregister any old SW with wrong scope
+    // Remove any old SW registrations pointing to wrong files
     navigator.serviceWorker.getRegistrations().then(function(regs) {
       regs.forEach(function(reg) {
-        if (reg.scope.includes('Cartagenaeste')) {
-          console.log('[PWA] Removing old SW:', reg.scope);
+        if (!reg.active || !reg.active.scriptURL.endsWith('/sw.js')) {
           reg.unregister();
         }
       });
     });
-    // Clear any old caches with wrong paths
-    if ('caches' in window) {
-      caches.keys().then(function(keys) {
-        keys.forEach(function(k) {
-          if (k.includes('v2') || k.includes('v3')) {
-            console.log('[PWA] Deleting old cache:', k);
-            caches.delete(k);
+
+    // Register the correct SW
+    navigator.serviceWorker.register('/Cartagenaeste/sw.js', {
+      scope: '/Cartagenaeste/',
+      updateViaCache: 'none'
+    }).then(function(reg) {
+      // Check for update immediately and every 5 minutes
+      reg.update();
+      setInterval(function() { reg.update(); }, 5 * 60 * 1000);
+
+      // When a new SW is found installing
+      reg.addEventListener('updatefound', function() {
+        var newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', function() {
+          // New SW installed and waiting → tell it to skip waiting
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            newSW.postMessage({ type: 'SKIP_WAITING' });
           }
         });
       });
-    }
-    // Register current SW
-    navigator.serviceWorker.register('/Cartagenaeste/sw-v2.js', { scope: '/Cartagenaeste/', updateViaCache: 'none' })
-      .then(function(reg) {
-        console.log('✅ SW v6 registrado:', reg.scope);
-        // Force check for update immediately
-        reg.update();
-        // Auto-update when new SW is waiting — no reload to avoid loops
-        reg.addEventListener('updatefound', function() {
-          var newSW = reg.installing;
-          if (newSW) {
-            newSW.addEventListener('statechange', function() {
-              if (newSW.state === 'installed') {
-                console.log('[PWA] New SW installed, will activate on next visit');
-                newSW.postMessage({type:'SKIP_WAITING'});
-              }
-            });
-          }
-        });
-        // Check for updates every hour
-        setInterval(function() { reg.update(); }, 60 * 60 * 1000);
-      })
-      .catch(function(err) {
-        console.log('⚠️ SW error:', err);
-      });
+    }).catch(function(err) {
+      console.warn('[SW] Error:', err);
+    });
+
+    // When the SW controller changes (new SW activated) → auto reload
+    var refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
   });
 }
 

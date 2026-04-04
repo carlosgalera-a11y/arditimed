@@ -1,8 +1,9 @@
-// Service Worker - Área II Cartagena PWA v11 - network only, sin caché
-const CACHE_NAME = 'area2-cartagena-v15';
+// Service Worker - Área II Cartagena PWA v16 - network only + auto-update
+const CACHE_NAME = 'area2-v16';
 
 self.addEventListener('install', event => {
-  event.waitUntil(self.skipWaiting());
+  // Skip waiting immediately — new SW takes control right away
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -13,7 +14,16 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Network only — nunca cachear, siempre versión fresca del servidor
+// Network only — never cache, always fresh
 self.addEventListener('fetch', event => {
-  event.respondWith(fetch(event.request));
+  event.respondWith(
+    fetch(event.request).catch(() => caches.match(event.request))
+  );
+});
+
+// Listen for SKIP_WAITING message
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
