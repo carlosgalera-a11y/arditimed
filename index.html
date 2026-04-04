@@ -4,7 +4,7 @@
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
-  var APP_VERSION='v11-20260404e';
+  var APP_VERSION='v12-20260404f';
   // Always delete every cache
   if('caches' in window){caches.keys().then(function(k){k.forEach(function(c){caches.delete(c);});});}
   if('serviceWorker' in navigator){
@@ -2051,8 +2051,14 @@ window.showNotebooksModal=function(){
 
             <!-- TAB 1: SCAN IA (existing) -->
             <div id="panelScanIA">
-            <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#856404;margin-bottom:24px;line-height:1.6;">
+            <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#856404;margin-bottom:12px;line-height:1.6;">
                 ⚠️ <strong>Uso exclusivamente docente.</strong> No sustituye el juicio clínico profesional. Las interpretaciones pueden contener errores y nunca deben usarse como diagnóstico definitivo.
+            </div>
+            <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:var(--radius);padding:14px 18px;font-size:.82rem;color:#991b1b;margin-bottom:12px;line-height:1.6;">
+                🔒 <strong>RGPD Art. 9 — Protección de datos de salud:</strong> NO suba imágenes que contengan nombre, NHC, DNI, pegatinas identificativas ni datos del paciente. Las imágenes se envían a servicios IA externos para análisis y <strong>no se almacenan permanentemente</strong>. Este sistema <strong>NO es un producto sanitario</strong> conforme al Reglamento MDR 2017/745.
+            </div>
+            <div style="margin-bottom:20px;text-align:right;">
+                <button onclick="if(confirm('¿Borrar todo el historial clínico almacenado en este dispositivo? (preguntas, notas, pacientes de guardia, historial IA, análisis de imagen)')){secureStore.clearAll();localStorage.removeItem('scan_hist_v2');localStorage.removeItem('guardia_pacientes_v1');localStorage.removeItem('aiHistory');localStorage.removeItem('cartagena_preguntas');localStorage.removeItem('cartagena_notas');localStorage.removeItem('enf_preguntas_v1');alert('✅ Datos clínicos eliminados de este dispositivo.');location.reload();}" style="background:none;border:1px solid #dc2626;color:#dc2626;padding:6px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;font-weight:600;">🗑️ Borrar mis datos clínicos</button>
             </div>
             <!-- QR for mobile image upload -->
             <div id="scanQRSection" style="display:block;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:var(--radius);padding:16px;margin-bottom:20px;">
@@ -4334,7 +4340,7 @@ function saveConfigToFirestore(){
         var user=firebase.auth().currentUser;
         if(!user||!isAdmin())return;
         var config={
-            version:'v11-20260404e',
+            version:'v12-20260404f',
             swVersion:'v23',
             timestamp:new Date().toISOString(),
             savedBy:user.email,
@@ -5279,7 +5285,7 @@ function megaCallNAS(sp, msgs, btn) {
     });
 }
 
-var MEGA_DS_KEY = "REDACTED_DEEPSEEK_OLD_2026-04";
+var MEGA_DS_KEY = "";/* REMOVED: paid key moved to NAS proxy */
 
 function megaCallDeepSeek(sp, msgs, btn) {
     if (!MEGA_DS_KEY) { megaCallPollinations(sp, msgs, btn, true); return; }

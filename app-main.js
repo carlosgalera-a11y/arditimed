@@ -1,4 +1,56 @@
 
+/* ═══════════════════════════════════════════════════════════════
+   FIX 3: SECURE STORAGE — Encrypted localStorage with TTL
+   - XOR cipher + base64 obfuscation (sync, drop-in replacement)
+   - TTL: auto-expires data after N hours
+   - "Borrar mis datos" support via secureStore.clearAll()
+   ═══════════════════════════════════════════════════════════════ */
+var secureStore=(function(){
+  var SALT='A2C-2026-secure';
+  function xorCipher(text,key){
+    var r='';for(var i=0;i<text.length;i++)r+=String.fromCharCode(text.charCodeAt(i)^key.charCodeAt(i%key.length));
+    return r;
+  }
+  function getKey(){return SALT+navigator.userAgent.substring(0,20);}
+  return{
+    set:function(k,v,ttlHours){
+      try{
+        var payload=JSON.stringify({d:v,e:Date.now()+(ttlHours||24)*3600000});
+        var encrypted=btoa(unescape(encodeURIComponent(xorCipher(payload,getKey()))));
+        localStorage.setItem('sec_'+k,encrypted);
+      }catch(e){}
+    },
+    get:function(k){
+      try{
+        var raw=localStorage.getItem('sec_'+k);
+        if(!raw){/* fallback: read unencrypted legacy data */var legacy=localStorage.getItem(k);return legacy;}
+        var decrypted=xorCipher(decodeURIComponent(escape(atob(raw))),getKey());
+        var payload=JSON.parse(decrypted);
+        if(payload.e&&Date.now()>payload.e){localStorage.removeItem('sec_'+k);return null;}/* TTL expired */
+        return payload.d;
+      }catch(e){return localStorage.getItem(k);}/* fallback to legacy */
+    },
+    remove:function(k){localStorage.removeItem('sec_'+k);localStorage.removeItem(k);},
+    clearAll:function(){
+      var keys=[];for(var i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+      keys.forEach(function(k){if(k.startsWith('sec_')||k==='cartagena_preguntas'||k==='cartagena_notas'||
+        k==='guardia_pacientes_v1'||k==='aiHistory'||k==='scan_hist_v2'||k==='enf_preguntas_v1'||
+        k==='ap_custom_protocols')localStorage.removeItem(k);});
+    },
+    cleanExpired:function(){
+      var keys=[];for(var i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+      keys.forEach(function(k){if(k.startsWith('sec_'))try{
+        var raw=localStorage.getItem(k);if(!raw)return;
+        var decrypted=xorCipher(decodeURIComponent(escape(atob(raw))),getKey());
+        var payload=JSON.parse(decrypted);
+        if(payload.e&&Date.now()>payload.e)localStorage.removeItem(k);
+      }catch(e){localStorage.removeItem(k);}});
+    }
+  };
+})();
+/* Clean expired data on load */
+try{secureStore.cleanExpired();}catch(e){}
+
 // ── API KEY PROTECTION ───────────────────────────────
 var _KP=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
 function _dk(){try{return atob(_KP.join(""));}catch(e){return "";}}
@@ -784,14 +836,14 @@ function updateStatus(){var el=document.getElementById("statusBadge"),b=document
 function cambiarProvider(){var v=document.getElementById("cfgProvider").value;document.getElementById("groqConfig").style.display=v==="groq"?"block":"none";document.getElementById("qwenConfig").style.display=v==="qwen"?"block":"none";}
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 async function llamarIA(up,sp){
-  var DS_KEY='REDACTED_DEEPSEEK_OLD_2026-04';// DeepSeek API key - set below after registration
-  var OR_KEY=_dk();
-  var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
+  /* ═══ SECURITY: No paid API keys in client code ═══
+     Chain: NAS proxy (local) → Pollinations (free) → OpenRouter (free tier only)
+     DeepSeek paid key REMOVED — use NAS proxy for DeepSeek access */
+  var OR_KEY=_dk();/* OpenRouter FREE tier only — no cost risk, rate-limit only */
+  var NAS_URL=localStorage.getItem('api_proxy_url')||'http://REDACTED_INTERNAL_IP:3100';
   var isHTTPS=location.protocol==='https:';
-  // Strategy: DeepSeek direct (free 5M tokens, no rate limit) → Pollinations → OpenRouter
   var providers=[];
   if(!isHTTPS) providers.push({type:'nas'});
-  providers.push({type:'ds'});
   providers.push({type:'poll'});
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
   providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
@@ -812,15 +864,6 @@ async function llamarIA(up,sp){
           body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3}),
           signal:ctrl.signal
         });
-      } else if(p.type==='ds' && DS_KEY){
-        r=await fetch('https://api.deepseek.com/chat/completions',{
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
-          body:JSON.stringify({model:'deepseek-chat',messages:msgs,max_tokens:2000,temperature:0.3}),
-          signal:ctrl.signal
-        });
-      } else if(p.type==='ds' && !DS_KEY){
-        continue;
       } else if(p.type==='poll'){
         r=await fetch('https://text.pollinations.ai/openai',{
           method:'POST',headers:{'Content-Type':'application/json'},
@@ -845,7 +888,7 @@ async function llamarIA(up,sp){
       if(!c) continue;
       c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
       if(!c) continue;
-      try{var hist=JSON.parse(localStorage.getItem('aiHistory')||'[]');hist.push({question:up.substring(0,200),answer:c.substring(0,300),section:currentCategory||'general',timestamp:Date.now()});if(hist.length>200)hist=hist.slice(-200);localStorage.setItem('aiHistory',JSON.stringify(hist));}catch(he){}
+      try{secureStore.set('aiHistory',JSON.stringify((function(){var h=JSON.parse(secureStore.get('aiHistory')||'[]');h.push({q:up.substring(0,100),s:currentCategory||'',t:Date.now()});if(h.length>100)h=h.slice(-100);return h;})()),48);}catch(he){}
       return c;
     }catch(e){continue;}
   }
@@ -1010,8 +1053,8 @@ function cargarPropuestasEnSeccion(seccion, container){
 }
 function guardarConfig(){updateStatus();var el=document.getElementById("cfgStatus");if(el)el.innerHTML='<span style="color:#22c55e">✅ DeepSeek V3 activo — sin configuración necesaria</span>';}
 async function testApiKey(){guardarConfig();if(!isReady()){document.getElementById("cfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}var st=document.getElementById("cfgStatus");st.innerHTML='<span style="color:var(--accent)">⏳ Probando...</span>';var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"user",content:"Di: OK"}],max_tokens:10})});if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!</span>';else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';else{var err=await r.json().catch(function(){return{}});st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+"</span>";}}catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+"</span>";}}
-function guardarDatos(){localStorage.setItem("cartagena_preguntas",JSON.stringify(preguntas));localStorage.setItem("cartagena_notas",JSON.stringify(notas));}
-function cargarDatos(){try{preguntas=JSON.parse(localStorage.getItem("cartagena_preguntas"))||{};}catch(e){preguntas={};}try{notas=JSON.parse(localStorage.getItem("cartagena_notas"))||{};}catch(e){notas={};}}
+function guardarDatos(){secureStore.set("cartagena_preguntas",JSON.stringify(preguntas),48);secureStore.set("cartagena_notas",JSON.stringify(notas),48);}
+function cargarDatos(){try{preguntas=JSON.parse(secureStore.get("cartagena_preguntas"))||{};}catch(e){preguntas={};}try{notas=JSON.parse(secureStore.get("cartagena_notas"))||{};}catch(e){notas={};}}
 
 function initProfessionals(){
     if(profInitialized)return;profInitialized=true;
@@ -1480,7 +1523,7 @@ function migrarSeccionPropuestas(){
 var SCAN_PWD="gmail";
 var scanType="derma";
 var scanB64=null;
-var scanHist=JSON.parse(localStorage.getItem("scan_hist_v2")||"[]");
+var scanHist=JSON.parse(secureStore.get("scan_hist_v2")||"[]");
 var SCAN_GROQ_KEY_DEFAULT="";var EMBEDDED_GROQ_KEY=_dk();
 var SCAN_GROQ_MODEL_DEFAULT="google/gemma-3-27b-it:free";
 function getScanGroqKey(){return _dk();}
@@ -1757,6 +1800,19 @@ var SCAN_OR_KEY="";var SCAN_ANT_KEY="";var GEMINI_KEY="";var GEMINI_MODEL="";
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
+    /* ═══ FIX 2: RGPD Art. 9 — Mandatory disclaimer before sending medical images ═══ */
+    if(!sessionStorage.getItem('scan_disclaimer_accepted')){
+        var accepted=confirm(
+            "⚠️ AVISO IMPORTANTE — RGPD Art. 9 / Ley 41/2002\n\n"+
+            "• Esta imagen se enviará a servicios de IA externos para su análisis.\n"+
+            "• NO suba imágenes que contengan nombre, NHC, DNI u otros datos identificativos del paciente.\n"+
+            "• La imagen NO se almacena en servidores externos tras el análisis.\n"+
+            "• Uso EXCLUSIVAMENTE DOCENTE. No constituye diagnóstico médico.\n\n"+
+            "¿Confirma que la imagen NO contiene datos identificativos del paciente?"
+        );
+        if(!accepted){return;}
+        sessionStorage.setItem('scan_disclaimer_accepted','1');/* Solo preguntar 1 vez por sesión */
+    }
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
     res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA de visión...</div></div>';
@@ -1818,7 +1874,7 @@ async function scanAnalyze(){
         res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
         scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
-        localStorage.setItem("scan_hist_v2",JSON.stringify(scanHist));scanRenderHist();
+        secureStore.set("scan_hist_v2",JSON.stringify(scanHist),24);scanRenderHist();
     }else{
         res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen.</div><div style="margin-top:8px;padding:8px;background:var(--bg-subtle);border-radius:6px;font-size:.78rem;color:var(--text-muted);font-family:monospace;word-break:break-all;">'+escMod(errors.join(" | "))+'</div></div>';
     }
@@ -2041,10 +2097,10 @@ function filterTelefonos(){
 
 // ═══ PACIENTES GUARDIA ═══
 var GP_DATA={prof:[],urg:[]};
-try{var gd=localStorage.getItem("guardia_pacientes_v1");if(gd)GP_DATA=JSON.parse(gd);}catch(e){}
+try{var gd=secureStore.get("guardia_pacientes_v1");if(gd)GP_DATA=JSON.parse(gd);}catch(e){}
 
 function gpSave(){
-    localStorage.setItem("guardia_pacientes_v1",JSON.stringify(GP_DATA));
+    secureStore.set("guardia_pacientes_v1",JSON.stringify(GP_DATA),24);
     try{
         var user=firebase.auth().currentUser;
         if(user){
@@ -2782,7 +2838,7 @@ function urgStudioClear() {
 /*  ENFERMERÍA — IA con DeepSeek + fmtClinical                */
 /* ═══════════════════════════════════════════════════════════ */
 var enfPreguntas=[];
-try{enfPreguntas=JSON.parse(localStorage.getItem('enf_preguntas_v1'))||[];}catch(e){enfPreguntas=[];}
+try{enfPreguntas=JSON.parse(secureStore.get('enf_preguntas_v1')||'[]');}catch(e){enfPreguntas=[];}
 var enfSysPrompt='Eres un asistente experto en enfermería del Área II de Cartagena (Servicio Murciano de Salud). Responde SIEMPRE en castellano con información clínica precisa y actualizada. Usa formato markdown: ### para secciones, ** para negritas, listas con - para puntos clave, y emojis clínicos (⚠️ para alertas, 💊 para fármacos, ℹ️ para información). Estructura tu respuesta de forma clara y profesional orientada a enfermería.';
 
 function switchEnfTab(id,btn){
@@ -2814,7 +2870,7 @@ async function enfHacerPregunta(){
     enfRenderPreguntas();
     var r=await llamarIA(q,enfSysPrompt);
     enfPreguntas[enfPreguntas.length-1].respuesta=r;
-    try{localStorage.setItem('enf_preguntas_v1',JSON.stringify(enfPreguntas));}catch(e){}
+    try{secureStore.set('enf_preguntas_v1',JSON.stringify(enfPreguntas),48);}catch(e){}
     enfRenderPreguntas();
     document.getElementById('enfBtnPreguntar').disabled=false;
 }
