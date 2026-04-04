@@ -1,6 +1,6 @@
 // Service Worker — Área II Cartagena v6 (March 2026)
 // NETWORK-FIRST: Always fetch from network, cache offline.html for fallback
-const CACHE_NAME = 'area2-v8';
+const CACHE_NAME = 'area2-v9';
 const OFFLINE_URL = '/Cartagenaeste/offline.html';
 
 self.addEventListener('install', event => {
