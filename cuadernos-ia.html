@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuadernos IA | Área II Cartagena</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1.05rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
+.container{max-width:800px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:14px}
+.card h3{color:#1a6b4a;font-size:.95rem;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #e8f5e9}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:.78rem;font-weight:600;color:#64748b;margin-bottom:3px}
+.field input,.field textarea{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit}
+.field textarea{min-height:60px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:#1a6b4a}
+.btn{padding:10px 16px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.85rem;transition:.2s}
+.btn-green{background:#1a6b4a;color:#fff}.btn-green:hover{background:#145a32}
+.btn-blue{background:#0d47a1;color:#fff}
+.btn-red{background:#dc2626;color:#fff}
+.btn-outline{background:#fff;color:#333;border:2px solid #e0e0e0}
+.btn-sm{padding:6px 12px;font-size:.78rem}
+.nb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.nb-card{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;cursor:pointer;transition:.2s;position:relative}
+.nb-card:hover{border-color:#1a6b4a;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.nb-card .icon{font-size:2rem;margin-bottom:8px}
+.nb-card .name{font-weight:700;font-size:.92rem;color:#1a6b4a}
+.nb-card .desc{font-size:.78rem;color:#888;margin-top:4px}
+.nb-card .meta{font-size:.7rem;color:#aaa;margin-top:8px}
+.nb-card .del{position:absolute;top:8px;right:8px;background:none;border:none;color:#ccc;cursor:pointer;font-size:.9rem}
+.nb-card .del:hover{color:#dc2626}
+.drop-zone{border:3px dashed #ccc;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:.3s;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.drop-zone:hover,.drop-zone.over{border-color:#1a6b4a;background:#f0fdf4}
+.doc-list{margin-top:10px}
+.doc-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8faf8;border:1px solid #e0e0e0;border-radius:8px;margin-bottom:6px;font-size:.82rem}
+.doc-item .rm{margin-left:auto;background:none;border:none;color:#dc2626;cursor:pointer;font-size:.85rem}
+.chat-area{border:2px solid #e0e0e0;border-radius:12px;overflow:hidden;margin-top:14px}
+.chat-header{background:#1a6b4a;color:#fff;padding:10px 14px;font-weight:700;font-size:.88rem}
+.chat-msgs{max-height:400px;overflow-y:auto;padding:12px;background:#fafafa}
+.chat-msg{margin-bottom:10px;padding:10px 12px;border-radius:10px;font-size:.85rem;line-height:1.6;max-width:85%}
+.chat-user{background:#e3f2fd;margin-left:auto;border-bottom-right-radius:4px}
+.chat-bot{background:#fff;border:1px solid #e8e8e8;border-bottom-left-radius:4px}
+.chat-bot pre{white-space:pre-wrap;font-family:inherit}
+.chat-input-bar{display:flex;gap:8px;padding:10px;border-top:1px solid #e0e0e0;background:#fff}
+.chat-input-bar input{flex:1;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit}
+.chat-input-bar input:focus{outline:none;border-color:#1a6b4a}
+.loading{text-align:center;padding:10px;font-size:.82rem;color:#888}
+.spinner-sm{display:inline-block;width:16px;height:16px;border:2px solid #ccc;border-top:2px solid #1a6b4a;border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.auth-msg{text-align:center;padding:40px}
+.back-btn{background:none;border:none;color:#1a6b4a;cursor:pointer;font-weight:600;font-size:.88rem;padding:8px 0;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="nav">
+<a href="index.html">← Inicio</a>
+<h1>📓 Cuadernos IA</h1>
+</div>
+
+<div class="container">
+<div id="authMsg" class="auth-msg" style="display:none;">
+<div style="font-size:3rem;margin-bottom:12px;">🔐</div>
+<h2>Inicia sesión</h2>
+<p style="color:#888;margin:8px 0 16px;">Tus cuadernos son privados y requieren cuenta Google.</p>
+<button onclick="firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())" class="btn btn-green">🔐 Login con Google</button>
+</div>
+
+<div id="mainApp" style="display:none;">
+
+<!-- LISTA DE CUADERNOS -->
+<div id="viewList">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<h2 style="font-size:1.1rem;font-weight:700;color:#333;">📓 Mis Cuadernos</h2>
+<button class="btn btn-green btn-sm" onclick="showCreate()">➕ Nuevo cuaderno</button>
+</div>
+<div id="nbGrid" class="nb-grid"></div>
+</div>
+
+<!-- CREAR CUADERNO -->
+<div id="viewCreate" style="display:none;">
+<button class="back-btn" onclick="showList()">← Mis Cuadernos</button>
+<div class="card">
+<h3>➕ Nuevo Cuaderno</h3>
+<div class="field"><label>Nombre</label><input type="text" id="createName" placeholder="Ej: Cardiología MIR, Manual ATLS, Protocolos UCI..."></div>
+<div class="field"><label>Descripción (opcional)</label><input type="text" id="createDesc" placeholder="Breve descripción del contenido"></div>
+<div style="margin-top:12px;display:flex;gap:8px;">
+<button class="btn btn-green" onclick="createNotebook()">💾 Crear</button>
+<button class="btn btn-outline" onclick="showList()">Cancelar</button>
+</div>
+</div>
+</div>
+
+<!-- DENTRO DE UN CUADERNO -->
+<div id="viewNotebook" style="display:none;">
+<button class="back-btn" onclick="showList()">← Mis Cuadernos</button>
+<div class="card">
+<h3 id="nbTitle">📓 Cuaderno</h3>
+<p id="nbDesc" style="font-size:.82rem;color:#888;margin-bottom:12px;"></p>
+
+<div style="font-size:.82rem;font-weight:600;color:#1a6b4a;margin-bottom:6px;">📎 Documentos (<span id="docCount">0</span>)</div>
+<div class="drop-zone" id="nbDropZone" onclick="document.getElementById('nbFileIn').click()" tabindex="0">
+<span style="font-size:1.5rem;">📄</span>
+<div style="font-weight:600;font-size:.85rem;">Arrastra, clic o pega (Cmd+V)</div>
+<div style="font-size:.72rem;color:#888;">Imágenes y capturas de pantalla</div>
+<input type="file" id="nbFileIn" accept="image/*" multiple style="display:none">
+</div>
+<div class="doc-list" id="docList"></div>
+</div>
+
+<!-- CHAT -->
+<div class="chat-area">
+<div class="chat-header">💬 Pregunta sobre tus documentos</div>
+<div class="chat-msgs" id="chatMsgs">
+<div class="chat-msg chat-bot">Sube documentos y hazme preguntas sobre ellos. Puedo resumir, explicar, comparar o extraer información.</div>
+</div>
+<div class="chat-input-bar">
+<input type="text" id="chatInput" placeholder="Pregunta algo sobre tus documentos..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="btn btn-green btn-sm" onclick="sendChat()">Enviar</button>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+firebase.initializeApp({apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgo_1o",authDomain:"docenciacartagenaeste.firebaseapp.com",projectId:"docenciacartagenaeste"});
+var auth=firebase.auth(),db=firebase.firestore();
+var currentUser=null,currentNbId=null,notebooks=[],chatHistory=[];
+
+auth.onAuthStateChanged(function(u){
+  if(u){currentUser=u;document.getElementById('authMsg').style.display='none';document.getElementById('mainApp').style.display='block';loadNotebooks();}
+  else{currentUser=null;document.getElementById('authMsg').style.display='block';document.getElementById('mainApp').style.display='none';}
+});
+
+function NB_KEY(){return 'cuadernos_ia_'+currentUser.uid;}
+
+function loadNotebooks(){
+  try{notebooks=JSON.parse(localStorage.getItem(NB_KEY())||'[]');}catch(e){notebooks=[];}
+  renderList();
+  // Cloud restore
+  db.collection('cuadernos_ia').doc(currentUser.uid).get().then(function(doc){
+    if(doc.exists&&doc.data().notebooks){
+      var cloud=doc.data().notebooks;
+      if(cloud.length>notebooks.length){notebooks=cloud;localStorage.setItem(NB_KEY(),JSON.stringify(notebooks));renderList();}
+    }
+  }).catch(function(){});
+}
+
+function saveNotebooks(){
+  localStorage.setItem(NB_KEY(),JSON.stringify(notebooks));
+  var compact=notebooks.map(function(nb){
+    return{id:nb.id,name:nb.name,desc:nb.desc,docs:nb.docs.map(function(d){return{name:d.name,type:d.type,data:d.data.substring(0,100000)};}),chat:nb.chat.slice(-20),createdAt:nb.createdAt};
+  });
+  db.collection('cuadernos_ia').doc(currentUser.uid).set({notebooks:compact.slice(0,10),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(function(){});
+}
+
+function renderList(){
+  var el=document.getElementById('nbGrid');
+  if(notebooks.length===0){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:#888;">No tienes cuadernos. Crea uno para empezar.</div>';return;}
+  el.innerHTML=notebooks.map(function(nb,i){
+    return '<div class="nb-card" onclick="openNotebook('+i+')">'+
+      '<button class="del" onclick="event.stopPropagation();deleteNb('+i+')" title="Eliminar">🗑️</button>'+
+      '<div class="icon">📓</div>'+
+      '<div class="name">'+esc(nb.name)+'</div>'+
+      '<div class="desc">'+esc(nb.desc||'Sin descripción')+'</div>'+
+      '<div class="meta">'+nb.docs.length+' docs · '+nb.chat.length+' mensajes</div>'+
+    '</div>';
+  }).join('');
+}
+
+function showList(){
+  document.getElementById('viewList').style.display='block';
+  document.getElementById('viewCreate').style.display='none';
+  document.getElementById('viewNotebook').style.display='none';
+  renderList();
+}
+function showCreate(){
+  document.getElementById('viewList').style.display='none';
+  document.getElementById('viewCreate').style.display='block';
+  document.getElementById('createName').value='';document.getElementById('createDesc').value='';
+}
+
+function createNotebook(){
+  var name=document.getElementById('createName').value.trim();
+  if(!name){alert('Escribe un nombre');return;}
+  notebooks.push({id:'nb_'+Date.now(),name:name,desc:document.getElementById('createDesc').value.trim(),docs:[],chat:[],createdAt:Date.now()});
+  saveNotebooks();showList();
+}
+
+function deleteNb(idx){
+  if(!confirm('¿Eliminar "'+notebooks[idx].name+'"?'))return;
+  notebooks.splice(idx,1);saveNotebooks();renderList();
+}
+
+// ═══ DENTRO DEL CUADERNO ═══
+function openNotebook(idx){
+  currentNbId=idx;
+  var nb=notebooks[idx];
+  document.getElementById('viewList').style.display='none';
+  document.getElementById('viewNotebook').style.display='block';
+  document.getElementById('nbTitle').textContent='📓 '+nb.name;
+  document.getElementById('nbDesc').textContent=nb.desc||'';
+  chatHistory=nb.chat||[];
+  renderDocs();renderChat();
+}
+
+function renderDocs(){
+  var nb=notebooks[currentNbId];
+  document.getElementById('docCount').textContent=nb.docs.length;
+  var el=document.getElementById('docList');
+  el.innerHTML=nb.docs.map(function(d,i){
+    return '<div class="doc-item">'+
+      '<span>📄</span><span>'+esc(d.name||'Imagen '+(i+1))+'</span>'+
+      '<span style="font-size:.72rem;color:#aaa;">'+Math.round((d.data.length*3/4)/1024)+'KB</span>'+
+      '<button class="rm" onclick="removeDoc('+i+')">✕</button>'+
+    '</div>';
+  }).join('');
+}
+
+function renderChat(){
+  var el=document.getElementById('chatMsgs');
+  el.innerHTML='<div class="chat-msg chat-bot">Sube documentos y hazme preguntas. Puedo resumir, explicar, comparar o extraer información.</div>';
+  chatHistory.forEach(function(m){
+    var div=document.createElement('div');
+    div.className='chat-msg chat-'+(m.role==='user'?'user':'bot');
+    div.innerHTML=m.role==='user'?esc(m.text):'<pre>'+esc(m.text)+'</pre>';
+    el.appendChild(div);
+  });
+  el.scrollTop=el.scrollHeight;
+}
+
+// File handling
+var dz=document.getElementById('nbDropZone');
+var fi=document.getElementById('nbFileIn');
+['dragenter','dragover'].forEach(function(e){dz.addEventListener(e,function(ev){ev.preventDefault();dz.classList.add('over');});});
+['dragleave','drop'].forEach(function(e){dz.addEventListener(e,function(ev){ev.preventDefault();dz.classList.remove('over');});});
+dz.addEventListener('drop',function(ev){if(ev.dataTransfer.files.length)addFiles(ev.dataTransfer.files);});
+fi.addEventListener('change',function(){if(this.files.length)addFiles(this.files);this.value='';});
+
+// Paste support
+document.addEventListener('paste',function(ev){
+  if(currentNbId===null)return;
+  var items=ev.clipboardData&&ev.clipboardData.items;if(!items)return;
+  var files=[];
+  for(var i=0;i<items.length;i++){if(items[i].type.indexOf('image')!==-1){var b=items[i].getAsFile();if(b)files.push(b);}}
+  if(files.length){ev.preventDefault();addFiles(files);dz.style.borderColor='#16a34a';dz.style.background='#dcfce7';setTimeout(function(){dz.style.borderColor='';dz.style.background='';},800);}
+});
+
+async function addFiles(fl){
+  for(var i=0;i<fl.length;i++){
+    if(fl[i].size>10*1024*1024){alert('Máximo 10MB');continue;}
+    var data=await toBase64(fl[i]);
+    notebooks[currentNbId].docs.push({name:fl[i].name||'Captura_'+Date.now()+'.png',type:fl[i].type,data:data});
+  }
+  saveNotebooks();renderDocs();
+}
+function removeDoc(idx){
+  notebooks[currentNbId].docs.splice(idx,1);saveNotebooks();renderDocs();
+}
+function toBase64(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result);};r.onerror=rej;r.readAsDataURL(file);});}
+
+// ═══ CHAT CON IA ═══
+async function sendChat(){
+  var input=document.getElementById('chatInput');
+  var question=input.value.trim();if(!question)return;
+  input.value='';
+
+  var nb=notebooks[currentNbId];
+  chatHistory.push({role:'user',text:question});
+  renderChatMsg('user',question);
+
+  // Build content with images
+  var content=[];
+  nb.docs.forEach(function(d,i){
+    if(d.data&&i<8){
+      content.push({type:'image_url',image_url:{url:d.data}});
+    }
+  });
+
+  var sysPrompt='Eres un asistente clínico docente del Área II Cartagena. El usuario ha subido documentos médicos a su cuaderno "'+nb.name+'". Responde en español, de forma clara y profesional. Si hay imágenes de analíticas, informes o capturas médicas, extrae y organiza la información relevante.';
+
+  var messages=[{role:'system',content:sysPrompt}];
+  // Add recent chat context
+  chatHistory.slice(-6).forEach(function(m){
+    if(m.role==='user') messages.push({role:'user',content:m.text});
+    else messages.push({role:'assistant',content:m.text});
+  });
+  // Last message with images
+  content.push({type:'text',text:question});
+  messages[messages.length-1]={role:'user',content:content};
+
+  var hasImages=nb.docs.length>0;
+  var model=hasImages?'meta-llama/llama-4-scout:free':'deepseek/deepseek-chat-v3-0324:free';
+
+  renderChatMsg('loading','');
+
+  try{
+    var body={model:model,messages:messages,max_tokens:4000,temperature:0.3};
+    var proxyUrl=localStorage.getItem('api_proxy_url');
+    var r;
+    if(proxyUrl){
+      r=await fetch(proxyUrl+'/api/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    }else{
+      r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Cuadernos IA'},body:JSON.stringify(body)});
+    }
+    var data=await r.json();
+    var answer=data.choices&&data.choices[0]?data.choices[0].message.content:'Error al generar respuesta';
+
+    removeLoading();
+    chatHistory.push({role:'assistant',text:answer});
+    renderChatMsg('bot',answer);
+    nb.chat=chatHistory.slice(-30);
+    saveNotebooks();
+  }catch(e){
+    removeLoading();
+    renderChatMsg('bot','❌ Error: '+e.message);
+  }
+}
+
+function renderChatMsg(role,text){
+  var el=document.getElementById('chatMsgs');
+  if(role==='loading'){
+    var div=document.createElement('div');div.id='chatLoading';div.className='loading';
+    div.innerHTML='<span class="spinner-sm"></span> Analizando documentos...';
+    el.appendChild(div);
+  }else{
+    var div=document.createElement('div');
+    div.className='chat-msg chat-'+(role==='user'?'user':'bot');
+    div.innerHTML=role==='user'?esc(text):'<pre>'+esc(text)+'</pre>';
+    el.appendChild(div);
+  }
+  el.scrollTop=el.scrollHeight;
+}
+function removeLoading(){var l=document.getElementById('chatLoading');if(l)l.remove();}
+function esc(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
+</script>
+</body>
+</html>
