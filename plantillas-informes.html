@@ -445,7 +445,7 @@ async function iaGenerar(){
   
   // Use vision model if images attached, text model otherwise
   var hasImages = content.some(function(c){ return c.type === 'image_url'; });
-  var model = hasImages ? 'meta-llama/llama-4-scout:free' : 'deepseek/deepseek-chat-v3-0324:free';
+  var model = hasImages ? 'qwen/qwen2.5-vl-32b-instruct:free' : 'deepseek/deepseek-chat-v3-0324:free';
   
   var body = {
     model: model,
