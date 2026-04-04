@@ -1,5 +1,5 @@
 // Service Worker - Área II Cartagena PWA v11 - network only, sin caché
-const CACHE_NAME = 'area2-cartagena-v11';
+const CACHE_NAME = 'area2-cartagena-v12';
 
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
