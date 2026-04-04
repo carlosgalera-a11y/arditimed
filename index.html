@@ -2512,7 +2512,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                             <span style="font-size:1.3rem;">📋</span>
                             <div>
                                 <div style="font-weight:800;font-size:.95rem;color:var(--text);">Checklist Clínico IA</div>
-                                <div style="font-size:.7rem;color:var(--text-muted);">Anamnesis · Exploración · Pruebas · Tratamiento</div>
+                                <div style="font-size:.7rem;color:var(--text-muted);">Anamnesis · Exploración · Pruebas · Tto Hospital · Tto Domicilio</div>
                             </div>
                         </div>
                         <div id="ckProgress" style="display:none;text-align:center;">
@@ -5163,7 +5163,7 @@ var CK_SYS="Eres un asistente clínico docente para médicos residentes del Áre
 "TAREA: Dado un diagnóstico/sospecha clínica Y el contexto proporcionado (protocolos locales, conversación previa del MegaCuaderno), genera un CHECKLIST CLÍNICO estructurado en JSON.\n\n"+
 "RESPONDE ÚNICAMENTE con JSON válido, sin markdown, sin backticks, sin texto fuera del JSON:\n"+
 "{\"patologia\":\"Nombre de la patología\",\"resumen\":\"Descripción breve en 1-2 frases\",\"secciones\":[{\"titulo\":\"Sección\",\"icono\":\"emoji\",\"items\":[{\"texto\":\"Acción concreta\",\"prioridad\":\"alta|media|baja\",\"detalle\":\"Explicación o justificación breve\"}]}]}\n\n"+
-"LAS 4 SECCIONES OBLIGATORIAS (en este orden exacto):\n\n"+
+"LAS 5 SECCIONES OBLIGATORIAS (en este orden exacto):\n\n"+
 "1. 📝 ANAMNESIS DIRIGIDA\n"+
 "   - Preguntas clave que hacer al paciente\n"+
 "   - Antecedentes relevantes a preguntar\n"+
@@ -5183,13 +5183,22 @@ var CK_SYS="Eres un asistente clínico docente para médicos residentes del Áre
 "   - ECG: cuándo pedirlo y qué buscar\n"+
 "   - Otras: cultivos, tira de orina, punción lumbar, etc.\n"+
 "   - Indicar prioridad alta si es urgente, media si es necesaria, baja si es según evolución\n\n"+
-"4. 💊 TRATAMIENTO\n"+
-"   - Medidas generales (posición, dieta, fluidoterapia con volumen y ritmo)\n"+
-"   - Tratamiento farmacológico ESPECÍFICO: nombre del fármaco, DOSIS, VÍA, FRECUENCIA y DURACIÓN\n"+
-"   - Alternativa si alergia\n"+
-"   - Criterios de ingreso vs alta\n"+
-"   - Plan de seguimiento / reevaluación\n"+
-"   - Criterios de alarma / cuándo avisar al adjunto\n\n"+
+"4. 🏥 TRATAMIENTO HOSPITALARIO (si requiere ingreso o manejo en urgencias)\n"+
+"   - Medidas generales hospitalarias (posición, dieta absoluta/específica, fluidoterapia IV con volumen y ritmo exacto)\n"+
+"   - Tratamiento farmacológico IV/hospitalario: fármaco, DOSIS, VÍA IV/IM, FRECUENCIA y DURACIÓN\n"+
+"   - Monitorización: qué constantes vigilar y cada cuánto tiempo\n"+
+"   - Criterios de ingreso en planta vs UCI\n"+
+"   - Interconsultas a solicitar (a qué servicio y por qué)\n"+
+"   - Criterios de alarma / cuándo avisar al adjunto / cuándo escalar a UCI\n"+
+"   - Reevaluación: a las cuántas horas y qué parámetros revisar\n\n"+
+"5. 🏠 TRATAMIENTO DOMICILIARIO / AL ALTA\n"+
+"   - Criterios de alta desde urgencias (cuándo es seguro dar de alta)\n"+
+"   - Tratamiento farmacológico VO para casa: fármaco, DOSIS, VÍA ORAL, FRECUENCIA y DURACIÓN exacta\n"+
+"   - Alternativa si alergia a primera línea\n"+
+"   - Medidas higiénico-dietéticas (reposo, hidratación, dieta, actividad física)\n"+
+"   - Signos de alarma que debe conocer el paciente (cuándo volver a urgencias)\n"+
+"   - Plan de seguimiento: cita con AP / especialista, en cuántos días\n"+
+"   - Receta: qué recetas necesita llevar\n\n"+
 "REGLAS:\n"+
 "- Sé MUY específico y práctico: valores concretos, dosis exactas, nombres de fármacos\n"+
 "- Si hay protocolos locales del Área II en el contexto, PRIORÍZALOS sobre guías genéricas\n"+
@@ -5351,7 +5360,8 @@ var CK_SEC_STYLE={
     "anamnesis":{icon:"📝",color:"#2563eb",bg:"rgba(37,99,235,.06)"},
     "exploración":{icon:"🩺",color:"#7c3aed",bg:"rgba(124,58,237,.06)"},
     "pruebas":{icon:"🔬",color:"#d97706",bg:"rgba(217,119,6,.06)"},
-    "tratamiento":{icon:"💊",color:"#dc2626",bg:"rgba(220,38,38,.06)"}
+    "hospital":{icon:"🏥",color:"#dc2626",bg:"rgba(220,38,38,.06)"},
+    "domicilio":{icon:"🏠",color:"#0d9488",bg:"rgba(13,148,136,.06)"}
 };
 
 function getSectionStyle(titulo){
@@ -5359,7 +5369,9 @@ function getSectionStyle(titulo){
     if(t.indexOf("anamnesis")>=0) return CK_SEC_STYLE.anamnesis;
     if(t.indexOf("explorac")>=0) return CK_SEC_STYLE["exploración"];
     if(t.indexOf("prueba")>=0||t.indexOf("complementar")>=0) return CK_SEC_STYLE.pruebas;
-    if(t.indexOf("tratamiento")>=0||t.indexOf("farmac")>=0) return CK_SEC_STYLE.tratamiento;
+    if(t.indexOf("hospital")>=0||t.indexOf("ingreso")>=0||t.indexOf("urgencia")>=0) return CK_SEC_STYLE.hospital;
+    if(t.indexOf("domicili")>=0||t.indexOf("alta")>=0||t.indexOf("casa")>=0) return CK_SEC_STYLE.domicilio;
+    if(t.indexOf("tratamiento")>=0||t.indexOf("farmac")>=0) return CK_SEC_STYLE.hospital;
     return {icon:"📌",color:"#64748b",bg:"rgba(100,116,139,.06)"};
 }
 
