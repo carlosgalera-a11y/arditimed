@@ -42,9 +42,9 @@
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="expires" content="0">
-    <title>Área II Cartagena - App Médica Docente | Centro de Salud Cartagena Este — build 1775319107</title>
-    <meta name="description" content="App médica docente del Área II de Cartagena (Servicio Murciano de Salud). 77 protocolos de urgencias, análisis de imagen con IA, gestión de guardia, directorio telefónico. Centro de Salud Cartagena Este — build 1775319107, docencia MFyC.">
-    <meta name="keywords" content="Área II Cartagena, Centro de Salud Cartagena Este — build 1775319107, docencia médica, protocolos urgencias, MFyC, Servicio Murciano de Salud, SMS, medicina familiar, residentes, EAP Cartagena, atención primaria Cartagena, urgencias Cartagena, hospital Santa Lucía, app médica docente">
+    <title>Área II Cartagena - App Médica Docente | Centro de Salud Cartagena Este — build 1775319542</title>
+    <meta name="description" content="App médica docente del Área II de Cartagena (Servicio Murciano de Salud). 77 protocolos de urgencias, análisis de imagen con IA, gestión de guardia, directorio telefónico. Centro de Salud Cartagena Este — build 1775319542, docencia MFyC.">
+    <meta name="keywords" content="Área II Cartagena, Centro de Salud Cartagena Este — build 1775319542, docencia médica, protocolos urgencias, MFyC, Servicio Murciano de Salud, SMS, medicina familiar, residentes, EAP Cartagena, atención primaria Cartagena, urgencias Cartagena, hospital Santa Lucía, app médica docente">
     <meta name="author" content="Área II Cartagena - Servicio Murciano de Salud">
     <meta name="google-site-verification" content="DAyjJZI9RMlaZ0mYXZT_YC1u93iXtk2QLkQy6N0brCw" />
     <meta name="robots" content="index, follow">
@@ -65,7 +65,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Área II Cartagena - App Médica Docente">
-    <meta name="twitter:description" content="77 protocolos de urgencias, IA diagnóstica, gestión de guardia. Centro de Salud Cartagena Este — build 1775319107.">
+    <meta name="twitter:description" content="77 protocolos de urgencias, IA diagnóstica, gestión de guardia. Centro de Salud Cartagena Este — build 1775319542.">
     <meta name="twitter:image" content="https://carlosgalera-a11y.github.io/Cartagenaeste/icons/icon-512x512.png">
 
     <!-- Schema.org JSON-LD -->
@@ -98,7 +98,7 @@
             "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/"
         },
         "medicalSpecialty": ["FamilyPractice", "EmergencyMedicine"],
-        "keywords": "protocolos urgencias, docencia médica, Cartagena, Área II, Centro de Salud Cartagena Este — build 1775319107, MFyC, medicina familiar"
+        "keywords": "protocolos urgencias, docencia médica, Cartagena, Área II, Centro de Salud Cartagena Este — build 1775319542, MFyC, medicina familiar"
     }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1173,6 +1173,7 @@ window.showNotebooksModal=function(){
                 <button class="tab-btn tab-urg active" onclick="switchUrgTab('urg-trip',this)" style="cursor:pointer;color:#fff;">📄 Trípticos</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-list',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">📋 Protocolos</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">🤖 Preguntas IA</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">✨ Studio</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">🛏️ Pacientes</button>
             </div>
             
@@ -1713,6 +1714,64 @@ window.showNotebooksModal=function(){
             </div>
 
             <!-- PACIENTES GUARDIA (Urgencias) -->
+            <div id="urg-studio-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:linear-gradient(135deg,#7f0000,#b71c1c);border-radius:var(--radius);padding:18px 22px;margin-bottom:18px;color:#fff;position:relative;overflow:hidden;">
+                    <div style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:2.5rem;opacity:.15;">✨</div>
+                    <h4 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:5px;">✨ Studio Urgencias — Chat con DeepSeek</h4>
+                    <p style="font-size:.84rem;opacity:.8;font-weight:300;">Chat libre sobre cualquier protocolo de urgencias. DeepSeek tiene acceso a los 77 protocolos.</p>
+                </div>
+
+                <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <label style="font-weight:600;font-size:.84rem;color:rgba(255,255,255,.8);white-space:nowrap;">📄 Contexto:</label>
+                    <select id="urgStudioProtoSelect" style="flex:1;min-width:180px;padding:9px 12px;border:2px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);font-size:.83rem;font-family:var(--font-body);background:rgba(255,255,255,.1);color:#fff;">
+                        <option value="all">📚 Todos los protocolos de urgencias</option>
+                        <optgroup label="📄 Trípticos" style="color:#ccc;">
+                            <option value="trip-fibrilacion-auricular">❤️‍🔥 Fibrilación Auricular</option>
+                            <option value="trip-insuficiencia-cardiaca">❤️‍🔥 Insuficiencia Cardíaca Aguda</option>
+                            <option value="trip-sincope">❤️‍🔥 Síncope</option>
+                            <option value="trip-tvp">🩸 TVP</option>
+                            <option value="trip-diverticulitis">🫀 Diverticulitis</option>
+                            <option value="trip-hemorragia-digestiva">🫀 Hemorragia Digestiva</option>
+                            <option value="trip-pancreatitis">🫀 Pancreatitis Aguda</option>
+                            <option value="trip-emergencias-hiperglucemicas">🧬 Emergencias Hiperglucémicas</option>
+                            <option value="trip-neutropenia">🦠 Neutropenia Febril</option>
+                            <option value="trip-hiperpotasemia">🫘 Hiperpotasemia</option>
+                            <option value="trip-epoc">💨 EPOC Agudizado</option>
+                            <option value="trip-neumonia">💨 Neumonía</option>
+                            <option value="trip-tep">💨 TEP</option>
+                            <option value="trip-cefalea">🧠 Cefalea</option>
+                        </optgroup>
+                        <optgroup label="🏨 Hospitalarios" style="color:#ccc;">
+                            <option value="hosp-sepsis">🦠 Sepsis / Shock Séptico</option>
+                            <option value="hosp-sca">❤️ SCA / Código Infarto</option>
+                            <option value="hosp-ictus">🧠 Ictus Isquémico</option>
+                            <option value="hosp-via-aerea">🔴 Vía Aérea / SRI</option>
+                            <option value="hosp-sva">🔴 SVA</option>
+                            <option value="hosp-shock">⚡ Shock</option>
+                            <option value="hosp-anafilaxia">🌸 Anafilaxia</option>
+                            <option value="hosp-politrauma">🚑 Politrauma</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div id="urgStudioChat" style="min-height:180px;max-height:480px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;" class="scrollbar"></div>
+
+                <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;">
+                    <button onclick="urgStudioQuick('Resume el protocolo paso a paso con dosis exactas')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">📋 Resumen + dosis</button>
+                    <button onclick="urgStudioQuick('¿Cuáles son las red flags y criterios de ingreso urgente?')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">🚨 Red flags + ingreso</button>
+                    <button onclick="urgStudioQuick('Haz un diagnóstico diferencial completo con claves para distinguir cada entidad')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">🔍 Dx diferencial</button>
+                    <button onclick="urgStudioQuick('Crea un caso clínico MIR sobre este protocolo con 4 opciones y respuesta comentada')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">🎓 Caso MIR</button>
+                    <button onclick="urgStudioQuick('Lista todos los fármacos con dosis, vía y contraindicaciones')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">💊 Fármacos</button>
+                    <button onclick="urgStudioClear()" style="padding:5px 11px;background:rgba(239,83,80,.2);border:1px solid rgba(239,83,80,.4);border-radius:16px;font-size:.78rem;cursor:pointer;color:#ef9a9a;font-family:var(--font-body);">🗑️ Limpiar</button>
+                </div>
+
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="urgStudioInput" placeholder="Escribe tu pregunta... (Enter para enviar)" rows="2" spellcheck="false" style="flex:1;padding:11px 14px;border:2px solid rgba(255,255,255,.2);border-radius:var(--radius);font-size:.88rem;font-family:var(--font-body);background:rgba(255,255,255,.08);color:#fff;resize:none;transition:.2s;line-height:1.5;" onfocus="this.style.borderColor='rgba(239,83,80,.7)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();urgStudioEnviar();}"></textarea>
+                    <button onclick="urgStudioEnviar()" id="urgStudioBtn" style="padding:11px 18px;background:linear-gradient(135deg,#c62828,#b71c1c);color:#fff;border:none;border-radius:var(--radius);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font-body);white-space:nowrap;">Enviar ✨</button>
+                </div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:5px;text-align:right;">DeepSeek V3 · 77 protocolos de urgencias</div>
+            </div>
+
             <div id="urg-pacientes-content" class="urg-tab-content" style="display:none;margin-top:20px;">
                 <div style="background:rgba(255,193,7,.12);border:1px solid rgba(255,193,7,.35);border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#ffc107;margin-bottom:20px;line-height:1.6;">
                     🔒 <strong>Datos anonimizados.</strong> No incluyas nombre, DNI, NHC ni datos identificativos. Usa solo iniciales o número de cama. Los datos se guardan localmente en tu dispositivo.

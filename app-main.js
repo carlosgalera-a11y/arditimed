@@ -663,7 +663,15 @@ function urgRenderPreguntas() {
         return;
     }
     el.innerHTML = urgPreguntas.slice().reverse().map(function(p) {
-        return '<div style="background:rgba(255,255,255,.08);padding:14px;border-radius:8px;margin-bottom:10px;border-left:3px solid #d32f2f;"><div style="font-weight:600;margin-bottom:8px;font-size:.9rem;">❓ '+esc(p.pregunta)+'</div><div style="font-size:.88rem;opacity:.9;line-height:1.6;white-space:pre-wrap;">'+esc(p.respuesta)+'</div><div style="font-size:.75rem;opacity:.4;margin-top:8px;">'+p.fecha+'</div></div>';
+        var isLoading = p.respuesta === '⏳ Consultando...';
+        var respHtml = isLoading
+            ? '<div style="display:flex;align-items:center;gap:10px;padding:16px;color:rgba(255,255,255,.6);font-size:.88rem;"><div style="width:18px;height:18px;border:2px solid #ef5350;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Consultando DeepSeek V3...</div>'
+            : (typeof fmtClinical === 'function' ? '<div class="cl-proto" style="color:#fff;">' + fmtClinical(p.respuesta).replace(/class="cl-proto"/,'') + '</div>' : p.respuesta.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
+        return '<div style="border-radius:12px;overflow:hidden;margin-bottom:14px;border:1px solid rgba(255,255,255,.12);">'
+            + '<div style="background:rgba(211,47,47,.35);padding:10px 16px;font-size:.88rem;font-weight:600;color:#fff;">❓ ' + esc(p.pregunta) + '</div>'
+            + '<div style="padding:16px;background:rgba(255,255,255,.06);font-size:.88rem;line-height:1.7;color:rgba(255,255,255,.92);">' + respHtml + '</div>'
+            + '<div style="padding:6px 16px;background:rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.35);">' + p.fecha + '</div>'
+            + '</div>';
     }).join('');
 }
 
@@ -2663,4 +2671,87 @@ function apStudioClear() {
 
 document.addEventListener('DOMContentLoaded', function() {
     apStudioRender();
+});
+
+
+// ═══ STUDIO URGENCIAS ═══
+var urgStudioHistory = [];
+var urgStudioProcessing = false;
+
+function urgStudioGetContext() {
+    var sel = document.getElementById('urgStudioProtoSelect') ? document.getElementById('urgStudioProtoSelect').value : 'all';
+    var ctx = '';
+    if (sel === 'all') {
+        for (var k in URG_PROTOCOLS) ctx += '\n\n--- ' + URG_PROTOCOLS[k].title + ' ---\n' + URG_PROTOCOLS[k].text;
+        ctx += '\n\n' + (typeof MEGA_KB !== 'undefined' ? MEGA_KB : '');
+    } else if (URG_PROTOCOLS[sel]) {
+        ctx = URG_PROTOCOLS[sel].text;
+    }
+    return ctx;
+}
+
+function urgStudioRender() {
+    var el = document.getElementById('urgStudioChat');
+    if (!el) return;
+    if (urgStudioHistory.length === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:36px 20px;opacity:.4;"><div style="font-size:2.2rem;margin-bottom:8px;">✨</div><p style="font-size:.85rem;color:#fff;">Studio listo. Pregunta sobre cualquier protocolo de urgencias.</p></div>';
+        return;
+    }
+    el.innerHTML = urgStudioHistory.map(function(m) {
+        if (m.role === 'user') {
+            return '<div style="display:flex;justify-content:flex-end;">'
+                + '<div style="max-width:80%;background:rgba(211,47,47,.6);color:#fff;padding:9px 14px;border-radius:16px 16px 4px 16px;font-size:.86rem;line-height:1.5;border:1px solid rgba(239,83,80,.4);">'
+                + esc(m.content) + '</div></div>';
+        } else {
+            var isLoading = m.content === '⏳';
+            var html = isLoading
+                ? '<div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.5);font-size:.83rem;"><div style="width:14px;height:14px;border:2px solid #ef5350;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>DeepSeek pensando...</div>'
+                : (typeof fmtClinical === 'function'
+                    ? '<div style="color:rgba(255,255,255,.92);">' + fmtClinical(m.content) + '</div>'
+                    : m.content.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
+            return '<div style="display:flex;align-items:flex-start;gap:8px;">'
+                + '<div style="width:24px;height:24px;background:linear-gradient(135deg,#c62828,#7f0000);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:#fff;margin-top:3px;">✨</div>'
+                + '<div style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:10px 14px;border-radius:4px 16px 16px 16px;font-size:.86rem;line-height:1.65;">'
+                + html + '</div></div>';
+        }
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+}
+
+async function urgStudioEnviar() {
+    var input = document.getElementById('urgStudioInput');
+    var q = input ? input.value.trim() : '';
+    if (!q || urgStudioProcessing) return;
+    urgStudioProcessing = true;
+    document.getElementById('urgStudioBtn').disabled = true;
+    input.value = '';
+
+    urgStudioHistory.push({ role: 'user', content: q });
+    urgStudioHistory.push({ role: 'assistant', content: '⏳' });
+    urgStudioRender();
+
+    var ctx = urgStudioGetContext();
+    var sys = 'Eres un médico de urgencias experto. Responde de forma clínica, estructurada y práctica con markdown (negritas, listas, tablas). Incluye dosis exactas cuando corresponda. Si la pregunta va más allá del protocolo, usa tu conocimiento médico general indicándolo.\n\nPROTOCOLOS DE URGENCIAS:\n' + ctx;
+
+    var r = await llamarIA(q, sys);
+    urgStudioHistory[urgStudioHistory.length - 1] = { role: 'assistant', content: r };
+    urgStudioRender();
+    urgStudioProcessing = false;
+    document.getElementById('urgStudioBtn').disabled = false;
+    if (input) input.focus();
+}
+
+function urgStudioQuick(q) {
+    var input = document.getElementById('urgStudioInput');
+    if (input) input.value = q;
+    urgStudioEnviar();
+}
+
+function urgStudioClear() {
+    urgStudioHistory = [];
+    urgStudioRender();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    urgStudioRender();
 });
