@@ -736,10 +736,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ═══ PAGE NAVIGATION ═══
-var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
+var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
 function showPage(id){
     // Páginas que requieren login (NO incluye pagePatients ni pageTriaje)
-    var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
+    var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
     var PAGE_NAMES={
         "pageTelefonos":"Teléfonos Búsca",
         "pageProtocolosAP":"Protocolos AP",
