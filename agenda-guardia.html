@@ -2,200 +2,367 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>Agenda de Guardia | Área II Cartagena</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Turnos | Área II Cartagena</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--green:#1a6b4a;--green-l:#e8f5e9;--bg:#f0f2f5;--card:#fff;--text:#1a1a2e;--muted:#64748b;--r:12px}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.nav{background:linear-gradient(135deg,#1a237e,#283593);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
-.nav h1{font-size:1.05rem;font-weight:700}.nav a{color:#90caf9;text-decoration:none;font-size:.85rem}
-.container{max-width:700px;margin:0 auto;padding:16px}
-.today-bar{background:linear-gradient(135deg,#1a237e,#3949ab);color:#fff;border-radius:var(--r);padding:16px 20px;margin-bottom:16px;text-align:center}
-.today-bar .date{font-size:1.1rem;font-weight:700}.today-bar .sub{font-size:.82rem;opacity:.8;margin-top:2px}
-.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:12px}
-.card h3{font-size:.95rem;color:#1a237e;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.guard-form{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.guard-form input,.guard-form select{padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit;flex:1;min-width:120px}
-.guard-form input:focus,.guard-form select:focus{outline:none;border-color:#1a237e}
-.btn-add{background:#1a237e;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
-.guard-list{display:flex;flex-direction:column;gap:8px}
-.guard-item{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #e8eaf6;border-radius:8px;background:#f5f5ff;transition:all .2s}
-.guard-item:hover{background:#e8eaf6}
-.guard-item .avatar{width:36px;height:36px;border-radius:50%;background:#c5cae9;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#1a237e;flex-shrink:0}
-.guard-item .info{flex:1}
-.guard-item .name{font-weight:600;font-size:.88rem;color:#1a237e}
-.guard-item .role{font-size:.76rem;color:var(--muted)}
-.guard-item .time{font-size:.78rem;color:#3949ab;font-weight:600;background:#e8eaf6;padding:4px 8px;border-radius:6px}
-.guard-item .actions{display:flex;gap:4px}
-.guard-item .actions button{background:none;border:none;font-size:1rem;cursor:pointer;padding:4px;border-radius:4px}
-.guard-item .actions button:hover{background:#e8eaf6}
-.tab-bar{display:flex;gap:4px;margin-bottom:14px;background:#e8eaf6;border-radius:8px;padding:3px}
-.tab-bar button{flex:1;padding:8px;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:inherit;background:transparent;color:var(--muted)}
-.tab-bar button.active{background:#1a237e;color:#fff}
-.notes-area{min-height:100px;border:2px solid #e0e0e0;border-radius:8px;padding:12px;font-family:inherit;font-size:.88rem;width:100%;resize:vertical}
-.notes-area:focus{outline:none;border-color:#1a237e}
-.empty{text-align:center;padding:30px;color:#aaa;font-size:.85rem}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700}
-.badge-r1{background:#e8f5e9;color:#1b5e20}.badge-r2{background:#e3f2fd;color:#0d47a1}.badge-r3{background:#fce4ec;color:#880e4f}.badge-r4{background:#fff3e0;color:#e65100}.badge-adj{background:#f3e5f5;color:#4a148c}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
+.nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.nav h1{font-size:1.05rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
+.container{max-width:900px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:3px solid #e0e0e0}
+.tab{flex:1;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:.88rem;border:none;background:#fff;color:#888;font-family:inherit;border-radius:8px 8px 0 0;transition:.2s}
+.tab.active{background:#1a6b4a;color:#fff}
+.panel{display:none}.panel.show{display:block}
+.card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:14px}
+.card h3{color:#1a6b4a;font-size:.95rem;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #e8f5e9}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:.78rem;font-weight:600;color:#64748b;margin-bottom:3px}
+.field input,.field select,.field textarea{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit}
+.field textarea{min-height:80px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:#1a6b4a}
+.btn{padding:12px 18px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.88rem;transition:.2s}
+.btn-green{background:#1a6b4a;color:#fff}.btn-green:hover{background:#145a32}
+.btn-blue{background:#0d47a1;color:#fff}
+.btn-outline{background:#fff;color:#333;border:2px solid #e0e0e0}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.loading{display:none;text-align:center;padding:20px}
+.loading.show{display:block}
+.spinner{width:36px;height:36px;border:4px solid #e0e0e0;border-top:4px solid #1a6b4a;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.plantilla-output{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;margin-top:14px;overflow-x:auto;font-size:.85rem;line-height:1.6;display:none}
+.plantilla-output.show{display:block}
+.plantilla-output table{width:100%;border-collapse:collapse;font-size:.8rem}
+.plantilla-output th,.plantilla-output td{border:1px solid #d0d0d0;padding:6px 8px;text-align:left}
+.plantilla-output th{background:#e8f5e9;color:#1a6b4a;font-weight:700;font-size:.75rem;text-transform:uppercase}
+.chat-box{border:2px solid #e0e0e0;border-radius:12px;padding:12px;margin-top:12px;max-height:300px;overflow-y:auto;background:#fafafa}
+.chat-msg{margin-bottom:8px;padding:8px 10px;border-radius:8px;font-size:.82rem;line-height:1.5}
+.chat-user{background:#e3f2fd;margin-left:20%}.chat-bot{background:#e8f5e9;margin-right:20%}
+.chat-input{display:flex;gap:8px;margin-top:8px}
+.chat-input input{flex:1;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit}
+.saved-list{max-height:400px;overflow-y:auto}
+.saved-item{border:1px solid #e0e0e0;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:.2s}
+.saved-item:hover{border-color:#1a6b4a;background:#f0fdf4}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700;margin-right:4px}
+.auth-wall{text-align:center;padding:40px 20px}
 </style>
 </head>
 <body>
-<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>📋 Agenda de Guardia</h1></div>
-<div class="container">
-    <div class="today-bar">
-        <div class="date" id="todayDate"></div>
-        <div class="sub">Hospital Santa Lucía · Área II Cartagena</div>
-    </div>
 
-    <div class="tab-bar">
-        <button class="active" onclick="showGuardTab('hoy',this)">📅 Hoy</button>
-        <button onclick="showGuardTab('semana',this)">📆 Semana</button>
-        <button onclick="showGuardTab('notas',this)">📝 Notas</button>
-    </div>
-
-    <div id="tab-hoy">
-        <div class="card">
-            <h3>➕ Añadir al turno de hoy</h3>
-            <div class="guard-form">
-                <input type="text" id="guardNombre" placeholder="Nombre">
-                <select id="guardRol">
-                    <option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option><option value="R4">R4</option>
-                    <option value="Adjunto">Adjunto</option><option value="Enfermería">Enfermería</option><option value="MIR otro">MIR otro</option>
-                </select>
-                <select id="guardTurno">
-                    <option value="08:00-15:00">☀️ Mañana</option><option value="15:00-22:00">🌆 Tarde</option><option value="22:00-08:00">🌙 Noche</option><option value="08:00-08:00">🔄 24h</option>
-                </select>
-                <button class="btn-add" onclick="addGuard()">+ Añadir</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>🩺 Equipo de guardia hoy</h3>
-            <div class="guard-list" id="guardList">
-                <div class="empty">No hay personal registrado para hoy.<br>Pulsa "Añadir" para empezar.</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="tab-semana" style="display:none;">
-        <div class="card">
-            <h3>📆 Guardias esta semana</h3>
-            <div id="weekView"></div>
-        </div>
-    </div>
-
-    <div id="tab-notas" style="display:none;">
-        <div class="card">
-            <h3>📝 Notas de guardia</h3>
-            <p style="font-size:.8rem;color:var(--muted);margin-bottom:8px;">Apuntes generales, cambios de turno, avisos importantes...</p>
-            <textarea class="notes-area" id="guardNotas" placeholder="Escribe notas para el equipo de guardia..." oninput="saveNotes()"></textarea>
-            <div style="margin-top:8px;display:flex;gap:8px;">
-                <button onclick="copyNotes()" style="padding:8px 14px;background:#e8eaf6;border:1px solid #c5cae9;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;color:#1a237e;font-family:inherit;">📋 Copiar</button>
-                <button onclick="if(confirm('¿Borrar notas?')){document.getElementById('guardNotas').value='';saveNotes();}" style="padding:8px 14px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;color:#dc2626;font-family:inherit;">🗑️ Borrar</button>
-            </div>
-        </div>
-    </div>
+<div class="nav">
+<a href="javascript:window.location='index.html'">← Inicio</a>
+<h1>📋 Generador de Turnos</h1>
 </div>
 
+<div id="authWall" class="auth-wall" style="display:none;">
+<div style="font-size:3rem;margin-bottom:12px;">🔐</div>
+<h2>Inicia sesión para acceder</h2>
+<p style="color:#888;margin:8px 0 16px;">Se requiere cuenta Google autorizada.</p>
+<button onclick="firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())" class="btn btn-green">🔐 Login con Google</button>
+</div>
+
+<div class="container" id="mainContent" style="display:none;">
+
+<div class="tabs">
+<button class="tab active" onclick="switchTab('generar')">🤖 Generar Plantilla</button>
+<button class="tab" onclick="switchTab('guardadas')">💾 Plantillas Guardadas</button>
+</div>
+
+<!-- TAB 1: GENERAR -->
+<div class="panel show" id="panelGenerar">
+<div class="card">
+<h3>⚙️ Configuración del turno</h3>
+<div class="field"><label>Servicio / Ubicación</label>
+<select id="servicio">
+<option value="Urgencias H.G.U. Santa Lucía">Urgencias H.G.U. Santa Lucía</option>
+<option value="Urgencias Rosell">Urgencias Rosell</option>
+<option value="Centro de Salud">Centro de Salud</option>
+<option value="Otro">Otro (especificar abajo)</option>
+</select></div>
+
+<div class="field"><label>Mes / Periodo</label><input type="text" id="periodo" placeholder="Ej: Abril 2026"></div>
+
+<div class="field"><label>Puestos por guardia (uno por línea: nombre del puesto)</label>
+<textarea id="puestos" rows="4" placeholder="Ej:
+Rosell (adjunto)
+Verde (R1)
+Amarillo (R2-R3)
+Camas (R4)"></textarea></div>
+
+<div class="field"><label>Personas disponibles (nombre + nivel, una por línea)</label>
+<textarea id="personas" rows="8" placeholder="Ej:
+Patricia Onco R1
+Inma R1
+Julia R1
+Marcelo GRT R1
+Andrés Perez R3
+Isa Pérez R3
+Maria Barba R4
+Elena R4"></textarea></div>
+
+<div class="field"><label>Reglas / Restricciones adicionales (opcional)</label>
+<textarea id="reglas" rows="3" placeholder="Ej: Máximo 5 guardias/persona al mes. R1 solo pueden ir a Verde o Rosell. R4 solo a Camas. No poner a la misma persona 2 días seguidos."></textarea></div>
+
+<div class="field"><label>Nº de días a planificar</label><input type="number" id="numDias" value="30" min="1" max="31"></div>
+</div>
+
+<div class="actions">
+<button class="btn btn-green" onclick="generarPlantilla()" id="btnGenerar">🤖 Generar Plantilla con IA</button>
+</div>
+
+<div class="loading" id="loadingGen">
+<div class="spinner"></div>
+<p style="font-size:.85rem;color:#64748b;">Generando plantilla de turnos...</p>
+</div>
+
+<div class="plantilla-output" id="plantillaOutput"></div>
+
+<!-- Chat para modificaciones -->
+<div id="chatSection" style="display:none;margin-top:14px;">
+<div class="card">
+<h3>💬 Modificar plantilla con IA</h3>
+<p style="font-size:.78rem;color:#888;margin-bottom:8px;">Pide cambios: "Cambia a Inma del día 5 por Patricia", "Pon a Elena en Camas el día 12", etc.</p>
+<div class="chat-box" id="chatBox"></div>
+<div class="chat-input">
+<input type="text" id="chatInput" placeholder="Escribe un cambio..." onkeydown="if(event.key==='Enter')chatSend()">
+<button class="btn btn-blue" onclick="chatSend()">Enviar</button>
+</div>
+</div>
+<div class="actions">
+<button class="btn btn-green" onclick="guardarPlantilla()">💾 Guardar plantilla</button>
+<button class="btn btn-outline" onclick="copiarPlantilla()">📋 Copiar como texto</button>
+</div>
+</div>
+</div>
+
+<!-- TAB 2: GUARDADAS -->
+<div class="panel" id="panelGuardadas">
+<div class="card">
+<h3>💾 Plantillas guardadas</h3>
+<p style="font-size:.78rem;color:#888;margin-bottom:10px;">Visibles para todos los usuarios logueados.</p>
+<div class="saved-list" id="savedList"><div style="text-align:center;color:#888;padding:20px;">Cargando...</div></div>
+</div>
+</div>
+
+</div><!-- container -->
+
 <script>
-var guards=JSON.parse(localStorage.getItem('guardias_hoy')||'[]');
-var today=new Date();
-var opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
-document.getElementById('todayDate').textContent=today.toLocaleDateString('es-ES',opts);
+firebase.initializeApp({
+  apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgo_1o",
+  authDomain:"docenciacartagenaeste.firebaseapp.com",
+  projectId:"docenciacartagenaeste"
+});
+var auth=firebase.auth();
+var db=firebase.firestore();
 
-// Check if stored date is today, otherwise clear
-var storedDate=localStorage.getItem('guardias_fecha');
-var todayStr=today.toISOString().split('T')[0];
-if(storedDate!==todayStr){
-    guards=[];
-    localStorage.setItem('guardias_hoy','[]');
-    localStorage.setItem('guardias_fecha',todayStr);
+auth.onAuthStateChanged(function(user){
+  if(user){
+    document.getElementById('authWall').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+    loadSaved();
+  } else {
+    document.getElementById('authWall').style.display='block';
+    document.getElementById('mainContent').style.display='none';
+  }
+});
+
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('show');});
+  if(id==='generar'){
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('panelGenerar').classList.add('show');
+  } else {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('panelGuardadas').classList.add('show');
+    loadSaved();
+  }
 }
 
-function addGuard(){
-    var nombre=document.getElementById('guardNombre').value.trim();
-    if(!nombre){alert('Escribe un nombre');return;}
-    var rol=document.getElementById('guardRol').value;
-    var turno=document.getElementById('guardTurno').value;
-    guards.push({nombre:nombre,rol:rol,turno:turno,id:Date.now()});
-    localStorage.setItem('guardias_hoy',JSON.stringify(guards));
-    localStorage.setItem('guardias_fecha',todayStr);
-    document.getElementById('guardNombre').value='';
-    renderGuards();
-    // Save to week
-    var week=JSON.parse(localStorage.getItem('guardias_semana')||'{}');
-    if(!week[todayStr]) week[todayStr]=[];
-    week[todayStr]=guards;
-    localStorage.setItem('guardias_semana',JSON.stringify(week));
+// ═══ GENERAR PLANTILLA ═══
+var currentPlantilla='';
+var chatHistory=[];
+
+async function generarPlantilla(){
+  var servicio=document.getElementById('servicio').value;
+  var periodo=document.getElementById('periodo').value||'Próximo mes';
+  var puestos=document.getElementById('puestos').value.trim();
+  var personas=document.getElementById('personas').value.trim();
+  var reglas=document.getElementById('reglas').value.trim();
+  var dias=document.getElementById('numDias').value||30;
+
+  if(!puestos||!personas){alert('Rellena los puestos y las personas');return;}
+
+  var btn=document.getElementById('btnGenerar');
+  btn.disabled=true;btn.textContent='⏳ Generando...';
+  document.getElementById('loadingGen').classList.add('show');
+  document.getElementById('plantillaOutput').classList.remove('show');
+
+  var prompt='Eres un generador de plantillas de turnos de guardia hospitalarias.\n\n';
+  prompt+='SERVICIO: '+servicio+'\nPERIODO: '+periodo+'\nDÍAS: '+dias+'\n\n';
+  prompt+='PUESTOS POR GUARDIA:\n'+puestos+'\n\n';
+  prompt+='PERSONAS DISPONIBLES:\n'+personas+'\n\n';
+  if(reglas) prompt+='REGLAS/RESTRICCIONES:\n'+reglas+'\n\n';
+  prompt+='INSTRUCCIONES:\n';
+  prompt+='- Genera una tabla HTML con los días como filas y los puestos como columnas\n';
+  prompt+='- Asigna personas a cada puesto cada día respetando las reglas\n';
+  prompt+='- Distribuye equitativamente las guardias entre todas las personas\n';
+  prompt+='- Incluye un resumen al final con el total de guardias por persona\n';
+  prompt+='- Responde SOLO con el HTML de la tabla, sin explicaciones\n';
+  prompt+='- Añade una fila de cabecera con: Día | '+puestos.replace(/\n/g,' | ')+'\n';
+  prompt+='- Si hay "Otro servicio", incluye una columna extra\n';
+
+  chatHistory=[{role:'user',content:prompt}];
+
+  try{
+    var data=await callAI(prompt);
+    var text=data.choices?data.choices[0].message.content:'Error al generar';
+    currentPlantilla=text;
+    chatHistory.push({role:'assistant',content:text});
+
+    var output=document.getElementById('plantillaOutput');
+    output.innerHTML=text;
+    output.classList.add('show');
+    document.getElementById('chatSection').style.display='block';
+    output.scrollIntoView({behavior:'smooth'});
+  }catch(e){
+    alert('Error: '+e.message);
+  }
+
+  btn.disabled=false;btn.textContent='🤖 Generar Plantilla con IA';
+  document.getElementById('loadingGen').classList.remove('show');
 }
 
-function removeGuard(id){
-    guards=guards.filter(g=>g.id!==id);
-    localStorage.setItem('guardias_hoy',JSON.stringify(guards));
-    renderGuards();
+async function chatSend(){
+  var input=document.getElementById('chatInput');
+  var msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+
+  appendChat('user',msg);
+  chatHistory.push({role:'user',content:'Modifica la plantilla según esta petición: '+msg+'\nResponde SOLO con el HTML de la tabla actualizada completa.'});
+
+  appendChat('bot','⏳ Procesando cambio...');
+
+  try{
+    var body={
+      model:'deepseek/deepseek-chat-v3-0324:free',
+      messages:chatHistory.slice(-6),
+      max_tokens:4000,
+      temperature:0.3
+    };
+    var data=await callAI(null,body);
+    var text=data.choices?data.choices[0].message.content:'Error';
+    chatHistory.push({role:'assistant',content:text});
+
+    // Remove loading msg
+    var box=document.getElementById('chatBox');
+    if(box.lastChild)box.removeChild(box.lastChild);
+    appendChat('bot','✅ Plantilla actualizada');
+
+    currentPlantilla=text;
+    document.getElementById('plantillaOutput').innerHTML=text;
+  }catch(e){
+    var box=document.getElementById('chatBox');
+    if(box.lastChild)box.removeChild(box.lastChild);
+    appendChat('bot','❌ Error: '+e.message);
+  }
 }
 
-function renderGuards(){
-    var el=document.getElementById('guardList');
-    if(guards.length===0){
-        el.innerHTML='<div class="empty">No hay personal registrado para hoy.<br>Pulsa "Añadir" para empezar.</div>';
-        return;
-    }
-    var badgeClass={'R1':'badge-r1','R2':'badge-r2','R3':'badge-r3','R4':'badge-r4','Adjunto':'badge-adj','Enfermería':'badge-r2','MIR otro':'badge-r1'};
-    var h='';
-    guards.forEach(function(g){
-        var initials=g.nombre.split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
-        h+='<div class="guard-item">';
-        h+='<div class="avatar">'+initials+'</div>';
-        h+='<div class="info"><div class="name">'+g.nombre+' <span class="badge '+(badgeClass[g.rol]||'badge-r1')+'">'+g.rol+'</span></div>';
-        h+='<div class="role">'+g.turno+'</div></div>';
-        h+='<div class="actions"><button onclick="removeGuard('+g.id+')" title="Eliminar">🗑️</button></div>';
-        h+='</div>';
+function appendChat(role,text){
+  var box=document.getElementById('chatBox');
+  var div=document.createElement('div');
+  div.className='chat-msg chat-'+(role==='user'?'user':'bot');
+  div.textContent=text;
+  box.appendChild(div);
+  box.scrollTop=box.scrollHeight;
+}
+
+// ═══ GUARDAR / CARGAR ═══
+async function guardarPlantilla(){
+  if(!currentPlantilla){alert('Genera una plantilla primero');return;}
+  var servicio=document.getElementById('servicio').value;
+  var periodo=document.getElementById('periodo').value||'Sin periodo';
+  var user=auth.currentUser;
+
+  try{
+    await db.collection('plantillas_turnos').add({
+      servicio:servicio,
+      periodo:periodo,
+      html:currentPlantilla.substring(0,50000),
+      createdBy:user.email,
+      createdByName:user.displayName||user.email,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    el.innerHTML=h;
+    alert('✅ Plantilla guardada. Visible para todos.');
+    loadSaved();
+  }catch(e){
+    alert('Error: '+e.message);
+  }
 }
 
-function showGuardTab(tab,btn){
-    document.querySelectorAll('.tab-bar button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-hoy').style.display=tab==='hoy'?'block':'none';
-    document.getElementById('tab-semana').style.display=tab==='semana'?'block':'none';
-    document.getElementById('tab-notas').style.display=tab==='notas'?'block':'none';
-    if(tab==='semana') renderWeek();
+async function loadSaved(){
+  var el=document.getElementById('savedList');
+  try{
+    var snap=await db.collection('plantillas_turnos').orderBy('createdAt','desc').limit(20).get();
+    if(snap.empty){el.innerHTML='<div style="text-align:center;color:#888;padding:20px;">No hay plantillas guardadas.</div>';return;}
+    var html='';
+    snap.forEach(function(doc){
+      var d=doc.data();
+      var fecha=d.createdAt?d.createdAt.toDate().toLocaleDateString('es-ES'):'';
+      html+='<div class="saved-item" onclick="verPlantilla(\''+doc.id+'\')">';
+      html+='<div style="font-weight:700;font-size:.9rem;color:#1a6b4a;">'+esc(d.servicio)+' — '+esc(d.periodo)+'</div>';
+      html+='<div style="font-size:.75rem;color:#888;margin-top:4px;">'+esc(d.createdByName||'')+' · '+fecha+'</div>';
+      html+='</div>';
+    });
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div style="color:#ef4444;padding:10px;">Error: '+e.message+'</div>';
+  }
 }
 
-function renderWeek(){
-    var week=JSON.parse(localStorage.getItem('guardias_semana')||'{}');
-    var el=document.getElementById('weekView');
-    var h='';
-    var d=new Date();d.setDate(d.getDate()-d.getDay()+1);
-    for(var i=0;i<7;i++){
-        var ds=d.toISOString().split('T')[0];
-        var dayName=d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'});
-        var isToday=ds===todayStr;
-        var dayGuards=week[ds]||[];
-        h+='<div style="padding:10px;border-bottom:1px solid #e8eaf6;'+(isToday?'background:#e8eaf6;border-radius:8px;':'')+'margin-bottom:4px;">';
-        h+='<div style="font-weight:700;font-size:.85rem;color:'+(isToday?'#1a237e':'#666')+';">'+dayName+(isToday?' (hoy)':'')+'</div>';
-        if(dayGuards.length>0){
-            dayGuards.forEach(function(g){
-                h+='<div style="font-size:.8rem;color:#555;margin-top:2px;">• '+g.nombre+' <span class="badge '+(({'R1':'badge-r1','R2':'badge-r2','R3':'badge-r3','R4':'badge-r4','Adjunto':'badge-adj'})[g.rol]||'badge-r1')+'">'+g.rol+'</span> '+g.turno+'</div>';
-            });
-        } else {
-            h+='<div style="font-size:.78rem;color:#ccc;">Sin registros</div>';
-        }
-        h+='</div>';
-        d.setDate(d.getDate()+1);
-    }
-    el.innerHTML=h;
+async function verPlantilla(id){
+  try{
+    var doc=await db.collection('plantillas_turnos').doc(id).get();
+    if(!doc.exists)return;
+    currentPlantilla=doc.data().html;
+    switchTab('generar');
+    document.getElementById('plantillaOutput').innerHTML=currentPlantilla;
+    document.getElementById('plantillaOutput').classList.add('show');
+    document.getElementById('chatSection').style.display='block';
+    document.getElementById('servicio').value=doc.data().servicio||'';
+    document.getElementById('periodo').value=doc.data().periodo||'';
+  }catch(e){alert('Error: '+e.message);}
 }
 
-function saveNotes(){localStorage.setItem('guardias_notas',document.getElementById('guardNotas').value);}
-function copyNotes(){navigator.clipboard.writeText(document.getElementById('guardNotas').value).then(()=>alert('✅ Notas copiadas'));}
+function copiarPlantilla(){
+  var el=document.getElementById('plantillaOutput');
+  var text=el.innerText||el.textContent;
+  navigator.clipboard.writeText(text).then(function(){alert('✅ Copiado');});
+}
 
-// Init
-renderGuards();
-document.getElementById('guardNotas').value=localStorage.getItem('guardias_notas')||'';
+// ═══ API CALL ═══
+async function callAI(prompt,bodyOverride){
+  var body=bodyOverride||{
+    model:'deepseek/deepseek-chat-v3-0324:free',
+    messages:[{role:'user',content:prompt}],
+    max_tokens:4000,
+    temperature:0.3
+  };
+  var proxyUrl=localStorage.getItem('api_proxy_url');
+  if(proxyUrl){
+    var r=await fetch(proxyUrl+'/api/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    return r.json();
+  } else {
+    var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Turnos Area II'},body:JSON.stringify(body)});
+    return r.json();
+  }
+}
+
+function esc(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
 </script>
 </body>
 </html>
