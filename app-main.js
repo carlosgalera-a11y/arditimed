@@ -688,15 +688,20 @@ var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgen
 function showPage(id){
     // Páginas que requieren login (NO incluye pagePatients ni pageTriaje)
     var PAGES_REQUIRE_LOGIN=["pageTelefonos","pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
+    var PAGE_NAMES={
+        "pageTelefonos":"Teléfonos Búsca",
+        "pageProtocolosAP":"Protocolos AP",
+        "pageProtocolosUrgencias":"Protocolos Urgencias",
+        "pageProfessionals":"Profesionales",
+        "pageFilehub":"Filehub",
+        "pageEnfermeria":"Enfermería",
+        "pageScanIA":"Herramientas"
+    };
     if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
         if(!user){
             pendingPageAfterLogin=id;
-            try{
-                document.getElementById("scanLoginModal").style.display="flex";
-                document.getElementById("scanLoginError").style.display="none";
-                resetDisclaimerCheck();
-            }catch(e){console.error(e);}
+            showLoginModal(PAGE_NAMES[id]||id);
             return;
         }
         try{logPageAccess(id,user);}catch(e){}

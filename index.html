@@ -4387,7 +4387,7 @@ function resetDisclaimerCheck(){
     }catch(e){}
 }
 
-function showLoginModal(){
+function showLoginModal(sectionName){
     var user=firebase.auth().currentUser;
     if(user){
         // Ya hay sesion activa — cargar moderadores y abrir panel
@@ -4398,6 +4398,19 @@ function showLoginModal(){
             document.getElementById("adminPanel").style.display="flex";
         });
         return;
+    }
+    // Actualizar título del modal con el nombre de la sección
+    var icons = {
+        'Herramientas':'🔬','Profesionales':'👤','Protocolos AP':'📋',
+        'Protocolos Urgencias':'🚨','Enfermería':'👩‍⚕️','Docencia':'📚',
+        'Analizar imagen':'🔬','ScanIA':'🔬'
+    };
+    var h2 = document.querySelector('#scanLoginModal h2');
+    var icon = document.querySelector('#scanLoginModal .modal-login-icon');
+    if(sectionName && h2){
+        h2.textContent = (icons[sectionName]||'🔐') + ' ' + sectionName;
+    } else if(h2) {
+        h2.textContent = '🔐 Acceso';
     }
     // Sin sesion — mostrar modal de Google login
     try{
