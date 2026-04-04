@@ -2778,6 +2778,96 @@ function urgStudioClear() {
     urgStudioRender();
 }
 
+/* ═══════════════════════════════════════════════════════════ */
+/*  ENFERMERÍA — IA con DeepSeek + fmtClinical                */
+/* ═══════════════════════════════════════════════════════════ */
+var enfPreguntas=[];
+try{enfPreguntas=JSON.parse(localStorage.getItem('enf_preguntas_v1'))||[];}catch(e){enfPreguntas=[];}
+var enfSysPrompt='Eres un asistente experto en enfermería del Área II de Cartagena (Servicio Murciano de Salud). Responde SIEMPRE en castellano con información clínica precisa y actualizada. Usa formato markdown: ### para secciones, ** para negritas, listas con - para puntos clave, y emojis clínicos (⚠️ para alertas, 💊 para fármacos, ℹ️ para información). Estructura tu respuesta de forma clara y profesional orientada a enfermería.';
+
+function switchEnfTab(id,btn){
+    document.querySelectorAll('.enf-tab-content').forEach(function(t){t.style.display='none';});
+    var el=document.getElementById(id);if(el)el.style.display='block';
+    var tabs=el?el.closest('.page'):document.getElementById('pageEnfermeria');
+    if(tabs)tabs.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    if(btn)btn.classList.add('active');
+}
+
+function enfRenderPreguntas(){
+    var el=document.getElementById('enfPreguntasList');if(!el)return;
+    if(enfPreguntas.length===0){el.innerHTML='<div class="empty-state"><div class="empty-state-icon">👩‍⚕️</div><p>Haz tu primera pregunta de enfermería</p></div>';return;}
+    el.innerHTML=enfPreguntas.slice().reverse().map(function(p){
+        var isLoading=p.respuesta==='⏳ Consultando...';
+        var respHtml=isLoading
+            ?'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;opacity:.6;font-size:.88rem;"><div style="width:16px;height:16px;border:2px solid #c2185b;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Consultando DeepSeek V3...</div>'
+            :(typeof fmtClinical==='function'?fmtClinical(p.respuesta):p.respuesta.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
+        return'<div class="question-box" style="border-left-color:#c2185b;"><div class="question-text" style="background:rgba(194,24,91,.1);">❓ '+esc(p.pregunta)+'</div><div class="answer-text" style="line-height:1.7;">'+respHtml+'</div><div class="note-time">'+p.fecha+'</div></div>';
+    }).join('');
+}
+
+async function enfHacerPregunta(){
+    var input=document.getElementById('enfPreguntaInput');
+    var q=input.value.trim();if(!q)return;
+    input.value='';
+    document.getElementById('enfBtnPreguntar').disabled=true;
+    enfPreguntas.push({pregunta:q,respuesta:'⏳ Consultando...',fecha:new Date().toLocaleString('es-ES')});
+    enfRenderPreguntas();
+    var r=await llamarIA(q,enfSysPrompt);
+    enfPreguntas[enfPreguntas.length-1].respuesta=r;
+    try{localStorage.setItem('enf_preguntas_v1',JSON.stringify(enfPreguntas));}catch(e){}
+    enfRenderPreguntas();
+    document.getElementById('enfBtnPreguntar').disabled=false;
+}
+
+async function enfAskAI(prompt){
+    var resultDiv=document.getElementById('enfTecnicaResult');
+    var contentDiv=document.getElementById('enfTecnicaContent');
+    if(!resultDiv||!contentDiv)return;
+    resultDiv.style.display='block';
+    document.getElementById('enfTecnicaTitle').textContent='Generando...';
+    contentDiv.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:16px;opacity:.6;"><div style="width:16px;height:16px;border:2px solid #c2185b;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Consultando DeepSeek V3...</div>';
+    var r=await llamarIA(prompt,enfSysPrompt);
+    document.getElementById('enfTecnicaTitle').textContent='Resultado';
+    contentDiv.style.whiteSpace='normal';
+    contentDiv.innerHTML=typeof fmtClinical==='function'?fmtClinical(r):r;
+}
+
+async function enfLoadProtocol(key){
+    var titles={curas:'Curas y Heridas',via_venosa:'Vía Venosa Periférica',sondaje:'Sondajes',vacunacion:'Vacunación',inyectables:'Administración de Inyectables',constantes:'Constantes Vitales',ecg:'ECG',rcp:'RCP / SVB',diabetico:'Paciente Diabético',triaje:'Triaje'};
+    var resultDiv=document.getElementById('enfProtocolResult');
+    var contentDiv=document.getElementById('enfProtocolContent');
+    if(!resultDiv||!contentDiv)return;
+    resultDiv.style.display='block';
+    document.getElementById('enfProtocolTitle').textContent=titles[key]||key;
+    contentDiv.style.whiteSpace='normal';
+    contentDiv.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:16px;opacity:.6;"><div style="width:16px;height:16px;border:2px solid #c2185b;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Generando protocolo con DeepSeek V3...</div>';
+    var prompt='Genera un protocolo de enfermería completo y detallado sobre: '+(titles[key]||key)+'. Incluye: definición, material necesario, procedimiento paso a paso, cuidados posteriores, complicaciones frecuentes y criterios de derivación. Formato profesional para enfermería de Atención Primaria.';
+    var r=await llamarIA(prompt,enfSysPrompt);
+    contentDiv.innerHTML=typeof fmtClinical==='function'?fmtClinical(r):r;
+}
+
+async function enfBuscarFarmaco(){
+    var input=document.getElementById('enfFarmacoInput');
+    var q=input.value.trim();if(!q)return;
+    enfBuscarFarmacoDir(q);
+}
+
+async function enfBuscarFarmacoDir(nombre){
+    var resultDiv=document.getElementById('enfFarmacoResult');
+    var contentDiv=document.getElementById('enfFarmacoContent');
+    if(!resultDiv||!contentDiv)return;
+    resultDiv.style.display='block';
+    document.getElementById('enfFarmacoTitle').textContent='💊 '+nombre;
+    contentDiv.style.whiteSpace='normal';
+    contentDiv.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:16px;opacity:.6;"><div style="width:16px;height:16px;border:2px solid #c2185b;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Buscando información farmacológica...</div>';
+    var prompt='Proporciona información farmacológica completa sobre: '+nombre+'. Incluye: nombre comercial, presentaciones, vía de administración, dosis habituales, indicaciones, contraindicaciones, efectos adversos, interacciones importantes, cuidados de enfermería en la administración y conservación. Enfocado para enfermería de Atención Primaria.';
+    var r=await llamarIA(prompt,enfSysPrompt);
+    contentDiv.innerHTML=typeof fmtClinical==='function'?fmtClinical(r):r;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     urgStudioRender();
+    enfRenderPreguntas();
+    var enfInput=document.getElementById('enfPreguntaInput');
+    if(enfInput)enfInput.addEventListener('keypress',function(e){if(e.key==='Enter')enfHacerPregunta();});
 });
