@@ -1755,7 +1755,7 @@ async function scanCheckUploads(){
     var html='<p style="font-size:.82rem;font-weight:700;color:#1e40af;margin-bottom:8px;">📸 '+snap.size+' imagen(es) recibida(s):</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;">';
     snap.forEach(function(doc){
       var d=doc.data();
-      var thumb=d.imageData?d.imageData.substring(0,500000):'';
+      var thumb=d.imageURL||d.imageData||'';
       html+='<div style="position:relative;border-radius:8px;overflow:hidden;border:2px solid #3b82f6;cursor:pointer;" onclick="scanLoadUploaded(\''+doc.id+'\')">';
       if(thumb) html+='<img src="'+thumb+'" style="width:100%;aspect-ratio:1;object-fit:cover;" />';
       html+='<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:3px 6px;font-size:.68rem;color:#fff;">'+({derma:'🩹 Derma',torax:'🫁 Tórax',osea:'🦴 Ósea',abdomen:'🔬 Abdomen',ecg:'💓 ECG',eco:'🫀 Eco'}[d.type]||d.type)+'</div>';
@@ -1773,29 +1773,50 @@ async function scanLoadUploaded(docId){
     var doc=await db.collection("scan_uploads").doc(docId).get();
     if(!doc.exists)return;
     var d=doc.data();
-    // Load image into the scan analyzer
-    var imgData=d.imageData||'';
-    if(imgData){
-      scanB64=imgData.split(',')[1]||imgData;
-      document.getElementById("scanImgPreview").src=imgData;
-      document.getElementById("scanImgPreview").style.display="block";
-      document.getElementById("scanDropContent").style.display="none";
-      document.getElementById("scanDropZone").style.borderStyle="solid";
-      document.getElementById("scanDropZone").style.borderColor="#0066cc";
-      document.getElementById("scanBtnGo").disabled=false;
-      if(d.context) document.getElementById("scanCtx").value=d.context;
-      // Set scan type
-      var typeMap={derma:'derma',torax:'torax',osea:'osea',abdomen:'abdomen',ecg:'ecg',eco:'eco'};
-      if(typeMap[d.type]){
-        var btns=document.querySelectorAll(".scan-mode-btn");
-        btns.forEach(function(b){
-          if(b.textContent.toLowerCase().indexOf(d.type)>=0||b.onclick.toString().indexOf("'"+d.type+"'")>=0){
-            scanSetType(d.type,b);
-          }
+    /* Support both formats: new (imageURL from Storage) and legacy (imageData base64) */
+    var imgSrc=d.imageURL||d.imageData||'';
+    if(!imgSrc){alert('Imagen no disponible');return;}
+
+    if(d.imageURL){
+      /* Fetch from Storage URL and convert to base64 for the analyzer */
+      try{
+        var resp=await fetch(d.imageURL);
+        var blob=await resp.blob();
+        var reader=new FileReader();
+        var b64=await new Promise(function(resolve,reject){
+          reader.onload=function(){resolve(reader.result);};
+          reader.onerror=reject;
+          reader.readAsDataURL(blob);
         });
+        scanB64=b64.split(',')[1]||b64;
+        document.getElementById("scanImgPreview").src=b64;
+      }catch(fe){
+        /* Fallback: use URL directly as preview */
+        scanB64=null;
+        document.getElementById("scanImgPreview").src=d.imageURL;
       }
-      // Mark as loaded
-      await db.collection("scan_uploads").doc(docId).update({status:'loaded'});
+    } else {
+      scanB64=imgSrc.split(',')[1]||imgSrc;
+      document.getElementById("scanImgPreview").src=imgSrc;
+    }
+
+    document.getElementById("scanImgPreview").style.display="block";
+    document.getElementById("scanDropContent").style.display="none";
+    document.getElementById("scanDropZone").style.borderStyle="solid";
+    document.getElementById("scanDropZone").style.borderColor="#0066cc";
+    document.getElementById("scanBtnGo").disabled=false;
+    if(d.context) document.getElementById("scanCtx").value=d.context;
+    // Set scan type
+    if(d.type){
+      var btns=document.querySelectorAll(".scan-mode-btn");
+      btns.forEach(function(b){
+        if(b.textContent.toLowerCase().indexOf(d.type)>=0||b.onclick.toString().indexOf("'"+d.type+"'")>=0){
+          scanSetType(d.type,b);
+        }
+      });
+    }
+    // Mark as loaded
+    await db.collection("scan_uploads").doc(docId).update({status:'loaded'});
       // Scroll to analyzer
       document.getElementById("scanDropZone").scrollIntoView({behavior:'smooth'});
     }

@@ -4,7 +4,7 @@
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
-  var APP_VERSION='v15-20260404i';
+  var APP_VERSION='v16-20260404j';
   // Always delete every cache
   if('caches' in window){caches.keys().then(function(k){k.forEach(function(c){caches.delete(c);});});}
   if('serviceWorker' in navigator){
@@ -4355,7 +4355,7 @@ function saveConfigToFirestore(){
         var user=firebase.auth().currentUser;
         if(!user||!isAdmin())return;
         var config={
-            version:'v15-20260404i',
+            version:'v16-20260404j',
             swVersion:'v23',
             timestamp:new Date().toISOString(),
             savedBy:user.email,
