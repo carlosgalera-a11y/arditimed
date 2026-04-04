@@ -2001,7 +2001,34 @@ window.showNotebooksModal=function(){
                 <button onclick="filterCalc('urgencias')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🏥 Urgencias</button>
                 <button onclick="filterCalc('digestivo')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🍽️ Digestivo</button>
                 <button onclick="filterCalc('otros')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">📌 Otros</button>
+                <button onclick="toggleAddCalc()" style="padding:6px 12px;border:1px solid #16a34a;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#16a34a;color:#fff;margin-left:auto;">➕ Añadir escala</button>
               </div>
+              <!-- Form añadir escala personalizada -->
+              <div id="addCalcForm" style="display:none;background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:14px;">
+                <h3 style="font-size:.95rem;font-weight:700;color:#1a6b4a;margin-bottom:10px;">➕ Nueva escala personalizada</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                  <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Nombre</label><input type="text" id="newCalcName" placeholder="Ej: Escala MELD" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;"></div>
+                  <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Especialidad</label>
+                    <select id="newCalcCat" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                      <option value="neumo">🫁 Neumología</option><option value="cardio">❤️ Cardiología</option>
+                      <option value="neuro">🧠 Neurología</option><option value="urgencias">🏥 Urgencias</option>
+                      <option value="digestivo">🍽️ Digestivo</option><option value="nefro">💧 Nefrología</option>
+                      <option value="uro">💧 Urología</option><option value="endocrino">🧬 Endocrino</option>
+                      <option value="pediatria">👶 Pediatría</option><option value="reuma">🦴 Reumatología</option>
+                      <option value="derma">🩹 Dermatología</option><option value="psiq">🧠 Psiquiatría</option>
+                      <option value="otros" selected>📌 Otros</option>
+                    </select></div>
+                </div>
+                <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Descripción breve</label><input type="text" id="newCalcDesc" placeholder="Ej: Gravedad hepatopatía" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;margin-bottom:8px;"></div>
+                <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Ítems (uno por línea: nombre del ítem | puntos)</label>
+                <textarea id="newCalcItems" rows="5" placeholder="Confusión mental | 1&#10;Urea >7mmol/L | 1&#10;FR ≥30/min | 1&#10;TA baja | 1&#10;Edad ≥65 | 1" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;font-family:inherit;margin-bottom:8px;"></textarea></div>
+                <div style="display:flex;gap:8px;">
+                  <button onclick="saveCustomCalc()" style="padding:8px 16px;background:#1a6b4a;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:.82rem;">💾 Guardar</button>
+                  <button onclick="toggleAddCalc()" style="padding:8px 16px;background:#eee;color:#333;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;">Cancelar</button>
+                </div>
+              </div>
+              <!-- Custom scales rendered here -->
+              <div id="customCalcGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;"></div>
               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:4px;" id="calcGrid">
 
                 <!-- CURB-65 -->

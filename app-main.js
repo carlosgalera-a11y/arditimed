@@ -77,7 +77,105 @@ function filterCalc(cat){
     for(var key in CALC_CATS){if(title.indexOf(key)!==-1){cardCat=CALC_CATS[key];break;}}
     card.style.display=(cat==='all'||cardCat===cat)?'':'none';
   }
+  // Also filter custom scales
+  var custom=document.getElementById('customCalcGrid');
+  if(custom){
+    for(var i=0;i<custom.children.length;i++){
+      var c=custom.children[i];
+      var ccat=c.dataset.cat||'otros';
+      c.style.display=(cat==='all'||ccat===cat)?'':'none';
+    }
+  }
 }
+
+// ═══ ESCALAS PERSONALIZADAS ═══
+var CUSTOM_CALC_KEY='custom_calculadoras_v1';
+function getCustomCalcs(){try{return JSON.parse(localStorage.getItem(CUSTOM_CALC_KEY)||'[]');}catch(e){return [];}}
+function saveCustomCalcs(list){
+  localStorage.setItem(CUSTOM_CALC_KEY,JSON.stringify(list));
+  try{
+    if(typeof firebase!=='undefined'&&firebase.auth().currentUser){
+      db.collection('custom_calculadoras').doc('shared').set({
+        scales:list.slice(0,50),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true}).catch(function(){});
+    }
+  }catch(e){}
+}
+function toggleAddCalc(){
+  var f=document.getElementById('addCalcForm');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+function saveCustomCalc(){
+  var name=document.getElementById('newCalcName').value.trim();
+  var cat=document.getElementById('newCalcCat').value;
+  var desc=document.getElementById('newCalcDesc').value.trim();
+  var itemsRaw=document.getElementById('newCalcItems').value.trim();
+  if(!name||!itemsRaw){alert('Rellena nombre e ítems');return;}
+  var items=itemsRaw.split('\n').filter(function(l){return l.trim();}).map(function(l){
+    var parts=l.split('|');
+    return {label:(parts[0]||'').trim(),pts:parseInt(parts[1])||1};
+  });
+  var list=getCustomCalcs();
+  list.push({name:name,cat:cat,desc:desc,items:items,createdAt:Date.now()});
+  saveCustomCalcs(list);
+  document.getElementById('newCalcName').value='';
+  document.getElementById('newCalcDesc').value='';
+  document.getElementById('newCalcItems').value='';
+  toggleAddCalc();
+  renderCustomCalcs();
+}
+function renderCustomCalcs(){
+  var list=getCustomCalcs();
+  var grid=document.getElementById('customCalcGrid');
+  if(!grid)return;
+  grid.innerHTML='';
+  var catIcons={neumo:'🫁',cardio:'❤️',neuro:'🧠',urgencias:'🏥',digestivo:'🍽️',nefro:'💧',uro:'💧',endocrino:'🧬',pediatria:'👶',reuma:'🦴',derma:'🩹',psiq:'🧠',otros:'📌'};
+  list.forEach(function(s,idx){
+    var div=document.createElement('div');
+    div.dataset.cat=s.cat;
+    div.style.cssText='background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);position:relative;border:2px solid #e8f5e9;';
+    var h='<div style="position:absolute;top:6px;right:6px;"><button onclick="deleteCustomCalc('+idx+')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:.8rem;" title="Eliminar">🗑️</button></div>';
+    h+='<h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">'+(catIcons[s.cat]||'📌')+' '+s.name+' <span style="font-size:.75rem;font-weight:400;color:#64748b;">'+( s.desc||'Personalizada')+'</span></h3>';
+    s.items.forEach(function(item,ii){
+      h+='<label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cc-'+idx+'" data-pts="'+item.pts+'" onchange="calcCustom('+idx+')"> '+item.label+' ('+(item.pts>0?'+':'')+item.pts+')</label>';
+    });
+    h+='<div id="ccResult'+idx+'" style="text-align:center;padding:8px;background:#f0f4f8;border-radius:8px;margin-top:8px;font-weight:700;color:#1e293b;">Puntaje: 0</div>';
+    div.innerHTML=h;
+    grid.appendChild(div);
+  });
+}
+function calcCustom(idx){
+  var total=0;
+  document.querySelectorAll('.cc-'+idx+':checked').forEach(function(el){total+=parseInt(el.dataset.pts)||0;});
+  var el=document.getElementById('ccResult'+idx);
+  if(el)el.textContent='Puntaje: '+total;
+}
+function deleteCustomCalc(idx){
+  if(!confirm('¿Eliminar esta escala?'))return;
+  var list=getCustomCalcs();
+  list.splice(idx,1);
+  saveCustomCalcs(list);
+  renderCustomCalcs();
+}
+// Load custom calcs on init & from cloud
+setTimeout(function(){
+  renderCustomCalcs();
+  try{
+    if(typeof firebase!=='undefined'&&firebase.auth().currentUser){
+      db.collection('custom_calculadoras').doc('shared').get().then(function(doc){
+        if(doc.exists&&doc.data().scales){
+          var cloud=doc.data().scales;
+          var local=getCustomCalcs();
+          if(cloud.length>local.length){
+            localStorage.setItem(CUSTOM_CALC_KEY,JSON.stringify(cloud));
+            renderCustomCalcs();
+          }
+        }
+      }).catch(function(){});
+    }
+  }catch(e){}
+},3000);
 
 function calcWells(){
     var pts=0;document.querySelectorAll('.wells-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
