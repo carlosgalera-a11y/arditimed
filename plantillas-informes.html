@@ -3,264 +3,413 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plantillas de Informes | Área II Cartagena</title>
+<title>Informes Clínicos | Área II Cartagena</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
 .nav{background:linear-gradient(135deg,#0a2e1a,#145a32);padding:14px 20px;color:#fff;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
 .nav h1{font-size:1.05rem}.nav a{color:#86efac;text-decoration:none;font-size:.85rem}
-.container{max-width:750px;margin:0 auto;padding:16px}
-.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px}
-.tpl-card{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s}
-.tpl-card:hover,.tpl-card.active{border-color:#1a6b4a;background:#e8f5e9;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.tpl-card .icon{font-size:1.8rem;margin-bottom:6px}
-.tpl-card .label{font-size:.82rem;font-weight:700;color:#333}
-.tpl-card .desc{font-size:.7rem;color:#888;margin-top:2px}
-.editor{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px;display:none}
-.editor.show{display:block}
-.editor h3{color:#1a6b4a;font-size:1rem;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #e8f5e9}
-.field{margin-bottom:12px}
-.field label{display:block;font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:4px}
-.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.88rem;font-family:inherit}
-.field textarea{min-height:100px;resize:vertical}
+.container{max-width:800px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:3px solid #e0e0e0}
+.tab{flex:1;padding:14px;text-align:center;cursor:pointer;font-weight:700;font-size:.9rem;border:none;background:#fff;color:#888;font-family:inherit;border-radius:10px 10px 0 0;transition:.2s}
+.tab.active{background:#1a6b4a;color:#fff}
+.panel{display:none}.panel.show{display:block}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:16px}
+.card h3{color:#1a6b4a;font-size:1rem;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8f5e9;display:flex;align-items:center;gap:8px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:.78rem;font-weight:600;color:#64748b;margin-bottom:3px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit}
+.field textarea{min-height:80px;resize:vertical;line-height:1.6}
 .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:#1a6b4a}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.output{background:#fafafa;border:2px solid #e0e0e0;border-radius:12px;padding:20px;margin-top:16px;font-family:'Courier New',monospace;font-size:.85rem;line-height:1.7;white-space:pre-wrap;min-height:200px;display:none}
+.btn{padding:12px 20px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.88rem;transition:.2s}
+.btn-green{background:#1a6b4a;color:#fff}.btn-green:hover{background:#145a32}
+.btn-blue{background:#0d47a1;color:#fff}.btn-blue:hover{background:#0a3680}
+.btn-outline{background:#fff;color:#333;border:2px solid #e0e0e0}.btn-outline:hover{border-color:#1a6b4a}
+.output{background:#fafafa;border:2px solid #e0e0e0;border-radius:12px;padding:20px;margin-top:16px;font-size:.88rem;line-height:1.8;white-space:pre-wrap;display:none;position:relative}
 .output.show{display:block}
 .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.btn{padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;border:none}
-.btn-green{background:#1a6b4a;color:#fff}.btn-blue{background:#1565c0;color:#fff}
-.btn-gray{background:#e0e0e0;color:#333}.btn-red{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
-.warn{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px;font-size:.78rem;color:#6d4c00;margin-bottom:14px}
-.chip{display:inline-block;padding:4px 10px;background:#e8f5e9;border-radius:20px;font-size:.72rem;font-weight:600;color:#1a6b4a;cursor:pointer;margin:2px}
-.chip:hover{background:#c8e6c9}
+.warn{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:.82rem;color:#856404;margin-bottom:16px}
+.drop-zone{border:3px dashed #ccc;border-radius:12px;padding:30px;text-align:center;cursor:pointer;transition:.3s;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.drop-zone:hover,.drop-zone.over{border-color:#1a6b4a;background:#f0fdf4}
+.drop-zone input{display:none}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-top:10px}
+.preview-item{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;border:2px solid #e0e0e0}
+.preview-item img{width:100%;height:100%;object-fit:cover}
+.preview-item .rm{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:.7rem;cursor:pointer}
+.loading{display:none;text-align:center;padding:20px}
+.loading.show{display:block}
+.loading .spinner{width:40px;height:40px;border:4px solid #e0e0e0;border-top:4px solid #1a6b4a;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.section-title{font-size:.82rem;font-weight:700;color:#1a6b4a;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;padding:6px 0;border-bottom:1px solid #e8f5e9}
+.copy-btn{position:absolute;top:8px;right:8px;background:#1a6b4a;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600}
+.dr-bar{position:sticky;bottom:0;background:#fff;border-top:2px solid #e0e0e0;padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:50}
+.dr-bar input{flex:1;padding:8px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.88rem;font-family:inherit}
 </style>
 </head>
 <body>
-<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>📄 Plantillas de Informes</h1></div>
+
+<div class="nav">
+<a href="javascript:history.back()">← Volver</a>
+<h1>📄 Informes Clínicos</h1>
+</div>
+
 <div class="container">
-    <div class="warn">⚠️ <strong>Sin datos personales.</strong> No incluyas nombre, DNI ni datos identificativos. Usa iniciales o número de cama. RGPD/LOPD.</div>
+<div class="warn">⚠️ <strong>Sin datos personales.</strong> No incluyas nombre, DNI ni datos identificativos. Usa iniciales o número de cama. RGPD/LOPD.</div>
 
-    <div class="tpl-grid">
-        <div class="tpl-card" onclick="selectTpl('alta')"><div class="icon">✅</div><div class="label">Alta médica</div><div class="desc">Informe de alta</div></div>
-        <div class="tpl-card" onclick="selectTpl('derivacion')"><div class="icon">📨</div><div class="label">Derivación</div><div class="desc">Interconsulta</div></div>
-        <div class="tpl-card" onclick="selectTpl('it')"><div class="icon">📋</div><div class="label">IT / Baja</div><div class="desc">Incapacidad temporal</div></div>
-        <div class="tpl-card" onclick="selectTpl('seguimiento')"><div class="icon">🔄</div><div class="label">Seguimiento</div><div class="desc">Control evolutivo</div></div>
-        <div class="tpl-card" onclick="selectTpl('urgencia')"><div class="icon">🚨</div><div class="label">Urgencia</div><div class="desc">Atención urgente</div></div>
-        <div class="tpl-card" onclick="selectTpl('enfermeria')"><div class="icon">👩‍⚕️</div><div class="label">Enfermería</div><div class="desc">Informe cuidados</div></div>
-        <div class="tpl-card" onclick="selectTpl('certificado')"><div class="icon">📝</div><div class="label">Certificado</div><div class="desc">Certificado médico</div></div>
-        <div class="tpl-card" onclick="selectTpl('receta')"><div class="icon">💊</div><div class="label">Receta</div><div class="desc">Prescripción</div></div>
-    </div>
+<div class="tabs">
+<button class="tab active" onclick="switchTab('urgencias')">🚨 Plantilla Urgencias</button>
+<button class="tab" onclick="switchTab('ia')">🤖 Generar con IA</button>
+</div>
 
-    <div class="editor" id="editor">
-        <h3 id="editorTitle">📄 Informe</h3>
-        <div id="editorFields"></div>
-        <div class="actions">
-            <button class="btn btn-green" onclick="generateReport()">📄 Generar informe</button>
-            <button class="btn btn-blue" onclick="generateWithAI()">🤖 Generar con IA</button>
-            <button class="btn btn-gray" onclick="clearEditor()">🗑️ Limpiar</button>
-        </div>
-    </div>
+<!-- ═══════ TAB 1: PLANTILLA URGENCIAS ═══════ -->
+<div class="panel show" id="panelUrgencias">
 
-    <div class="output" id="output"></div>
-    <div class="actions" id="outputActions" style="display:none;">
-        <button class="btn btn-green" onclick="copyReport()">📋 Copiar</button>
-        <button class="btn btn-blue" onclick="printReport()">🖨️ Imprimir</button>
-        <button class="btn btn-gray" onclick="document.getElementById('output').classList.remove('show');document.getElementById('outputActions').style.display='none';">✕ Cerrar</button>
-    </div>
+<div class="card">
+<h3>📋 Historia Clínica y Exploración</h3>
+<div class="field"><label>Fecha/Hora llegada</label><input type="text" id="urgFecha" placeholder="DD/MM/AAAA HH:MM"></div>
+<div class="field"><label>Motivo de consulta</label><textarea id="urgMotivo" placeholder="Paciente varón/mujer de __ años que acude a Urgencias por __ desde __. La clínica ha aumentado/disminuido/se mantiene igual."></textarea></div>
+<div class="field"><label>Anamnesis / Síntomas negativos</label><textarea id="urgAnamnesis" rows="6" placeholder="No alteración de la conciencia. No náuseas ni vómitos. No cortejo vegetativo. No alteración del hábito intestinal. No fiebre. No clínica abdominal. No clínica urológica. No clínica respiratoria. No clínica cardiológica."></textarea></div>
+<div class="field"><label>Antecedentes personales</label><textarea id="urgAP" rows="4" placeholder="Alergias: NKDA
+Enfermedades: HTA/DM/DLP
+Ingresos previos:
+Cirugías previas:
+H�bitos tóxicos:
+Tratamiento habitual:"></textarea></div>
+</div>
+
+<div class="card">
+<h3>🩺 Exploración Física</h3>
+<div class="row">
+<div class="field"><label>TA (mmHg)</label><input type="text" id="urgTA" placeholder="120/80"></div>
+<div class="field"><label>FC (lpm)</label><input type="text" id="urgFC" placeholder="78"></div>
+</div>
+<div class="row">
+<div class="field"><label>Tª (°C)</label><input type="text" id="urgTemp" placeholder="36.5"></div>
+<div class="field"><label>SatO2 (%)</label><input type="text" id="urgSat" placeholder="98"></div>
+</div>
+<div class="field"><label>Aspecto general</label><textarea id="urgGeneral" rows="2">BEG. Consciente y orientado en las tres esferas. Normohidratado y normocoloreado. Eupneico en reposo. Afebril. Glasgow 15/15.</textarea></div>
+<div class="field"><label>Auscultación cardíaca</label><input type="text" id="urgAC" value="Tonos cardíacos rítmicos sin soplos, ni roce ni extratonos audibles."></div>
+<div class="field"><label>Auscultación pulmonar</label><input type="text" id="urgAP2" value="MVC, sin crepitantes, ni sibilantes ni roncus."></div>
+<div class="field"><label>Abdomen</label><textarea id="urgAbd" rows="3">Blando y depresible. No doloroso a la palpación. No masas ni organomegalias. No signos de irritación peritoneal. Peristaltismo conservado. PPR bilateral negativa. Blumberg (-). Murphy (-). McBurney (-). Rovsing (-). Psoas (-).</textarea></div>
+<div class="field"><label>Extremidades inferiores</label><input type="text" id="urgMMII" value="No edemas. No signos de TVP. Pulsos pedios conservados y simétricos."></div>
+<div class="field"><label>Neurológico</label><textarea id="urgNRL" rows="3">Consciente y orientado en tiempo, espacio y persona. Pupilas isocóricas y normorreactivas. PPCC conservados y simétricos. Fuerza 5/5 en MMSS y MMII. Sensibilidad conservada. ROT conservados. Romberg (-). Marcha normal. No dismetría. No signos meníngeos. Glasgow 15/15.</textarea></div>
+<div class="field"><label>ORL (si aplica)</label><textarea id="urgORL" rows="2" placeholder="Orofaringe hiperémica sin placas pultáceas. No adenopatías cervicales. CAE sin alteraciones."></textarea></div>
+<div class="field"><label>Columna / MSK (si aplica)</label><textarea id="urgMSK" rows="2" placeholder="Dolor a la palpación en musculatura paravertebral. Movilidad conservada/dolorosa. No apofisalgia. Lassègue (-). Bragard (-)."></textarea></div>
+</div>
+
+<div class="card">
+<h3>🔬 Pruebas Complementarias</h3>
+<div class="field"><label>Analítica</label><textarea id="urgAna" rows="3" placeholder="Hemograma, bioquímica, coagulación, PCR..."></textarea></div>
+<div class="field"><label>Imagen / ECG / Otras</label><textarea id="urgImg" rows="2" placeholder="Rx tórax PA/L: ... / ECG: ritmo sinusal a __ lpm..."></textarea></div>
+</div>
+
+<div class="card">
+<h3>💊 Tratamiento y Plan</h3>
+<div class="field"><label>Tratamiento en Urgencias</label><textarea id="urgTtoUrg" rows="3" placeholder="Nolotil 1 amp IV + Enantyum 1 amp IV + SF 500cc..."></textarea></div>
+<div class="field"><label>Tratamiento al alta / Evolución</label><textarea id="urgTtoAlta" rows="4" placeholder="Durante su estancia en Urgencias se administra analgesia IV con mejoría clínico-hemodinámica. Tras la normalidad de las pruebas complementarias y estabilidad clínica, se decide alta con:
+- Paracetamol 1g /8h
+- Ibuprofeno 600mg /8h alterno
+- Control por su MAP
+- Si empeoramiento, acudir de nuevo a Urgencias"></textarea></div>
+<div class="field"><label>Diagnóstico</label><input type="text" id="urgDx" placeholder="Ej: Lumbalgia mecánica"></div>
+</div>
+
+<div class="actions">
+<button class="btn btn-green" onclick="urgGenerar()">📋 Generar Informe</button>
+<button class="btn btn-outline" onclick="urgLimpiar()">🗑️ Limpiar</button>
+</div>
+
+<div class="output" id="urgOutput"><button class="copy-btn" onclick="urgCopiar()">📋 Copiar</button></div>
+</div>
+
+<!-- ═══════ TAB 2: GENERAR CON IA ═══════ -->
+<div class="panel" id="panelIA">
+
+<div class="card">
+<h3>🤖 Generador de Informes con IA</h3>
+<p style="font-size:.82rem;color:#64748b;margin-bottom:14px;">Sube documentos o capturas del paciente y la IA generará el informe que necesites.</p>
+
+<div class="field"><label>¿Qué tipo de informe necesitas?</label>
+<select id="iaType" onchange="iaTipoChanged()">
+<option value="">— Selecciona —</option>
+<option value="alta">Informe de Alta</option>
+<option value="derivacion">Informe de Derivación / Interconsulta</option>
+<option value="urgencias">Informe de Urgencias</option>
+<option value="seguimiento">Informe de Seguimiento</option>
+<option value="it">Parte de IT / Baja</option>
+<option value="certificado">Certificado Médico</option>
+<option value="enfermeria">Informe de Enfermería</option>
+<option value="otro">Otro (especificar)</option>
+</select></div>
+
+<div class="field" id="iaOtroField" style="display:none"><label>Especifica el tipo de informe</label><input type="text" id="iaOtro" placeholder="Ej: Informe para juzgado, informe prequirúrgico..."></div>
+
+<div class="field"><label>Instrucciones adicionales (opcional)</label><textarea id="iaInstrucciones" rows="3" placeholder="Ej: Paciente de 68 años con EPOC Gold III ingresado 5 días por exacerbación. Incluir tratamiento completo al alta y signos de alarma."></textarea></div>
+
+<div class="section-title">📎 Documentos del paciente</div>
+<div class="drop-zone" id="iaDropZone" onclick="document.getElementById('iaFileIn').click()">
+<span style="font-size:2rem;">📄</span>
+<div style="font-weight:600;">Arrastra aquí o haz clic para subir</div>
+<div style="font-size:.78rem;color:#888;">PDF, imágenes (analíticas, Rx, informes previos...)</div>
+<input type="file" id="iaFileIn" accept="image/*,.pdf" multiple>
+</div>
+<div class="preview-grid" id="iaPreviews"></div>
+</div>
+
+<div class="actions">
+<button class="btn btn-blue" onclick="iaGenerar()" id="iaBtnGen">🤖 Generar Informe con IA</button>
+</div>
+
+<div class="loading" id="iaLoading">
+<div class="spinner"></div>
+<p id="iaLoadMsg" style="font-size:.85rem;color:#64748b;">Analizando documentos y generando informe...</p>
+</div>
+
+<div class="output" id="iaOutput"><button class="copy-btn" onclick="iaCopiar()">📋 Copiar</button></div>
+</div>
+
+</div><!-- container -->
+
+<!-- Barra Dr/Dra sticky abajo -->
+<div class="dr-bar">
+<span style="font-size:1.2rem;">👨‍⚕️</span>
+<input type="text" id="drName" placeholder="Dr./Dra. Nombre Apellidos" value="">
+<span style="font-size:.75rem;color:#888;">Aparecerá en los informes</span>
 </div>
 
 <script>
-var templates={
-    alta:{title:'✅ Informe de Alta',fields:[
-        {id:'fecha',label:'Fecha',type:'date'},
-        {id:'servicio',label:'Servicio',type:'select',options:['Medicina Interna','Urgencias','Cirugía','Cardiología','Neumología','Digestivo','Neurología','Traumatología','Pediatría','Otro']},
-        {id:'motivo',label:'Motivo de ingreso',type:'textarea',placeholder:'Motivo del ingreso hospitalario...'},
-        {id:'antecedentes',label:'Antecedentes personales',type:'textarea',placeholder:'AP relevantes...'},
-        {id:'evolucion',label:'Evolución durante ingreso',type:'textarea',placeholder:'Resumen de la evolución clínica...'},
-        {id:'exploracion',label:'Exploración al alta',type:'textarea',placeholder:'Exploración física al alta...'},
-        {id:'pruebas',label:'Pruebas complementarias',type:'textarea',placeholder:'Analítica, Rx, ECG, etc...'},
-        {id:'diagnostico',label:'Diagnóstico al alta',type:'textarea',placeholder:'Diagnósticos principal y secundarios...'},
-        {id:'tratamiento',label:'Tratamiento al alta',type:'textarea',placeholder:'Pauta farmacológica...'},
-        {id:'recomendaciones',label:'Recomendaciones',type:'textarea',placeholder:'Indicaciones al paciente...'}
-    ]},
-    derivacion:{title:'📨 Informe de Derivación',fields:[
-        {id:'fecha',label:'Fecha',type:'date'},
-        {id:'destino',label:'Especialidad destino',type:'select',options:['Cardiología','Neumología','Digestivo','Neurología','Traumatología','Dermatología','Oftalmología','ORL','Urología','Ginecología','Psiquiatría','Endocrinología','Reumatología','Cirugía General','Otro']},
-        {id:'preferente',label:'Carácter',type:'select',options:['Normal','Preferente','Urgente']},
-        {id:'motivo',label:'Motivo de derivación',type:'textarea',placeholder:'Motivo de la interconsulta...'},
-        {id:'antecedentes',label:'Antecedentes relevantes',type:'textarea'},
-        {id:'clinica',label:'Clínica actual',type:'textarea'},
-        {id:'exploracion',label:'Exploración',type:'textarea'},
-        {id:'pruebas',label:'Pruebas realizadas',type:'textarea'},
-        {id:'tratamiento',label:'Tratamiento actual',type:'textarea'}
-    ]},
-    it:{title:'📋 Informe IT / Baja',fields:[
-        {id:'fecha',label:'Fecha inicio IT',type:'date'},
-        {id:'diagnostico',label:'Diagnóstico (CIE-10)',type:'text',placeholder:'Ej: M54.5 - Lumbalgia'},
-        {id:'contingencia',label:'Contingencia',type:'select',options:['Enfermedad común','Accidente no laboral','Accidente de trabajo','Enfermedad profesional']},
-        {id:'clinica',label:'Situación clínica',type:'textarea',placeholder:'Estado actual del paciente...'},
-        {id:'limitaciones',label:'Limitaciones funcionales',type:'textarea',placeholder:'Actividades que no puede realizar...'},
-        {id:'tratamiento',label:'Tratamiento',type:'textarea'},
-        {id:'prevision',label:'Previsión de duración',type:'text',placeholder:'Ej: 2-3 semanas'}
-    ]},
-    seguimiento:{title:'🔄 Informe de Seguimiento',fields:[
-        {id:'fecha',label:'Fecha',type:'date'},
-        {id:'motivo',label:'Motivo de seguimiento',type:'textarea'},
-        {id:'evolucion',label:'Evolución desde última visita',type:'textarea'},
-        {id:'exploracion',label:'Exploración actual',type:'textarea'},
-        {id:'pruebas',label:'Pruebas solicitadas/resultados',type:'textarea'},
-        {id:'plan',label:'Plan terapéutico',type:'textarea'},
-        {id:'proxima',label:'Próxima cita',type:'text',placeholder:'Ej: 3 meses'}
-    ]},
-    urgencia:{title:'🚨 Informe de Urgencias',fields:[
-        {id:'fecha',label:'Fecha/Hora llegada',type:'text',placeholder:'DD/MM/AAAA HH:MM'},
-        {id:'motivo',label:'Motivo de consulta',type:'textarea'},
-        {id:'anamnesis',label:'Anamnesis',type:'textarea'},
-        {id:'exploracion',label:'Exploración física',type:'textarea'},
-        {id:'pruebas',label:'Pruebas complementarias',type:'textarea'},
-        {id:'diagnostico',label:'Diagnóstico',type:'textarea'},
-        {id:'tratamiento',label:'Tratamiento en urgencias',type:'textarea'},
-        {id:'destino',label:'Destino',type:'select',options:['Alta a domicilio','Observación','Ingreso hospitalario','Derivación a otro centro','Alta voluntaria']},
-        {id:'recomendaciones',label:'Recomendaciones al alta',type:'textarea'}
-    ]},
-    enfermeria:{title:'👩‍⚕️ Informe de Enfermería',fields:[
-        {id:'fecha',label:'Fecha',type:'date'},
-        {id:'motivo',label:'Motivo de la consulta',type:'textarea'},
-        {id:'valoracion',label:'Valoración enfermera',type:'textarea',placeholder:'Constantes, estado general, valoración por patrones...'},
-        {id:'diagnosticos',label:'Diagnósticos enfermeros (NANDA)',type:'textarea'},
-        {id:'intervenciones',label:'Intervenciones (NIC)',type:'textarea'},
-        {id:'resultados',label:'Resultados esperados (NOC)',type:'textarea'},
-        {id:'cuidados',label:'Plan de cuidados',type:'textarea'},
-        {id:'proxima',label:'Próxima revisión',type:'text'}
-    ]},
-    certificado:{title:'📝 Certificado Médico',fields:[
-        {id:'fecha',label:'Fecha',type:'date'},
-        {id:'tipo',label:'Tipo de certificado',type:'select',options:['Certificado de salud','Apto para actividad deportiva','Certificado de defunción','Certificado para oposiciones','Otro']},
-        {id:'contenido',label:'Contenido del certificado',type:'textarea',placeholder:'Que el paciente presenta...'},
-        {id:'observaciones',label:'Observaciones',type:'textarea'}
-    ]},
-    receta:{title:'💊 Prescripción',fields:[
-        {id:'fecha',label:'Fecha',type:'date'},
-        {id:'farmacos',label:'Fármacos (uno por línea)',type:'textarea',placeholder:'Fármaco - dosis - pauta - duración\nEj: Amoxicilina 500mg - 1 comp/8h - 7 días'},
-        {id:'instrucciones',label:'Instrucciones al paciente',type:'textarea',placeholder:'Tomar con alimentos, evitar alcohol, etc.'},
-        {id:'alergias',label:'Alergias conocidas',type:'text',placeholder:'NKDA / Penicilina / etc.'}
-    ]}
-};
+// Save/restore Dr name
+var drInput = document.getElementById('drName');
+drInput.value = localStorage.getItem('informe_dr_name') || '';
+drInput.addEventListener('input', function(){ localStorage.setItem('informe_dr_name', this.value); });
 
-var currentTpl='';
-
-function selectTpl(key){
-    currentTpl=key;
-    var tpl=templates[key];
-    document.querySelectorAll('.tpl-card').forEach(function(c){c.classList.remove('active');});
-    event.currentTarget.classList.add('active');
-    document.getElementById('editorTitle').textContent=tpl.title;
-    var h='';
-    tpl.fields.forEach(function(f){
-        h+='<div class="field"><label>'+f.label+'</label>';
-        if(f.type==='textarea') h+='<textarea id="f_'+f.id+'" placeholder="'+(f.placeholder||'')+'"></textarea>';
-        else if(f.type==='select'){
-            h+='<select id="f_'+f.id+'"><option value="">— Selecciona —</option>';
-            f.options.forEach(function(o){h+='<option value="'+o+'">'+o+'</option>';});
-            h+='</select>';
-        }
-        else if(f.type==='date') h+='<input type="date" id="f_'+f.id+'" value="'+new Date().toISOString().split('T')[0]+'">';
-        else h+='<input type="text" id="f_'+f.id+'" placeholder="'+(f.placeholder||'')+'">';
-        h+='</div>';
-    });
-    document.getElementById('editorFields').innerHTML=h;
-    document.getElementById('editor').classList.add('show');
-    document.getElementById('output').classList.remove('show');
-    document.getElementById('outputActions').style.display='none';
+// Tabs
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('show'); });
+  if(id==='urgencias'){
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('panelUrgencias').classList.add('show');
+  } else {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('panelIA').classList.add('show');
+  }
 }
 
-function getFieldValues(){
-    var tpl=templates[currentTpl];
-    var vals={};
-    tpl.fields.forEach(function(f){
-        var el=document.getElementById('f_'+f.id);
-        vals[f.id]={label:f.label,value:el?el.value.trim():''};
-    });
-    return vals;
+function iaTipoChanged(){
+  document.getElementById('iaOtroField').style.display = document.getElementById('iaType').value==='otro' ? 'block' : 'none';
 }
 
-function generateReport(){
-    var vals=getFieldValues();
-    var tpl=templates[currentTpl];
-    var txt='════════════════════════════════════════\n';
-    txt+=tpl.title.replace(/[^\w\sáéíóúñÁÉÍÓÚÑ]/g,'').trim().toUpperCase()+'\n';
-    txt+='Centro de Salud Virgen de la Caridad\nÁrea II Cartagena — SMS\n';
-    txt+='════════════════════════════════════════\n\n';
-    for(var k in vals){
-        if(vals[k].value){
-            txt+=vals[k].label.toUpperCase()+':\n'+vals[k].value+'\n\n';
-        }
-    }
-    txt+='────────────────────────────────────────\n';
-    txt+='Firma del profesional:\n\n\n\n';
-    txt+='Fecha: '+new Date().toLocaleDateString('es-ES')+'\n';
-    txt+='C.S. Virgen de la Caridad · Área II Cartagena\n';
-
-    document.getElementById('output').textContent=txt;
-    document.getElementById('output').classList.add('show');
-    document.getElementById('outputActions').style.display='flex';
+// ═══ TAB 1: PLANTILLA URGENCIAS ═══
+function urgGenerar(){
+  var dr = drInput.value.trim();
+  var fecha = document.getElementById('urgFecha').value || new Date().toLocaleString('es-ES');
+  var lines = [];
+  lines.push('INFORME DE URGENCIAS');
+  lines.push('═══════════════════════════════════════════');
+  lines.push('Área II Cartagena · H.G.U. Santa Lucía');
+  lines.push('Fecha: ' + fecha);
+  if(dr) lines.push('Médico: ' + dr);
+  lines.push('');
+  
+  var v = function(id){ return (document.getElementById(id).value||'').trim(); };
+  
+  if(v('urgMotivo')){ lines.push('MOTIVO DE CONSULTA:'); lines.push(v('urgMotivo')); lines.push(''); }
+  if(v('urgAnamnesis')){ lines.push('ANAMNESIS:'); lines.push(v('urgAnamnesis')); lines.push(''); }
+  if(v('urgAP')){ lines.push('ANTECEDENTES PERSONALES:'); lines.push(v('urgAP')); lines.push(''); }
+  
+  lines.push('EXPLORACIÓN FÍSICA:');
+  var constantes = [];
+  if(v('urgTA')) constantes.push('TA: '+v('urgTA')+' mmHg');
+  if(v('urgFC')) constantes.push('FC: '+v('urgFC')+' lpm');
+  if(v('urgTemp')) constantes.push('Tª: '+v('urgTemp')+'°C');
+  if(v('urgSat')) constantes.push('SatO2: '+v('urgSat')+'%');
+  if(constantes.length) lines.push(constantes.join(' · '));
+  if(v('urgGeneral')) lines.push(v('urgGeneral'));
+  if(v('urgAC')) lines.push('AC: '+v('urgAC'));
+  if(v('urgAP2')) lines.push('AP: '+v('urgAP2'));
+  if(v('urgAbd')) lines.push('Abdomen: '+v('urgAbd'));
+  if(v('urgMMII')) lines.push('EEII: '+v('urgMMII'));
+  if(v('urgNRL')) lines.push('Neurológico: '+v('urgNRL'));
+  if(v('urgORL')) lines.push('ORL: '+v('urgORL'));
+  if(v('urgMSK')) lines.push('MSK: '+v('urgMSK'));
+  lines.push('');
+  
+  if(v('urgAna') || v('urgImg')){ lines.push('PRUEBAS COMPLEMENTARIAS:'); if(v('urgAna')) lines.push(v('urgAna')); if(v('urgImg')) lines.push(v('urgImg')); lines.push(''); }
+  if(v('urgTtoUrg')){ lines.push('TRATAMIENTO EN URGENCIAS:'); lines.push(v('urgTtoUrg')); lines.push(''); }
+  if(v('urgTtoAlta')){ lines.push('EVOLUCIÓN Y TRATAMIENTO AL ALTA:'); lines.push(v('urgTtoAlta')); lines.push(''); }
+  if(v('urgDx')){ lines.push('DIAGNÓSTICO: '+v('urgDx')); lines.push(''); }
+  
+  if(dr) lines.push('\n'+dr+'\nÁrea II Cartagena — Servicio Murciano de Salud');
+  
+  var output = document.getElementById('urgOutput');
+  output.textContent = lines.join('\n');
+  // Re-add copy button
+  var btn = document.createElement('button');
+  btn.className='copy-btn'; btn.textContent='📋 Copiar'; btn.onclick=urgCopiar;
+  output.insertBefore(btn, output.firstChild);
+  output.classList.add('show');
+  output.scrollIntoView({behavior:'smooth'});
 }
 
-async function generateWithAI(){
-    var vals=getFieldValues();
-    var tpl=templates[currentTpl];
-    var prompt='Genera un informe médico profesional de tipo "'+tpl.title+'" con estos datos:\n\n';
-    for(var k in vals){
-        if(vals[k].value) prompt+=vals[k].label+': '+vals[k].value+'\n';
+function urgCopiar(){
+  var el = document.getElementById('urgOutput');
+  var text = el.textContent.replace('📋 Copiar','').trim();
+  navigator.clipboard.writeText(text).then(function(){ alert('✅ Informe copiado al portapapeles'); });
+}
+
+function urgLimpiar(){
+  if(!confirm('¿Limpiar todos los campos?')) return;
+  document.querySelectorAll('#panelUrgencias input, #panelUrgencias textarea').forEach(function(el){
+    if(el.id!=='drName') el.value='';
+  });
+  document.getElementById('urgOutput').classList.remove('show');
+}
+
+// ═══ TAB 2: GENERADOR IA ═══
+var iaFiles = [];
+
+var iaDropZone = document.getElementById('iaDropZone');
+var iaFileIn = document.getElementById('iaFileIn');
+['dragenter','dragover'].forEach(function(e){ iaDropZone.addEventListener(e, function(ev){ ev.preventDefault(); iaDropZone.classList.add('over'); }); });
+['dragleave','drop'].forEach(function(e){ iaDropZone.addEventListener(e, function(ev){ ev.preventDefault(); iaDropZone.classList.remove('over'); }); });
+iaDropZone.addEventListener('drop', function(ev){ if(ev.dataTransfer.files.length) iaAddFiles(ev.dataTransfer.files); });
+iaFileIn.addEventListener('change', function(){ if(this.files.length) iaAddFiles(this.files); this.value=''; });
+
+function iaAddFiles(fl){
+  for(var i=0;i<fl.length;i++){
+    if(fl[i].size>20*1024*1024){alert('Máximo 20MB');continue;}
+    iaFiles.push(fl[i]);
+  }
+  iaRenderPreviews();
+}
+
+function iaRenderPreviews(){
+  var c=document.getElementById('iaPreviews'); c.innerHTML='';
+  iaFiles.forEach(function(f,i){
+    var div=document.createElement('div'); div.className='preview-item';
+    if(f.type.startsWith('image/')){
+      var img=document.createElement('img'); img.src=URL.createObjectURL(f); div.appendChild(img);
+    } else {
+      div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#f0f0f0;font-size:1.5rem;">📄</div>';
     }
-    prompt+='\nFormato: informe clínico profesional en español, estructurado, conciso. No inventes datos que no se proporcionan. Usa lenguaje médico apropiado.';
+    var rm=document.createElement('button'); rm.className='rm'; rm.textContent='✕';
+    rm.onclick=function(e){e.stopPropagation();iaFiles.splice(i,1);iaRenderPreviews();};
+    div.appendChild(rm); c.appendChild(div);
+  });
+}
 
-    var key=localStorage.getItem('groqApiKey')||'';
-    if(!key){
-        try{var cfg=JSON.parse(localStorage.getItem('notebook_ai_cfg_v3')||'{}');key=cfg.groqKey||'';}catch(e){}
-    }
-    if(!key){alert('Configura la API Key de Groq en la sección Profesionales > Config');return;}
+async function fileToBase64(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){res(r.result);};
+    r.onerror=function(){rej(new Error('Read error'));};
+    r.readAsDataURL(file);
+  });
+}
 
-    document.getElementById('output').textContent='⏳ Generando informe con IA...';
-    document.getElementById('output').classList.add('show');
-
-    try{
-        var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-            body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[
-                {role:'system',content:'Eres un médico redactando informes clínicos del Centro de Salud Virgen de la Caridad, Área II Cartagena, SMS. Redacta informes profesionales, estructurados, en español médico. No incluyas datos personales inventados.'},
-                {role:'user',content:prompt}
-            ],max_tokens:1500,temperature:0.3})
+async function iaGenerar(){
+  var tipo = document.getElementById('iaType').value;
+  if(!tipo){alert('Selecciona el tipo de informe');return;}
+  if(tipo==='otro') tipo = document.getElementById('iaOtro').value.trim() || 'Informe clínico';
+  
+  var instrucciones = document.getElementById('iaInstrucciones').value.trim();
+  var dr = drInput.value.trim();
+  
+  var btn = document.getElementById('iaBtnGen');
+  btn.disabled=true; btn.textContent='⏳ Generando...';
+  document.getElementById('iaLoading').classList.add('show');
+  document.getElementById('iaOutput').classList.remove('show');
+  
+  // Build prompt
+  var prompt = 'Eres un asistente clínico docente del Área II Cartagena (H.G.U. Santa Lucía, Servicio Murciano de Salud).\n\n';
+  prompt += 'GENERA un ' + tipo.toUpperCase() + ' completo y profesional.\n\n';
+  if(instrucciones) prompt += 'INSTRUCCIONES DEL MÉDICO: ' + instrucciones + '\n\n';
+  if(dr) prompt += 'MÉDICO RESPONSABLE: ' + dr + '\n\n';
+  prompt += 'REGLAS:\n';
+  prompt += '- Formato profesional de informe hospitalario español\n';
+  prompt += '- Incluye todas las secciones estándar del tipo de informe\n';
+  prompt += '- Usa terminología médica correcta\n';
+  prompt += '- Si hay documentos adjuntos, extrae e integra la información relevante\n';
+  prompt += '- Incluye fecha actual: ' + new Date().toLocaleDateString('es-ES') + '\n';
+  prompt += '- Firma con el nombre del médico al final si se proporciona\n';
+  prompt += '- NO inventes datos clínicos que no estén en los documentos o instrucciones\n';
+  prompt += '- Uso exclusivamente DOCENTE e INFORMATIVO\n';
+  
+  // Build messages with images if any
+  var content = [];
+  
+  // Add images as base64
+  for(var i=0; i<iaFiles.length && i<5; i++){
+    try {
+      if(iaFiles[i].type.startsWith('image/')){
+        var b64 = await fileToBase64(iaFiles[i]);
+        content.push({
+          type: 'image_url',
+          image_url: { url: b64 }
         });
-        var d=await r.json();
-        var txt=d.choices[0].message.content;
-        document.getElementById('output').textContent=txt;
-        document.getElementById('outputActions').style.display='flex';
-    }catch(e){
-        document.getElementById('output').textContent='❌ Error: '+e.message;
+      }
+    } catch(e){}
+  }
+  
+  content.push({ type: 'text', text: prompt });
+  
+  var body = {
+    model: 'deepseek/deepseek-chat-v3-0324:free',
+    messages: [{ role: 'user', content: content }],
+    max_tokens: 4000,
+    temperature: 0.3
+  };
+  
+  try {
+    var data;
+    // Use proxy if available
+    var proxyUrl = localStorage.getItem('api_proxy_url');
+    if(proxyUrl){
+      var r = await fetch(proxyUrl + '/api/openrouter', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      });
+      data = await r.json();
+    } else {
+      // Direct (fallback)
+      var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/',
+          'X-Title':'Informes Area II'
+        },
+        body:JSON.stringify(body)
+      });
+      data = await r.json();
     }
+    
+    var text = '';
+    if(data.choices && data.choices[0]) text = data.choices[0].message.content;
+    else if(data.error) text = 'Error: ' + (data.error.message || JSON.stringify(data.error));
+    else text = 'No se pudo generar el informe. Inténtalo de nuevo.';
+    
+    var output = document.getElementById('iaOutput');
+    output.textContent = text;
+    var cbtn = document.createElement('button');
+    cbtn.className='copy-btn'; cbtn.textContent='📋 Copiar'; cbtn.onclick=iaCopiar;
+    output.insertBefore(cbtn, output.firstChild);
+    output.classList.add('show');
+    output.scrollIntoView({behavior:'smooth'});
+    
+  } catch(e){
+    alert('Error: ' + e.message);
+  }
+  
+  btn.disabled=false; btn.textContent='🤖 Generar Informe con IA';
+  document.getElementById('iaLoading').classList.remove('show');
 }
 
-function clearEditor(){
-    document.querySelectorAll('#editorFields input, #editorFields textarea, #editorFields select').forEach(function(el){
-        if(el.type==='date') el.value=new Date().toISOString().split('T')[0];
-        else el.value='';
-    });
-}
-
-function copyReport(){
-    navigator.clipboard.writeText(document.getElementById('output').textContent).then(function(){alert('✅ Informe copiado');});
-}
-
-function printReport(){
-    var w=window.open('','_blank');
-    w.document.write('<html><body style="font-family:Courier New,monospace;padding:40px;font-size:13px;line-height:1.7;white-space:pre-wrap;">');
-    w.document.write(document.getElementById('output').textContent.replace(/</g,'&lt;'));
-    w.document.write('</body></html>');
-    w.document.close();
-    w.print();
+function iaCopiar(){
+  var el = document.getElementById('iaOutput');
+  var text = el.textContent.replace('📋 Copiar','').trim();
+  navigator.clipboard.writeText(text).then(function(){ alert('✅ Informe copiado al portapapeles'); });
 }
 </script>
 </body>
