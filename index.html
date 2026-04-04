@@ -4,7 +4,7 @@
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
-  var APP_VERSION='v16-20260404j';
+  var APP_VERSION='v17-20260404k';
   // Always delete every cache
   if('caches' in window){caches.keys().then(function(k){k.forEach(function(c){caches.delete(c);});});}
   if('serviceWorker' in navigator){
@@ -232,6 +232,13 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">IA · Calculadoras · Informes</div>
                     </button>
 
+                    <!-- TELÉFONOS Y BUSCAS -->
+                    <button onclick="showPage('pageTelefonos')" aria-label="Directorio de teléfonos y buscas" style="background:linear-gradient(135deg,rgba(202,138,4,.25),rgba(161,98,7,.2));border:2px solid rgba(202,138,4,.5);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                        <div style="font-size:1.6rem;margin-bottom:4px;">📞</div>
+                        <div style="font-weight:700;font-size:.88rem;">Teléfonos Buscas</div>
+                        <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Hospital · Centros · Buscas</div>
+                    </button>
+
                     <!-- DOCENCIA -->
                     <button onclick="if(!firebase.auth().currentUser){document.querySelector('#scanLoginModal h2').textContent='📚 Docencia';window._pendingDocencia=true;showLoginModal();return;}var sh=document.getElementById('subHerramientas');if(sh)sh.style.display='none';var sp=document.getElementById('subProtocolos');if(sp)sp.style.display='none';var sd=document.getElementById('subDocencia');sd.style.display=sd.style.display==='flex'?'none':'flex';" aria-label="Ver recursos de docencia" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">📚</div>
@@ -273,16 +280,6 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                         <a href="plantillas-informes.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📄 Plantillas de Informes</a>
                         <a href="agenda-guardia.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Generador de Turnos</a>
                     </div>
-                </div>
-
-                <!-- ── TARJETA TELÉFONOS Y BUSCAS ── -->
-                <div onclick="showPage('pageTelefonos')" style="cursor:pointer;background:linear-gradient(135deg,rgba(202,138,4,0.9),rgba(161,98,7,0.85));border:2px solid rgba(255,255,255,0.35);border-radius:16px;padding:18px 20px;margin-top:20px;display:flex;align-items:center;gap:16px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(0,0,0,.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(0,0,0,.35)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'">
-                    <div style="background:rgba(255,255,255,.18);border-radius:12px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-shrink:0;">📞</div>
-                    <div style="flex:1;">
-                        <div style="color:#fff;font-size:1.05rem;font-weight:700;margin-bottom:3px;">Teléfonos y Buscas</div>
-                        <div style="color:rgba(255,255,255,.78);font-size:.82rem;line-height:1.45;">Directorio completo del H.G.U. Santa Lucía y centros de salud</div>
-                    </div>
-                    <div style="color:rgba(255,255,255,.6);font-size:1.3rem;flex-shrink:0;">›</div>
                 </div>
 
                 <!-- ── TARJETA AUTOTRIAJE AL FINAL (abajo del todo) ── -->
@@ -4355,7 +4352,7 @@ function saveConfigToFirestore(){
         var user=firebase.auth().currentUser;
         if(!user||!isAdmin())return;
         var config={
-            version:'v16-20260404j',
+            version:'v17-20260404k',
             swVersion:'v23',
             timestamp:new Date().toISOString(),
             savedBy:user.email,
