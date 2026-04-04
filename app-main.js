@@ -2180,6 +2180,10 @@ firebase.auth().onAuthStateChanged(function(user){
             btn.style.background="rgba(255,255,255,.2)";
         });
         if(typeof scanInitQR==='function') scanInitQR();
+        // Mostrar buzón sugerencias a todos los logueados (fuera del callback de moderadores)
+        document.querySelectorAll(".btn-sugerencia").forEach(function(el){
+            el.style.display="inline-flex";
+        });
         loadModeradoresFromFirestore(function(){
             isAdminLoggedIn=isAdmin();
             apShowAdminTab(isAdminLoggedIn);
@@ -2200,10 +2204,6 @@ firebase.auth().onAuthStateChanged(function(user){
             });
             // Mostrar botón proponer contenido a todos los logueados
             document.querySelectorAll(".btn-subir-contenido").forEach(function(el){
-                el.style.display="inline-flex";
-            });
-            // Mostrar buzón sugerencias a todos los logueados
-            document.querySelectorAll(".btn-sugerencia").forEach(function(el){
                 el.style.display="inline-flex";
             });
         });
