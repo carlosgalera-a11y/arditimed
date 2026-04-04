@@ -1591,6 +1591,14 @@ function scanGoogleLogin(){
         var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
         sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
         if(pg){logPageAccess(pg,user);showPage(pg);}
+        else if(window._pendingDocencia){
+            window._pendingDocencia=false;
+            showPage('pageLanding');
+            setTimeout(function(){
+                var sd=document.getElementById('subDocencia');if(sd)sd.style.display='flex';
+                sd.scrollIntoView({behavior:'smooth',block:'nearest'});
+            },300);
+        }
         else{showPage("pageScanIA");scanRenderHist();}
     }
 
