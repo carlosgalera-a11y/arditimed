@@ -1094,19 +1094,42 @@ async function trIASaveAndShowQR(nivel) {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
     };
 
+    var baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '');
+    var fichaUrl = '';
+
     try {
-        var docRef = await db.collection('triajes').add(fichaData);
-        var fichaId = docRef.id;
-        var baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '');
-        var fichaUrl = baseUrl + 'triaje-ficha.html?id=' + fichaId;
-        var NI = { 1:'🔴', 2:'🟠', 3:'🟡', 4:'🟢', 5:'🔵' };
+        // Try Firestore first (requires auth)
+        if (typeof db !== 'undefined' && firebase.auth().currentUser) {
+            var docRef = await db.collection('triajes').add(fichaData);
+            fichaUrl = baseUrl + 'triaje-ficha.html?id=' + docRef.id;
+        } else {
+            throw new Error('No auth');
+        }
+    } catch(e) {
+        // Fallback: encode compact data in URL
+        console.log('[Triaje] Firestore unavailable, using URL encoding:', e.message);
+        var compact = {
+            n: nivel,
+            v: verifyCode,
+            m: motivo.substring(0, 200),
+            a: fichaData.alergias.substring(0, 100),
+            med: fichaData.medicacion.substring(0, 100),
+            c: fichaData.constantes.substring(0, 100),
+            r: (window._trLastRecomendacion || '').substring(0, 500),
+            t: Date.now()
+        };
+        var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+        fichaUrl = baseUrl + 'triaje-ficha.html?data=' + encoded;
+    }
 
-        document.getElementById('trQRExtraFields').style.display = 'none';
-        if (btn) btn.style.display = 'none';
+    var NI = { 1:'🔴', 2:'🟠', 3:'🟡', 4:'🟢', 5:'🔵' };
 
-        var result = document.getElementById('trQRResult');
-        result.style.display = 'block';
-        result.innerHTML =
+    document.getElementById('trQRExtraFields').style.display = 'none';
+    if (btn) btn.style.display = 'none';
+
+    var result = document.getElementById('trQRResult');
+    result.style.display = 'block';
+    result.innerHTML =
             '<div style="background:#fff;border-radius:14px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,.08);text-align:center;">'+
                 '<p style="font-size:1.1rem;font-weight:800;margin-bottom:2px;">'+(NI[nivel]||'')+' Tu QR de Triaje</p>'+
                 '<p style="font-size:.82rem;color:#888;margin-bottom:16px;">Muéstralo al personal de enfermería al llegar</p>'+
@@ -1127,11 +1150,6 @@ async function trIASaveAndShowQR(nivel) {
             '</div>';
 
         result.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    } catch(e) {
-        if (btn) { btn.disabled = false; btn.innerHTML = '📱 Generar QR para el hospital'; }
-        alert('Error al guardar: ' + e.message);
-    }
 }
 
 function trIAPrintQR() {

@@ -91,13 +91,33 @@ firebase.initializeApp({
 var db = firebase.firestore();
 var auth = firebase.auth();
 
-// Get triage ID from URL
+// Get triage ID or data from URL
 var params = new URLSearchParams(window.location.search);
 var fichaId = params.get('id');
+var fichaDataParam = params.get('data');
 
-if (!fichaId) {
+if (fichaDataParam) {
+  // Fallback mode: data encoded in URL (no Firestore needed)
+  try {
+    var decoded = JSON.parse(decodeURIComponent(escape(atob(fichaDataParam))));
+    // Render directly without auth
+    document.getElementById('loading').style.display = 'none';
+    renderFichaFromData({
+      nivel: decoded.n,
+      verifyCode: decoded.v,
+      motivo: decoded.m || '',
+      recomendacion: decoded.r || '',
+      alergias: decoded.a || '',
+      medicacion: decoded.med || '',
+      constantes: decoded.c || '',
+      createdAt: { toDate: function() { return new Date(decoded.t); } }
+    });
+  } catch(e) {
+    document.getElementById('loading').innerHTML = '<div class="expired"><div class="icon">❌</div><h2>Error de datos</h2><p style="color:#666;margin-top:8px">No se pudieron decodificar los datos del triaje.</p></div>';
+  }
+} else if (!fichaId) {
   document.getElementById('loading').innerHTML = '<div class="expired"><div class="icon">❌</div><h2>Enlace inválido</h2><p style="color:#666;margin-top:8px">No se encontró un ID de ficha de triaje en la URL.</p></div>';
-}
+} else {
 
 auth.onAuthStateChanged(function(user) {
   document.getElementById('loading').style.display = 'none';
@@ -107,6 +127,7 @@ auth.onAuthStateChanged(function(user) {
     document.getElementById('authWall').style.display = 'block';
   }
 });
+} // end else (Firestore mode)
 
 window.fichaSignIn = function() {
   var email = document.getElementById('fEmail').value.trim();
@@ -265,6 +286,61 @@ async function loadFicha(id) {
   } catch(e) {
     container.innerHTML = '<div class="expired"><div class="icon">❌</div><h2>Error al cargar</h2><p style="color:#666;margin-top:8px">' + e.message + '</p></div>';
   }
+}
+
+function renderFichaFromData(data) {
+  document.getElementById('authWall').style.display = 'none';
+  var container = document.getElementById('fichaContainer');
+  container.style.display = 'block';
+
+  var nivel = data.nivel || 3;
+  var cfg = NIVEL_CONFIG[nivel] || NIVEL_CONFIG[3];
+  var createdAt = data.createdAt ? data.createdAt.toDate() : new Date();
+  var fecha = createdAt.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+  var html = '<div class="ficha">';
+  html += '<div class="ficha-header" style="background:' + cfg.bg + '">';
+  html += '<div style="font-size:.78rem;opacity:.7">FICHA DE TRIAJE · ÁREA II CARTAGENA</div>';
+  html += '<div class="nivel">' + cfg.icon + ' NIVEL ' + nivel + '</div>';
+  html += '<div class="nivel-text">' + cfg.text + '</div>';
+  html += '</div>';
+  html += '<div class="ficha-body">';
+
+  html += '<div class="ficha-section"><h3>🔑 Código de verificación</h3>';
+  html += '<div class="verify-code">' + (data.verifyCode || '------') + '</div>';
+  html += '<p style="font-size:.72rem;color:#888;text-align:center;margin-top:6px">Pida al paciente que confirme este código</p></div>';
+
+  if (data.motivo) {
+    html += '<div class="ficha-section"><h3>📋 Motivo de consulta</h3>';
+    html += '<div class="value">' + escapeHtml(data.motivo) + '</div></div>';
+  }
+  if (data.recomendacion) {
+    html += '<div class="ficha-section"><h3>🤖 Orientación del triaje IA</h3>';
+    html += '<div class="value">' + escapeHtml(data.recomendacion).replace(/\n/g, '<br>') + '</div></div>';
+  }
+  if (data.constantes) {
+    html += '<div class="ficha-section"><h3>📊 Constantes vitales</h3>';
+    html += '<div class="value">' + escapeHtml(data.constantes) + '</div></div>';
+  }
+  if (data.alergias) {
+    html += '<div class="ficha-section"><h3>⚠️ Alergias</h3>';
+    html += '<div class="value" style="color:#dc2626;font-weight:600">' + escapeHtml(data.alergias) + '</div></div>';
+  }
+  if (data.medicacion) {
+    html += '<div class="ficha-section"><h3>💊 Medicación habitual</h3>';
+    html += '<div class="value">' + escapeHtml(data.medicacion) + '</div></div>';
+  }
+
+  html += '<div class="ficha-section"><h3>ℹ️ Información</h3>';
+  html += '<div class="meta"><span>🕐 ' + fecha + '</span><span>🏥 Área II Cartagena</span><span>📱 Autotriaje online</span></div></div>';
+  html += '</div>';
+  html += '<div class="no-print" style="display:flex;gap:8px;margin-top:16px;padding-bottom:30px">';
+  html += '<button onclick="window.print()" style="flex:1;padding:12px;background:#0d47a1;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer">🖨️ Imprimir</button>';
+  html += '<button onclick="window.close()" style="flex:1;padding:12px;background:#f0f2f5;color:#333;border:1px solid #ddd;border-radius:10px;font-weight:600;cursor:pointer">Cerrar</button>';
+  html += '</div></div>';
+  html += '<div class="no-print" style="text-align:center;padding:12px;font-size:.72rem;color:#888;max-width:500px;margin:0 auto 20px">⚠️ Orientativo. No constituye diagnóstico médico.</div>';
+
+  container.innerHTML = html;
 }
 
 function escapeHtml(text) {
