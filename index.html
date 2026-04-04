@@ -2,34 +2,36 @@
 <html lang="es">
 <head>
 <script>
-// v6: Nuclear cleanup — delete ALL caches, update SW
+// v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
-  var APP_VERSION='v7-20260404a';
-  // Delete every single cache
-  if('caches' in window){
-    caches.keys().then(function(keys){
-      keys.forEach(function(k){ caches.delete(k); });
+  var APP_VERSION='v8-20260404b';
+  // Always delete every cache
+  if('caches' in window){caches.keys().then(function(k){k.forEach(function(c){caches.delete(c);});});}
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      var killed=false;
+      regs.forEach(function(r){
+        // Kill any SW that is NOT sw.js (i.e. kill sw-v2.js)
+        if(r.active && r.active.scriptURL && r.active.scriptURL.indexOf('sw-v2')!==-1){
+          r.unregister();killed=true;
+        }
+      });
+      // Also version check for full reload
+      try{
+        var stored=localStorage.getItem('app_version');
+        if(killed||(stored && stored!==APP_VERSION)){
+          localStorage.setItem('app_version',APP_VERSION);
+          if(killed){
+            // Small delay to let unregister complete
+            setTimeout(function(){window.location.reload(true);},500);
+          }
+          return;
+        }
+        localStorage.setItem('app_version',APP_VERSION);
+      }catch(e){}
     });
   }
-  // If stored version differs, force clean reload
-  try{
-    var stored=localStorage.getItem('app_version');
-    if(stored && stored!==APP_VERSION){
-      localStorage.setItem('app_version',APP_VERSION);
-      // Unregister all SWs then reload
-      if('serviceWorker' in navigator){
-        navigator.serviceWorker.getRegistrations().then(function(regs){
-          Promise.all(regs.map(function(r){return r.unregister();})).then(function(){
-            window.location.reload(true);
-          });
-        });
-      } else {
-        window.location.reload(true);
-      }
-      return; // stop execution, page will reload
-    }
-    localStorage.setItem('app_version',APP_VERSION);
-  }catch(e){}
+  try{localStorage.setItem('app_version',APP_VERSION);}catch(e){}
 })();
 </script>
     <meta charset="UTF-8">

@@ -1,4 +1,4 @@
-// sw-v2.js — Archivo de limpieza: se destruye a sí mismo al activarse
+// sw-v2.js — Self-destruct: kills itself and forces fresh content
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -8,4 +8,8 @@ self.addEventListener('activate', event => {
       .then(() => self.clients.matchAll())
       .then(clients => clients.forEach(c => c.navigate(c.url)))
   );
+});
+// While alive, NEVER serve cache — always go to network
+self.addEventListener('fetch', event => {
+  event.respondWith(fetch(event.request));
 });

@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v20 - network only + auto-update
-const CACHE_NAME = 'area2-v20';
+// Service Worker - Área II Cartagena PWA v21 - network only + auto-update
+const CACHE_NAME = 'area2-v21';
 
 self.addEventListener('install', event => {
   // Skip waiting immediately — new SW takes control right away
