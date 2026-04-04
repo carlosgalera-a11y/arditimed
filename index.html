@@ -1796,11 +1796,10 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <p style="opacity:.85;font-size:.95rem;font-weight:300;">Análisis de imágenes médicas con IA y casos clínicos NIH para formación.</p>
             </div>
 
-            <!-- TABS: Scan IA / Quiz NIH -->
+            <!-- TABS: Herramientas -->
             <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:3px solid var(--border);flex-wrap:wrap;">
                 <button id="tabScanIA" onclick="switchScanTab('scanIA')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🔬 Analizar imagen</button>
                 <button id="tabCalc" onclick="switchScanTab('calc')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧮 Calculadoras</button>
-                <button id="tabNIHQuiz" onclick="switchScanTab('nihQuiz')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧠 Quiz NIH</button>
                 <button id="tabNotebooks" onclick="switchScanTab('notebooks')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🤖 NotebookLM</button>
                 <button id="tabPlantillas" onclick="switchScanTab('plantillas')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📋 Plantillas</button>
                 <button id="tabTriaje" onclick="switchScanTab('triaje')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🚨 Triaje IA</button>
@@ -1855,97 +1854,6 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
             <div style="margin-top:30px;"><h4 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:14px;">📋 Historial de análisis</h4><div id="scanHistList"><div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:10px;opacity:.5;">🔬</div><p style="font-size:.92rem;">Aún no hay análisis realizados</p></div></div></div>
             </div><!-- end panelScanIA -->
 
-            <!-- TAB 2: NIH QUIZ + COMPARACIÓN IA -->
-            <div id="panelNIHQuiz" style="display:none;">
-                <div style="background:#e8f5e9;border:1px solid #4caf50;border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#2e7d32;margin-bottom:20px;line-height:1.6;">
-                    🏥 <strong>Dataset NIH Chest X-Ray.</strong> Casos reales desidentificados del NIH Clinical Center. Practica tu diagnóstico y compáralo con la IA.
-                </div>
-
-                <!-- Quiz Mode Selector -->
-                <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-                    <button id="nihModeQuiz" onclick="nihSetMode('quiz')" style="flex:1;min-width:180px;padding:14px;border-radius:var(--radius);border:2px solid #4caf50;background:#e8f5e9;color:#2e7d32;cursor:pointer;font-family:var(--font-body);font-size:.92rem;font-weight:700;transition:.25s;text-align:center;">🧠 Modo Quiz</button>
-                    <button id="nihModeCompare" onclick="nihSetMode('compare')" style="flex:1;min-width:180px;padding:14px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);color:var(--text);cursor:pointer;font-family:var(--font-body);font-size:.92rem;font-weight:700;transition:.25s;text-align:center;">🤖 Modo IA vs Diagnóstico</button>
-                </div>
-
-                <!-- Filter by pathology -->
-                <div style="margin-bottom:20px;">
-                    <label style="font-size:.85rem;font-weight:600;color:var(--text-light);margin-bottom:6px;display:block;">Filtrar por patología:</label>
-                    <select id="nihFilterPath" onchange="nihFilterCases()" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:var(--radius);font-family:var(--font-body);font-size:.92rem;background:var(--bg-card);">
-                        <option value="all">📋 Todas las patologías</option>
-                        <option value="No Finding">✅ Normal (No Finding)</option>
-                        <option value="Atelectasis">Atelectasia</option>
-                        <option value="Cardiomegaly">Cardiomegalia</option>
-                        <option value="Consolidation">Consolidación</option>
-                        <option value="Edema">Edema pulmonar</option>
-                        <option value="Effusion">Derrame pleural</option>
-                        <option value="Emphysema">Enfisema</option>
-                        <option value="Fibrosis">Fibrosis</option>
-                        <option value="Hernia">Hernia</option>
-                        <option value="Infiltration">Infiltrado</option>
-                        <option value="Mass">Masa</option>
-                        <option value="Nodule">Nódulo</option>
-                        <option value="Pleural_Thickening">Engrosamiento pleural</option>
-                        <option value="Pneumonia">Neumonía</option>
-                        <option value="Pneumothorax">Neumotórax</option>
-                    </select>
-                </div>
-
-                <!-- Score display -->
-                <div id="nihScoreBar" style="background:var(--bg-card);border:2px solid var(--border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-                    <div style="font-weight:700;font-family:var(--font-display);color:var(--primary-dark);">📊 Puntuación</div>
-                    <div style="display:flex;gap:20px;font-size:.92rem;">
-                        <span>✅ Aciertos: <strong id="nihCorrect">0</strong></span>
-                        <span>❌ Fallos: <strong id="nihWrong">0</strong></span>
-                        <span>📝 Total: <strong id="nihTotal">0</strong>/<span id="nihTotalCases">30</span></span>
-                    </div>
-                    <button onclick="nihReset()" style="padding:8px 16px;background:var(--bg-subtle);border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🔄 Reiniciar</button>
-                </div>
-
-                <!-- Case display area -->
-                <div id="nihCaseArea" style="background:var(--bg-card);border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;">
-                    <div id="nihCaseImage" style="background:#000;text-align:center;padding:20px;min-height:350px;display:flex;align-items:center;justify-content:center;">
-                        <div style="color:#fff;opacity:.5;font-size:1.1rem;">Pulsa "Siguiente caso" para empezar</div>
-                    </div>
-                    <div style="padding:20px;">
-                        <div id="nihCaseInfo" style="font-size:.85rem;color:var(--text-muted);margin-bottom:14px;"></div>
-
-                        <!-- Quiz mode: multiple choice -->
-                        <div id="nihQuizOptions" style="display:none;">
-                            <p style="font-weight:700;font-size:.95rem;margin-bottom:12px;">¿Cuál es tu diagnóstico?</p>
-                            <div id="nihOptions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
-                        </div>
-
-                        <!-- Compare mode: IA analysis -->
-                        <div id="nihCompareArea" style="display:none;">
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                                <div>
-                                    <div style="font-weight:700;font-size:.92rem;color:#2e7d32;margin-bottom:8px;">✅ Diagnóstico NIH (Ground Truth)</div>
-                                    <div id="nihGroundTruth" style="background:#e8f5e9;border-radius:var(--radius-sm);padding:14px;font-size:.9rem;min-height:60px;"></div>
-                                </div>
-                                <div>
-                                    <div style="font-weight:700;font-size:.92rem;color:#0066cc;margin-bottom:8px;">🤖 Diagnóstico IA (Llama 4 Scout)</div>
-                                    <div id="nihAIDiagnosis" style="background:#e3f2fd;border-radius:var(--radius-sm);padding:14px;font-size:.9rem;min-height:60px;">
-                                        <button id="nihRunIA" onclick="nihAnalyzeWithIA()" style="padding:10px 20px;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-family:var(--font-body);font-size:.88rem;">🔬 Analizar con IA</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Feedback area -->
-                        <div id="nihFeedback" style="display:none;margin-top:16px;padding:16px;border-radius:var(--radius-sm);font-size:.92rem;line-height:1.6;"></div>
-                    </div>
-                </div>
-
-                <!-- Navigation -->
-                <div style="display:flex;gap:12px;justify-content:center;">
-                    <button onclick="nihNextCase()" style="padding:14px 32px;background:linear-gradient(135deg,#4caf50,#2e7d32);color:#fff;border:none;border-radius:var(--radius);font-size:.98rem;font-weight:700;cursor:pointer;font-family:var(--font-body);">▶ Siguiente caso</button>
-                </div>
-
-                <!-- Attribution -->
-                <div style="margin-top:24px;padding:14px;background:var(--bg-subtle);border-radius:var(--radius-sm);font-size:.78rem;color:var(--text-muted);line-height:1.6;">
-                    📖 <strong>Fuente:</strong> NIH Chest X-ray Dataset — Wang et al., "ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks", IEEE CVPR 2017. Datos proporcionados por el NIH Clinical Center. <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC" target="_blank" style="color:#0066cc;">nihcc.app.box.com</a>
-                </div>
-            </div><!-- end panelNIHQuiz -->
             <!-- TAB 3: CALCULADORAS MÉDICAS -->
             <div id="panelCalc" style="display:none;">
               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:4px;">
