@@ -186,7 +186,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 <!-- ═══════ LANDING PAGE ═══════ -->
 <div class="page active" id="pageLanding">
     <div class="landing">
-        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button id="loginBtnLanding" onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-mi-guardia" onclick="openGuardiaNotas()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0d9488,#0f766e);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);">📋 Mi Guardia</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button></div></nav>
+        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button id="loginBtnLanding" onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-mi-guardia" onclick="openGuardiaNotas()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0d9488,#0f766e);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);">📋 Mi Guardia</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button><button class="btn-sugerencia" onclick="abrirSugerencias()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(245,158,11,.4);">💡 Sugerencias</button></div></nav>
         <div class="hero">
             <div class="hero-bg"></div>
             <div class="hero-overlay"></div>
@@ -587,6 +587,48 @@ window.showNotebooksModal=function(){
   }catch(e){}
 };
 </script>
+
+<!-- Modal Buzón de Sugerencias -->
+<div id="modalSugerencias" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+  <div style="background:#fff;border-radius:16px;max-width:520px;width:94%;max-height:88vh;overflow-y:auto;box-shadow:0 25px 80px rgba(0,0,0,.4);">
+    <div style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:20px 24px;border-radius:16px 16px 0 0;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:1.6rem;">💡</div><h2 style="margin:4px 0 0;font-size:1.2rem;font-weight:700;">Buzón de Sugerencias</h2><p style="margin:2px 0 0;font-size:.78rem;opacity:.85;">Tu opinión nos ayuda a mejorar</p></div>
+      <span onclick="document.getElementById('modalSugerencias').style.display='none'" style="cursor:pointer;font-size:1.6rem;opacity:.8;">✕</span>
+    </div>
+    <div style="padding:16px;">
+      <!-- Formulario enviar -->
+      <div id="sugForm">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:3px;">Tipo</label>
+          <select id="sugTipo" style="width:100%;padding:8px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit;">
+            <option value="mejora">💡 Mejora / Idea</option>
+            <option value="bug">🐛 Error / Bug</option>
+            <option value="contenido">📚 Nuevo contenido</option>
+            <option value="otro">💬 Otro</option>
+          </select>
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:3px;">Tu sugerencia</label>
+          <textarea id="sugTexto" rows="4" placeholder="Escribe tu sugerencia, idea o reporte de error..." style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;font-family:inherit;resize:vertical;"></textarea>
+        </div>
+        <button onclick="enviarSugerencia()" style="width:100%;padding:12px;background:#f59e0b;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.88rem;font-family:inherit;">📨 Enviar sugerencia</button>
+        <p style="font-size:.72rem;color:#888;text-align:center;margin-top:8px;">Solo los moderadores verán tu sugerencia.</p>
+      </div>
+      <div id="sugGracias" style="display:none;text-align:center;padding:20px;">
+        <div style="font-size:3rem;margin-bottom:8px;">✅</div>
+        <h3 style="color:#16a34a;">¡Gracias!</h3>
+        <p style="color:#888;font-size:.85rem;">Tu sugerencia ha sido enviada. Los moderadores la revisarán.</p>
+        <button onclick="document.getElementById('sugGracias').style.display='none';document.getElementById('sugForm').style.display='block';document.getElementById('sugTexto').value='';" style="margin-top:12px;padding:8px 16px;background:#f59e0b;color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:.82rem;">Enviar otra</button>
+      </div>
+
+      <!-- Lista para moderadores -->
+      <div id="sugListaMod" style="display:none;margin-top:16px;border-top:2px solid #e0e0e0;padding-top:14px;">
+        <h3 style="font-size:.9rem;font-weight:700;color:#333;margin-bottom:10px;">🛡️ Sugerencias recibidas</h3>
+        <div id="sugListaContenido" style="max-height:300px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal Guía Antibióticos -->
 <div id="modalAntibioticos" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
@@ -6243,6 +6285,71 @@ if(typeof MEGA_KB !== 'undefined') {
     'Via SC: Palomilla 21-23G pectoral/deltoides/abdomen. Compatibles: Morfina+Midazolam+Butilescopolamina.\n' +
     '';
 }
+
+// ═══ BUZÓN DE SUGERENCIAS ═══
+function abrirSugerencias(){
+  var user=firebase.auth().currentUser;
+  if(!user){showLoginModal();return;}
+  document.getElementById('modalSugerencias').style.display='flex';
+  document.getElementById('sugForm').style.display='block';
+  document.getElementById('sugGracias').style.display='none';
+  // Si es moderador, mostrar lista
+  if(typeof isAdmin==='function'&&isAdmin()){
+    document.getElementById('sugListaMod').style.display='block';
+    cargarSugerencias();
+  } else {
+    document.getElementById('sugListaMod').style.display='none';
+  }
+}
+
+function enviarSugerencia(){
+  var user=firebase.auth().currentUser;
+  if(!user){alert('Inicia sesión primero');return;}
+  var tipo=document.getElementById('sugTipo').value;
+  var texto=document.getElementById('sugTexto').value.trim();
+  if(!texto){alert('Escribe tu sugerencia');return;}
+  db.collection('sugerencias').add({
+    tipo:tipo,
+    texto:texto,
+    email:user.email,
+    nombre:user.displayName||user.email,
+    leido:false,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
+    document.getElementById('sugForm').style.display='none';
+    document.getElementById('sugGracias').style.display='block';
+  }).catch(function(e){alert('Error: '+e.message);});
+}
+
+function cargarSugerencias(){
+  var el=document.getElementById('sugListaContenido');
+  el.innerHTML='<div style="text-align:center;color:#888;padding:10px;font-size:.82rem;">Cargando...</div>';
+  db.collection('sugerencias').orderBy('createdAt','desc').limit(30).get().then(function(snap){
+    if(snap.empty){el.innerHTML='<div style="text-align:center;color:#888;padding:10px;font-size:.82rem;">No hay sugerencias.</div>';return;}
+    var html='';
+    var tipoIcons={mejora:'💡',bug:'🐛',contenido:'📚',otro:'💬'};
+    snap.forEach(function(doc){
+      var d=doc.data();
+      var fecha=d.createdAt?d.createdAt.toDate().toLocaleDateString('es-ES',''):'';
+      var leido=d.leido?'opacity:.5;':'';
+      html+='<div style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;margin-bottom:6px;font-size:.82rem;'+leido+'">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;">';
+      html+='<span style="font-weight:700;">'+(tipoIcons[d.tipo]||'💬')+' '+escHtml(d.nombre||'')+'</span>';
+      html+='<span style="font-size:.7rem;color:#aaa;">'+fecha+'</span>';
+      html+='</div>';
+      html+='<div style="margin-top:4px;color:#333;">'+escHtml(d.texto)+'</div>';
+      if(!d.leido) html+='<button onclick="marcarLeido(\''+doc.id+'\')" style="margin-top:4px;padding:3px 8px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;font-size:.7rem;cursor:pointer;">✅ Marcar leído</button>';
+      html+='</div>';
+    });
+    el.innerHTML=html;
+  }).catch(function(e){el.innerHTML='<div style="color:#dc2626;padding:10px;font-size:.82rem;">Error: '+e.message+'</div>';});
+}
+
+function marcarLeido(id){
+  db.collection('sugerencias').doc(id).update({leido:true}).then(function(){cargarSugerencias();}).catch(function(){});
+}
+
+function escHtml(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
 </script>
 
 <!-- Supabase SDK -->

@@ -2202,11 +2202,15 @@ firebase.auth().onAuthStateChanged(function(user){
             document.querySelectorAll(".btn-subir-contenido").forEach(function(el){
                 el.style.display="inline-flex";
             });
+            // Mostrar buzón sugerencias a todos los logueados
+            document.querySelectorAll(".btn-sugerencia").forEach(function(el){
+                el.style.display="inline-flex";
+            });
         });
     } else {
         // Sin sesión — restaurar botones
         
-        document.querySelectorAll(".btn-panel-mod,.btn-subir-contenido").forEach(function(el){
+        document.querySelectorAll(".btn-panel-mod,.btn-subir-contenido,.btn-sugerencia").forEach(function(el){
             el.style.display="none";
         });
     }
