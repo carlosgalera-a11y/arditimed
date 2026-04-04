@@ -835,6 +835,7 @@ function isReady(){return true;}
 function updateStatus(){var el=document.getElementById("statusBadge"),b=document.getElementById("modelBadge"),i=document.getElementById("modelInfo");if(!el)return;el.className="nav-status ok";el.textContent="✅ IA Conectada";b.textContent="DeepSeek";i.textContent="OpenRouter · Gratuito";}
 function cambiarProvider(){var v=document.getElementById("cfgProvider").value;document.getElementById("groqConfig").style.display=v==="groq"?"block":"none";document.getElementById("qwenConfig").style.display=v==="qwen"?"block":"none";}
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
+var lastAIModel='';/* EU AI Act Art. 52: transparency — track which model generates each response */
 async function llamarIA(up,sp){
   /* ═══ SECURITY: No paid API keys in client code ═══
      Chain: NAS proxy (local) → Pollinations (free) → OpenRouter (free tier only)
@@ -888,7 +889,9 @@ async function llamarIA(up,sp){
       if(!c) continue;
       c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
       if(!c) continue;
-      try{secureStore.set('aiHistory',JSON.stringify((function(){var h=JSON.parse(secureStore.get('aiHistory')||'[]');h.push({q:up.substring(0,100),s:currentCategory||'',t:Date.now()});if(h.length>100)h=h.slice(-100);return h;})()),48);}catch(he){}
+      /* EU AI Act Art. 52 — Track model for transparency */
+      lastAIModel=p.type==='nas'?'DeepSeek V3 (NAS proxy)':p.type==='poll'?'Pollinations AI (GPT-4o)':'OpenRouter · '+(p.model||'').split('/').pop().replace(':free','');
+      try{secureStore.set('aiHistory',JSON.stringify((function(){var h=JSON.parse(secureStore.get('aiHistory')||'[]');h.push({q:up.substring(0,100),s:currentCategory||'',t:Date.now(),m:lastAIModel});if(h.length>100)h=h.slice(-100);return h;})()),48);}catch(he){}
       return c;
     }catch(e){continue;}
   }
@@ -964,7 +967,8 @@ function fmtClinical(md,dark){
   html=html.replace(/\n\n+/g,'</p><p>').replace(/\n/g,'<br>');
   if(!html.startsWith('<'))html='<p>'+html+'</p>';
   var cls=dark?'cl-proto cl-dark':'cl-proto';
-  return css+'<div class="'+cls+'">'+html+'<div style="margin-top:16px;padding-top:12px;border-top:1px solid '+(dark?'rgba(255,255,255,.15)':'#e2e8f0')+';font-size:.72rem;color:#94a3b8;">Área II Cartagena · Generado con IA · Uso exclusivamente docente · Verificar siempre con fuentes oficiales</div></div>';
+  var modelTag=typeof lastAIModel==='string'&&lastAIModel?(' · Modelo: '+lastAIModel):'';
+  return css+'<div class="'+cls+'">'+html+'<div style="margin-top:16px;padding-top:12px;border-top:1px solid '+(dark?'rgba(255,255,255,.15)':'#e2e8f0')+';font-size:.72rem;color:#94a3b8;">Área II Cartagena · Generado con IA'+modelTag+' · Uso exclusivamente docente · No es producto sanitario (MDR 2017/745)</div></div>';
 }
 function openDocModal(idx){
   var docs=documents[currentCategory]||[];
