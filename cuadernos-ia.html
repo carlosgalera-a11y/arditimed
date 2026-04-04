@@ -64,14 +64,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:1
 </div>
 
 <div class="container">
-<div id="authMsg" class="auth-msg" style="display:none;">
-<div style="font-size:3rem;margin-bottom:12px;">🔐</div>
-<h2>Inicia sesión</h2>
-<p style="color:#888;margin:8px 0 16px;">Tus cuadernos son privados y requieren cuenta Google.</p>
-<button onclick="firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())" class="btn btn-green">🔐 Login con Google</button>
-</div>
-
-<div id="mainApp" style="display:none;">
+<div id="mainApp">
 
 <!-- LISTA DE CUADERNOS -->
 <div id="viewList">
@@ -134,31 +127,39 @@ firebase.initializeApp({apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgo_1o",authDom
 var auth=firebase.auth(),db=firebase.firestore();
 var currentUser=null,currentNbId=null,notebooks=[],chatHistory=[];
 
-auth.onAuthStateChanged(function(u){
-  if(u){currentUser=u;document.getElementById('authMsg').style.display='none';document.getElementById('mainApp').style.display='block';loadNotebooks();}
-  else{currentUser=null;document.getElementById('authMsg').style.display='block';document.getElementById('mainApp').style.display='none';}
-});
+function NB_KEY(){
+  var uid=currentUser?currentUser.uid:'local';
+  return 'cuadernos_ia_'+uid;
+}
 
-function NB_KEY(){return 'cuadernos_ia_'+currentUser.uid;}
+// Load immediately (localStorage), cloud sync if logged in later
+loadNotebooks();
+
+auth.onAuthStateChanged(function(u){
+  if(u){currentUser=u;loadNotebooks();}
+});
 
 function loadNotebooks(){
   try{notebooks=JSON.parse(localStorage.getItem(NB_KEY())||'[]');}catch(e){notebooks=[];}
   renderList();
-  // Cloud restore
-  db.collection('cuadernos_ia').doc(currentUser.uid).get().then(function(doc){
-    if(doc.exists&&doc.data().notebooks){
-      var cloud=doc.data().notebooks;
-      if(cloud.length>notebooks.length){notebooks=cloud;localStorage.setItem(NB_KEY(),JSON.stringify(notebooks));renderList();}
-    }
-  }).catch(function(){});
+  if(currentUser){
+    db.collection('cuadernos_ia').doc(currentUser.uid).get().then(function(doc){
+      if(doc.exists&&doc.data().notebooks){
+        var cloud=doc.data().notebooks;
+        if(cloud.length>notebooks.length){notebooks=cloud;localStorage.setItem(NB_KEY(),JSON.stringify(notebooks));renderList();}
+      }
+    }).catch(function(){});
+  }
 }
 
 function saveNotebooks(){
   localStorage.setItem(NB_KEY(),JSON.stringify(notebooks));
-  var compact=notebooks.map(function(nb){
-    return{id:nb.id,name:nb.name,desc:nb.desc,docs:nb.docs.map(function(d){return{name:d.name,type:d.type,data:d.data.substring(0,100000)};}),chat:nb.chat.slice(-20),createdAt:nb.createdAt};
-  });
-  db.collection('cuadernos_ia').doc(currentUser.uid).set({notebooks:compact.slice(0,10),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(function(){});
+  if(currentUser){
+    var compact=notebooks.map(function(nb){
+      return{id:nb.id,name:nb.name,desc:nb.desc,docs:nb.docs.map(function(d){return{name:d.name,type:d.type,data:d.data.substring(0,100000)};}),chat:nb.chat.slice(-20),createdAt:nb.createdAt};
+    });
+    db.collection('cuadernos_ia').doc(currentUser.uid).set({notebooks:compact.slice(0,10),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(function(){});
+  }
 }
 
 function renderList(){
