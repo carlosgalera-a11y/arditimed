@@ -53,11 +53,15 @@ select,button{font-family:inherit}
 <div class="type-btn" onclick="selType('eco',this)">🫀 Eco</div>
 </div>
 
-<div class="drop" id="dropZone" onclick="document.getElementById('fileIn').click()">
+<div class="drop" id="dropZone">
 <span class="icon">📸</span>
-<div>Toca para hacer foto o elegir imagen</div>
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;">
+<button onclick="document.getElementById('fileCam').click()" style="padding:12px 20px;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;">📷 Hacer foto</button>
+<button onclick="document.getElementById('fileGal').click()" style="padding:12px 20px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;">🖼️ Galería</button>
+</div>
 <div style="font-size:.78rem;color:#64748b">JPG, PNG · Fotos clínicas, Rx, ECG</div>
-<input type="file" id="fileIn" accept="image/*" capture="environment" multiple>
+<input type="file" id="fileCam" accept="image/*" capture="environment" multiple style="display:none">
+<input type="file" id="fileGal" accept="image/*" multiple style="display:none">
 </div>
 <div class="preview-grid" id="previews"></div>
 
@@ -95,12 +99,14 @@ function selType(t,el){
 }
 
 var drop=document.getElementById('dropZone');
-var fileIn=document.getElementById('fileIn');
+var fileCam=document.getElementById('fileCam');
+var fileGal=document.getElementById('fileGal');
 if(drop){
   ['dragenter','dragover'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add('over');});});
   ['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('over');});});
   drop.addEventListener('drop',function(ev){if(ev.dataTransfer.files.length)addFiles(ev.dataTransfer.files);});
-  fileIn.addEventListener('change',function(){if(this.files.length)addFiles(this.files);this.value='';});
+  fileCam.addEventListener('change',function(){if(this.files.length)addFiles(this.files);this.value='';});
+  fileGal.addEventListener('change',function(){if(this.files.length)addFiles(this.files);this.value='';});
 }
 
 function addFiles(fl){
