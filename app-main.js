@@ -51,6 +51,34 @@ function calcQSOFA(){
     else if(pts===1){el.style.background='#fefce8';el.style.color='#854d0e';el.textContent='qSOFA: '+pts+'/3 — Bajo-moderado';}
     else{el.style.background='#f0fdf4';el.style.color='#166534';el.textContent='qSOFA: 0/3 — Sin criterios';}
 }
+// Calculator specialty filter
+var CALC_CATS={
+  'CURB-65':'neumo','qSOFA':'urgencias','Wells':'cardio','Glasgow':'neuro','NIHSS':'neuro',
+  'Fine':'neumo','PORT':'neumo','PESI':'cardio','BODE':'neumo','CRB-65':'neumo','BAP-65':'neumo',
+  'Wood-Downes':'neumo','Taussig':'neumo','DECAF':'neumo','CAUDA-70':'neumo','VNI':'neumo',
+  'Pisa':'cardio','HEART':'cardio','CHA':'cardio','HAS-BLED':'cardio',
+  'NEWS2':'urgencias','SOFA':'urgencias',
+  'Glasgow-Blatchford':'digestivo','Child-Pugh':'digestivo','Alvarado':'digestivo',
+  'PHQ-9':'neuro','GAD-7':'neuro','ABCD':'neuro',
+  'Barthel':'otros','CKD-EPI':'otros','Ottawa':'otros'
+};
+function filterCalc(cat){
+  document.querySelectorAll('.calc-filter').forEach(function(b){b.style.background='#fff';b.style.color='#333';});
+  event.target.style.background='#1a6b4a';event.target.style.color='#fff';
+  var grid=document.getElementById('calcGrid');
+  if(!grid)return;
+  var cards=grid.children;
+  for(var i=0;i<cards.length;i++){
+    var card=cards[i];
+    var h3=card.querySelector('h3');
+    if(!h3){card.style.display='';continue;}
+    var title=h3.textContent||'';
+    var cardCat='otros';
+    for(var key in CALC_CATS){if(title.indexOf(key)!==-1){cardCat=CALC_CATS[key];break;}}
+    card.style.display=(cat==='all'||cardCat===cat)?'':'none';
+  }
+}
+
 function calcWells(){
     var pts=0;document.querySelectorAll('.wells-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
     var el=document.getElementById('wellsResult');

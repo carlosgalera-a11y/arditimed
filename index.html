@@ -1992,7 +1992,17 @@ window.showNotebooksModal=function(){
 
             <!-- TAB 3: CALCULADORAS MÉDICAS -->
             <div id="panelCalc" style="display:none;">
-              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:4px;">
+              <!-- Filter bar -->
+              <div id="calcFilterBar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:8px;background:rgba(0,0,0,.02);border-radius:10px;">
+                <button onclick="filterCalc('all')" class="calc-filter active" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#1a6b4a;color:#fff;">📋 Todas</button>
+                <button onclick="filterCalc('neumo')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🫁 Neumo</button>
+                <button onclick="filterCalc('cardio')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">❤️ Cardio</button>
+                <button onclick="filterCalc('neuro')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🧠 Neuro</button>
+                <button onclick="filterCalc('urgencias')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🏥 Urgencias</button>
+                <button onclick="filterCalc('digestivo')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🍽️ Digestivo</button>
+                <button onclick="filterCalc('otros')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">📌 Otros</button>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:4px;" id="calcGrid">
 
                 <!-- CURB-65 -->
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
