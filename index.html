@@ -4,7 +4,7 @@
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
-  var APP_VERSION='v9-20260404c';
+  var APP_VERSION='v10-20260404d';
   // Always delete every cache
   if('caches' in window){caches.keys().then(function(k){k.forEach(function(c){caches.delete(c);});});}
   if('serviceWorker' in navigator){
@@ -4273,6 +4273,7 @@ function renderPatients(){
 // ═══ SISTEMA DE MODERADORES ═══
 var SUPERADMIN_EMAIL="ramongalera22@gmail.com";
 var SUPERADMIN_EMAILS=["ramongalera22@gmail.com","carlosgalera2roman@gmail.com","esther.montoro@gmail.com"];
+var MODERATOR_EMAILS=["urgenciashuslcartagena@gmail.com"];
 var ADMIN_EMAIL=SUPERADMIN_EMAIL; // compatibilidad hacia atrás
 var isAdminLoggedIn=false;
 var isModerador=false;
@@ -4289,20 +4290,23 @@ function loadModeradoresFromFirestore(callback){
                 var d=doc.data();
                 moderadoresCache[d.email]={nombre:d.nombre||d.email,rol:d.rol||"moderador",activo:true};
             });
-            // Siempre incluir superadmin
+            // Siempre incluir superadmin y moderadores hardcodeados
             SUPERADMIN_EMAILS.forEach(function(em){moderadoresCache[em]={nombre:"Admin",rol:"superadmin",activo:true};});
+            MODERATOR_EMAILS.forEach(function(em){if(!moderadoresCache[em])moderadoresCache[em]={nombre:em.split("@")[0],rol:"moderador",activo:true};});
             console.log("Moderadores cargados:",Object.keys(moderadoresCache).length);
             if(callback)callback(moderadoresCache);
         }).catch(function(e){
             console.error("Error cargando moderadores:",e);
             moderadoresCache={};
             SUPERADMIN_EMAILS.forEach(function(em){moderadoresCache[em]={nombre:"Admin",rol:"superadmin",activo:true};});
+            MODERATOR_EMAILS.forEach(function(em){if(!moderadoresCache[em])moderadoresCache[em]={nombre:em.split("@")[0],rol:"moderador",activo:true};});
             if(callback)callback(moderadoresCache);
         });
     }catch(e){
         moderadoresCache={};
         SUPERADMIN_EMAILS.forEach(function(em){moderadoresCache[em]={nombre:"Admin",rol:"superadmin",activo:true};});
         if(callback)callback(moderadoresCache);
+        MODERATOR_EMAILS.forEach(function(em){if(!moderadoresCache[em])moderadoresCache[em]={nombre:em.split("@")[0],rol:"moderador",activo:true};});
     }
 }
 
