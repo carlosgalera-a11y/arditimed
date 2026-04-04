@@ -149,10 +149,10 @@ Tratamiento habitual:"></textarea></div>
 <div class="field"><label>Instrucciones adicionales (opcional)</label><textarea id="iaInstrucciones" rows="3" placeholder="Ej: Paciente de 68 años con EPOC Gold III ingresado 5 días por exacerbación. Incluir tratamiento completo al alta y signos de alarma."></textarea></div>
 
 <div class="section-title">📎 Documentos del paciente</div>
-<div class="drop-zone" id="iaDropZone" onclick="document.getElementById('iaFileIn').click()">
+<div class="drop-zone" id="iaDropZone" onclick="document.getElementById('iaFileIn').click()" tabindex="0">
 <span style="font-size:2rem;">📄</span>
-<div style="font-weight:600;">Arrastra aquí o haz clic para subir</div>
-<div style="font-size:.78rem;color:#888;">PDF, imágenes (analíticas, Rx, informes previos...)</div>
+<div style="font-weight:600;">Arrastra, haz clic o pega (Cmd+V)</div>
+<div style="font-size:.78rem;color:#888;">PDF, imágenes, capturas de pantalla (Cmd+V)</div>
 <input type="file" id="iaFileIn" accept="image/*,.pdf" multiple>
 </div>
 <div class="preview-grid" id="iaPreviews"></div>
@@ -341,6 +341,30 @@ var iaFileIn = document.getElementById('iaFileIn');
 iaDropZone.addEventListener('drop', function(ev){ if(ev.dataTransfer.files.length) iaAddFiles(ev.dataTransfer.files); });
 iaFileIn.addEventListener('change', function(){ if(this.files.length) iaAddFiles(this.files); this.value=''; });
 
+// Paste support (Cmd+V / Ctrl+V) - works on drop zone AND entire document
+document.addEventListener('paste', function(ev){
+  var items = ev.clipboardData && ev.clipboardData.items;
+  if(!items) return;
+  var files = [];
+  for(var i=0; i<items.length; i++){
+    if(items[i].type.indexOf('image') !== -1){
+      var blob = items[i].getAsFile();
+      if(blob) files.push(blob);
+    }
+  }
+  if(files.length > 0){
+    ev.preventDefault();
+    iaAddFiles(files);
+    // Visual feedback
+    iaDropZone.style.borderColor='#16a34a';
+    iaDropZone.style.background='#dcfce7';
+    setTimeout(function(){ iaDropZone.style.borderColor=''; iaDropZone.style.background=''; }, 1000);
+    // Switch to IA tab if not visible
+    var panel = document.getElementById('panelIA');
+    if(panel && !panel.classList.contains('show')) switchTab('ia');
+  }
+});
+
 function iaAddFiles(fl){
   for(var i=0;i<fl.length;i++){
     if(fl[i].size>20*1024*1024){alert('Máximo 20MB');continue;}
@@ -419,8 +443,12 @@ async function iaGenerar(){
   
   content.push({ type: 'text', text: prompt });
   
+  // Use vision model if images attached, text model otherwise
+  var hasImages = content.some(function(c){ return c.type === 'image_url'; });
+  var model = hasImages ? 'meta-llama/llama-4-scout:free' : 'deepseek/deepseek-chat-v3-0324:free';
+  
   var body = {
-    model: 'deepseek/deepseek-chat-v3-0324:free',
+    model: model,
     messages: [{ role: 'user', content: content }],
     max_tokens: 4000,
     temperature: 0.3
