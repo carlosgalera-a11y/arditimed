@@ -1593,11 +1593,20 @@ function scanGoogleLogin(){
         if(pg){logPageAccess(pg,user);showPage(pg);}
         else if(window._pendingDocencia){
             window._pendingDocencia=false;
-            showPage('pageLanding');
+            // Close the login modal
+            try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+            // Make sure we're on landing
+            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+            var landing=document.getElementById('pageLanding');
+            if(landing)landing.classList.add('active');
+            // Open subDocencia
             setTimeout(function(){
-                var sd=document.getElementById('subDocencia');if(sd)sd.style.display='flex';
-                sd.scrollIntoView({behavior:'smooth',block:'nearest'});
-            },300);
+                var sh=document.getElementById('subHerramientas');if(sh)sh.style.display='none';
+                var sp=document.getElementById('subProtocolos');if(sp)sp.style.display='none';
+                var sd=document.getElementById('subDocencia');
+                if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
+            },500);
+            return;
         }
         else{showPage("pageScanIA");scanRenderHist();}
     }
