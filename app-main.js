@@ -891,6 +891,8 @@ async function llamarIA(up,sp){
       if(!c) continue;
       /* EU AI Act Art. 52 — Track model for transparency */
       lastAIModel=p.type==='nas'?'DeepSeek V3 (NAS proxy)':p.type==='poll'?'Pollinations AI (GPT-4o)':'OpenRouter · '+(p.model||'').split('/').pop().replace(':free','');
+      /* EU AI Act Art. 14 — Log interaction to Firestore for traceability (no patient data) */
+      try{if(typeof db!=='undefined'&&firebase.auth().currentUser){db.collection('ai_audit_log').add({ts:new Date(),model:lastAIModel,section:currentCategory||'general',type:sp&&sp.indexOf('enferm')>-1?'enfermeria':sp&&sp.indexOf('urgencia')>-1?'urgencias':'consulta',user:firebase.auth().currentUser.email,queryLen:up.length,responseLen:c.length});}}catch(le){}
       try{secureStore.set('aiHistory',JSON.stringify((function(){var h=JSON.parse(secureStore.get('aiHistory')||'[]');h.push({q:up.substring(0,100),s:currentCategory||'',t:Date.now(),m:lastAIModel});if(h.length>100)h=h.slice(-100);return h;})()),48);}catch(he){}
       return c;
     }catch(e){continue;}

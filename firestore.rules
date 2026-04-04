@@ -2,86 +2,56 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper functions
+    function isAuth() { return request.auth != null; }
     function isSuperAdmin() {
-      return request.auth != null && (
-        request.auth.token.email == "ramongalera22@gmail.com" ||
-        request.auth.token.email == "carlosgalera2roman@gmail.com" ||
-        request.auth.token.email == "esther.montoro@gmail.com"
-      );
+      return isAuth() && request.auth.token.email in [
+        'ramongalera22@gmail.com','carlosgalera2roman@gmail.com','esther.montoro@gmail.com'
+      ];
     }
 
-    function isAuth() {
-      return request.auth != null;
-    }
-
-    // === MODERADORES ===
+    // Moderadores — read: authenticated, write: superadmin only
     match /moderadores/{docId} {
+      allow read: if isAuth();
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // Propuestas — create: authenticated, moderate: admin/moderator, delete: superadmin
+    match /propuestas_contenido/{docId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth() && (isSuperAdmin() || 
+        exists(/databases/$(database)/documents/moderadores/$(request.auth.token.email)));
+      allow delete: if isSuperAdmin();
+    }
+
+    // Documentos aprobados — read: authenticated, write: admin/mod
+    match /documentos_aprobados/{docId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && (isSuperAdmin() || 
+        exists(/databases/$(database)/documents/moderadores/$(request.auth.token.email)));
+    }
+
+    // Platform config — read: authenticated, write: superadmin
+    match /platform_config/{docId} {
       allow read: if isAuth();
       allow write: if isSuperAdmin();
     }
 
-    // === PROPUESTAS DE CONTENIDO ===
-    match /propuestas_contenido/{docId} {
-      allow create: if isAuth()
-                    && request.resource.data.email == request.auth.token.email;
-      allow read: if isAuth();
-      allow update: if isAuth();
-      allow delete: if isSuperAdmin();
+    // AI Audit Log — create: authenticated, read: admin, no update/delete (immutable)
+    match /ai_audit_log/{docId} {
+      allow create: if isAuth();
+      allow read: if isSuperAdmin();
+      allow update, delete: if false;
     }
 
-    // === CONFIG (API keys, etc.) — solo superadmin ===
+    // Config (legacy) — read: authenticated, write: superadmin
     match /config/{docId} {
       allow read: if isAuth();
       allow write: if isSuperAdmin();
     }
 
-    // === ACCESOS ===
-    match /accesos/{docId} {
-      allow create: if isAuth();
-      allow read, update, delete: if isSuperAdmin();
-    }
-
-    match /accesos_profesionales/{docId} {
-      allow create: if isAuth();
-      allow read, update, delete: if isSuperAdmin();
-    }
-
-    // === PROTOCOLOS ===
-    match /protocolos/{docId} {
-      allow read: if isAuth();
-      allow write: if isSuperAdmin();
-    }
-
-    // === DOCUMENTOS APROBADOS (público lectura, solo moderadores escriben) ===
-    match /documentos_aprobados/{docId} {
-      allow read: if true;
-      allow create, update: if isAuth();
-      allow delete: if isSuperAdmin();
-    }
-
-    // === DOCUMENTOS (registro de archivos subidos por admin) ===
-    match /documentos/{docId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isSuperAdmin();
-    }
-
-    // === GUARDIA_CAMBIOS ===
-    match /guardia_cambios/{docId} {
-      allow read, write: if isAuth();
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // === CUADERNOS PRIVADOS POR USUARIO =====================
-    // Cada usuario solo puede leer y escribir sus propios docs.
-    // Ni superadmins pueden leer los cuadernos de otro usuario.
-    // ═══════════════════════════════════════════════════════
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == userId;
-    }
-
-    // Bloquear todo lo demás
+    // Default: deny all
     match /{document=**} {
       allow read, write: if false;
     }
