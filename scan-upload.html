@@ -89,6 +89,9 @@ var uid=params.get('uid');
 var selectedType='derma';
 var pendingFiles=[];
 
+/* Anonymous auth for Storage access */
+firebase.auth().signInAnonymously().catch(function(e){console.warn('Anon auth:',e);});
+
 if(!uid){
   document.querySelector('.card').innerHTML='<div style="text-align:center;padding:30px"><div style="font-size:2.5rem;margin-bottom:12px">❌</div><p style="font-weight:700">Enlace inválido</p><p style="font-size:.82rem;color:#94a3b8;margin-top:8px">Este QR no contiene un ID de usuario válido. Genera un nuevo QR desde la webapp.</p></div>';
 }
