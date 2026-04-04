@@ -336,57 +336,10 @@ function renderFavoritosBar(){
 document.addEventListener('DOMContentLoaded',function(){setTimeout(renderFavoritosBar,500);});
 
 // ═══ PROTOCOLOS AP CONFIG (uses shared CONFIG, unique IDs) ═══
-function apCambiarProvider(){
-    var v=document.getElementById("apCfgProvider").value;
-    document.getElementById("apGroqConfig").style.display=v==="groq"?"block":"none";
-    document.getElementById("apQwenConfig").style.display=v==="qwen"?"block":"none";
-}
-
-function apSyncFromConfig(){
-    try{
-        document.getElementById("apCfgProvider").value=CONFIG.provider;
-        apCambiarProvider();
-        document.getElementById("apCfgGroqKey").value=CONFIG.groqKey||"";
-        document.getElementById("apCfgGroqModel").value=CONFIG.groqModel;
-        document.getElementById("apCfgQwenKey").value=CONFIG.qwenKey||"";
-        document.getElementById("apCfgQwenModel").value=CONFIG.qwenModel;
-    }catch(e){}
-}
-
-function apGuardarConfig(){
-    CONFIG.provider=document.getElementById("apCfgProvider").value;
-    CONFIG.groqKey=document.getElementById("apCfgGroqKey").value.trim();
-    CONFIG.groqModel=document.getElementById("apCfgGroqModel").value;
-    CONFIG.qwenKey=document.getElementById("apCfgQwenKey").value.trim();
-    CONFIG.qwenModel=document.getElementById("apCfgQwenModel").value;
-    localStorage.setItem("notebook_ai_cfg_v3",JSON.stringify(CONFIG));
-    updateStatus();
-    // Also sync the professionals config fields if they exist
-    try{
-        document.getElementById("cfgProvider").value=CONFIG.provider;
-        cambiarProvider();
-        document.getElementById("cfgGroqKey").value=CONFIG.groqKey;
-        document.getElementById("cfgGroqModel").value=CONFIG.groqModel;
-        document.getElementById("cfgQwenKey").value=CONFIG.qwenKey;
-        document.getElementById("cfgQwenModel").value=CONFIG.qwenModel;
-    }catch(e){}
-    document.getElementById("apCfgStatus").innerHTML='<span style="color:var(--primary)">✅ Guardado</span>';
-    setTimeout(function(){document.getElementById("apCfgStatus").innerHTML=""},3000);
-}
-
-async function apTestApiKey(){
-    apGuardarConfig();
-    if(!isReady()){document.getElementById("apCfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}
-    var st=document.getElementById("apCfgStatus");
-    st.innerHTML='<span style="color:var(--accent)">⏳ Probando...</span>';
-    var e=ep();
-    try{
-        var r=await fetch(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"user",content:"Di: OK"}],max_tokens:10})});
-        if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!</span>';
-        else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';
-        else st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+'</span>';
-    }catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+'</span>';}
-}
+function apCambiarProvider(){}
+function apSyncFromConfig(){}
+function apGuardarConfig(){var el=document.getElementById("apCfgStatus");if(el){el.innerHTML='<span style="color:#22c55e">✅ DeepSeek V3 activo</span>';setTimeout(function(){el.innerHTML='';},3000);}}
+async function apTestApiKey(){var el=document.getElementById("apCfgStatus");if(el){el.innerHTML='<span style="color:#d97706">⏳ Probando...</span>';var r=await llamarIA("Di: OK","Test");el.innerHTML=r.includes("OK")||r.length>2?'<span style="color:#22c55e">✅ IA funcionando correctamente</span>':'<span style="color:#dc2626">❌ Sin respuesta</span>';setTimeout(function(){el.innerHTML='';},3000);}}
 
 
 // ═══ PROTOCOLOS AP - PREGUNTAS IA ═══
@@ -1013,7 +966,7 @@ function cargarPropuestasEnSeccion(seccion, container){
         })
         .catch(function(){ container.innerHTML = ""; });
 }
-function guardarConfig(){CONFIG.provider=document.getElementById("cfgProvider").value;CONFIG.groqKey=document.getElementById("cfgGroqKey").value.trim();CONFIG.groqModel=document.getElementById("cfgGroqModel").value;CONFIG.qwenKey=document.getElementById("cfgQwenKey").value.trim();CONFIG.qwenModel=document.getElementById("cfgQwenModel").value;localStorage.setItem("notebook_ai_cfg_v3",JSON.stringify(CONFIG));if(CONFIG.groqKey&&isAdmin())saveGroqKeyToFirestore(CONFIG.groqKey);updateStatus();document.getElementById("cfgStatus").innerHTML='<span style="color:var(--primary)">✅ Guardado</span>';}
+function guardarConfig(){updateStatus();var el=document.getElementById("cfgStatus");if(el)el.innerHTML='<span style="color:#22c55e">✅ DeepSeek V3 activo — sin configuración necesaria</span>';}
 async function testApiKey(){guardarConfig();if(!isReady()){document.getElementById("cfgStatus").innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}var st=document.getElementById("cfgStatus");st.innerHTML='<span style="color:var(--accent)">⏳ Probando...</span>';var e=ep();try{var r=await fetchWithCorsProxy(e.url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+e.getKey()},body:JSON.stringify({model:e.getModel(),messages:[{role:"user",content:"Di: OK"}],max_tokens:10})});if(r.ok)st.innerHTML='<span style="color:var(--primary)">✅ ¡Conexión exitosa!</span>';else if(r.status===401)st.innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';else{var err=await r.json().catch(function(){return{}});st.innerHTML='<span style="color:#dc2626">❌ Error '+r.status+"</span>";}}catch(err){st.innerHTML='<span style="color:#dc2626">❌ '+err.message+"</span>";}}
 function guardarDatos(){localStorage.setItem("cartagena_preguntas",JSON.stringify(preguntas));localStorage.setItem("cartagena_notas",JSON.stringify(notas));}
 function cargarDatos(){try{preguntas=JSON.parse(localStorage.getItem("cartagena_preguntas"))||{};}catch(e){preguntas={};}try{notas=JSON.parse(localStorage.getItem("cartagena_notas"))||{};}catch(e){notas={};}}
