@@ -871,7 +871,7 @@ window.showNotebooksModal=function(){
         <p style="font-size:.95rem;color:var(--text-light);margin-bottom:30px;max-width:600px;">Accede a los protocolos y guías de atención primaria para profesionales médicos.</p>
         
         <div style="background:var(--bg-card);border-radius:var(--radius);padding:24px;margin-bottom:30px;">
-            <div class="tab-buttons"><button class="tab-btn tab-protocols active" onclick="switchProtocolTab('generales',this)" style="cursor:pointer;">📋 Protocolos</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('preguntas-proto',this)" style="cursor:pointer;">🤖 Preguntas IA</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('informes-ap',this)" style="cursor:pointer;">📄 Informes</button></div>
+            <div class="tab-buttons"><button class="tab-btn tab-protocols active" onclick="switchProtocolTab('generales',this)" style="cursor:pointer;">📋 Protocolos</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('preguntas-proto',this)" style="cursor:pointer;">🤖 Preguntas IA</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('studio-ap',this)" style="cursor:pointer;">✨ Studio</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('informes-ap',this)" style="cursor:pointer;">📄 Informes</button></div>
             
             <div id="generales-content" class="protocol-content" style="display:block;margin-top:20px;">
                 <div id="generalesProtocols" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
@@ -1050,6 +1050,53 @@ window.showNotebooksModal=function(){
             </div>
             
             <!-- ADMIN PROTOCOLOS (solo visible con login) -->
+            <!-- ═══ STUDIO AP ═══ -->
+            <div id="studio-ap-content" class="protocol-content" style="display:none;margin-top:20px;">
+                <div style="background:linear-gradient(135deg,#1a6b4a,#0d4d33);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;">
+                    <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:2.5rem;opacity:.12;">✨</div>
+                    <h4 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:6px;">✨ Studio AP — Chat libre con IA</h4>
+                    <p style="font-size:.86rem;opacity:.8;font-weight:300;">Pregunta lo que quieras. La IA conoce todos los protocolos de AP y responde con contexto clínico.</p>
+                </div>
+
+                <!-- Selector protocolo de contexto -->
+                <div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <label style="font-weight:600;font-size:.85rem;color:var(--text);white-space:nowrap;">📄 Contexto:</label>
+                    <select id="apStudioProtoSelect" style="flex:1;min-width:180px;padding:9px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.85rem;font-family:var(--font-body);background:var(--bg-main);">
+                        <option value="all">📚 Todos los protocolos</option>
+                        <option value="1">1 · ORL en Atención Primaria</option>
+                        <option value="2">2 · Riñón y Vías Urinarias</option>
+                        <option value="3">3 · Dermatología en AP</option>
+                        <option value="4">4 · Musculoesquelético</option>
+                        <option value="5">5 · Enfermedades Crónicas (HTA, DM, EPOC)</option>
+                        <option value="6">6 · Salud Mental</option>
+                        <option value="7">7 · Sistema Nervioso</option>
+                        <option value="8">8 · Problemas Digestivos</option>
+                        <option value="9">9 · Problemas Digestivos (cont.)</option>
+                        <option value="10">10 · Respiratorio y Cardiovascular</option>
+                    </select>
+                </div>
+
+                <!-- Chat -->
+                <div id="apStudioChat" style="min-height:200px;max-height:520px;overflow-y:auto;margin-bottom:14px;display:flex;flex-direction:column;gap:12px;" class="scrollbar"></div>
+
+                <!-- Acciones rápidas Studio -->
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+                    <button onclick="apStudioQuick('Crea un esquema de diagnóstico diferencial completo para este protocolo')" style="padding:6px 12px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">🔍 Diagnóstico diferencial</button>
+                    <button onclick="apStudioQuick('Enumera todos los fármacos con dosis exactas que aparecen en este protocolo')" style="padding:6px 12px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">💊 Fármacos y dosis</button>
+                    <button onclick="apStudioQuick('¿Cuáles son los criterios de derivación urgente y preferente?')" style="padding:6px 12px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">🚨 Derivación</button>
+                    <button onclick="apStudioQuick('Crea 5 casos clínicos MIR basados en el contenido de este protocolo con respuesta comentada')" style="padding:6px 12px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">🎓 Casos MIR</button>
+                    <button onclick="apStudioQuick('Haz un resumen ejecutivo en formato tabla: patología / diagnóstico / tratamiento / derivación')" style="padding:6px 12px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">📊 Tabla resumen</button>
+                    <button onclick="apStudioClear()" style="padding:6px 12px;background:#fee2e2;border:1px solid #fca5a5;border-radius:20px;font-size:.8rem;cursor:pointer;color:#dc2626;font-family:var(--font-body);transition:.2s;">🗑️ Limpiar</button>
+                </div>
+
+                <!-- Input -->
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="apStudioInput" placeholder="Escribe tu pregunta... (Enter para enviar, Shift+Enter para nueva línea)" rows="2" spellcheck="false" style="flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:.9rem;font-family:var(--font-body);background:var(--bg-card);resize:none;transition:.2s;line-height:1.5;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();apStudioEnviar();}"></textarea>
+                    <button onclick="apStudioEnviar()" id="apStudioBtn" style="padding:12px 20px;background:linear-gradient(135deg,#1a6b4a,#0d4d33);color:#fff;border:none;border-radius:var(--radius);font-size:.9rem;font-weight:700;cursor:pointer;font-family:var(--font-body);white-space:nowrap;min-width:90px;">Enviar ✨</button>
+                </div>
+                <div style="font-size:.73rem;color:var(--text-muted);margin-top:6px;text-align:right;">DeepSeek V3 · Contexto: protocolos de AP seleccionados</div>
+            </div>
+
             <!-- ═══ INFORMES AP ═══ -->
             <div id="informes-ap-content" class="protocol-content" style="display:none;margin-top:20px;">
                 <div style="text-align:center;padding:20px;">

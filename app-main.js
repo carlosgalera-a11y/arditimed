@@ -397,7 +397,15 @@ function apRenderPreguntas() {
         return;
     }
     el.innerHTML = apPreguntas.slice().reverse().map(function(p) {
-        return '<div class="question-box"><div class="question-text">' + esc(p.pregunta) + '</div><div class="answer-text">' + esc(p.respuesta) + '</div><div class="note-time">' + p.fecha + '</div></div>';
+        var isLoading = p.respuesta === '⏳ Consultando...';
+        var respHtml = isLoading
+            ? '<div style="display:flex;align-items:center;gap:10px;padding:16px;color:var(--text-muted);font-size:.88rem;"><div style="width:18px;height:18px;border:2px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Consultando DeepSeek V3...</div>'
+            : (typeof fmtClinical === 'function' ? fmtClinical(p.respuesta) : p.respuesta.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
+        return '<div class="question-box" style="border-radius:12px;overflow:hidden;margin-bottom:14px;border:none;box-shadow:0 2px 8px rgba(0,0,0,.08);">'
+            + '<div style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));padding:10px 16px;color:#fff;font-size:.88rem;font-weight:600;">❓ ' + esc(p.pregunta) + '</div>'
+            + '<div style="padding:16px;background:var(--bg-card);">' + respHtml + '</div>'
+            + '<div style="padding:6px 16px;background:var(--bg-main);border-top:1px solid var(--border);font-size:.73rem;color:var(--text-muted);">' + p.fecha + '</div>'
+            + '</div>';
     }).join('');
 }
 
@@ -2566,4 +2574,93 @@ document.addEventListener("DOMContentLoaded",function(){
     document.getElementById("loginUsername").addEventListener("keypress",function(e){
         if(e.key==="Enter")document.getElementById("loginPassword").focus();
     });
+});
+
+
+// ═══ STUDIO AP ═══
+var apStudioHistory = [];
+var apStudioProcessing = false;
+
+function apStudioGetContext() {
+    var sel = document.getElementById('apStudioProtoSelect').value;
+    var contextText = '';
+    if (sel === 'all') {
+        for (var k in AP_PROTOCOL_TEXTS) contextText += '\n\n--- PROTOCOLO ' + k + ' ---\n' + AP_PROTOCOL_TEXTS[k];
+        var custom = apGetCustomProtocols();
+        for (var i = 0; i < custom.length; i++) contextText += '\n\n--- ' + custom[i].name + ' ---\n' + custom[i].content;
+    } else if (AP_PROTOCOL_TEXTS[sel]) {
+        contextText = AP_PROTOCOL_TEXTS[sel];
+    }
+    return contextText;
+}
+
+function apStudioRender() {
+    var el = document.getElementById('apStudioChat');
+    if (!el) return;
+    if (apStudioHistory.length === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:40px 20px;opacity:.5;"><div style="font-size:2.5rem;margin-bottom:8px;">✨</div><p style="font-size:.88rem;">Studio listo. Haz una pregunta o usa los accesos rápidos.</p></div>';
+        return;
+    }
+    el.innerHTML = apStudioHistory.map(function(m) {
+        if (m.role === 'user') {
+            return '<div style="display:flex;justify-content:flex-end;">'
+                + '<div style="max-width:80%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:10px 16px;border-radius:18px 18px 4px 18px;font-size:.88rem;line-height:1.5;">'
+                + esc(m.content) + '</div></div>';
+        } else {
+            var isLoading = m.content === '⏳';
+            var html = isLoading
+                ? '<div style="display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:.85rem;"><div style="width:16px;height:16px;border:2px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>DeepSeek está pensando...</div>'
+                : (typeof fmtClinical === 'function' ? fmtClinical(m.content) : m.content.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
+            return '<div style="display:flex;align-items:flex-start;gap:10px;">'
+                + '<div style="width:28px;height:28px;background:linear-gradient(135deg,#1a6b4a,#0d4d33);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:#fff;font-weight:700;margin-top:4px;">✨</div>'
+                + '<div style="flex:1;background:var(--bg-card);border:1px solid var(--border);padding:12px 16px;border-radius:4px 18px 18px 18px;font-size:.88rem;line-height:1.6;">'
+                + html + '</div></div>';
+        }
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+}
+
+async function apStudioEnviar() {
+    var input = document.getElementById('apStudioInput');
+    var q = (input ? input.value.trim() : '');
+    if (!q || apStudioProcessing) return;
+    apStudioProcessing = true;
+    document.getElementById('apStudioBtn').disabled = true;
+    input.value = '';
+
+    apStudioHistory.push({ role: 'user', content: q });
+    apStudioHistory.push({ role: 'assistant', content: '⏳' });
+    apStudioRender();
+
+    var ctx = apStudioGetContext();
+    var sys = 'Eres un asistente médico experto en Atención Primaria en España. Responde de forma detallada, estructurada y clínica. Usa markdown con negritas, listas y encabezados para que el texto sea fácil de leer. Si el protocolo no cubre el tema preguntado, responde con tu conocimiento médico general indicándolo.\n\nCONTENIDO DE LOS PROTOCOLOS:\n' + ctx;
+
+    // Build messages for context (last 6 exchanges max)
+    var msgs = [{role:'system',content:sys}];
+    var hist = apStudioHistory.slice(0,-1); // exclude loading placeholder
+    var start = Math.max(0, hist.length - 12);
+    for (var i = start; i < hist.length; i++) msgs.push(hist[i]);
+
+    var r = await llamarIA(q, sys);
+
+    apStudioHistory[apStudioHistory.length - 1] = { role: 'assistant', content: r };
+    apStudioRender();
+    apStudioProcessing = false;
+    document.getElementById('apStudioBtn').disabled = false;
+    if (input) input.focus();
+}
+
+function apStudioQuick(q) {
+    var input = document.getElementById('apStudioInput');
+    if (input) input.value = q;
+    apStudioEnviar();
+}
+
+function apStudioClear() {
+    apStudioHistory = [];
+    apStudioRender();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    apStudioRender();
 });
