@@ -1050,82 +1050,12 @@ window.showNotebooksModal=function(){
             <!-- ADMIN PROTOCOLOS (solo visible con login) -->
             <!-- ═══ INFORMES AP ═══ -->
             <div id="informes-ap-content" class="protocol-content" style="display:none;margin-top:20px;">
-                <!-- ADVERTENCIA RGPD -->
-                <div style="background:linear-gradient(135deg,#dc2626,#c62828);border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;color:#fff;border-left:5px solid #ff0;">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                        <span style="font-size:1.6rem;">⚠️</span>
-                        <strong style="font-size:1.05rem;">PROTECCIÓN DE DATOS — IMPORTANTE</strong>
-                    </div>
-                    <p style="font-size:.88rem;line-height:1.6;opacity:.95;">
-                        <strong>NO subas documentos ni capturas que contengan nombres de pacientes, DNI, números de historia clínica u otros datos identificativos.</strong>
-                        La IA rechazará automáticamente cualquier imagen o texto donde detecte datos personales.
-                        Anonimiza siempre la información antes de usarla: sustituye nombres por "Paciente", elimina DNI, NHC y direcciones.
-                    </p>
-                    <p style="font-size:.8rem;margin-top:8px;opacity:.7;">📋 Esta herramienta es de uso docente. Cumplimiento RGPD / LOPD-GDD.</p>
-                </div>
-
-                <div class="studio-intro" style="background:linear-gradient(135deg,#1565c0,#0d47a1);">
-                    <h4>📄 Generador de Informes Clínicos</h4>
-                    <p>Elabora informes con IA a partir de texto o capturas. Descarga en Word, PDF o texto plano.</p>
-                </div>
-
-                <!-- Tipo de informe -->
-                <div class="config-box" style="margin-bottom:16px;">
-                    <h4 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:12px;">1️⃣ Tipo de Informe</h4>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
-                        <button class="studio-card informe-tipo-btn" data-tipo="derivacion" onclick="infSelectTipo(this,'derivacion')" style="border:2px solid var(--primary);background:rgba(26,107,74,.05);"><div class="studio-card-icon">📨</div><div class="studio-card-title">Derivación</div><div class="studio-card-desc">Interconsulta a especialista</div></button>
-                        <button class="studio-card informe-tipo-btn" data-tipo="alta" onclick="infSelectTipo(this,'alta')"><div class="studio-card-icon">✅</div><div class="studio-card-title">Alta</div><div class="studio-card-desc">Informe de alta médica</div></button>
-                        <button class="studio-card informe-tipo-btn" data-tipo="seguimiento" onclick="infSelectTipo(this,'seguimiento')"><div class="studio-card-icon">📋</div><div class="studio-card-title">Seguimiento</div><div class="studio-card-desc">Control evolutivo</div></button>
-                        <button class="studio-card informe-tipo-btn" data-tipo="urgencia" onclick="infSelectTipo(this,'urgencia')"><div class="studio-card-icon">🚨</div><div class="studio-card-title">Urgencia</div><div class="studio-card-desc">Atención urgente</div></button>
-                        <button class="studio-card informe-tipo-btn" data-tipo="enfermeria" onclick="infSelectTipo(this,'enfermeria')"><div class="studio-card-icon">👩‍⚕️</div><div class="studio-card-title">Enfermería</div><div class="studio-card-desc">Informe de cuidados</div></button>
-                        <button class="studio-card informe-tipo-btn" data-tipo="libre" onclick="infSelectTipo(this,'libre')"><div class="studio-card-icon">✏️</div><div class="studio-card-title">Libre</div><div class="studio-card-desc">Formato personalizado</div></button>
-                    </div>
-                </div>
-
-                <!-- Input de datos -->
-                <div class="config-box" style="margin-bottom:16px;">
-                    <h4 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:12px;">2️⃣ Datos del Informe</h4>
-                    <textarea id="infTextoInput" placeholder="Describe el caso clínico aquí (sin datos personales)...&#10;&#10;Ejemplo: Paciente varón 67 años, HTA, DM2, acude por dolor torácico de 2h de evolución..." style="width:100%;padding:14px;border:2px solid var(--border);border-radius:var(--radius);min-height:120px;font-family:var(--font-body);resize:vertical;font-size:.92rem;background:var(--bg-card);line-height:1.6;" oninput="infCheckPrivacy(this)"></textarea>
-                    <div id="infPrivacyAlert" style="display:none;margin-top:8px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#dc2626;font-size:.85rem;font-weight:600;">
-                        ⚠️ Se han detectado posibles datos personales. Por favor, anonimiza el texto antes de continuar.
-                    </div>
-
-                    <!-- Upload capturas -->
-                    <div style="margin-top:16px;">
-                        <label style="display:block;font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:8px;">📷 Adjuntar capturas (opcional — sin datos personales)</label>
-                        <div id="infDropZone" style="border:2px dashed var(--border);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg-subtle);" onclick="document.getElementById('infFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--primary)';this.style.background='rgba(26,107,74,.05)'" ondragleave="this.style.borderColor='var(--border)';this.style.background='var(--bg-subtle)'" ondrop="event.preventDefault();this.style.borderColor='var(--border)';this.style.background='var(--bg-subtle)';infHandleFiles(event.dataTransfer.files)">
-                            <div style="font-size:2rem;margin-bottom:6px;">📎</div>
-                            <p style="font-size:.88rem;color:var(--text-muted);">Arrastra imágenes aquí o haz clic para seleccionar</p>
-                            <p style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">PNG, JPG — Máximo 5 imágenes</p>
-                        </div>
-                        <input type="file" id="infFileInput" accept="image/*" multiple style="display:none;" onchange="infHandleFiles(this.files)">
-                        <div id="infFilesList" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;"></div>
-                    </div>
-                </div>
-
-                <!-- Instrucciones adicionales -->
-                <div class="config-box" style="margin-bottom:16px;">
-                    <h4 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:8px;">3️⃣ Instrucciones adicionales (opcional)</h4>
-                    <input type="text" id="infInstrucciones" placeholder="Ej: Incluir plan de tratamiento, añadir antecedentes, formato breve..." style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.9rem;font-family:var(--font-body);background:var(--bg-card);">
-                </div>
-
-                <!-- Generar -->
-                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
-                    <button class="btn btn-primary" onclick="infGenerar()" id="infBtnGenerar" style="flex:1;min-width:200px;padding:14px 24px;font-size:1rem;">🤖 Generar Informe</button>
-                </div>
-
-                <!-- Resultado -->
-                <div id="infResultado" style="display:none;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
-                        <h4 style="font-family:var(--font-display);color:var(--primary-dark);" id="infResultTitle">📄 Informe Generado</h4>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <button class="btn btn-primary btn-small" onclick="infDescargar('docx')">📝 Word</button>
-                            <button class="btn btn-primary btn-small" onclick="infDescargar('pdf')" style="background:linear-gradient(135deg,#dc2626,#b91c1c);">📕 PDF</button>
-                            <button class="btn btn-secondary btn-small" onclick="infDescargar('txt')">📃 Texto</button>
-                            <button class="btn btn-secondary btn-small" onclick="infCopiar()">📋 Copiar</button>
-                        </div>
-                    </div>
-                    <div id="infResultContent" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;line-height:1.8;font-size:.92rem;white-space:pre-wrap;max-height:600px;overflow-y:auto;font-family:'Segoe UI',system-ui,sans-serif;"></div>
+                <div style="text-align:center;padding:20px;">
+                    <div style="font-size:3rem;margin-bottom:12px;">📄</div>
+                    <h3 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:8px;">Generador de Informes Clínicos</h3>
+                    <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:16px;">3 modos: Plantilla Urgencias, Generador con IA (Cmd+V capturas) y Mis Plantillas personalizadas.</p>
+                    <a href="plantillas-informes.html" target="_blank" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#1a6b4a,#145a32);color:#fff;border-radius:10px;font-weight:700;font-size:1rem;text-decoration:none;font-family:var(--font-body);box-shadow:0 4px 12px rgba(26,107,74,.3);">🤖 Abrir Generador de Informes</a>
+                    <p style="font-size:.75rem;color:var(--text-muted);margin-top:12px;">Usa Qwen 2.5 VL para leer capturas · DeepSeek V3 para texto · Pega capturas con Cmd+V</p>
                 </div>
             </div>
 
