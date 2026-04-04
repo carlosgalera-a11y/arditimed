@@ -1817,9 +1817,8 @@ async function scanLoadUploaded(docId){
     }
     // Mark as loaded
     await db.collection("scan_uploads").doc(docId).update({status:'loaded'});
-      // Scroll to analyzer
-      document.getElementById("scanDropZone").scrollIntoView({behavior:'smooth'});
-    }
+    // Scroll to analyzer
+    document.getElementById("scanDropZone").scrollIntoView({behavior:'smooth'});
   }catch(e){console.error(e);}
 }
 
