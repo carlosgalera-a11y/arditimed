@@ -666,7 +666,7 @@ function urgRenderPreguntas() {
         var isLoading = p.respuesta === '⏳ Consultando...';
         var respHtml = isLoading
             ? '<div style="display:flex;align-items:center;gap:10px;padding:16px;color:rgba(255,255,255,.6);font-size:.88rem;"><div style="width:18px;height:18px;border:2px solid #ef5350;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Consultando DeepSeek V3...</div>'
-            : (typeof fmtClinical === 'function' ? '<div class="cl-proto" style="color:#fff;">' + fmtClinical(p.respuesta).replace(/class="cl-proto"/,'') + '</div>' : p.respuesta.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
+            : (typeof fmtClinical === 'function' ? fmtClinical(p.respuesta, true) : p.respuesta.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
         return '<div style="border-radius:12px;overflow:hidden;margin-bottom:14px;border:1px solid rgba(255,255,255,.12);">'
             + '<div style="background:rgba(211,47,47,.35);padding:10px 16px;font-size:.88rem;font-weight:600;color:#fff;">❓ ' + esc(p.pregunta) + '</div>'
             + '<div style="padding:16px;background:rgba(255,255,255,.06);font-size:.88rem;line-height:1.7;color:rgba(255,255,255,.92);">' + respHtml + '</div>'
@@ -857,9 +857,9 @@ var lastSC="",lastST="";
 async function studioAction(t){if(!isReady()||isProcessing)return;var c=studioPrompts[t];if(!c)return;isProcessing=true;document.querySelectorAll(".studio-card").forEach(function(x){x.disabled=true});var rd=document.getElementById("studioResult"),cd=document.getElementById("studioResultContent");lastST=c.title+currentCategory;document.getElementById("studioResultTitle").textContent=lastST;cd.textContent="⏳ Generando...";rd.style.display="block";lastSC=await llamarIA(c.prompt.replace(/\{cat\}/g,currentCategory),"Experto médico. Responde en español.");cd.textContent=lastSC;isProcessing=false;document.querySelectorAll(".studio-card").forEach(function(x){x.disabled=false});}
 function guardarStudioComoNota(){if(!lastSC)return;if(!notas[currentCategory])notas[currentCategory]=[];notas[currentCategory].push({texto:lastST+"\n\n"+lastSC,fecha:new Date().toLocaleString("es-ES")});guardarDatos();actualizarUI();alert("✅ Guardado")}
 function agregarNota(){var t=document.getElementById("noteInput").value.trim();if(!t)return;if(!notas[currentCategory])notas[currentCategory]=[];notas[currentCategory].push({texto:t,fecha:new Date().toLocaleString("es-ES")});document.getElementById("noteInput").value="";guardarDatos();actualizarUI();}
-function fmtClinical(md){
+function fmtClinical(md,dark){
   if(!md)return'<p style="color:#888;">Sin contenido.</p>';
-  var css='<style>.cl-proto{font-family:-apple-system,system-ui,sans-serif;line-height:1.75;color:var(--text,#1e293b);font-size:.9rem}'+
+  var css='<style>.cl-proto{font-family:-apple-system,system-ui,sans-serif;line-height:1.75;color:#1e293b;font-size:.9rem}'+
     '.cl-proto h2{font-size:1.05rem;font-weight:700;color:#0f172a;margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid #0d9488}'+
     '.cl-proto h3{font-size:.95rem;font-weight:700;color:#0d9488;margin:16px 0 6px}'+
     '.cl-proto h4{font-size:.88rem;font-weight:600;color:#334155;margin:12px 0 4px}'+
@@ -876,6 +876,21 @@ function fmtClinical(md){
     '.cl-proto table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.84rem}'+
     '.cl-proto th{background:#f0fdfa;color:#0d9488;font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid #0d9488}'+
     '.cl-proto td{padding:6px 10px;border-bottom:1px solid #e2e8f0}'+
+    /* Dark mode overrides */
+    '.cl-proto.cl-dark{color:#e2e8f0}'+
+    '.cl-proto.cl-dark h2{color:#f1f5f9;border-bottom-color:#14b8a6}'+
+    '.cl-proto.cl-dark h3{color:#5eead4}'+
+    '.cl-proto.cl-dark h4{color:#cbd5e1}'+
+    '.cl-proto.cl-dark strong{color:#f8fafc}'+
+    '.cl-proto.cl-dark em{color:#94a3b8}'+
+    '.cl-proto.cl-dark .alert-box{background:rgba(239,68,68,.15);color:#fca5a5;border-left-color:#f87171}'+
+    '.cl-proto.cl-dark .info-box{background:rgba(59,130,246,.15);color:#93c5fd;border-left-color:#60a5fa}'+
+    '.cl-proto.cl-dark .drug-box{background:rgba(34,197,94,.15);color:#86efac;border-left-color:#4ade80}'+
+    '.cl-proto.cl-dark code{background:rgba(255,255,255,.1);color:#5eead4}'+
+    '.cl-proto.cl-dark hr{border-top-color:rgba(255,255,255,.15)}'+
+    '.cl-proto.cl-dark th{background:rgba(13,148,136,.2);color:#5eead4}'+
+    '.cl-proto.cl-dark td{border-bottom-color:rgba(255,255,255,.1)}'+
+    '.cl-proto.cl-dark li{color:#e2e8f0}'+
     '</style>';
   var html=md
     .replace(/^### (.*$)/gm,'<h3>$1</h3>')
@@ -900,7 +915,8 @@ function fmtClinical(md){
   // Clean up remaining newlines into paragraphs
   html=html.replace(/\n\n+/g,'</p><p>').replace(/\n/g,'<br>');
   if(!html.startsWith('<'))html='<p>'+html+'</p>';
-  return css+'<div class="cl-proto">'+html+'<div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:.72rem;color:#94a3b8;">Área II Cartagena · Generado con IA · Uso exclusivamente docente · Verificar siempre con fuentes oficiales</div></div>';
+  var cls=dark?'cl-proto cl-dark':'cl-proto';
+  return css+'<div class="'+cls+'">'+html+'<div style="margin-top:16px;padding-top:12px;border-top:1px solid '+(dark?'rgba(255,255,255,.15)':'#e2e8f0')+';font-size:.72rem;color:#94a3b8;">Área II Cartagena · Generado con IA · Uso exclusivamente docente · Verificar siempre con fuentes oficiales</div></div>';
 }
 function openDocModal(idx){
   var docs=documents[currentCategory]||[];
@@ -2712,7 +2728,7 @@ function urgStudioRender() {
             var html = isLoading
                 ? '<div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.5);font-size:.83rem;"><div style="width:14px;height:14px;border:2px solid #ef5350;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>DeepSeek pensando...</div>'
                 : (typeof fmtClinical === 'function'
-                    ? '<div style="color:rgba(255,255,255,.92);">' + fmtClinical(m.content) + '</div>'
+                    ? fmtClinical(m.content, true)
                     : m.content.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
             return '<div style="display:flex;align-items:flex-start;gap:8px;">'
                 + '<div style="width:24px;height:24px;background:linear-gradient(135deg,#c62828,#7f0000);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:#fff;margin-top:3px;">✨</div>'
