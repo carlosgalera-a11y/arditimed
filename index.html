@@ -2693,6 +2693,18 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                     rows.push(rowData);
                   });
                   try{ localStorage.setItem(PT_KEY, JSON.stringify(rows)); } catch(e){}
+                  // Cloud backup (debounced)
+                  clearTimeout(window._ptCloudTimer);
+                  window._ptCloudTimer = setTimeout(function(){
+                    try {
+                      if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+                        db.collection('plantillas_backup').doc(firebase.auth().currentUser.uid).set({
+                          rows: rows.slice(0, 50),
+                          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true }).catch(function(){});
+                      }
+                    } catch(e){}
+                  }, 3000);
                 }
 
                 function ptLoad(){
@@ -2708,6 +2720,29 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                       ptAddRow(); ptAddRow(); ptAddRow();
                     }
                   } catch(e){ ptAddRow(); ptAddRow(); ptAddRow(); }
+                  // Cloud restore (delayed, checks if cloud has newer data)
+                  setTimeout(function(){
+                    try {
+                      if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+                        db.collection('plantillas_backup').doc(firebase.auth().currentUser.uid).get().then(function(doc){
+                          if (doc.exists && doc.data().rows && doc.data().rows.length > 0) {
+                            var cloudRows = doc.data().rows;
+                            var localRows = [];
+                            try { localRows = JSON.parse(localStorage.getItem(PT_KEY) || '[]'); } catch(e){}
+                            // Use cloud if local is empty or cloud has more data
+                            var localHasData = localRows.some(function(r){ return r.cols && r.cols.some(function(c){return c;}); });
+                            var cloudHasData = cloudRows.some(function(r){ return r.cols && r.cols.some(function(c){return c;}); });
+                            if (!localHasData && cloudHasData) {
+                              var tbody = document.getElementById('tablaPacientesTbody');
+                              if(tbody) tbody.innerHTML = '';
+                              cloudRows.forEach(function(row){ ptAddRow(row.cols, row.alerta, row.id); });
+                              console.log('[Plantillas] Restored ' + cloudRows.length + ' rows from Firestore');
+                            }
+                          }
+                        }).catch(function(){});
+                      }
+                    } catch(e){}
+                  }, 3000);
                 }
 
                 window.ptAddRow = function(data, alerta, id){
@@ -4777,6 +4812,74 @@ var megaHistory = [];
 var megaIsBusy = false;
 var megaQueue = [];
 
+/* ═══ MEGACUADERNO BACKUP: localStorage + Firestore ═══ */
+var _megaSaveTimer = null;
+function megaSaveHistory() {
+  // Debounce: save 2s after last change
+  clearTimeout(_megaSaveTimer);
+  _megaSaveTimer = setTimeout(function() {
+    // 1. Always save to localStorage (fast, offline)
+    try {
+      var compact = megaHistory.slice(-50).map(function(m) {
+        return { role: m.role, content: m.content.substring(0, 1000) };
+      });
+      localStorage.setItem('megacuaderno_history_v1', JSON.stringify(compact));
+    } catch(e) {}
+    
+    // 2. If logged in, also save to Firestore (cloud backup)
+    try {
+      if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+        var uid = firebase.auth().currentUser.uid;
+        db.collection('megacuaderno_backups').doc(uid).set({
+          history: megaHistory.slice(-30).map(function(m) {
+            return { role: m.role, content: m.content.substring(0, 800) };
+          }),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          device: navigator.userAgent.substring(0, 100)
+        }, { merge: true }).catch(function(e) { console.warn('[MegaBackup] Firestore save error:', e.message); });
+      }
+    } catch(e) {}
+  }, 2000);
+}
+
+// Restore history on load
+(function megaRestoreHistory() {
+  try {
+    var saved = localStorage.getItem('megacuaderno_history_v1');
+    if (saved) {
+      megaHistory = JSON.parse(saved);
+      console.log('[MegaCuaderno] Restored ' + megaHistory.length + ' messages from localStorage');
+    }
+  } catch(e) {}
+  
+  // Also try Firestore (might have newer data from another device)
+  setTimeout(function() {
+    try {
+      if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+        var uid = firebase.auth().currentUser.uid;
+        db.collection('megacuaderno_backups').doc(uid).get().then(function(doc) {
+          if (doc.exists && doc.data().history) {
+            var cloudHistory = doc.data().history;
+            // Only use cloud data if it has more messages than local
+            if (cloudHistory.length > megaHistory.length) {
+              megaHistory = cloudHistory;
+              localStorage.setItem('megacuaderno_history_v1', JSON.stringify(cloudHistory));
+              console.log('[MegaCuaderno] Restored ' + cloudHistory.length + ' messages from Firestore');
+              // Re-render chat if it's visible
+              var chatEl = document.getElementById('megaChat');
+              if (chatEl && chatEl.children.length === 0) {
+                megaHistory.forEach(function(m) {
+                  megaAppendMsg(m.role === 'user' ? 'user' : 'bot', m.content);
+                });
+              }
+            }
+          }
+        }).catch(function(){});
+      }
+    } catch(e) {}
+  }, 3000);
+})();
+
 // Groq key (embedded, free tier)
 var _mgk = atob(["Z3NrX0dUVHFmVFhwQzV","IR3lNSFRrRzByV0dkeW","IzRllPSHNnVVRBOE5Za","lVWVDROOVd5ak1NeFQ="].join(""));
 
@@ -4805,7 +4908,7 @@ function megaSendInput() {
 function megaDispatch(question) {
     megaIsBusy = true;
     megaAppendMsg("user", question);
-    megaHistory.push({role:"user", content:question});
+    megaHistory.push({role:"user", content:question}); megaSaveHistory();
     var btn = document.getElementById("megaBtn");
     if (btn) { btn.disabled = true; btn.textContent = "Pensando..."; }
 
@@ -4839,7 +4942,7 @@ function megaCallNAS(sp, msgs, btn) {
         if(!c) throw new Error('No content');
         c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
         if(!c) throw new Error('Empty');
-        megaHistory.push({role:'assistant',content:c});
+        megaHistory.push({role:'assistant',content:c}); megaSaveHistory();
         megaAppendMsg('bot',c);
         megaIsBusy=false;
         if(btn){btn.disabled=false;btn.textContent='Enviar';}
@@ -4865,7 +4968,7 @@ function megaCallDeepSeek(sp, msgs, btn) {
         if(!c) throw new Error("No content");
         c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
         if(!c) throw new Error("Empty");
-        megaHistory.push({role:"assistant",content:c});
+        megaHistory.push({role:"assistant",content:c}); megaSaveHistory();
         megaAppendMsg("bot",c);
         megaIsBusy=false;
         if(btn){btn.disabled=false;btn.textContent="Enviar";}
@@ -5000,7 +5103,7 @@ function megaRetryLast() {
 }
 
 function megaOnAnswer(ans, btn) {
-    megaHistory.push({role:"assistant", content:ans});
+    megaHistory.push({role:"assistant", content:ans}); megaSaveHistory();
     if (megaHistory.length > 20) megaHistory = megaHistory.slice(-20);
     megaAppendMsg("assistant", ans);
     megaReset(btn);

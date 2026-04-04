@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  api-proxy:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    environment:
+      - OPENROUTER_KEY=tu_key_aqui
+      - DEEPL_KEY=tu_key_deepl_aqui
+      - PORT=3100

@@ -3,6 +3,38 @@
 var _KP=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
 function _dk(){try{return atob(_KP.join(""));}catch(e){return "";}}
 
+/* ═══ API PROXY CONFIG ═══ 
+   Si tienes el backend en tu NAS, configura la URL aquí.
+   Si no, usa "" y la webapp llamará a OpenRouter directamente (con key expuesta).
+   Ejemplo: "https://tu-nas-ip:3100" o "https://api.tudominio.com" */
+var API_PROXY_URL = localStorage.getItem('api_proxy_url') || "";
+
+/* Helper: llama a OpenRouter via proxy o directamente */
+window.orFetch = async function(body, extraHeaders) {
+  if (API_PROXY_URL) {
+    // Modo seguro: proxy en NAS (key oculta en servidor)
+    var r = await fetch(API_PROXY_URL + '/api/openrouter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return r.json();
+  } else {
+    // Modo directo: key expuesta en frontend (fallback)
+    var key = _dk();
+    var h = Object.assign({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key,
+      'HTTP-Referer': 'https://carlosgalera-a11y.github.io/Cartagenaeste/',
+      'X-Title': 'Area II Cartagena'
+    }, extraHeaders || {});
+    var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST', headers: h, body: JSON.stringify(body)
+    });
+    return r.json();
+  }
+};
+
 // ── CALCULADORAS MÉDICAS ──────────────────────────────
 function calcCURB65(){
     var pts=[...document.querySelectorAll('.curb-chk')].filter(c=>c.checked).length;
