@@ -58,8 +58,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:1
 <div class="warn">⚠️ <strong>Sin datos personales.</strong> No incluyas nombre, DNI ni datos identificativos. Usa iniciales o número de cama. RGPD/LOPD.</div>
 
 <div class="tabs">
-<button class="tab active" onclick="switchTab('urgencias')">🚨 Plantilla Urgencias</button>
+<button class="tab active" onclick="switchTab('urgencias')">🚨 Urgencias</button>
 <button class="tab" onclick="switchTab('ia')">🤖 Generar con IA</button>
+<button class="tab" onclick="switchTab('mis')">📝 Mis Plantillas</button>
 </div>
 
 <!-- ═══════ TAB 1: PLANTILLA URGENCIAS ═══════ -->
@@ -169,6 +170,71 @@ Tratamiento habitual:"></textarea></div>
 <div class="output" id="iaOutput"><button class="copy-btn" onclick="iaCopiar()">📋 Copiar</button></div>
 </div>
 
+<!-- ═══════ TAB 3: MIS PLANTILLAS ═══════ -->
+<div class="panel" id="panelMis">
+
+<div class="card">
+<h3>📝 Mis Plantillas Personalizadas</h3>
+<p style="font-size:.82rem;color:#64748b;margin-bottom:14px;">Crea tus propias plantillas adaptadas a tu especialidad. Se guardan en tu dispositivo y en la nube si estás logueado.</p>
+
+<button class="btn btn-green" onclick="misNueva()" style="margin-bottom:16px;">➕ Nueva Plantilla</button>
+
+<!-- Lista de plantillas guardadas -->
+<div id="misLista"></div>
+</div>
+
+<!-- Editor de plantilla (oculto por defecto) -->
+<div class="card" id="misEditor" style="display:none;">
+<h3>✏️ <span id="misEditorTitle">Nueva Plantilla</span></h3>
+
+<div class="row">
+<div class="field"><label>Nombre de la plantilla</label><input type="text" id="misNombre" placeholder="Ej: Informe de Alta Digestivo"></div>
+<div class="field"><label>Especialidad</label>
+<select id="misEspec">
+<option value="">General</option>
+<option value="MFyC">Medicina Familiar</option>
+<option value="Urgencias">Urgencias</option>
+<option value="MI">Medicina Interna</option>
+<option value="Digestivo">Digestivo</option>
+<option value="Cardio">Cardiología</option>
+<option value="Neumo">Neumología</option>
+<option value="Neuro">Neurología</option>
+<option value="Trauma">Traumatología</option>
+<option value="Pediatria">Pediatría</option>
+<option value="Gineco">Ginecología</option>
+<option value="Uro">Urología</option>
+<option value="Dermato">Dermatología</option>
+<option value="Psiq">Psiquiatría</option>
+<option value="Otro">Otra</option>
+</select></div>
+</div>
+
+<div class="section-title">📋 Campos del informe</div>
+<p style="font-size:.78rem;color:#888;margin-bottom:10px;">Añade las secciones que necesites. Puedes prerellenar cada campo con texto por defecto.</p>
+
+<div id="misCampos"></div>
+
+<button class="btn btn-outline" onclick="misAddCampo()" style="margin:10px 0;">➕ Añadir campo</button>
+
+<div class="actions" style="margin-top:16px;">
+<button class="btn btn-green" onclick="misGuardar()">💾 Guardar Plantilla</button>
+<button class="btn btn-outline" onclick="misCancelar()">Cancelar</button>
+</div>
+</div>
+
+<!-- Usar plantilla (oculto por defecto) -->
+<div class="card" id="misUsar" style="display:none;">
+<h3>📋 <span id="misUsarTitle"></span></h3>
+<div id="misUsarCampos"></div>
+<div class="actions" style="margin-top:16px;">
+<button class="btn btn-green" onclick="misGenerarInforme()">📋 Generar Informe</button>
+<button class="btn btn-outline" onclick="misUsarCerrar()">← Volver</button>
+</div>
+<div class="output" id="misOutput"><button class="copy-btn" onclick="misCopiar()">📋 Copiar</button></div>
+</div>
+
+</div>
+
 </div><!-- container -->
 
 <!-- Barra Dr/Dra sticky abajo -->
@@ -188,13 +254,11 @@ drInput.addEventListener('input', function(){ localStorage.setItem('informe_dr_n
 function switchTab(id){
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
   document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('show'); });
-  if(id==='urgencias'){
-    document.querySelectorAll('.tab')[0].classList.add('active');
-    document.getElementById('panelUrgencias').classList.add('show');
-  } else {
-    document.querySelectorAll('.tab')[1].classList.add('active');
-    document.getElementById('panelIA').classList.add('show');
-  }
+  var idx = {urgencias:0, ia:1, mis:2};
+  document.querySelectorAll('.tab')[idx[id]||0].classList.add('active');
+  var panels = {urgencias:'panelUrgencias', ia:'panelIA', mis:'panelMis'};
+  document.getElementById(panels[id]||'panelUrgencias').classList.add('show');
+  if(id==='mis') misRenderLista();
 }
 
 function iaTipoChanged(){
@@ -411,6 +475,227 @@ function iaCopiar(){
   var text = el.textContent.replace('📋 Copiar','').trim();
   navigator.clipboard.writeText(text).then(function(){ alert('✅ Informe copiado al portapapeles'); });
 }
+
+// ═══════════════════════════════════════
+// TAB 3: MIS PLANTILLAS PERSONALIZADAS
+// ═══════════════════════════════════════
+var MIS_KEY = 'mis_plantillas_v1';
+var misEditId = null;
+var misEditCampos = [];
+
+function misGetAll(){
+  try { return JSON.parse(localStorage.getItem(MIS_KEY) || '[]'); } catch(e){ return []; }
+}
+function misSaveAll(list){
+  localStorage.setItem(MIS_KEY, JSON.stringify(list));
+  // Cloud backup if logged in
+  try {
+    if(typeof firebase!=='undefined' && firebase.auth().currentUser){
+      var uid = firebase.auth().currentUser.uid;
+      firebase.firestore().collection('mis_plantillas').doc(uid).set({
+        plantillas: list.slice(0,30),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, {merge:true}).catch(function(){});
+    }
+  } catch(e){}
+}
+
+function misRenderLista(){
+  var list = misGetAll();
+  var el = document.getElementById('misLista');
+  if(list.length===0){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:#888;font-size:.88rem;">No tienes plantillas. Pulsa "➕ Nueva Plantilla" para crear la primera.</div>';
+    return;
+  }
+  var html='';
+  list.forEach(function(p,i){
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:12px;background:#f8faf8;border:1px solid #e0e0e0;border-radius:8px;margin-bottom:8px;">';
+    html+='<div style="flex:1;cursor:pointer;" onclick="misUsar('+i+')">';
+    html+='<div style="font-weight:700;font-size:.9rem;color:#1a6b4a;">'+escHtml(p.nombre)+'</div>';
+    html+='<div style="font-size:.75rem;color:#888;">'+escHtml(p.especialidad||'General')+' · '+p.campos.length+' campos</div>';
+    html+='</div>';
+    html+='<button onclick="misEditar('+i+')" style="background:none;border:1px solid #ccc;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.78rem;" title="Editar">✏️</button>';
+    html+='<button onclick="misEliminar('+i+')" style="background:none;border:1px solid #fca5a5;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.78rem;color:#dc2626;" title="Eliminar">🗑️</button>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+  
+  // Cloud restore on first load
+  if(!window._misCloudChecked){
+    window._misCloudChecked=true;
+    try {
+      if(typeof firebase!=='undefined' && firebase.auth().currentUser){
+        firebase.firestore().collection('mis_plantillas').doc(firebase.auth().currentUser.uid).get().then(function(doc){
+          if(doc.exists && doc.data().plantillas){
+            var cloud=doc.data().plantillas;
+            var local=misGetAll();
+            if(cloud.length>local.length){
+              localStorage.setItem(MIS_KEY, JSON.stringify(cloud));
+              misRenderLista();
+            }
+          }
+        }).catch(function(){});
+      }
+    } catch(e){}
+  }
+}
+
+function misNueva(){
+  misEditId=null;
+  misEditCampos=[
+    {label:'Motivo de consulta', defecto:'', tipo:'textarea'},
+    {label:'Antecedentes', defecto:'', tipo:'textarea'},
+    {label:'Exploración física', defecto:'', tipo:'textarea'},
+    {label:'Pruebas complementarias', defecto:'', tipo:'textarea'},
+    {label:'Diagnóstico', defecto:'', tipo:'input'},
+    {label:'Tratamiento', defecto:'', tipo:'textarea'},
+    {label:'Plan / Recomendaciones', defecto:'', tipo:'textarea'}
+  ];
+  document.getElementById('misNombre').value='';
+  document.getElementById('misEspec').value='';
+  document.getElementById('misEditorTitle').textContent='Nueva Plantilla';
+  misRenderCamposEditor();
+  document.getElementById('misEditor').style.display='block';
+  document.getElementById('misEditor').scrollIntoView({behavior:'smooth'});
+}
+
+function misEditar(idx){
+  var list=misGetAll();
+  var p=list[idx]; if(!p)return;
+  misEditId=idx;
+  misEditCampos=JSON.parse(JSON.stringify(p.campos));
+  document.getElementById('misNombre').value=p.nombre;
+  document.getElementById('misEspec').value=p.especialidad||'';
+  document.getElementById('misEditorTitle').textContent='Editar: '+p.nombre;
+  misRenderCamposEditor();
+  document.getElementById('misEditor').style.display='block';
+  document.getElementById('misEditor').scrollIntoView({behavior:'smooth'});
+}
+
+function misRenderCamposEditor(){
+  var html='';
+  misEditCampos.forEach(function(c,i){
+    html+='<div style="background:#f8faf8;border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;position:relative;">';
+    html+='<button onclick="misRemoveCampo('+i+')" style="position:absolute;top:6px;right:6px;background:none;border:none;color:#dc2626;cursor:pointer;font-size:.9rem;" title="Eliminar campo">✕</button>';
+    html+='<div class="row" style="margin-bottom:6px;">';
+    html+='<div class="field"><label>Nombre del campo</label><input type="text" value="'+escAttr(c.label)+'" onchange="misEditCampos['+i+'].label=this.value" placeholder="Ej: Exploración física"></div>';
+    html+='<div class="field"><label>Tipo</label><select onchange="misEditCampos['+i+'].tipo=this.value"><option value="textarea"'+(c.tipo==='textarea'?' selected':'')+'>Texto largo</option><option value="input"'+(c.tipo==='input'?' selected':'')+'>Texto corto</option><option value="select"'+(c.tipo==='select'?' selected':'')+'>Selector</option></select></div>';
+    html+='</div>';
+    html+='<div class="field"><label>Texto por defecto (prerrellenado)</label><textarea rows="2" onchange="misEditCampos['+i+'].defecto=this.value" placeholder="Texto que aparecerá prellenado al usar la plantilla...">'+escHtml(c.defecto||'')+'</textarea></div>';
+    html+='</div>';
+  });
+  document.getElementById('misCampos').innerHTML=html;
+}
+
+function misAddCampo(){
+  misEditCampos.push({label:'', defecto:'', tipo:'textarea'});
+  misRenderCamposEditor();
+}
+
+function misRemoveCampo(i){
+  misEditCampos.splice(i,1);
+  misRenderCamposEditor();
+}
+
+function misGuardar(){
+  var nombre=document.getElementById('misNombre').value.trim();
+  if(!nombre){alert('Escribe un nombre para la plantilla');return;}
+  var plantilla={
+    nombre: nombre,
+    especialidad: document.getElementById('misEspec').value,
+    campos: misEditCampos.filter(function(c){return c.label.trim();}),
+    createdAt: Date.now()
+  };
+  var list=misGetAll();
+  if(misEditId!==null) list[misEditId]=plantilla;
+  else list.push(plantilla);
+  misSaveAll(list);
+  document.getElementById('misEditor').style.display='none';
+  misRenderLista();
+  alert('✅ Plantilla guardada');
+}
+
+function misCancelar(){
+  document.getElementById('misEditor').style.display='none';
+}
+
+function misEliminar(idx){
+  if(!confirm('¿Eliminar esta plantilla?'))return;
+  var list=misGetAll();
+  list.splice(idx,1);
+  misSaveAll(list);
+  misRenderLista();
+}
+
+// ─── USAR PLANTILLA ───
+var misUsarIdx=null;
+function misUsar(idx){
+  var list=misGetAll();
+  var p=list[idx]; if(!p)return;
+  misUsarIdx=idx;
+  document.getElementById('misUsarTitle').textContent=p.nombre;
+  var html='';
+  p.campos.forEach(function(c,i){
+    html+='<div class="field">';
+    html+='<label>'+escHtml(c.label)+'</label>';
+    if(c.tipo==='input') html+='<input type="text" class="mis-usar-field" data-label="'+escAttr(c.label)+'" value="'+escAttr(c.defecto||'')+'">';
+    else html+='<textarea class="mis-usar-field" data-label="'+escAttr(c.label)+'" rows="3">'+escHtml(c.defecto||'')+'</textarea>';
+    html+='</div>';
+  });
+  document.getElementById('misUsarCampos').innerHTML=html;
+  document.getElementById('misOutput').classList.remove('show');
+  document.getElementById('misUsar').style.display='block';
+  document.getElementById('misLista').parentElement.style.display='none';
+  document.getElementById('misUsar').scrollIntoView({behavior:'smooth'});
+}
+
+function misUsarCerrar(){
+  document.getElementById('misUsar').style.display='none';
+  document.getElementById('misLista').parentElement.style.display='block';
+}
+
+function misGenerarInforme(){
+  var list=misGetAll();
+  var p=list[misUsarIdx]; if(!p)return;
+  var dr=drInput.value.trim();
+  var lines=[];
+  lines.push(p.nombre.toUpperCase());
+  lines.push('═══════════════════════════════════════════');
+  lines.push('Área II Cartagena · H.G.U. Santa Lucía');
+  lines.push('Fecha: '+new Date().toLocaleDateString('es-ES'));
+  if(p.especialidad) lines.push('Especialidad: '+p.especialidad);
+  if(dr) lines.push('Médico: '+dr);
+  lines.push('');
+  
+  document.querySelectorAll('.mis-usar-field').forEach(function(el){
+    var label=el.dataset.label;
+    var val=(el.value||'').trim();
+    if(val){
+      lines.push(label.toUpperCase()+':');
+      lines.push(val);
+      lines.push('');
+    }
+  });
+  
+  if(dr) lines.push('\n'+dr+'\nÁrea II Cartagena — Servicio Murciano de Salud');
+  
+  var output=document.getElementById('misOutput');
+  output.textContent=lines.join('\n');
+  var btn=document.createElement('button');
+  btn.className='copy-btn';btn.textContent='📋 Copiar';btn.onclick=misCopiar;
+  output.insertBefore(btn,output.firstChild);
+  output.classList.add('show');
+  output.scrollIntoView({behavior:'smooth'});
+}
+
+function misCopiar(){
+  var el=document.getElementById('misOutput');
+  var text=el.textContent.replace('📋 Copiar','').trim();
+  navigator.clipboard.writeText(text).then(function(){alert('✅ Copiado');});
+}
+
+function escHtml(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
+function escAttr(t){return (t||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 </script>
 </body>
 </html>
