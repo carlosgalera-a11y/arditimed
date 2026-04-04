@@ -5163,42 +5163,40 @@ var CK_SYS="Eres un asistente clínico docente para médicos residentes del Áre
 "TAREA: Dado un diagnóstico/sospecha clínica Y el contexto proporcionado (protocolos locales, conversación previa del MegaCuaderno), genera un CHECKLIST CLÍNICO estructurado en JSON.\n\n"+
 "RESPONDE ÚNICAMENTE con JSON válido, sin markdown, sin backticks, sin texto fuera del JSON:\n"+
 "{\"patologia\":\"Nombre de la patología\",\"resumen\":\"Descripción breve en 1-2 frases\",\"secciones\":[{\"titulo\":\"Sección\",\"icono\":\"emoji\",\"items\":[{\"texto\":\"Acción concreta\",\"prioridad\":\"alta|media|baja\",\"detalle\":\"Explicación o justificación breve\"}]}]}\n\n"+
-"LAS 5 SECCIONES OBLIGATORIAS (en este orden exacto):\n\n"+
-"1. 📝 ANAMNESIS DIRIGIDA\n"+
+"GENERA EXACTAMENTE 5 SECCIONES (ni más, ni menos), en este orden OBLIGATORIO:\n\n"+
+"1. titulo: \"Anamnesis dirigida\", icono: \"📝\"\n"+
 "   - Preguntas clave que hacer al paciente\n"+
 "   - Antecedentes relevantes a preguntar\n"+
 "   - Alergias, medicación habitual\n"+
 "   - Cronología y características del cuadro\n"+
 "   - Red flags anamnésicas específicas de esta patología\n"+
 "   - Escalas/scores a aplicar durante la anamnesis (ej: CURB-65, Wells, CHA2DS2-VASc)\n\n"+
-"2. 🩺 EXPLORACIÓN FÍSICA\n"+
+"2. titulo: \"Exploración física\", icono: \"🩺\"\n"+
 "   - Constantes vitales a tomar (especificar cuáles son prioritarias)\n"+
 "   - Exploración por aparatos relevante para esta patología\n"+
 "   - Signos clínicos específicos a buscar (nombrarlos)\n"+
 "   - Maniobras exploratorias concretas\n"+
 "   - Hallazgos que cambiarían la actitud (banderas rojas en la exploración)\n\n"+
-"3. 🔬 PRUEBAS COMPLEMENTARIAS\n"+
+"3. titulo: \"Pruebas complementarias\", icono: \"🔬\"\n"+
 "   - Analítica: especificar parámetros concretos (ej: hemograma, bioquímica con PCR, procalcitonina, troponina seriada 0h-3h, BNP, gasometría)\n"+
 "   - Imagen: especificar pruebas exactas (Rx tórax PA/L, eco FAST, TC craneal sin contraste, etc.)\n"+
 "   - ECG: cuándo pedirlo y qué buscar\n"+
-"   - Otras: cultivos, tira de orina, punción lumbar, etc.\n"+
-"   - Indicar prioridad alta si es urgente, media si es necesaria, baja si es según evolución\n\n"+
-"4. 🏥 TRATAMIENTO HOSPITALARIO (si requiere ingreso o manejo en urgencias)\n"+
-"   - Medidas generales hospitalarias (posición, dieta absoluta/específica, fluidoterapia IV con volumen y ritmo exacto)\n"+
+"   - Otras: cultivos, tira de orina, punción lumbar, etc.\n\n"+
+"4. titulo: \"Tratamiento hospitalario\", icono: \"🏥\"\n"+
+"   - Medidas generales hospitalarias (posición, dieta, fluidoterapia IV con volumen y ritmo exacto)\n"+
 "   - Tratamiento farmacológico IV/hospitalario: fármaco, DOSIS, VÍA IV/IM, FRECUENCIA y DURACIÓN\n"+
-"   - Monitorización: qué constantes vigilar y cada cuánto tiempo\n"+
+"   - Monitorización: qué constantes vigilar y cada cuánto\n"+
 "   - Criterios de ingreso en planta vs UCI\n"+
-"   - Interconsultas a solicitar (a qué servicio y por qué)\n"+
-"   - Criterios de alarma / cuándo avisar al adjunto / cuándo escalar a UCI\n"+
-"   - Reevaluación: a las cuántas horas y qué parámetros revisar\n\n"+
-"5. 🏠 TRATAMIENTO DOMICILIARIO / AL ALTA\n"+
-"   - Criterios de alta desde urgencias (cuándo es seguro dar de alta)\n"+
-"   - Tratamiento farmacológico VO para casa: fármaco, DOSIS, VÍA ORAL, FRECUENCIA y DURACIÓN exacta\n"+
-"   - Alternativa si alergia a primera línea\n"+
-"   - Medidas higiénico-dietéticas (reposo, hidratación, dieta, actividad física)\n"+
+"   - Interconsultas a solicitar\n"+
+"   - Criterios de alarma / cuándo avisar al adjunto / cuándo escalar\n\n"+
+"5. titulo: \"Tratamiento domiciliario / al alta\", icono: \"🏠\"\n"+
+"   - Criterios para dar de alta desde urgencias\n"+
+"   - Tratamiento farmacológico VO para casa: fármaco, DOSIS, VÍA ORAL, FRECUENCIA y DURACIÓN\n"+
+"   - Alternativa si alergia\n"+
+"   - Medidas higiénico-dietéticas (reposo, hidratación, dieta)\n"+
 "   - Signos de alarma que debe conocer el paciente (cuándo volver a urgencias)\n"+
-"   - Plan de seguimiento: cita con AP / especialista, en cuántos días\n"+
-"   - Receta: qué recetas necesita llevar\n\n"+
+"   - Seguimiento: cita con AP / especialista, en cuántos días\n\n"+
+"IMPORTANTE: La sección 4 (Tratamiento hospitalario) y la sección 5 (Tratamiento domiciliario) son DIFERENTES y AMBAS son OBLIGATORIAS. NO las combines en una sola. El JSON debe tener exactamente 5 objetos en el array secciones.\n\n"+
 "REGLAS:\n"+
 "- Sé MUY específico y práctico: valores concretos, dosis exactas, nombres de fármacos\n"+
 "- Si hay protocolos locales del Área II en el contexto, PRIORÍZALOS sobre guías genéricas\n"+
