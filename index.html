@@ -230,7 +230,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                     </button>
 
                     <!-- DOCENCIA -->
-                    <button onclick="if(!firebase.auth().currentUser){showLoginModal();return;}toggleSubMenu('subDocencia')" aria-label="Ver recursos de docencia" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){document.querySelector('#scanLoginModal h2').textContent='📚 Docencia';showLoginModal();return;}toggleSubMenu('subDocencia')" aria-label="Ver recursos de docencia" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">📚</div>
                         <div style="font-weight:700;font-size:.88rem;">Docencia</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Casos · Cuaderno IA · Blog</div>
