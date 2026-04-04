@@ -57,14 +57,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:1
 <h1>📋 Generador de Turnos</h1>
 </div>
 
-<div id="authWall" class="auth-wall" style="display:none;">
-<div style="font-size:3rem;margin-bottom:12px;">🔐</div>
-<h2>Inicia sesión para acceder</h2>
-<p style="color:#888;margin:8px 0 16px;">Se requiere cuenta Google autorizada.</p>
-<button onclick="firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())" class="btn btn-green">🔐 Login con Google</button>
-</div>
-
-<div class="container" id="mainContent" style="display:none;">
+<div class="container" id="mainContent">
 
 <div class="tabs">
 <button class="tab active" onclick="switchTab('generar')">🤖 Generar Plantilla</button>
@@ -160,12 +153,7 @@ var db=firebase.firestore();
 
 auth.onAuthStateChanged(function(user){
   if(user){
-    document.getElementById('authWall').style.display='none';
-    document.getElementById('mainContent').style.display='block';
     loadSaved();
-  } else {
-    document.getElementById('authWall').style.display='block';
-    document.getElementById('mainContent').style.display='none';
   }
 });
 
