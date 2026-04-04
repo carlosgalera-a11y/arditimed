@@ -89,10 +89,10 @@
         .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
         .btn-secondary{background:var(--bg-subtle);color:var(--text)}.btn-secondary:hover{background:var(--border)}
         .btn-small{padding:8px 16px;font-size:.82rem}
-        .question-box{background:var(--bg-card);padding:18px 20px;border-radius:var(--radius);margin-bottom:14px;border-left:4px solid var(--primary);box-shadow:var(--shadow-sm);animation:fadeUp .3s;transition:box-shadow .2s;position:relative}
+        .question-box{background:var(--bg-card);padding:20px 22px;border-radius:var(--radius);margin-bottom:16px;border-left:4px solid var(--primary);box-shadow:var(--shadow-sm);animation:fadeUp .3s;transition:box-shadow .2s;position:relative}
         .question-box:hover{box-shadow:var(--shadow-md)}
-        .question-text{font-family:var(--font-display);color:var(--primary-dark);font-weight:600;margin-bottom:10px;font-size:1rem}
-        .answer-text{color:var(--text);line-height:1.7;font-size:.92rem;white-space:pre-wrap;word-wrap:break-word;font-weight:300}
+        .question-text{font-family:var(--font-display);color:var(--primary-dark);font-weight:600;margin-bottom:12px;font-size:1rem;padding:8px 12px;background:var(--bg-subtle,rgba(0,0,0,.03));border-radius:8px}
+        .answer-text{color:var(--text);line-height:1.7;font-size:.92rem;word-wrap:break-word;font-weight:300;overflow-x:auto}
         .note-time{font-size:.76rem;color:var(--text-muted);margin-top:10px;font-weight:500}
         .doc-item{background:var(--bg-card);padding:14px 18px;border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;transition:.2s}
         .doc-item:hover{border-color:var(--primary-light);box-shadow:var(--shadow-sm)}
@@ -288,6 +288,7 @@
         body.dark-mode h1,.dark-mode h2,.dark-mode h3,.dark-mode h4{color:#e2e8f0!important;}
         body.dark-mode .answer-box,.dark-mode .ai-response{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important;}
         body.dark-mode .question-input{background:#0f172a!important;color:#e2e8f0!important;border-color:#334155!important;}
+        body.dark-mode .question-text{color:#93c5fd!important;background:rgba(59,130,246,.1)!important;}
         body.dark-mode .config-box{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important;}
         body.dark-mode .studio-card{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important;}
         body.dark-mode .urg-tab-content{color:#e2e8f0!important;}

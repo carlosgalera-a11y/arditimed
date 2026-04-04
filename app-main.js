@@ -859,40 +859,45 @@ function guardarStudioComoNota(){if(!lastSC)return;if(!notas[currentCategory])no
 function agregarNota(){var t=document.getElementById("noteInput").value.trim();if(!t)return;if(!notas[currentCategory])notas[currentCategory]=[];notas[currentCategory].push({texto:t,fecha:new Date().toLocaleString("es-ES")});document.getElementById("noteInput").value="";guardarDatos();actualizarUI();}
 function fmtClinical(md,dark){
   if(!md)return'<p style="color:#888;">Sin contenido.</p>';
+  /* Auto-detect dark mode from body class if not explicitly passed */
+  if(dark===undefined)try{dark=document.body.classList.contains('dark-mode');}catch(e){dark=false;}
+  var D='.cl-proto.cl-dark,.dark-mode .cl-proto';
   var css='<style>.cl-proto{font-family:-apple-system,system-ui,sans-serif;line-height:1.75;color:#1e293b;font-size:.9rem}'+
-    '.cl-proto h2{font-size:1.05rem;font-weight:700;color:#0f172a;margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid #0d9488}'+
-    '.cl-proto h3{font-size:.95rem;font-weight:700;color:#0d9488;margin:16px 0 6px}'+
-    '.cl-proto h4{font-size:.88rem;font-weight:600;color:#334155;margin:12px 0 4px}'+
-    '.cl-proto p{margin:0 0 8px}'+
+    '.cl-proto h2{font-size:1.1rem;font-weight:700;color:#0f172a;margin:22px 0 10px;padding-bottom:6px;border-bottom:2px solid #0d9488}'+
+    '.cl-proto h3{font-size:.98rem;font-weight:700;color:#0d9488;margin:18px 0 8px}'+
+    '.cl-proto h4{font-size:.9rem;font-weight:600;color:#334155;margin:14px 0 6px}'+
+    '.cl-proto p{margin:0 0 10px}'+
     '.cl-proto strong{color:#0f172a;font-weight:600}'+
     '.cl-proto em{color:#64748b;font-style:italic}'+
-    '.cl-proto ul,.cl-proto ol{margin:6px 0 12px 20px;padding:0}'+
-    '.cl-proto li{margin-bottom:4px}'+
-    '.cl-proto .alert-box{background:#fef2f2;border-left:4px solid #ef4444;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.84rem;color:#991b1b}'+
-    '.cl-proto .info-box{background:#eff6ff;border-left:4px solid #3b82f6;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.84rem;color:#1e40af}'+
-    '.cl-proto .drug-box{background:#f0fdf4;border-left:4px solid #22c55e;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.84rem;color:#166534}'+
-    '.cl-proto code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:.84rem;color:#0d9488;font-family:monospace}'+
-    '.cl-proto hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}'+
-    '.cl-proto table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.84rem}'+
-    '.cl-proto th{background:#f0fdfa;color:#0d9488;font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid #0d9488}'+
-    '.cl-proto td{padding:6px 10px;border-bottom:1px solid #e2e8f0}'+
-    /* Dark mode overrides */
-    '.cl-proto.cl-dark{color:#e2e8f0}'+
-    '.cl-proto.cl-dark h2{color:#f1f5f9;border-bottom-color:#14b8a6}'+
-    '.cl-proto.cl-dark h3{color:#5eead4}'+
-    '.cl-proto.cl-dark h4{color:#cbd5e1}'+
-    '.cl-proto.cl-dark strong{color:#f8fafc}'+
-    '.cl-proto.cl-dark em{color:#94a3b8}'+
-    '.cl-proto.cl-dark .alert-box{background:rgba(239,68,68,.15);color:#fca5a5;border-left-color:#f87171}'+
-    '.cl-proto.cl-dark .info-box{background:rgba(59,130,246,.15);color:#93c5fd;border-left-color:#60a5fa}'+
-    '.cl-proto.cl-dark .drug-box{background:rgba(34,197,94,.15);color:#86efac;border-left-color:#4ade80}'+
-    '.cl-proto.cl-dark code{background:rgba(255,255,255,.1);color:#5eead4}'+
-    '.cl-proto.cl-dark hr{border-top-color:rgba(255,255,255,.15)}'+
-    '.cl-proto.cl-dark th{background:rgba(13,148,136,.2);color:#5eead4}'+
-    '.cl-proto.cl-dark td{border-bottom-color:rgba(255,255,255,.1)}'+
-    '.cl-proto.cl-dark li{color:#e2e8f0}'+
+    '.cl-proto ul,.cl-proto ol{margin:8px 0 14px 22px;padding:0}'+
+    '.cl-proto li{margin-bottom:5px;line-height:1.65}'+
+    '.cl-proto .alert-box{background:#fef2f2;border-left:4px solid #ef4444;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.84rem;color:#991b1b}'+
+    '.cl-proto .info-box{background:#eff6ff;border-left:4px solid #3b82f6;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.84rem;color:#1e40af}'+
+    '.cl-proto .drug-box{background:#f0fdf4;border-left:4px solid #22c55e;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.84rem;color:#166534}'+
+    '.cl-proto code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.84rem;color:#0d9488;font-family:monospace}'+
+    '.cl-proto hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}'+
+    '.cl-proto table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.84rem}'+
+    '.cl-proto th{background:#f0fdfa;color:#0d9488;font-weight:600;padding:8px 12px;text-align:left;border-bottom:2px solid #0d9488}'+
+    '.cl-proto td{padding:7px 12px;border-bottom:1px solid #e2e8f0}'+
+    /* Dark mode — auto via body.dark-mode OR explicit .cl-dark */
+    D+'{color:#e2e8f0!important}'+
+    D+' h2{color:#f1f5f9!important;border-bottom-color:#14b8a6!important}'+
+    D+' h3{color:#5eead4!important}'+
+    D+' h4{color:#cbd5e1!important}'+
+    D+' strong{color:#f8fafc!important}'+
+    D+' em{color:#94a3b8!important}'+
+    D+' li{color:#e2e8f0!important}'+
+    D+' p{color:#e2e8f0!important}'+
+    D+' .alert-box{background:rgba(239,68,68,.15)!important;color:#fca5a5!important;border-left-color:#f87171!important}'+
+    D+' .info-box{background:rgba(59,130,246,.15)!important;color:#93c5fd!important;border-left-color:#60a5fa!important}'+
+    D+' .drug-box{background:rgba(34,197,94,.15)!important;color:#86efac!important;border-left-color:#4ade80!important}'+
+    D+' code{background:rgba(255,255,255,.1)!important;color:#5eead4!important}'+
+    D+' hr{border-top-color:rgba(255,255,255,.15)!important}'+
+    D+' th{background:rgba(13,148,136,.2)!important;color:#5eead4!important}'+
+    D+' td{border-bottom-color:rgba(255,255,255,.1)!important;color:#e2e8f0!important}'+
     '</style>';
   var html=md
+    .replace(/^#### (.*$)/gm,'<h4>$1</h4>')
     .replace(/^### (.*$)/gm,'<h3>$1</h3>')
     .replace(/^## (.*$)/gm,'<h2>$1</h2>')
     .replace(/^# (.*$)/gm,'<h2>$1</h2>')
