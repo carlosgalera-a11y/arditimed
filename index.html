@@ -2512,7 +2512,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                             <span style="font-size:1.3rem;">📋</span>
                             <div>
                                 <div style="font-weight:800;font-size:.95rem;color:var(--text);">Checklist Clínico IA</div>
-                                <div style="font-size:.7rem;color:var(--text-muted);">Genera un checklist de actuación para cualquier patología</div>
+                                <div style="font-size:.7rem;color:var(--text-muted);">Anamnesis · Exploración · Pruebas · Tratamiento</div>
                             </div>
                         </div>
                         <div id="ckProgress" style="display:none;text-align:center;">
@@ -2521,12 +2521,24 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                         </div>
                     </div>
 
+                    <!-- Auto-detect banner (when MegaCuaderno has context) -->
+                    <div id="ckAutoBanner" style="display:none;padding:10px 14px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(22,163,74,.06),rgba(22,163,74,.12));border:1.5px solid rgba(22,163,74,.3);margin-bottom:10px;cursor:pointer;" onclick="ckFromChat()">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:1.1rem;">🔗</span>
+                            <div>
+                                <div style="font-size:.82rem;font-weight:700;color:#16a34a;">Generar checklist desde el MegaCuaderno</div>
+                                <div style="font-size:.7rem;color:var(--text-muted);" id="ckAutoDesc">Usa la conversación actual como contexto</div>
+                            </div>
+                            <span style="margin-left:auto;font-size:1.2rem;">→</span>
+                        </div>
+                    </div>
+
                     <!-- Checklist search -->
                     <div style="display:flex;gap:8px;margin-bottom:10px;">
                         <input id="ckInput" type="text" placeholder="Ej: Neumonía comunitaria, TEP, SCA..."
                             style="flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius);font-size:.85rem;font-family:var(--font-body);background:var(--bg-card);color:var(--text);"
                             onkeydown="if(event.key==='Enter')ckGenerate()"
-                            onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'">
+                            onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='var(--border)'">
                         <button id="ckBtn" onclick="ckGenerate()" style="padding:10px 18px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:var(--radius);font-weight:700;cursor:pointer;font-family:var(--font-body);white-space:nowrap;font-size:.85rem;">
                             📋 Generar
                         </button>
@@ -5141,13 +5153,52 @@ function megaAppendMsg(role, text) {
 
 <script>
 // ═══════════════════════════════════════════
-// CHECKLIST CLÍNICO IA — Reutiliza cadena DeepSeek/Pollinations/OpenRouter
+// CHECKLIST CLÍNICO IA — Lee del MegaCuaderno + protocolos + 4 secciones clínicas
 // ═══════════════════════════════════════════
 (function(){
 var ckData=null, ckChecked={}, ckBusy=false;
 var CK_PATS=["Neumonía comunitaria","Crisis hipertensiva","Pancreatitis aguda","Dolor torácico","EPOC agudizada","SCA","FA","TEP","Ictus","IC descompensada","Sepsis","CAD","Cólico renal","HDA","Anafilaxia","Crisis asmática","TCE leve","Abdomen agudo","ITU","Dolor lumbar","Convulsiones","Neumotórax","EAP","Intoxicación"];
-var CK_SYS="Eres un asistente clínico docente para médicos residentes del Área II Cartagena (H.G.U. Santa Lucía). Dado un diagnóstico o sospecha clínica, genera un checklist en JSON.\n\nRESPONDE ÚNICAMENTE con JSON válido, sin markdown, sin backticks:\n{\"patologia\":\"Nombre\",\"resumen\":\"Descripción breve\",\"secciones\":[{\"titulo\":\"Sección\",\"icono\":\"emoji\",\"items\":[{\"texto\":\"Acción\",\"prioridad\":\"alta|media|baja\",\"detalle\":\"Explicación\"}]}]}\n\nSecciones obligatorias:\n1. Valoración inicial (ABC, constantes, anamnesis, exploración)\n2. Pruebas complementarias (analítica, imagen, ECG específicas)\n3. Tratamiento inicial (medidas generales + específico)\n4. Monitorización y reevaluación\n5. Criterios de alarma / derivación\n\nSé específico: incluye valores concretos (ej: troponina 0h y 3h). Contexto: urgencias hospitalarias España. Uso docente.";
-var CK_MSGS=["Consultando protocolos...","Revisando guías clínicas...","Generando checklist...","Organizando pruebas...","Preparando plan de actuación..."];
+
+var CK_SYS="Eres un asistente clínico docente para médicos residentes del Área II Cartagena (H.G.U. Santa Lucía).\n\n"+
+"TAREA: Dado un diagnóstico/sospecha clínica Y el contexto proporcionado (protocolos locales, conversación previa del MegaCuaderno), genera un CHECKLIST CLÍNICO estructurado en JSON.\n\n"+
+"RESPONDE ÚNICAMENTE con JSON válido, sin markdown, sin backticks, sin texto fuera del JSON:\n"+
+"{\"patologia\":\"Nombre de la patología\",\"resumen\":\"Descripción breve en 1-2 frases\",\"secciones\":[{\"titulo\":\"Sección\",\"icono\":\"emoji\",\"items\":[{\"texto\":\"Acción concreta\",\"prioridad\":\"alta|media|baja\",\"detalle\":\"Explicación o justificación breve\"}]}]}\n\n"+
+"LAS 4 SECCIONES OBLIGATORIAS (en este orden exacto):\n\n"+
+"1. 📝 ANAMNESIS DIRIGIDA\n"+
+"   - Preguntas clave que hacer al paciente\n"+
+"   - Antecedentes relevantes a preguntar\n"+
+"   - Alergias, medicación habitual\n"+
+"   - Cronología y características del cuadro\n"+
+"   - Red flags anamnésicas específicas de esta patología\n"+
+"   - Escalas/scores a aplicar durante la anamnesis (ej: CURB-65, Wells, CHA2DS2-VASc)\n\n"+
+"2. 🩺 EXPLORACIÓN FÍSICA\n"+
+"   - Constantes vitales a tomar (especificar cuáles son prioritarias)\n"+
+"   - Exploración por aparatos relevante para esta patología\n"+
+"   - Signos clínicos específicos a buscar (nombrarlos)\n"+
+"   - Maniobras exploratorias concretas\n"+
+"   - Hallazgos que cambiarían la actitud (banderas rojas en la exploración)\n\n"+
+"3. 🔬 PRUEBAS COMPLEMENTARIAS\n"+
+"   - Analítica: especificar parámetros concretos (ej: hemograma, bioquímica con PCR, procalcitonina, troponina seriada 0h-3h, BNP, gasometría)\n"+
+"   - Imagen: especificar pruebas exactas (Rx tórax PA/L, eco FAST, TC craneal sin contraste, etc.)\n"+
+"   - ECG: cuándo pedirlo y qué buscar\n"+
+"   - Otras: cultivos, tira de orina, punción lumbar, etc.\n"+
+"   - Indicar prioridad alta si es urgente, media si es necesaria, baja si es según evolución\n\n"+
+"4. 💊 TRATAMIENTO\n"+
+"   - Medidas generales (posición, dieta, fluidoterapia con volumen y ritmo)\n"+
+"   - Tratamiento farmacológico ESPECÍFICO: nombre del fármaco, DOSIS, VÍA, FRECUENCIA y DURACIÓN\n"+
+"   - Alternativa si alergia\n"+
+"   - Criterios de ingreso vs alta\n"+
+"   - Plan de seguimiento / reevaluación\n"+
+"   - Criterios de alarma / cuándo avisar al adjunto\n\n"+
+"REGLAS:\n"+
+"- Sé MUY específico y práctico: valores concretos, dosis exactas, nombres de fármacos\n"+
+"- Si hay protocolos locales del Área II en el contexto, PRIORÍZALOS sobre guías genéricas\n"+
+"- Si hay una conversación previa del MegaCuaderno, INTEGRA esa información en el checklist\n"+
+"- Incluye 5-10 items por sección\n"+
+"- Contexto: urgencias hospitalarias en España\n"+
+"- Uso exclusivamente docente";
+
+var CK_MSGS=["Consultando protocolos del Área II...","Revisando guías clínicas...","Generando anamnesis dirigida...","Preparando exploración física...","Organizando pruebas complementarias...","Definiendo tratamiento..."];
 
 // Init chips
 var chipsEl=document.getElementById("ckChips");
@@ -5161,7 +5212,41 @@ if(chipsEl){CK_PATS.forEach(function(p){
     chipsEl.appendChild(b);
 })}
 
-window.ckGenerate=function(){
+// Watch megaHistory to show auto-banner
+setInterval(function(){
+    var banner=document.getElementById("ckAutoBanner");
+    if(!banner)return;
+    var hist=typeof megaHistory!=="undefined"?megaHistory:[];
+    if(hist.length>=2 && !ckBusy && !ckData){
+        banner.style.display="block";
+        // Find last pathology discussed
+        var lastQ="";
+        for(var i=hist.length-1;i>=0;i--){
+            if(hist[i].role==="user"){lastQ=hist[i].content;break;}
+        }
+        var desc=document.getElementById("ckAutoDesc");
+        if(desc && lastQ) desc.textContent="Tema: "+lastQ.substring(0,60)+(lastQ.length>60?"...":"");
+    } else if(hist.length<2){
+        banner.style.display="none";
+    }
+},2000);
+
+// Generate from MegaCuaderno conversation
+window.ckFromChat=function(){
+    var hist=typeof megaHistory!=="undefined"?megaHistory:[];
+    if(hist.length<2)return;
+    // Extract last user question as the pathology
+    var lastQ="";
+    for(var i=hist.length-1;i>=0;i--){
+        if(hist[i].role==="user"){lastQ=hist[i].content;break;}
+    }
+    if(lastQ){
+        document.getElementById("ckInput").value=lastQ;
+        ckGenerate(true);
+    }
+};
+
+window.ckGenerate=function(fromChat){
     var q=(document.getElementById("ckInput").value||"").trim();
     if(!q||ckBusy)return;
     ckBusy=true;ckData=null;ckChecked={};
@@ -5171,20 +5256,44 @@ window.ckGenerate=function(){
     document.getElementById("ckResult").style.display="none";
     document.getElementById("ckError").style.display="none";
     document.getElementById("ckProgress").style.display="none";
+    document.getElementById("ckAutoBanner").style.display="none";
 
     var loadEl=document.getElementById("ckLoading");
     loadEl.style.display="block";
     var mi=0;
-    var lt=setInterval(function(){mi=(mi+1)%CK_MSGS.length;var e=document.getElementById("ckLoadMsg");if(e)e.textContent=CK_MSGS[mi]},2500);
+    var lt=setInterval(function(){mi=(mi+1)%CK_MSGS.length;var e=document.getElementById("ckLoadMsg");if(e)e.textContent=CK_MSGS[mi]},2000);
 
-    var msgs=[{role:"user",content:"Genera el checklist clínico completo para: "+q}];
+    // Build context from protocolos + MegaCuaderno history
+    var context="";
+    // Add MEGA_KB (protocolos locales)
+    if(typeof MEGA_KB!=="undefined" && MEGA_KB){
+        context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,3000)+"\n\n";
+    }
+    // Add MegaCuaderno conversation if available
+    if(fromChat && typeof megaHistory!=="undefined" && megaHistory.length>0){
+        context+="=== CONVERSACIÓN PREVIA DEL MEGACUADERNO ===\n";
+        var recent=megaHistory.slice(-8);
+        recent.forEach(function(m){
+            context+=(m.role==="user"?"MÉDICO: ":"IA: ")+m.content.substring(0,500)+"\n";
+        });
+        context+="\n";
+    }
+
+    var userMsg="";
+    if(context){
+        userMsg="CONTEXTO DISPONIBLE:\n"+context+"\n---\nCon toda esta información, genera el checklist clínico completo (4 secciones: Anamnesis, Exploración, Pruebas, Tratamiento) para: "+q;
+    } else {
+        userMsg="Genera el checklist clínico completo (4 secciones: Anamnesis, Exploración, Pruebas, Tratamiento) para: "+q;
+    }
+
+    var msgs=[{role:"user",content:userMsg}];
 
     ckCallAI(msgs,function(ans){
         clearInterval(lt);loadEl.style.display="none";
         btn.disabled=false;btn.textContent="📋 Generar";ckBusy=false;
         if(!ans){
             document.getElementById("ckError").style.display="block";
-            document.getElementById("ckError").innerHTML="⚠️ No se pudo generar el checklist. <button onclick='ckGenerate()' style='background:#dc2626;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;margin-left:8px;font-size:.8rem'>🔄 Reintentar</button>";
+            document.getElementById("ckError").innerHTML="⚠️ No se pudo generar. <button onclick=\"ckGenerate()\" style=\"background:#dc2626;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;margin-left:8px;font-size:.8rem\">🔄 Reintentar</button>";
             document.getElementById("ckChips").style.display="flex";
             return;
         }
@@ -5195,9 +5304,9 @@ window.ckGenerate=function(){
             ckData=JSON.parse(c);
             ckRender();
         }catch(ex){
-            console.error("CK parse:",ex,ans);
+            console.error("CK parse:",ex,ans.substring(0,200));
             document.getElementById("ckError").style.display="block";
-            document.getElementById("ckError").innerHTML="⚠️ Error al procesar. <button onclick='ckGenerate()' style='background:#dc2626;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;margin-left:8px;font-size:.8rem'>🔄 Reintentar</button>";
+            document.getElementById("ckError").innerHTML="⚠️ Error al procesar. <button onclick=\"ckGenerate()\" style=\"background:#dc2626;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;margin-left:8px;font-size:.8rem\">🔄 Reintentar</button>";
             document.getElementById("ckChips").style.display="flex";
         }
     });
@@ -5205,19 +5314,17 @@ window.ckGenerate=function(){
 
 // AI call chain: Pollinations → DeepSeek direct → OpenRouter
 function ckCallAI(msgs,cb){
-    // Try Pollinations first (no rate limit)
     fetch("https://text.pollinations.ai/openai",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"openai-large",messages:[{role:"system",content:CK_SYS}].concat(msgs),seed:Math.floor(Math.random()*9999),private:true})
     }).then(function(r){if(!r.ok)throw new Error("P"+r.status);return r.json()})
     .then(function(d){var a=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;if(!a)throw new Error("empty");cb(a)})
     .catch(function(){
-        // Try DeepSeek direct
         var dk=typeof MEGA_DS_KEY!=="undefined"?MEGA_DS_KEY:"";
         if(dk){
             fetch("https://api.deepseek.com/chat/completions",{
                 method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+dk},
-                body:JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:3000,temperature:0.3})
+                body:JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:4000,temperature:0.3})
             }).then(function(r){if(!r.ok)throw new Error("DS"+r.status);return r.json()})
             .then(function(d){var a=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;if(!a)throw new Error("empty");cb(a)})
             .catch(function(){ckCallOR(msgs,0,cb)});
@@ -5233,10 +5340,27 @@ function ckCallOR(msgs,idx,cb){
     if(k)h["Authorization"]="Bearer "+k;
     fetch("https://openrouter.ai/api/v1/chat/completions",{
         method:"POST",headers:h,
-        body:JSON.stringify({model:m,messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:3000,temperature:0.3})
+        body:JSON.stringify({model:m,messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:4000,temperature:0.3})
     }).then(function(r){if(r.status===429||r.status===503||r.status===502||r.status===402)throw new Error("retry");if(!r.ok)throw new Error("OR"+r.status);return r.json()})
     .then(function(d){var a=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;if(!a)throw new Error("empty");cb(a)})
     .catch(function(){if(idx+1<models.length)setTimeout(function(){ckCallOR(msgs,idx+1,cb)},500);else cb(null)});
+}
+
+// Section icons/colors for the 4 clinical sections
+var CK_SEC_STYLE={
+    "anamnesis":{icon:"📝",color:"#2563eb",bg:"rgba(37,99,235,.06)"},
+    "exploración":{icon:"🩺",color:"#7c3aed",bg:"rgba(124,58,237,.06)"},
+    "pruebas":{icon:"🔬",color:"#d97706",bg:"rgba(217,119,6,.06)"},
+    "tratamiento":{icon:"💊",color:"#dc2626",bg:"rgba(220,38,38,.06)"}
+};
+
+function getSectionStyle(titulo){
+    var t=(titulo||"").toLowerCase();
+    if(t.indexOf("anamnesis")>=0) return CK_SEC_STYLE.anamnesis;
+    if(t.indexOf("explorac")>=0) return CK_SEC_STYLE["exploración"];
+    if(t.indexOf("prueba")>=0||t.indexOf("complementar")>=0) return CK_SEC_STYLE.pruebas;
+    if(t.indexOf("tratamiento")>=0||t.indexOf("farmac")>=0) return CK_SEC_STYLE.tratamiento;
+    return {icon:"📌",color:"#64748b",bg:"rgba(100,116,139,.06)"};
 }
 
 // Render
@@ -5257,6 +5381,10 @@ function ckRender(){
     h+='<div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;border:1px solid var(--border);margin-bottom:10px;">';
     h+='<div style="font-size:1rem;font-weight:800;color:var(--text);">'+esc(ckData.patologia)+'</div>';
     if(ckData.resumen)h+='<div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;line-height:1.4;">'+esc(ckData.resumen)+'</div>';
+    // Progress bar global
+    h+='<div style="margin-top:10px;height:6px;border-radius:3px;background:var(--border);overflow:hidden;">';
+    h+='<div style="height:100%;width:'+pct+'%;border-radius:3px;background:'+(pct===100?"linear-gradient(90deg,#22c55e,#16a34a)":"linear-gradient(90deg,#3b82f6,#2563eb)")+';transition:width .4s;"></div>';
+    h+='</div>';
     h+='<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">';
     h+='<button onclick="ckChecked={};ckRender()" style="padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">🔄 Reiniciar</button>';
     h+='<button onclick="ckNewSearch()" style="padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">🔍 Nueva</button>';
@@ -5271,17 +5399,20 @@ function ckRender(){
         var sd=sec.items.filter(function(_,i){return ckChecked[si+"-"+i]}).length;
         var sp=st>0?Math.round(sd/st*100):0;
         var isDone=sp===100;
+        var sty=getSectionStyle(sec.titulo);
 
-        h+='<div style="background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:8px;">';
-        // Section header
-        h+='<div style="padding:10px 14px;background:'+(isDone?"rgba(34,197,94,.08)":"var(--bg-subtle)")+';border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">';
-        h+='<div style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;color:var(--text);">';
-        h+='<span style="font-size:1.1rem;">'+(sec.icono||"📌")+'</span>'+esc(sec.titulo)+'</div>';
+        h+='<div style="background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:8px;'+(isDone?"border-color:rgba(34,197,94,.3);":"")+'">';
+        // Section header with colored accent
+        h+='<div style="padding:10px 14px;background:'+(isDone?"rgba(34,197,94,.08)":sty.bg)+';border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">';
+        h+='<div style="display:flex;align-items:center;gap:6px;">';
+        h+='<span style="font-size:1.1rem;">'+(sec.icono||sty.icon)+'</span>';
+        h+='<span style="font-size:.82rem;font-weight:700;color:'+(isDone?"#16a34a":sty.color)+';">'+esc(sec.titulo)+'</span>';
+        h+='</div>';
         h+='<div style="display:flex;align-items:center;gap:6px;">';
         h+='<span style="font-size:.72rem;font-weight:600;color:'+(isDone?"#16a34a":"var(--text-muted)")+'">';
         h+=sd+'/'+st+'</span>';
         h+='<div style="width:40px;height:4px;border-radius:2px;background:var(--border);overflow:hidden;">';
-        h+='<div style="height:100%;width:'+sp+'%;border-radius:2px;background:'+(isDone?"linear-gradient(90deg,#22c55e,#16a34a)":"linear-gradient(90deg,#3b82f6,#2563eb)")+';transition:width .3s;"></div>';
+        h+='<div style="height:100%;width:'+sp+'%;border-radius:2px;background:'+(isDone?"linear-gradient(90deg,#22c55e,#16a34a)":"linear-gradient(90deg,"+sty.color+","+sty.color+")")+';transition:width .3s;"></div>';
         h+='</div></div></div>';
 
         // Items
@@ -5292,12 +5423,10 @@ function ckRender(){
             var pc={"alta":"background:#fee2e2;color:#dc2626","media":"background:#fef3c7;color:#d97706","baja":"background:#dbeafe;color:#2563eb"};
             var ps=pc[item.prioridad]||pc.media;
 
-            h+='<div onclick="ckToggle(\''+key+'\')" style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;border:1px solid '+(chk?"#86efac":"var(--border)")+';background:'+(chk?"rgba(34,197,94,.05)":"var(--bg-card)")+';cursor:pointer;margin-bottom:4px;transition:all .2s;opacity:'+(chk?".7":"1")+'">';
-            // Checkbox
+            h+='<div onclick="ckToggle(\''+key+'\')" style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;border:1px solid '+(chk?"#86efac":"var(--border)")+';background:'+(chk?"rgba(34,197,94,.05)":"var(--bg-card)")+';cursor:pointer;margin-bottom:4px;transition:all .2s;opacity:'+(chk?".65":"1")+'">';
             h+='<div style="width:20px;height:20px;min-width:20px;border-radius:6px;border:2px solid '+(chk?"#22c55e":"var(--border)")+';background:'+(chk?"#22c55e":"var(--bg-card)")+';display:flex;align-items:center;justify-content:center;margin-top:1px;">';
             if(chk)h+='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
             h+='</div>';
-            // Content
             h+='<div style="flex:1;">';
             h+='<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">';
             h+='<span style="font-size:.8rem;font-weight:500;line-height:1.3;color:var(--text);'+(chk?"text-decoration:line-through;opacity:.6;":"")+'">'+esc(item.texto)+'</span>';
@@ -5317,6 +5446,7 @@ function ckRender(){
         h+='<div style="margin-top:10px;padding:16px;border-radius:var(--radius);text-align:center;background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.15));border:2px solid #86efac;">';
         h+='<div style="font-size:1.8rem;">🎉</div>';
         h+='<div style="font-size:.9rem;font-weight:800;color:#166534;margin-top:4px;">¡Checklist completado!</div>';
+        h+='<div style="font-size:.75rem;color:#4ade80;margin-top:2px;">Todos los pasos han sido revisados</div>';
         h+='</div>';
     }
 
@@ -5329,6 +5459,7 @@ window.ckNewSearch=function(){
     document.getElementById("ckResult").style.display="none";
     document.getElementById("ckProgress").style.display="none";
     document.getElementById("ckChips").style.display="flex";
+    document.getElementById("ckAutoBanner").style.display="none";
     document.getElementById("ckInput").value="";
     document.getElementById("ckInput").focus();
 };
