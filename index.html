@@ -1182,13 +1182,13 @@ window.showNotebooksModal=function(){
         <p style="font-size:.88rem;opacity:.65;margin-bottom:24px;">23 trípticos + 16 SEMFyC + 38 hospitalarios · 77 en total · Fuente: ARDITI + SMS Murcia + Toledo + SEUP + HUSL</p>
         
         <div style="background:rgba(255,255,255,.04);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
-            <div class="tab-buttons" style="border-bottom-color:rgba(255,255,255,.12);">
-                <button class="tab-btn tab-urg active" onclick="switchUrgTab('urg-trip',this)" style="cursor:pointer;color:#fff;">📄 Trípticos</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-list',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">📋 Protocolos</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">🤖 Preguntas IA</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">✨ Studio</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">🛏️ Pacientes</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">💊 Fármacos</button>
+            <div class="tab-buttons" style="border-bottom-color:rgba(255,255,255,.12);display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;-ms-overflow-style:none;scrollbar-width:none;">
+                <button class="tab-btn tab-urg active" onclick="switchUrgTab('urg-trip',this)" style="cursor:pointer;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📄</span> Trípticos</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-list',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📋</span> Protocolos</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🤖</span> Preguntas IA</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">✨</span> Studio</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🛏️</span> Pacientes</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">💊</span> Fármacos</button>
             </div>
             
             <!-- TRÍPTICOS VISUALES -->
