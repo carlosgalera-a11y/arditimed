@@ -719,9 +719,16 @@ async function trClasGenerarQR(nivel) {
   };
 
   try {
-    var docRef = await db.collection('triajes').add(fichaData);
     var baseUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '');
-    var fichaUrl = baseUrl + 'triaje-ficha.html?id=' + docRef.id;
+    var fichaUrl = '';
+    if (typeof db !== 'undefined' && firebase.auth().currentUser) {
+      var docRef = await db.collection('triajes').add(fichaData);
+      fichaUrl = baseUrl + 'triaje-ficha.html?id=' + docRef.id;
+    } else {
+      console.log('[Triaje Clásico] Sin auth, usando URL encoding');
+      var compact = {n:nivel,v:verifyCode,m:(state.area||'')+' — '+(state.sintoma||''),a:(fichaData.alergias||'').substring(0,100),med:(fichaData.medicacion||'').substring(0,100),c:(fichaData.constantes||'').substring(0,100),r:(n.texto+' — '+n.accion).substring(0,500),t:Date.now()};
+      fichaUrl = baseUrl + 'triaje-ficha.html?d=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(compact)))));
+    }
     var NI = { 1:'🔴', 2:'🟠', 3:'🟡', 4:'🟢', 5:'🔵' };
 
     document.getElementById('trClasQRFields').style.display = 'none';
