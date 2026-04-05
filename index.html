@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- Google Analytics 4 — Área II Cartagena PWA -->
+<!-- ⚠️ Reemplazar GA_MEASUREMENT_ID con tu ID real (G-XXXXXXXXXX) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<script>
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());
+gtag('config','GA_MEASUREMENT_ID',{
+  page_title:'Área II Cartagena PWA',
+  cookie_flags:'SameSite=None;Secure'
+});
+
+// ═══ CUSTOM EVENTS — Tracking de uso clínico ═══
+window.gaTrack=function(event,params){
+  try{gtag('event',event,params||{});}catch(e){}
+};
+</script>
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
@@ -4294,5 +4311,75 @@ function urgFarmToggle(id){
 }
 </script>
 
+<script>
+// ═══ GOOGLE ANALYTICS 4 — Custom Events ═══
+// Monkey-patch funciones clave para tracking sin modificar archivos originales
+(function(){
+  // 1. Login exitoso
+  if(typeof firebase!=='undefined'){
+    firebase.auth().onAuthStateChanged(function(user){
+      if(user)try{gaTrack('login',{method:'Google',user_email:user.email});}catch(e){}
+    });
+  }
+
+  // 2. Preguntas IA
+  var _origHP=window.hacerPregunta;
+  if(_origHP)window.hacerPregunta=function(){
+    try{gaTrack('ia_pregunta',{category:typeof currentCategory!=='undefined'?currentCategory:'general'});}catch(e){}
+    return _origHP.apply(this,arguments);
+  };
+
+  // 3. Studio IA
+  var _origSA=window.studioAction;
+  if(_origSA)window.studioAction=function(t){
+    try{gaTrack('ia_studio',{tipo:t,category:typeof currentCategory!=='undefined'?currentCategory:'general'});}catch(e){}
+    return _origSA.apply(this,arguments);
+  };
+
+  // 4. Scan IA
+  var _origScan=window.scanAnalyze;
+  if(_origScan)window.scanAnalyze=function(){
+    try{gaTrack('scan_ia',{});}catch(e){}
+    return _origScan.apply(this,arguments);
+  };
+
+  // 5. Triaje QR generado
+  var _origTrClas=window.trClasGenerarQR;
+  if(_origTrClas)window.trClasGenerarQR=function(n){
+    try{gaTrack('triaje_qr',{nivel:n,tipo:'clasico'});}catch(e){}
+    return _origTrClas.apply(this,arguments);
+  };
+
+  var _origTrIA=window.trIASaveAndShowQR;
+  if(_origTrIA)window.trIASaveAndShowQR=function(n){
+    try{gaTrack('triaje_qr',{nivel:n,tipo:'ia'});}catch(e){}
+    return _origTrIA.apply(this,arguments);
+  };
+
+  // 6. Busqueda farmacos
+  var _origFF=window.urgFarmFilter;
+  if(_origFF){
+    var _ffDebounce;
+    window.urgFarmFilter=function(){
+      clearTimeout(_ffDebounce);
+      _ffDebounce=setTimeout(function(){
+        var q=document.getElementById('urgFarmSearch');
+        if(q&&q.value.length>2)try{gaTrack('farmacos_busqueda',{query:q.value});}catch(e){}
+      },1500);
+      return _origFF.apply(this,arguments);
+    };
+  }
+
+  // 7. Protocolo visualizado
+  var _origUVP=window.urgViewProtocol;
+  if(_origUVP)window.urgViewProtocol=function(id){
+    try{gaTrack('protocolo_view',{protocolo_id:id});}catch(e){}
+    return _origUVP.apply(this,arguments);
+  };
+
+  console.log('[GA4] Custom events tracking initialized');
+})();
+</script>
 </body>
 </html>
+

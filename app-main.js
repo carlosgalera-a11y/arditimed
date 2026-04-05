@@ -795,6 +795,8 @@ function _showPageInit(id){
     // Track page views for dashboard
     try{var pv=JSON.parse(localStorage.getItem('pageViews')||'{}');pv[id]=(pv[id]||0)+1;localStorage.setItem('pageViews',JSON.stringify(pv));}catch(e){}
     try{logUsage('page_view',id);}catch(e){}
+    // Google Analytics 4 — page view
+    try{if(typeof gaTrack==='function')gaTrack('page_view',{page_title:id,page_location:window.location.href+'#'+id});}catch(e){}
     // Inicializaciones específicas por página
     try{if(id==="pageProfessionals")initProfessionals();}catch(e){}
     try{if(id==="pageScanIA")scanRenderHist();}catch(e){}
