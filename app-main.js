@@ -763,8 +763,35 @@ function showPage(id){
         document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
         var pageEl=document.getElementById(id);
         if(!pageEl){console.error("showPage: no existe elemento con id="+id);return;}
+        // ── Lazy-load sections from external files ──
+        var src=pageEl.getAttribute("data-src");
+        if(src){
+            pageEl.classList.add("active");
+            fetch(src+"?v="+Date.now()).then(function(r){
+                if(!r.ok)throw new Error("HTTP "+r.status);
+                return r.text();
+            }).then(function(html){
+                // Extract inner content (skip outer div wrapper from section file)
+                var tmp=document.createElement("div");
+                tmp.innerHTML=html;
+                var inner=tmp.querySelector(".page");
+                if(inner){pageEl.innerHTML=inner.innerHTML;}
+                else{pageEl.innerHTML=html;}
+                pageEl.removeAttribute("data-src");
+                console.log("[LazyLoad] ✓ "+id+" loaded from "+src);
+                // Run page-specific initializations after load
+                _showPageInit(id);
+            }).catch(function(e){
+                console.error("[LazyLoad] ✗ "+id+":",e);
+                pageEl.innerHTML='<div style="padding:40px;text-align:center;"><p style="font-size:1.2rem;margin-bottom:8px;">⚠️ Error cargando sección</p><p style="color:var(--text-muted);font-size:.85rem;">'+e.message+'</p><button onclick="showPage(\''+id+'\')" class="btn btn-primary" style="margin-top:12px;">🔄 Reintentar</button></div>';
+            });
+            return;
+        }
         pageEl.classList.add("active");
     }catch(e){console.error("showPage error:",e);return;}
+    _showPageInit(id);
+}
+function _showPageInit(id){
     // Track page views for dashboard
     try{var pv=JSON.parse(localStorage.getItem('pageViews')||'{}');pv[id]=(pv[id]||0)+1;localStorage.setItem('pageViews',JSON.stringify(pv));}catch(e){}
     try{logUsage('page_view',id);}catch(e){}

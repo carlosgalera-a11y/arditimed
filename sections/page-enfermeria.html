@@ -1,0 +1,352 @@
+<div class="page" id="pageEnfermeria">
+    <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;">
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('Enfermería')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageEnfermeria" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageEnfermeria" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Enfermería')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
+    <div style="background:linear-gradient(135deg,#880e4f,#c2185b);padding:20px 28px;color:#fff;">
+        <h2 style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:4px;">👩‍⚕️ Enfermería</h2>
+        <p style="font-size:.88rem;opacity:.8;">Herramientas, protocolos y recursos para enfermería del Área II Cartagena</p>
+    </div>
+    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;background:var(--bg-main);">
+        <div style="padding:16px 28px 0;">
+            <div class="tab-buttons"><button class="tab-btn active" onclick="switchEnfTab('enf-ia',this)">🤖 Preguntas IA</button><button class="tab-btn" onclick="switchEnfTab('enf-protocolos',this)">📋 Protocolos</button><button class="tab-btn" onclick="switchEnfTab('enf-tecnicas',this)">💉 Técnicas</button><button class="tab-btn" onclick="switchEnfTab('enf-farmacos',this)">💊 Fármacos</button><button class="tab-btn" onclick="switchEnfTab('enf-escalas',this)">📊 Escalas</button><button class="tab-btn" onclick="switchEnfTab('enf-curas',this)">🩹 Curas</button><button class="tab-btn" onclick="switchEnfTab('enf-docs',this)">📄 Documentos</button><button class="tab-btn" onclick="switchEnfTab('enf-recursos',this)">📚 Recursos</button><button class="tab-btn" onclick="switchEnfTab('enf-config',this)">⚙️ Config</button></div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:16px 28px 28px;">
+
+            <!-- TAB: Preguntas IA -->
+            <div id="enf-ia" class="enf-tab-content" style="display:block;">
+                <div class="question-input"><input type="text" id="enfPreguntaInput" placeholder="Pregunta sobre enfermería..." spellcheck="false"><button class="btn btn-primary" onclick="enfHacerPregunta()" id="enfBtnPreguntar">Preguntar</button></div>
+                <div id="enfPreguntasList"><div class="empty-state"><div class="empty-state-icon">👩‍⚕️</div><p>Haz tu primera pregunta de enfermería</p></div></div>
+            </div>
+
+            <!-- TAB: Protocolos Enfermería -->
+            <div id="enf-protocolos" class="enf-tab-content" style="display:none;">
+                <div class="studio-intro" style="background:linear-gradient(135deg,#880e4f,#ad1457);"><h4>📋 Protocolos de Enfermería</h4><p>Protocolos y procedimientos de enfermería para Atención Primaria</p></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">
+                    <div class="patient-card" onclick="enfLoadProtocol('curas')"><div class="patient-card-icon">🩹</div><div class="patient-card-title">Curas y Heridas</div><div class="patient-card-desc">Úlceras, heridas quirúrgicas, quemaduras</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('via_venosa')"><div class="patient-card-icon">💉</div><div class="patient-card-title">Vía Venosa</div><div class="patient-card-desc">Canalización, mantenimiento, complicaciones</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('sondaje')"><div class="patient-card-icon">🔧</div><div class="patient-card-title">Sondajes</div><div class="patient-card-desc">Vesical, nasogástrico, rectal</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('vacunacion')"><div class="patient-card-icon">💉</div><div class="patient-card-title">Vacunación</div><div class="patient-card-desc">Calendario, técnica, conservación</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('inyectables')"><div class="patient-card-icon">💊</div><div class="patient-card-title">Inyectables</div><div class="patient-card-desc">IM, SC, IV, intradérmica</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('constantes')"><div class="patient-card-icon">📊</div><div class="patient-card-title">Constantes Vitales</div><div class="patient-card-desc">PA, FC, Tª, SatO2, glucemia</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('ecg')"><div class="patient-card-icon">💓</div><div class="patient-card-title">ECG</div><div class="patient-card-desc">Realización e interpretación básica</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('rcp')"><div class="patient-card-icon">🚨</div><div class="patient-card-title">RCP / SVB</div><div class="patient-card-desc">Soporte Vital Básico y DEA</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('diabetico')"><div class="patient-card-icon">🩸</div><div class="patient-card-title">Paciente Diabético</div><div class="patient-card-desc">Insulinas, glucemia, pie diabético</div></div>
+                    <div class="patient-card" onclick="enfLoadProtocol('triaje')"><div class="patient-card-icon">🏥</div><div class="patient-card-title">Triaje</div><div class="patient-card-desc">Manchester, clasificación, derivación</div></div>
+                </div>
+                <div id="enfProtocolResult" style="display:none;margin-top:20px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h4 style="font-family:var(--font-display);color:var(--primary-dark);" id="enfProtocolTitle"></h4><button class="btn btn-secondary btn-small" onclick="document.getElementById('enfProtocolResult').style.display='none'">✕ Cerrar</button></div>
+                    <div id="enfProtocolContent" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;line-height:1.7;font-size:.92rem;white-space:pre-wrap;max-height:500px;overflow-y:auto;"></div>
+                </div>
+            </div>
+
+            <!-- TAB: Técnicas -->
+            <div id="enf-tecnicas" class="enf-tab-content" style="display:none;">
+                <div class="studio-intro" style="background:linear-gradient(135deg,#880e4f,#ad1457);"><h4>💉 Técnicas de Enfermería</h4><p>Procedimientos y técnicas paso a paso</p></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">
+                    <div class="patient-card" onclick="enfAskAI('Describe paso a paso la técnica de canalización de vía venosa periférica, incluyendo material necesario, procedimiento y cuidados posteriores')"><div class="patient-card-icon">💉</div><div class="patient-card-title">Vía Venosa Periférica</div><div class="patient-card-desc">Canalización paso a paso</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Describe paso a paso la técnica de sondaje vesical masculino y femenino, material necesario y cuidados')"><div class="patient-card-icon">🔧</div><div class="patient-card-title">Sondaje Vesical</div><div class="patient-card-desc">Masculino y femenino</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Describe paso a paso la técnica de sondaje nasogástrico, indicaciones, contraindicaciones y cuidados')"><div class="patient-card-icon">🔧</div><div class="patient-card-title">Sonda Nasogástrica</div><div class="patient-card-desc">Inserción y mantenimiento</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Describe paso a paso la cura de heridas: tipos de heridas, material necesario, técnica estéril, tipos de apósitos y frecuencia de curas')"><div class="patient-card-icon">🩹</div><div class="patient-card-title">Cura de Heridas</div><div class="patient-card-desc">Tipos, técnica y apósitos</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Describe las técnicas de administración de inyectables: intramuscular, subcutánea, intravenosa e intradérmica. Zonas de punción, ángulos y volúmenes máximos')"><div class="patient-card-icon">💊</div><div class="patient-card-title">Administración Inyectables</div><div class="patient-card-desc">IM, SC, IV, ID</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Describe paso a paso la realización de un ECG de 12 derivaciones: preparación del paciente, colocación de electrodos, errores frecuentes')"><div class="patient-card-icon">💓</div><div class="patient-card-title">Realización ECG</div><div class="patient-card-desc">12 derivaciones paso a paso</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Describe el protocolo de extracción sanguínea: orden de tubos, técnica de venopunción, errores preanalíticos, tubo de hemocultivo')"><div class="patient-card-icon">🩸</div><div class="patient-card-title">Extracción Sanguínea</div><div class="patient-card-desc">Orden tubos y venopunción</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Describe la técnica de RCP básica y avanzada: secuencia de actuación, compresiones, ventilación, uso de DEA, algoritmo SVB/SVA')"><div class="patient-card-icon">🚨</div><div class="patient-card-title">RCP y DEA</div><div class="patient-card-desc">Soporte vital y desfibrilación</div></div>
+                </div>
+                <div id="enfTecnicaResult" style="display:none;margin-top:20px;">
+                    <h4 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:10px;" id="enfTecnicaTitle">Resultado</h4>
+                    <div id="enfTecnicaContent" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;line-height:1.7;font-size:.92rem;white-space:pre-wrap;max-height:500px;overflow-y:auto;"></div>
+                </div>
+            </div>
+
+            <!-- TAB: Fármacos -->
+            <div id="enf-farmacos" class="enf-tab-content" style="display:none;">
+                <div class="studio-intro" style="background:linear-gradient(135deg,#880e4f,#ad1457);"><h4>💊 Guía de Fármacos</h4><p>Consulta rápida de fármacos frecuentes en enfermería</p></div>
+                <div class="question-input"><input type="text" id="enfFarmacoInput" placeholder="Busca un fármaco: paracetamol, insulina, heparina..." spellcheck="false"><button class="btn btn-primary" onclick="enfBuscarFarmaco()">🔍 Buscar</button></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:10px;">
+                    <button class="studio-card" onclick="enfBuscarFarmacoDir('Insulinas')"><div class="studio-card-icon">💉</div><div class="studio-card-title">Insulinas</div><div class="studio-card-desc">Tipos, dosis, administración</div></button>
+                    <button class="studio-card" onclick="enfBuscarFarmacoDir('Heparinas de bajo peso molecular')"><div class="studio-card-icon">🩸</div><div class="studio-card-title">Heparinas</div><div class="studio-card-desc">HBPM, dosificación</div></button>
+                    <button class="studio-card" onclick="enfBuscarFarmacoDir('Analgésicos: paracetamol, metamizol, ibuprofeno, tramadol, morfina')"><div class="studio-card-icon">💊</div><div class="studio-card-title">Analgésicos</div><div class="studio-card-desc">Escala analgésica OMS</div></button>
+                    <button class="studio-card" onclick="enfBuscarFarmacoDir('Antibióticos más usados en atención primaria')"><div class="studio-card-icon">🦠</div><div class="studio-card-title">Antibióticos</div><div class="studio-card-desc">Los más frecuentes en AP</div></button>
+                    <button class="studio-card" onclick="enfBuscarFarmacoDir('Fármacos de urgencia: adrenalina, atropina, diazepam, salbutamol')"><div class="studio-card-icon">🚨</div><div class="studio-card-title">Urgencias</div><div class="studio-card-desc">Fármacos de emergencia</div></button>
+                    <button class="studio-card" onclick="enfBuscarFarmacoDir('Sueros intravenosos: salino, glucosado, Ringer')"><div class="studio-card-icon">🧪</div><div class="studio-card-title">Sueroterapia</div><div class="studio-card-desc">Tipos de sueros y ritmos</div></button>
+                </div>
+                <div id="enfFarmacoResult" style="display:none;margin-top:20px;">
+                    <h4 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:10px;" id="enfFarmacoTitle">Resultado</h4>
+                    <div id="enfFarmacoContent" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;line-height:1.7;font-size:.92rem;white-space:pre-wrap;max-height:500px;overflow-y:auto;"></div>
+                </div>
+            </div>
+
+            <!-- TAB: Escalas -->
+            <div id="enf-escalas" class="enf-tab-content" style="display:none;">
+                <div class="studio-intro" style="background:linear-gradient(135deg,#880e4f,#ad1457);"><h4>📊 Escalas y Valoraciones</h4><p>Escalas de valoración más utilizadas en enfermería</p></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">
+                    <div class="patient-card" onclick="enfAskAI('Explica la escala de Norton para valoración del riesgo de úlceras por presión: parámetros, puntuación, interpretación y actuación según resultado')"><div class="patient-card-icon">📊</div><div class="patient-card-title">Norton (UPP)</div><div class="patient-card-desc">Riesgo de úlceras por presión</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Explica la escala de Barthel para valoración de actividades básicas de la vida diaria: ítems, puntuación, interpretación y clasificación de dependencia')"><div class="patient-card-icon">📋</div><div class="patient-card-title">Barthel (ABVD)</div><div class="patient-card-desc">Actividades básicas vida diaria</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Explica la escala EVA de dolor y otras escalas de valoración del dolor en enfermería: numérica, facial, FLACC para niños')"><div class="patient-card-icon">😣</div><div class="patient-card-title">EVA / Dolor</div><div class="patient-card-desc">Escalas de valoración del dolor</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Explica la escala de Glasgow para valoración del nivel de conciencia: apertura ocular, respuesta verbal, respuesta motora, puntuación y significado clínico')"><div class="patient-card-icon">🧠</div><div class="patient-card-title">Glasgow (Conciencia)</div><div class="patient-card-desc">Nivel de conciencia</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Explica la escala de Braden para riesgo de úlceras por presión: 6 subescalas, puntuación, diferencias con Norton, actuación según resultado')"><div class="patient-card-icon">🩹</div><div class="patient-card-title">Braden (UPP)</div><div class="patient-card-desc">Alternativa a Norton</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Explica la escala de Downton para valoración del riesgo de caídas en pacientes hospitalizados: factores, puntuación y medidas preventivas')"><div class="patient-card-icon">⚠️</div><div class="patient-card-title">Downton (Caídas)</div><div class="patient-card-desc">Riesgo de caídas</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Explica la escala NEWS (National Early Warning Score) para detección precoz del deterioro clínico: parámetros, puntuación y actuación según nivel de alerta')"><div class="patient-card-icon">🚨</div><div class="patient-card-title">NEWS</div><div class="patient-card-desc">Deterioro clínico precoz</div></div>
+                    <div class="patient-card" onclick="enfAskAI('Explica las escalas de valoración nutricional MNA y MUST: parámetros, puntuación, interpretación y actuación en desnutrición')"><div class="patient-card-icon">🍎</div><div class="patient-card-title">MNA / MUST</div><div class="patient-card-desc">Valoración nutricional</div></div>
+                </div>
+            </div>
+
+            <!-- TAB: Documentos -->
+            <div id="enf-curas" class="enf-tab-content" style="display:none;">
+                <div style="background:linear-gradient(135deg,#7c2d12,#9a3412);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:1.8rem;">🩹</span>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;">Guías Prácticas de Heridas — SERGAS</div>
+                            <div style="font-size:.78rem;opacity:.85;">Colección «Úlceras Fóra» · Servicio Gallego de Salud · 8 guías basadas en evidencia</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:grid;gap:12px;">
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/Documents/93/GU%C3%8DA%20N%C2%BA1%20UPP%20cast.pdf" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #dc2626;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#991b1b';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#dc2626';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#dc2626;font-size:.9rem;">1</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Úlceras por Presión (UPP)</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Prevención, clasificación, tratamiento. Escalas Norton/Braden. Superficies especiales.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/Documents/8/GUIA-2-ULCERAS%20EXTREMIDAD%20INFERIOR-PUF-139D-%20Publicada-2024-CAST.pdf" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #ea580c;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#c2410c';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#ea580c';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fff7ed;display:flex;align-items:center;justify-content:center;font-weight:800;color:#ea580c;font-size:.9rem;">2</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Úlceras de la Extremidad Inferior <span style="background:#dbeafe;color:#1d4ed8;padding:1px 6px;border-radius:4px;font-size:.7rem;font-weight:600;">ACTUALIZADA 2024</span></div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Úlceras venosas, arteriales y mixtas. ITB. Terapia compresiva. Cura en ambiente húmedo.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G3_ULCERAS_PIE_DIABETICO?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #eab308;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#ca8a04';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#eab308';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fefce8;display:flex;align-items:center;justify-content:center;font-weight:800;color:#ca8a04;font-size:.9rem;">3</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Úlceras del Pie Diabético</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Clasificación Wagner/Texas. Exploración neuropática. Descarga. Pie de riesgo.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G4_LESIONES_CUTANEAS_NEOPLASICAS?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #7c3aed;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#6d28d9';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#7c3aed';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#f5f3ff;display:flex;align-items:center;justify-content:center;font-weight:800;color:#7c3aed;font-size:.9rem;">4</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Lesiones Cutáneas Neoplásicas</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Heridas tumorales. Manejo del exudado, olor y sangrado. Cuidados paliativos.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G5_LESIONES_POR_QUEMADURA?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #dc2626;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#991b1b';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#dc2626';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#dc2626;font-size:.9rem;">5</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Lesiones por Quemadura <span style="background:#f0fdf4;color:#166534;padding:1px 6px;border-radius:4px;font-size:.7rem;font-weight:600;">2ª EDICIÓN</span></div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Clasificación por profundidad. Regla de los 9. Fórmula de Parkland. Cura local.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G6_HERIDA_QUIRURGICA_AGUDA?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0284c7;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#0369a1';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#0284c7';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0284c7;font-size:.9rem;">6</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Herida Quirúrgica Aguda</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Clasificación herida quirúrgica. Infección sitio quirúrgico. Dehiscencia. Cuidados.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G7_LESIONES_CUTANEAS_ASOCIADAS_A_LA_HUMEDAD?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #059669;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#047857';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#059669';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;font-weight:800;color:#059669;font-size:.9rem;">7</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Lesiones Cutáneas Asociadas a la Humedad</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">LESCAH. Dermatitis por incontinencia. Diferenciación UPP vs LESCAH. Prevención.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G8_HERIDAS_TRAUMATICAS?idioma=es" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #475569;border-radius:var(--radius-sm);text-decoration:none;transition:.2s;" onmouseover="this.style.borderLeftColor='#334155';this.style.background='var(--bg-subtle)'" onmouseout="this.style.borderLeftColor='#475569';this.style.background='var(--bg-card)'">
+                        <div style="min-width:40px;height:40px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-weight:800;color:#475569;font-size:.9rem;">8</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:.92rem;color:var(--text);margin-bottom:2px;">Heridas Traumáticas de Partes Blandas</div>
+                            <div style="font-size:.78rem;color:var(--text-muted);">Abrasiones, laceraciones, contusiones, mordeduras. Limpieza. Cierre. Profilaxis tétanos.</div>
+                        </div>
+                        <span style="color:var(--text-muted);font-size:1.2rem;">📄</span>
+                    </a>
+
+                </div>
+
+                <div style="margin-top:16px;padding:12px 16px;background:var(--bg-subtle);border-radius:var(--radius-sm);font-size:.78rem;color:var(--text-muted);line-height:1.5;">
+                    <strong>Fuente:</strong> Programa «Úlceras Fóra» — Servicio Gallego de Salud (SERGAS). Colección de Guías Prácticas de Heridas. Xunta de Galicia.<br>
+                    <a href="https://ulcerasfora.sergas.gal/Informacion/G0_COLECCI%C3%93N%20GU%C3%8DAS%20PR%C3%81CTICAS?idioma=es" target="_blank" style="color:#0066cc;">Ver colección completa en ulcerasfora.sergas.gal</a>
+                </div>
+            </div>
+
+            <div id="enf-docs" class="enf-tab-content" style="display:none;">
+                <div class="studio-intro" style="background:linear-gradient(135deg,#880e4f,#ad1457);"><h4>📄 Documentos y Bibliografía</h4><p>Artículos científicos, guías clínicas, protocolos de vacunación y documentación de referencia</p></div>
+                
+                <!-- Buscador -->
+                <div style="margin:16px 0;"><input type="text" id="enfDocSearch" placeholder="🔍 Buscar documento..." oninput="enfFilterDocs(this.value)" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:.92rem;font-family:var(--font-body);background:var(--bg-card);"></div>
+
+                <!-- ═══ PAPPS 2024 ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">📋 Guías PAPPS</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <a href="papps-estilos-vida-2024.pdf" target="_blank" style="text-decoration:none;" class="enf-doc-item"><div class="patient-card" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📕</span><div><div style="font-weight:600;font-size:.88rem;color:var(--text);">Recomendaciones estilo de vida — PAPPS 2024</div><div style="font-size:.72rem;color:var(--text-muted);">Córdoba García R. et al. · Atención Primaria 56 · PDF</div></div></div></div></a>
+                </div>
+
+                <!-- ═══ CAMPAÑA GRIPE / COVID / VRS ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">🦠 Campaña Gripe, COVID-19 y VRS 2025-2026</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #c62828;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📄</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo campaña de gripe y COVID-19 2025-2026 final</div><div style="font-size:.72rem;color:var(--text-muted);">03022026 · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #c62828;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📄</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo Campaña vacunación VRS 2026-2026</div><div style="font-size:.72rem;color:var(--text-muted);">VRS · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #c62828;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📄</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo Campaña nirsevimab 2026-2026 con anexos</div><div style="font-size:.72rem;color:var(--text-muted);">Nirsevimab · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #c62828;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📄</span><div><div style="font-weight:600;font-size:.88rem;">Resumen ejecutivo protocolo campaña vacunación estacional 2026-2026</div><div style="font-size:.72rem;color:var(--text-muted);">Resumen · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #c62828;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📄</span><div><div style="font-weight:600;font-size:.88rem;">Carta autorización vacunación antigripal centros educativos 2025-2026</div><div style="font-size:.72rem;color:var(--text-muted);">2 versiones · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #c62828;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📄</span><div><div style="font-weight:600;font-size:.88rem;">Instrucciones Plantilla de Subida de dosis vacuna VRS 2026-2026</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #c62828;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📄</span><div><div style="font-weight:600;font-size:.88rem;">Virus respiratorio sincitial – VRS – FAQ Profesionales – murciasalud</div><div style="font-size:.72rem;color:var(--text-muted);">FAQ · PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ PROTOCOLOS VACUNACIÓN ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">💉 Protocolos de Vacunación</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo vacunación antineumocócica menores 18 años final</div><div style="font-size:.72rem;color:var(--text-muted);">2025_09_15 · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo vacunación antineumocócica actualizado 18 años y más final</div><div style="font-size:.72rem;color:var(--text-muted);">2025_09_16 · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo catch-up neumococo 2024</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo actuación hijo de madre AgHBs positivo o desconocido</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo de actuación en caso de profilaxis antirrábica</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo vacunación inmigrantes 2ª generación origen marroquí</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo vacunación frente a Hepatitis A en inmigrante mujer menor 10 años</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo vacunación frente a hepatitis A en grupos de riesgo</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo vacunación VPH en personas con condiciones de riesgo</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo administración VPH y meningococo ACWY en centros educativos</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo captación varones nacidos 1999-2010 no vacunados VPH</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Protocolo Herpes Zoster 04012024 v2</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Resumen ejecutivo del protocolo de vacunación</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #2e7d32;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💉</span><div><div style="font-weight:600;font-size:.88rem;">Prot_vacunacion_EAI_dic2023</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ HERPES ZÓSTER ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">🔬 Herpes Zóster</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #7b1fa2;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🔬</span><div><div style="font-weight:600;font-size:.88rem;">Recomendaciones de vacunación frente a herpes zóster</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #7b1fa2;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🔬</span><div><div style="font-weight:600;font-size:.88rem;">Herpes Zóster – FAQ para profesionales – murciasalud</div><div style="font-size:.72rem;color:var(--text-muted);">FAQ · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #7b1fa2;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🔬</span><div><div style="font-weight:600;font-size:.88rem;">Códigos registros OMI-AP indicadores vacuna herpes zóster</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #7b1fa2;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🔬</span><div><div style="font-weight:600;font-size:.88rem;">Infografía grupos de vacunación herpes zóster</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #7b1fa2;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🔬</span><div><div style="font-weight:600;font-size:.88rem;">Solicitud vacunación Herpes Zoster en personas con condiciones de riesgo</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ CALENDARIOS Y REGISTROS ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">📅 Calendarios y Registros</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #e65100;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📅</span><div><div style="font-weight:600;font-size:.88rem;">Calendario de vacunación a lo largo de toda la vida</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #e65100;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📅</span><div><div style="font-weight:600;font-size:.88rem;">Evolución calendarios de vacunaciones en la Región de Murcia</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #e65100;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📅</span><div><div style="font-weight:600;font-size:.88rem;">Lote 16 Calendario Gráfico de Vacunaciones SS-2026</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #e65100;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📅</span><div><div style="font-weight:600;font-size:.88rem;">Cronograma 07012026</div><div style="font-size:.72rem;color:var(--text-muted);">PNG</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #e65100;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📅</span><div><div style="font-weight:600;font-size:.88rem;">Códigos de registro OMI-AP de todas las vacunas (vigentes y no vigentes)</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #e65100;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📅</span><div><div style="font-weight:600;font-size:.88rem;">LOTE vacunaciones chicos y chicas 2026</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #e65100;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📅</span><div><div style="font-weight:600;font-size:.88rem;">Versión 2026</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ FICHAS TÉCNICAS ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">💊 Fichas Técnicas de Vacunas</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #00838f;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💊</span><div><div style="font-weight:600;font-size:.88rem;">Ficha técnica Beyfortus</div><div style="font-size:.72rem;color:var(--text-muted);">Nirsevimab · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #00838f;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💊</span><div><div style="font-weight:600;font-size:.88rem;">Ficha técnica Prevenar 20® (Apexxnar®)</div><div style="font-size:.72rem;color:var(--text-muted);">Antineumocócica · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #00838f;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💊</span><div><div style="font-weight:600;font-size:.88rem;">Ficha técnica vacuna Fluenz 2025-2026</div><div style="font-size:.72rem;color:var(--text-muted);">Antigripal intranasal · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #00838f;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💊</span><div><div style="font-weight:600;font-size:.88rem;">Ficha técnica Gardasil 9</div><div style="font-size:.72rem;color:var(--text-muted);">VPH · PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ RECOMENDACIONES Y FAQ ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">❓ Recomendaciones y FAQ</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Recomendaciones vacunación 19062026</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Recomendaciones de vacunación frente a sarampión</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Recomendaciones profilaxis antihepatitis B tras exposición accidental</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Indicaciones de vacunación frente a la varicela</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Preguntas y respuestas vacunación tosferina en embarazadas</div><div style="font-size:.72rem;color:var(--text-muted);">Para profesionales sanitarios · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Rotavirus – FAQ profesionales – murciasalud</div><div style="font-size:.72rem;color:var(--text-muted);">FAQ · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación antineumocócica – FAQ profesionales – murciasalud</div><div style="font-size:.72rem;color:var(--text-muted);">FAQ · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación VPH en grupos de riesgo – FAQ profesionales – murciasalud</div><div style="font-size:.72rem;color:var(--text-muted);">FAQ · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación escolar VPH y meningococo (A,C,W,Y) – FAQ – murciasalud</div><div style="font-size:.72rem;color:var(--text-muted);">FAQ · PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #1565c0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">❓</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación frente a VPH varones 1999-2010 – FAQ – murciasalud</div><div style="font-size:.72rem;color:var(--text-muted);">FAQ · PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ PAUTAS VACUNACIÓN ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">📝 Pautas y Tablas</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Pautas vacunación antitetánica en adulto tras herida</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Pautas rutinarias vacunación antitetánica en adulto con pauta incompleta</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Tabla indicaciones vacunación VPH y su pauta vacunal</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación antigripal en niños y registro</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Vacuna triple vírica y alergia al huevo</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación frente a Hepatitis B en adultos</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación frente a hepatitis B en pacientes en tratamiento renal sustitutivo</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #4527a0;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📝</span><div><div style="font-weight:600;font-size:.88rem;">Vacunación frente a hepatitis B en pacientes inmunodeprimidos</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ INFOGRAFÍAS ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">🖼️ Infografías</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #f57f17;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🖼️</span><div><div style="font-weight:600;font-size:.88rem;">Infografía 18 años o más</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #f57f17;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🖼️</span><div><div style="font-weight:600;font-size:.88rem;">Infografía de pautas de actualización vacunación frente al rotavirus</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #f57f17;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🖼️</span><div><div style="font-weight:600;font-size:.88rem;">Infografía embarazada</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #f57f17;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🖼️</span><div><div style="font-weight:600;font-size:.88rem;">Infografía guarderías</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #f57f17;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🖼️</span><div><div style="font-weight:600;font-size:.88rem;">Infografía menores de 18 años</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #f57f17;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🖼️</span><div><div style="font-weight:600;font-size:.88rem;">Infografía sanitarios</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                </div>
+
+                <!-- ═══ OTROS ═══ -->
+                <h3 class="enf-doc-section" style="font-family:var(--font-display);color:var(--primary-dark);margin:20px 0 12px;font-size:1.1rem;">📎 Otros Documentos</h3>
+                <div class="enf-doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:20px;">
+                    <div class="patient-card enf-doc-item" style="border-left:4px solid #546e7a;padding:12px 16px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📎</span><div><div style="font-weight:600;font-size:.88rem;">2025-5155</div><div style="font-size:.72rem;color:var(--text-muted);">PDF</div></div></div></div>
+                </div>
+
+                <!-- Nota con enlace a NotebookLM -->
+                <div style="margin-top:20px;padding:16px;background:linear-gradient(135deg,#880e4f,#ad1457);border-radius:var(--radius);color:#fff;font-size:.88rem;line-height:1.6;">
+                    <strong>📚 Biblioteca completa:</strong> Todos estos documentos están disponibles en el <a href="https://notebooklm.google.com/notebook/d8b9054c-a565-4916-8667-4ff1cb9cd77f" target="_blank" style="color:#ffcdd2;text-decoration:underline;">NotebookLM del proyecto</a> donde puedes consultar, buscar y hacer preguntas sobre su contenido con IA.
+                    <br><span style="opacity:.7;">Total: 70+ documentos · Actualizado: Febrero 2026</span>
+                </div>
+            </div>
+
+            <!-- TAB: Recursos -->
+            <div id="enf-recursos" class="enf-tab-content" style="display:none;">
+                <div class="studio-intro" style="background:linear-gradient(135deg,#880e4f,#ad1457);"><h4>📚 Recursos de Enfermería</h4><p>Material formativo, guías y documentación</p></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">
+                    <a href="vacunas.html" target="_blank" style="text-decoration:none;"><div class="patient-card"><div class="patient-card-icon">💉</div><div class="patient-card-title">Vacunas - Información</div><div class="patient-card-desc">Calendario vacunal y recursos</div></div></a>
+                    <a href="ejercicios.html" target="_blank" style="text-decoration:none;"><div class="patient-card"><div class="patient-card-icon">🏃</div><div class="patient-card-title">Ejercicios Terapéuticos</div><div class="patient-card-desc">Pautas para pacientes</div></div></a>
+                    <a href="dietas.html" target="_blank" style="text-decoration:none;"><div class="patient-card"><div class="patient-card-icon">🍎</div><div class="patient-card-title">Dietas</div><div class="patient-card-desc">Planes dietéticos para pacientes</div></div></a>
+                    <a href="dejar-fumar.html" target="_blank" style="text-decoration:none;"><div class="patient-card"><div class="patient-card-icon">🚭</div><div class="patient-card-title">Deshabituación Tabáquica</div><div class="patient-card-desc">Guía para dejar de fumar</div></div></a>
+                    <a href="violencia-genero.html" target="_blank" style="text-decoration:none;"><div class="patient-card"><div class="patient-card-icon">🛡️</div><div class="patient-card-title">Violencia de Género</div><div class="patient-card-desc">Protocolo de detección y actuación</div></div></a>
+                    <a href="recursos-sociales.html" target="_blank" style="text-decoration:none;"><div class="patient-card"><div class="patient-card-icon">📋</div><div class="patient-card-title">Recursos Sociales</div><div class="patient-card-desc">Formularios y servicios sociales</div></div></a>
+                </div>
+            </div>
+
+            <!-- TAB: Config -->
+            <div id="enf-config" class="enf-tab-content" style="display:none;">
+                <div class="config-box">
+                    <h4>⚙️ Configuración IA para Enfermería</h4>
+                    <p class="config-hint" style="margin-bottom:14px;">La IA de Enfermería usa la misma configuración que Profesionales. Puedes cambiar el modelo desde aquí.</p>
+                    <div class="config-row"><select id="enfModel" onchange="enfGuardarConfig()">
+                        <option value="qwen/qwen3-32b">Qwen3 32B (recomendado)</option>
+                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+                        <option value="deepseek-r1-distill-llama-70b">DeepSeek R1 70B</option>
+                    </select></div>
+                    <div id="enfConfigStatus" style="margin-top:12px;font-size:.88rem;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+</div>
+

@@ -1,0 +1,707 @@
+<div class="page" id="pageProtocolosUrgencias">
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos Urgencias')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageProtocolosUrgencias" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageProtocolosUrgencias" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Protocolos Urgencias')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
+    <!-- ⚖️ AVISO PROPIEDAD INTELECTUAL -->
+    <div style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:8px;padding:10px 14px;margin:10px 16px;font-size:.76rem;color:#0c4a6e;line-height:1.5;">
+        <strong>📚 Propiedad intelectual y uso responsable:</strong> Los documentos disponibles en esta plataforma son para uso interno del Área II de Cartagena. Su distribución externa puede vulnerar los derechos de las sociedades científicas emisoras (SEMES, SMS, SEMES-CAM y otras). Acceso restringido a profesionales autorizados.
+    </div>
+    <div style="background:linear-gradient(135deg,var(--bg-dark),#1a1a2e);padding:30px 40px 20px;color:#fff;min-height:100vh;">
+        <div style="max-width:1200px;margin:0 auto;">
+        <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:4px;">🚨 Protocolos de Urgencias</h2>
+        <p style="font-size:.88rem;opacity:.65;margin-bottom:24px;">23 trípticos + 16 SEMFyC + 38 hospitalarios · 77 en total · Fuente: ARDITI + SMS Murcia + Toledo + SEUP + HUSL</p>
+        
+        <div style="background:rgba(255,255,255,.04);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
+            <div class="tab-buttons" style="border-bottom-color:rgba(255,255,255,.12);display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;-ms-overflow-style:none;scrollbar-width:none;">
+                <button class="tab-btn tab-urg active" onclick="switchUrgTab('urg-trip',this)" style="cursor:pointer;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📄</span> Trípticos</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-list',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📋</span> Protocolos</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🤖</span> Preguntas IA</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">✨</span> Studio</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🛏️</span> Pacientes</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">💊</span> Fármacos</button>
+            </div>
+            
+            <!-- TRÍPTICOS VISUALES -->
+            <div id="urg-trip-content" class="urg-tab-content" style="margin-top:20px;">
+                <div style="background:rgba(211,47,47,.15);border:1px solid rgba(211,47,47,.3);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.5rem;">📄</span>
+                    <div><strong style="font-size:.92rem;">Trípticos de Urgencias</strong><br><span style="font-size:.82rem;opacity:.8;">Cada tríptico contiene un PDF con el protocolo visual completo. Haz clic en "Ver PDF" para abrirlo.</span></div>
+                </div>
+                <div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#f57c0033;border-radius:8px;border-left:4px solid #f57c00;">🍽️ Digestivo <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">4 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#f57c00';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#f57c00,#f57c00cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Diverticulitis Aguda</div>
+<div style="font-size:.78rem;opacity:.85;">Inflamación de los divertículos del colon. Consulta el tríptico para detalles.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Dolor en FII, fiebre, alteración del hábito intestinal.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1sHBEehuuCilWmm-V9cL8jW_G4WxlMr7K/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#f57c00;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-diverticulitis')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#f57c00';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#f57c00,#f57c00cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Hemorragia Digestiva</div>
+<div style="font-size:.78rem;opacity:.85;">Protocolo de manejo de hemorragia digestiva alta y baja.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Hematemesis, melenas o rectorragia.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1ps0HHuQYWlsd3ES2nNyeTzBRybGtaEM2/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#f57c00;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-hemorragia-digestiva')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#f57c00';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#f57c00,#f57c00cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Patología Biliar (Cólico/Colecistitis)</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo del cólico biliar, colecistitis y colangitis.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Dolor en hipocondrio derecho, fiebre, ictericia.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1gWo3J2GloEENIoO3GpLUFOCdp8GX5-JN/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#f57c00;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-patologia-biliar')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#f57c00';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#f57c00,#f57c00cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Pancreatitis Aguda</div>
+<div style="font-size:.78rem;opacity:.85;">Inflamación aguda del páncreas. Diagnóstico y manejo inicial.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Dolor epigástrico en cinturón, elevación amilasa/lipasa.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1gTbT_nvv1Q5CPAXaBpKe9MmOrQGl367f/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#f57c00;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-pancreatitis')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#d32f2f33;border-radius:8px;border-left:4px solid #d32f2f;">❤️‍🔥 Cardiología <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">3 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#d32f2f';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#d32f2f,#d32f2fcc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Síncope</div>
+<div style="font-size:.78rem;opacity:.85;">Pérdida transitoria de conciencia. Evaluación de riesgo en urgencias.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Pérdida de conciencia con recuperación espontánea completa.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/159RUw8bx2aAAQisTRcjl5fOGAt79544W/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#d32f2f;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-sincope')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#d32f2f';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#d32f2f,#d32f2fcc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Insuficiencia Cardíaca Aguda</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo de la descompensación de IC y EAP.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Disnea, ortopnea, edemas, crepitantes.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1HPv8FG4IRbvQrBtYCjfwuF6e0wp-GSTW/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#d32f2f;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-insuficiencia-cardiaca')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#d32f2f';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#d32f2f,#d32f2fcc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Fibrilación Auricular</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo de la FA aguda y crónica en urgencias.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Palpitaciones, ritmo irregular, disnea.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1edF_YZy1C-9TjCdc9UOKbxXcbNHWiCCN/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#d32f2f;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-fibrilacion-auricular')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#7b1fa233;border-radius:8px;border-left:4px solid #7b1fa2;">🧬 Endocrinología <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">4 documentos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#7b1fa2';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#7b1fa2,#7b1fa2cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Emergencias Hiperglucémicas</div>
+<div style="font-size:.78rem;opacity:.85;">Cetoacidosis diabética y estado hiperosmolar.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Hiperglucemia severa, deshidratación, alteración del estado mental.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1IV5hjBoJwitJp8WGsPb3SJpvgDLTQs5a/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#7b1fa2;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-emergencias-hiperglucemicas')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#7b1fa2';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#7b1fa2,#7b1fa2cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Insulinización en Urgencias</div>
+<div style="font-size:.78rem;opacity:.85;">Pautas de insulinización basal y corrección en el paciente agudo.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Hiperglucemia no controlada en medio hospitalario.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1dManw-ahn89mmmwBGqv8KmxAZ_i8OzlU/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#7b1fa2;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-insulinizacion')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#7b1fa2';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#6a1b9a,#7b1fa2cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📘 SEEN</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Tratamiento de las Dislipidemias</div>
+<div style="font-size:.78rem;opacity:.85;">Manual SEEN · Lípidos y riesgo cardiovascular</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Contenido:</strong> Objetivos terapéuticos cLDL por riesgo CV, estatinas, ezetimiba, PCSK9, fibratos, ácidos grasos ω-3. Guías ESC/ACC/AACE.</div>
+<div style="display:flex;gap:8px;">
+<a href="docs/endocrino/seen-dislipidemias.pdf" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#7b1fa2;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#7b1fa2';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#4a148c,#7b1fa2cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📘 SEEN</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Tumores Neuroendocrinos GEP</div>
+<div style="font-size:.78rem;opacity:.85;">Manual SEEN · TNEGEP · Diagnóstico y tratamiento</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Contenido:</strong> Clasificación ENETS/OMS, síndrome carcinoide, insulinoma, gastrinoma, glucagonoma, VIPoma, diagnóstico por imagen, ASS, sunitinib, everolimus, radionúclidos.</div>
+<div style="display:flex;gap:8px;">
+<a href="docs/endocrino/seen-tne-gastroenteropancreaticos.pdf" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#7b1fa2;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#1565c033;border-radius:8px;border-left:4px solid #1565c0;">🫘 Nefrología <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">3 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#1565c0';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#1565c0,#1565c0cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Hiperpotasemia (Hiperkalemia)</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo urgente de la hiperpotasemia grave.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> K > 5.5 mEq/L, cambios ECG.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1TRokzomeGn62tHafbLL9dS0up64hTbzl/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#1565c0;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-hiperpotasemia')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#1565c0';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#1565c0,#1565c0cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Hipopotasemia (Hipokalemia)</div>
+<div style="font-size:.78rem;opacity:.85;">Reposición de potasio en urgencias.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> K < 3.5 mEq/L, debilidad muscular, arritmias.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1Bc7PNzezC1zrTKzc6PyCl-R41vKwjXMp/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#1565c0;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-hipopotasemia')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#1565c0';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#1565c0,#1565c0cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Insuficiencia Renal Aguda</div>
+<div style="font-size:.78rem;opacity:.85;">Abordaje del fracaso renal agudo (prerrenal, renal, postrenal).</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Elevación de creatinina, oliguria.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1cyIZiZEuEhqqk9php_9KVceOXD-TKnMd/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#1565c0;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-insuficiencia-renal')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#0288d133;border-radius:8px;border-left:4px solid #0288d1;">💧 Urología <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">2 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#0288d1';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#0288d1,#0288d1cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Cólico Nefrítico</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo del dolor y criterios de derivación/ingreso en litiasis renal.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Dolor en fosa renal irradiado a genitales, náuseas, cortejo vegetativo.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1b1oCYwB2kmR7kIOfucRK5UvsSN0hrU3-/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#0288d1;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-colico-nefritico')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#0288d1';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#0288d1,#0288d1cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Retención Aguda de Orina (RAO)</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo de la retención urinaria y sondaje vesical.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Imposibilidad para orinar, dolor suprapúbico, globo vesical.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1yAkV_aRKgJ3vsvFkeB9VhjuNwzc4q84E/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#0288d1;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-rao')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#00838f33;border-radius:8px;border-left:4px solid #00838f;">💨 Neumología <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">3 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#00838f';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#00838f,#00838fcc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Tromboembolismo Pulmonar (TEP)</div>
+<div style="font-size:.78rem;opacity:.85;">Sospecha diagnóstica (Wells/Ginebra) y tratamiento inicial del TEP.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Disnea súbita, dolor torácico pleurítico, taquicardia.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1xlgOWMF_4ECl-yjwi_8f7ZVox4cj0JeC/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#00838f;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-tep')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#00838f';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#00838f,#00838fcc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Neumonía Adquirida en la Comunidad</div>
+<div style="font-size:.78rem;opacity:.85;">Escalas de gravedad (CURB-65) y antibioterapia empírica.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Fiebre, tos, expectoración, disnea, infiltrado radiológico.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1CCTy53dKEmvucnWTObPtmbf4Ex3VBPC9/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#00838f;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-neumonia')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#00838f';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#00838f,#00838fcc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">EPOC Agudizado</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo de la exacerbación de EPOC (Criterios Anthonisen).</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Aumento de disnea, esputo o purulencia en paciente EPOC.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1HlTfk4_kIfpwtklCTynDHdbeRlhAi_Mx/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#00838f;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-epoc')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#5e35b133;border-radius:8px;border-left:4px solid #5e35b1;">🧠 Urgencias Neuro <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">1 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#5e35b1';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#5e35b1,#5e35b1cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Cefalea en Urgencias</div>
+<div style="font-size:.78rem;opacity:.85;">Criterios de alarma y manejo sintomático de cefaleas primarias.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Cefalea intensa o con signos de alarma.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1dyt23QPIRHouWH2Wjh9ttBy6Tqoz71X9/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#5e35b1;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-cefalea')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#c6282833;border-radius:8px;border-left:4px solid #c62828;">🩸 Cirugía Vascular <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">2 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#c62828';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#c62828,#c62828cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Trombosis Venosa Profunda (TVP)</div>
+<div style="font-size:.78rem;opacity:.85;">Diagnóstico y tratamiento anticoagulante de la TVP.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Edema unilateral, dolor en pantorrilla, signo de Homans.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1SgRJoYfjSYoffcNmKKNnmPMbDyYykl85/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#c62828;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-tvp')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#c62828';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#c62828,#c62828cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Úlceras Vasculares y Pie Diabético</div>
+<div style="font-size:.78rem;opacity:.85;">Manejo de heridas crónicas y pie diabético.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Úlceras en miembros inferiores, pie de riesgo.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1ZdlfC5hH5JC-yjaTOk7-GU1XUFVRyu8W/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#c62828;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-ulceras')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#4e342e33;border-radius:8px;border-left:4px solid #4e342e;">🦴 Reumatología <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">1 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#4e342e';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#4e342e,#4e342ecc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Artritis (Monoartritis Aguda)</div>
+<div style="font-size:.78rem;opacity:.85;">Abordaje de la articulación caliente e inflamada (Gota, Séptica).</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Dolor, rubor, calor y tumefacción articular aguda.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/16r1Ot9_6SbA3D9eodPG-5vRBatjRJFqi/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#4e342e;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-artritis')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#2e7d3233;border-radius:8px;border-left:4px solid #2e7d32;">🦠 Infecciosas <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">1 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#2e7d32';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#2e7d32,#2e7d32cc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Neutropenia Febril</div>
+<div style="font-size:.78rem;opacity:.85;">Urgencia oncológica. Manejo antibiótico precoz.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Fiebre en paciente con neutropenia (<500/mm3) o quimioterapia reciente.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1dawYFPhOqhnD-0pZI0FDy5dsOS9ZCage/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#2e7d32;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-neutropenia')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div><div style="margin-bottom:24px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1.05rem;margin-bottom:12px;padding:8px 14px;background:#546e7a33;border-radius:8px;border-left:4px solid #546e7a;">🕊️ Paliativos <span style="font-size:.78rem;opacity:.6;font-weight:300;margin-left:8px;">1 trípticos</span></h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"><div style="background:var(--bg-card);border-radius:12px;overflow:hidden;transition:all .25s;cursor:pointer;border:2px solid transparent;" onmouseover="this.style.borderColor='#546e7a';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.2)'" onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+<div style="background:linear-gradient(135deg,#546e7a,#546e7acc);padding:14px 16px;color:#fff;position:relative;">
+<span style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700;">📄 TRÍPTICO</span>
+<div style="font-weight:700;font-size:.95rem;margin-bottom:4px;padding-right:70px;">Sedación Paliativa</div>
+<div style="font-size:.78rem;opacity:.85;">Protocolo de sedación en agonía y síntomas refractarios.</div>
+</div>
+<div style="padding:12px 16px;">
+<div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;"><strong>Indicaciones:</strong> Síntomas refractarios en situación de últimos días.</div>
+<div style="display:flex;gap:8px;">
+<a href="https://drive.google.com/file/d/1g_3dRWgBP3gmpdXnYY-4DqpbgoPaimTI/view" target="_blank" onclick="event.stopPropagation()" style="flex:1;display:block;text-align:center;padding:8px;background:#546e7a;color:#fff;border-radius:6px;text-decoration:none;font-size:.82rem;font-weight:600;transition:.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📄 Ver PDF</a>
+<button onclick="urgViewProtocol('trip-sedacion')" style="flex:1;padding:8px;background:var(--bg-main);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">ℹ️ Detalle</button>
+</div>
+</div>
+</div></div></div>
+            </div>
+            
+            <!-- PROTOCOLOS SEMFyC -->
+            <div id="urg-list-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:rgba(26,107,74,.15);border:1px solid rgba(26,107,74,.3);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.5rem;">📋</span>
+                    <div><strong style="font-size:.92rem;">Protocolos SEMFyC</strong><br><span style="font-size:.82rem;opacity:.8;">Protocolos de actuación con pasos, tratamiento y alertas. Haz clic para ver detalles.</span></div>
+                </div>
+                <div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🏥 Atención Primaria</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"><div onclick="urgViewProtocol('semfyc-fiebre-sin-foco')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #1a6b4a;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Fiebre sin Focalidad Aparente</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Abordaje de fiebre sin foco evidente tras anamnesis y exploración....</div>
+</div></div></div><div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">👂 Otorrinolaringología</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"><div onclick="urgViewProtocol('semfyc-epistaxis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ef6c00;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Epistaxis (Hemorragia Nasal)</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Sangrado nasal. Manejo inicial y criterios de derivación....</div>
+</div></div></div><div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🫁 Urgencias Respiratorio</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"><div onclick="urgViewProtocol('semfyc-disnea-aguda')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00695c;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Disnea Aguda</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Dificultad respiratoria de inicio súbito....</div>
+</div><div onclick="urgViewProtocol('semfyc-hemoptisis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00695c;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Hemoptisis</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Expectoración de sangre procedente del tracto respiratorio....</div>
+</div></div></div><div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🆘 Urgencias General</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"><div onclick="urgViewProtocol('semfyc-dolor-abdominal-agudo')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #e65100;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Dolor Abdominal Agudo</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Abdomen agudo. Identificar causa quirúrgica....</div>
+</div></div></div><div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🧠 Urgencias Neuro</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"><div onclick="urgViewProtocol('semfyc-paralisis-facial')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #5e35b1;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Parálisis Facial</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Parálisis facial periférica (Bell) vs central (ACV)....</div>
+</div><div onclick="urgViewProtocol('semfyc-convulsiones')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #5e35b1;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Convulsiones en el Adulto</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Crisis epiléptica. Primera crisis vs epilepsia conocida....</div>
+</div><div onclick="urgViewProtocol('semfyc-perdida-fuerza')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #5e35b1;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Pérdida de Fuerza</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Debilidad muscular. Descartar ACV....</div>
+</div></div></div><div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">👁️ Oftalmología</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"><div onclick="urgViewProtocol('semfyc-ojo-rojo')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #1976d2;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Ojo Rojo</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Hiperemia conjuntival. Descartar glaucoma agudo....</div>
+</div><div onclick="urgViewProtocol('semfyc-perdida-vision')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #1976d2;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Disminución de la Agudeza Visual</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Pérdida de visión. Descartar causa urgente....</div>
+</div></div></div><div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">👶 Pediatría</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"><div onclick="urgViewProtocol('semfyc-fiebre-pediatrica')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ec407a;cursor:pointer;transition:all .2s;position:relative;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+<div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Fiebre en el Niño</div>
+<div style="font-size:.78rem;color:var(--text-muted);line-height:1.4;">Manejo de la fiebre pediátrica....</div>
+</div></div></div>
+
+<!-- PROTOCOLOS HOSPITALARIOS (NUEVOS desde Drive) -->
+<div style="margin-top:30px;background:rgba(211,47,47,.08);border:1px solid rgba(211,47,47,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:1.5rem;">🏨</span>
+    <div><strong style="font-size:.92rem;">Protocolos Hospitalarios</strong><br><span style="font-size:.82rem;opacity:.8;">38 protocolos extraídos de los manuales de urgencias del SMS, Toledo, SEUP y HUSL.</span></div>
+</div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🔴 Reanimación / Críticos</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-sva')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #dc2626;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">SVA / RCP</div><div style="font-size:.78rem;color:var(--text-muted);">Algoritmo universal de SVA</div></div>
+<div onclick="urgViewProtocol('hosp-via-aerea')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #dc2626;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Vía Aérea Difícil / SRI</div><div style="font-size:.78rem;color:var(--text-muted);">Secuencia Rápida de Intubación</div></div>
+<div onclick="urgViewProtocol('hosp-shock')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #dc2626;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Shock</div><div style="font-size:.78rem;color:var(--text-muted);">Séptico, hipovolémico, cardiogénico</div></div>
+<div onclick="urgViewProtocol('hosp-anafilaxia')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #dc2626;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Anafilaxia</div><div style="font-size:.78rem;color:var(--text-muted);">Adrenalina IM precoz</div></div>
+<div onclick="urgViewProtocol('hosp-sepsis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #dc2626;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Sepsis / Código Sepsis</div><div style="font-size:.78rem;color:var(--text-muted);">ATB en &lt;1h, fluidos, vasopresores</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">❤️ Cardiología</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-sca')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #e91e63;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">SCA / Código Infarto</div><div style="font-size:.78rem;color:var(--text-muted);">ECG &lt;10 min, doble antiagregación</div></div>
+<div onclick="urgViewProtocol('hosp-crisis-hta')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #e91e63;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Crisis Hipertensiva</div><div style="font-size:.78rem;color:var(--text-muted);">Urgencia vs emergencia HTA</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🧠 Neurología</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-ictus')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #9c27b0;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Ictus / Código Ictus</div><div style="font-size:.78rem;color:var(--text-muted);">Fibrinolisis &lt;4.5h</div></div>
+<div onclick="urgViewProtocol('hosp-hemorragia-cerebral')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #9c27b0;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Hemorragia Cerebral / HSA</div><div style="font-size:.78rem;color:var(--text-muted);">Control TA, reversión ACO</div></div>
+<div onclick="urgViewProtocol('hosp-status-epileptico')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #9c27b0;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Status Epiléptico</div><div style="font-size:.78rem;color:var(--text-muted);">BZD, FAE IV, sedación</div></div>
+<div onclick="urgViewProtocol('hosp-meningoencefalitis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #9c27b0;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Meningoencefalitis Aguda</div><div style="font-size:.78rem;color:var(--text-muted);">ATB inmediato sin esperar TAC</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">💨 Neumología</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-crisis-asmatica')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #0277bd;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Crisis Asmática</div><div style="font-size:.78rem;color:var(--text-muted);">Broncodilatadores + corticoides</div></div>
+<div onclick="urgViewProtocol('hosp-disnea')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #0277bd;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Disnea Aguda / Insuf. Respiratoria</div><div style="font-size:.78rem;color:var(--text-muted);">VMNI, O2, tratar causa</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🍽️ Digestivo</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-hepatica-aguda')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ef6c00;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Insuficiencia Hepática Aguda</div><div style="font-size:.78rem;color:var(--text-muted);">NAC si paracetamol</div></div>
+<div onclick="urgViewProtocol('hosp-eii')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ef6c00;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Enfermedad Inflamatoria Intestinal</div><div style="font-size:.78rem;color:var(--text-muted);">Brote Crohn/CU en urgencias</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🧬 Endocrinología</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-hipoglucemia')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ff9800;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Hipoglucemia</div><div style="font-size:.78rem;color:var(--text-muted);">Glucosa IV si inconsciente</div></div>
+<div onclick="urgViewProtocol('hosp-suprarrenal')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ff9800;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Crisis Addisoniana</div><div style="font-size:.78rem;color:var(--text-muted);">Hidrocortisona IV inmediata</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">💧 Urología</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-escroto-agudo')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00838f;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Escroto Agudo</div><div style="font-size:.78rem;color:var(--text-muted);">Torsión testicular &lt;6h</div></div>
+<div onclick="urgViewProtocol('hosp-hematuria')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00838f;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Hematuria</div><div style="font-size:.78rem;color:var(--text-muted);">Sonda 3 vías si coágulos</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🚑 Trauma</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-politrauma')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #d32f2f;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Politrauma</div><div style="font-size:.78rem;color:var(--text-muted);">XABCDE, Ác. Tranexámico</div></div>
+<div onclick="urgViewProtocol('hosp-tce')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #d32f2f;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">TCE Adulto</div><div style="font-size:.78rem;color:var(--text-muted);">Canadian CT Rule</div></div>
+<div onclick="urgViewProtocol('hosp-quemaduras')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #d32f2f;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Quemaduras</div><div style="font-size:.78rem;color:var(--text-muted);">Regla de los 9, Parkland</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🩸 Cirugía Vascular</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-isquemia-arterial')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #c62828;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Isquemia Arterial Aguda</div><div style="font-size:.78rem;color:var(--text-muted);">Regla 6P, heparinización</div></div>
+<div onclick="urgViewProtocol('hosp-aorta')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #c62828;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Disección Aórtica</div><div style="font-size:.78rem;color:var(--text-muted);">Tipo A = cirugía urgente</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🌸 Alergia / ☠️ Toxicología / 🧠 Psiquiatría</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-urticaria-angioedema')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #7b1fa2;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Urticaria y Angioedema</div><div style="font-size:.78rem;color:var(--text-muted);">Valorar vía aérea</div></div>
+<div onclick="urgViewProtocol('hosp-piel-blandas')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #7b1fa2;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Infección Piel / Fascitis</div><div style="font-size:.78rem;color:var(--text-muted);">Crepitación = cirugía urgente</div></div>
+<div onclick="urgViewProtocol('hosp-intoxicacion-etilica')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #5d4037;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Intoxicación Etílica</div><div style="font-size:.78rem;color:var(--text-muted);">Tiamina antes de glucosa</div></div>
+<div onclick="urgViewProtocol('hosp-intoxicacion-farmacos')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #5d4037;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Intoxicación Fármacos/Drogas</div><div style="font-size:.78rem;color:var(--text-muted);">Carbón, antídotos, psiquiatría</div></div>
+<div onclick="urgViewProtocol('hosp-agitacion')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #455a64;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Agitación Psicomotriz</div><div style="font-size:.78rem;color:var(--text-muted);">Desescalada, sedación</div></div>
+<div onclick="urgViewProtocol('hosp-suicida')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #455a64;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Conducta Suicida</div><div style="font-size:.78rem;color:var(--text-muted);">Valoración riesgo autolítico</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">👶 Pediatría</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-ped-meningitis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00897b;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Meningitis Pediátrica</div><div style="font-size:.78rem;color:var(--text-muted);">ATB según edad</div></div>
+<div onclick="urgViewProtocol('hosp-ped-convulsion-febril')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00897b;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Convulsión Febril</div><div style="font-size:.78rem;color:var(--text-muted);">BZD si &gt;5 min</div></div>
+<div onclick="urgViewProtocol('hosp-ped-bronquiolitis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00897b;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Bronquiolitis</div><div style="font-size:.78rem;color:var(--text-muted);">VRS, soporte, no salbutamol</div></div>
+<div onclick="urgViewProtocol('hosp-ped-laringitis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00897b;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Laringitis / Crup</div><div style="font-size:.78rem;color:var(--text-muted);">Dexametasona + adrenalina neb</div></div>
+<div onclick="urgViewProtocol('hosp-ped-sepsis')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #00897b;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Sepsis Pediátrica</div><div style="font-size:.78rem;color:var(--text-muted);">Vía &lt;5min, fluidos &lt;15min</div></div>
+</div></div>
+
+<div style="margin-bottom:20px;">
+<h4 style="color:#fff;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.15);">🤰 Obstetricia</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+<div onclick="urgViewProtocol('hosp-obs-gripe')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ad1457;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Gripe y Gestación</div><div style="font-size:.78rem;color:var(--text-muted);">Oseltamivir precoz</div></div>
+<div onclick="urgViewProtocol('hosp-obs-migrana')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ad1457;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Migraña y Gestación</div><div style="font-size:.78rem;color:var(--text-muted);">Descartar preeclampsia</div></div>
+<div onclick="urgViewProtocol('hosp-obs-parto')" style="background:var(--bg-card);padding:14px;border-radius:8px;border-left:4px solid #ad1457;cursor:pointer;transition:all .2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><div style="font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:4px;">Parto Prematuro / Inminente</div><div style="font-size:.78rem;color:var(--text-muted);">Corticoides, profilaxis EGB</div></div>
+</div></div>
+
+            </div>
+            <div id="urg-ia-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:rgba(255,255,255,.08);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+                    <h4 style="font-size:1rem;margin-bottom:6px;">🤖 Pregunta sobre Protocolos de Urgencias</h4>
+                    <p style="font-size:.82rem;opacity:.7;">La IA tiene acceso al contenido de los 39 protocolos (trípticos + SEMFyC).</p>
+                    <p style="font-size:.72rem;opacity:.5;margin-top:6px;">📚 Fuentes: Adaptación docente basada en guías SEMFyC, protocolos H.G.U. Santa Lucía (Cartagena), ESC 2024, ERC 2021, ATLS. Verificar siempre con fuentes oficiales.</p>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <select id="urgProtoSelect" style="width:100%;padding:10px 14px;border:2px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);font-size:.86rem;font-family:var(--font-body);background:rgba(255,255,255,.1);color:#fff;"><option value="all">📚 Todos los protocolos de urgencias</option><optgroup label="📄 Trípticos"><option value="trip-fibrilacion-auricular">❤️‍🔥 Fibrilación Auricular</option><option value="trip-insuficiencia-cardiaca">❤️‍🔥 Insuficiencia Cardíaca Aguda</option><option value="trip-sincope">❤️‍🔥 Síncope</option><option value="trip-tvp">🩸 Trombosis Venosa Profunda (TVP)</option><option value="trip-ulceras">🩸 Úlceras Vasculares y Pie Diabético</option><option value="trip-diverticulitis">🫀 Diverticulitis Aguda</option><option value="trip-hemorragia-digestiva">🫀 Hemorragia Digestiva</option><option value="trip-pancreatitis">🫀 Pancreatitis Aguda</option><option value="trip-patologia-biliar">🫀 Patología Biliar (Cólico/Colecistitis)</option><option value="trip-emergencias-hiperglucemicas">🧬 Emergencias Hiperglucémicas</option><option value="trip-insulinizacion">🧬 Insulinización en Urgencias</option><option value="trip-neutropenia">🦠 Neutropenia Febril</option><option value="trip-hiperpotasemia">🫘 Hiperpotasemia (Hiperkalemia)</option><option value="trip-hipopotasemia">🫘 Hipopotasemia (Hipokalemia)</option><option value="trip-insuficiencia-renal">🫘 Insuficiencia Renal Aguda</option><option value="trip-epoc">💨 EPOC Agudizado</option><option value="trip-neumonia">💨 Neumonía Adquirida en la Comunidad</option><option value="trip-tep">💨 Tromboembolismo Pulmonar (TEP)</option><option value="trip-sedacion">🕊️ Sedación Paliativa</option><option value="trip-artritis">🦴 Artritis (Monoartritis Aguda)</option><option value="trip-cefalea">🧠 Cefalea en Urgencias</option><option value="trip-colico-nefritico">💧 Cólico Nefrítico</option><option value="trip-rao">💧 Retención Aguda de Orina (RAO)</option></optgroup><optgroup label="📋 Protocolos SEMFyC"><option value="semfyc-convulsiones">🏥 Convulsiones en el Adulto</option><option value="semfyc-colico-renal">🏥 Cólico Renal</option><option value="semfyc-perdida-vision">🏥 Disminución de la Agudeza Visual</option><option value="semfyc-disnea-aguda">🏥 Disnea Aguda</option><option value="semfyc-dolor-abdominal-agudo">🏥 Dolor Abdominal Agudo</option><option value="semfyc-dolor-toracico-anginoso">🏥 Dolor Torácico Anginoso</option><option value="semfyc-cefalea">🏥 Dolor de Cabeza (Cefalea)</option><option value="semfyc-epistaxis">🏥 Epistaxis (Hemorragia Nasal)</option><option value="semfyc-fiebre-pediatrica">🏥 Fiebre en el Niño</option><option value="semfyc-fiebre-sin-foco">🏥 Fiebre sin Focalidad Aparente</option><option value="semfyc-hemoptisis">🏥 Hemoptisis</option><option value="semfyc-monoartritis">🏥 Monoartritis Aguda</option><option value="semfyc-ojo-rojo">🏥 Ojo Rojo</option><option value="semfyc-paralisis-facial">🏥 Parálisis Facial</option><option value="semfyc-perdida-fuerza">🏥 Pérdida de Fuerza</option><option value="semfyc-sincope">🏥 Síncope</option></optgroup><optgroup label="🏨 Protocolos Hospitalarios"><option value="hosp-crisis-hta">❤️ Crisis Hipertensiva</option><option value="hosp-sca">❤️ Síndrome Coronario Agudo (Código Infarto)</option><option value="hosp-isquemia-arterial">🩸 Isquemia Arterial Aguda</option><option value="hosp-aorta">🩸 Patología Aórtica Aguda (Disección)</option><option value="hosp-shock">⚡ Shock (Séptico, Hipovolémico, Cardiogénico)</option><option value="hosp-eii">🫀 Enfermedad Inflamatoria Intestinal (EII)</option><option value="hosp-hepatica-aguda">🫀 Insuficiencia Hepática Aguda</option><option value="hosp-hipoglucemia">🧬 Hipoglucemia</option><option value="hosp-suprarrenal">🧬 Insuficiencia Suprarrenal Aguda (Crisis Addisoniana)</option><option value="hosp-piel-blandas">🦠 Infección Piel y Partes Blandas</option><option value="hosp-meningoencefalitis">🦠 Meningoencefalitis Aguda</option><option value="hosp-sepsis">🦠 Sepsis y Shock Séptico (Código Sepsis)</option><option value="hosp-crisis-asmatica">💨 Crisis Asmática</option><option value="hosp-disnea">💨 Disnea Aguda / Insuficiencia Respiratoria</option><option value="hosp-obs-parto">🤰 Amenaza de Parto Prematuro / Parto Inminente</option><option value="hosp-obs-gripe">🤰 Gripe y Gestación</option><option value="hosp-obs-migrana">🤰 Migraña y Gestación</option><option value="hosp-ped-bronquiolitis">👶 Bronquiolitis Pediátrica</option><option value="hosp-ped-convulsion-febril">👶 Convulsión Febril Pediátrica</option><option value="hosp-ped-laringitis">👶 Laringitis / Crup Pediátrico</option><option value="hosp-ped-meningitis">👶 Meningitis Pediátrica</option><option value="hosp-ped-sepsis">👶 Sepsis Pediátrica</option><option value="hosp-agitacion">🧠 Agitación Psicomotriz</option><option value="hosp-suicida">🧠 Paciente con Conducta Suicida</option><option value="hosp-via-aerea">🔴 Manejo Vía Aérea Difícil / SRI</option><option value="hosp-sva">🔴 Soporte Vital Avanzado (SVA)</option><option value="hosp-intoxicacion-etilica">☠️ Intoxicación Etílica</option><option value="hosp-intoxicacion-farmacos">☠️ Intoxicación por Fármacos/Drogas</option><option value="hosp-politrauma">🚑 Politrauma / Trauma Grave</option><option value="hosp-quemaduras">🚑 Quemaduras</option><option value="hosp-tce">🚑 TCE (Traumatismo Craneoencefálico)</option><option value="hosp-anafilaxia">🌸 Anafilaxia</option><option value="hosp-urticaria-angioedema">🌸 Urticaria y Angioedema</option><option value="hosp-hemorragia-cerebral">🧠 Hemorragia Cerebral / HSA</option><option value="hosp-ictus">🧠 Ictus Isquémico (Código Ictus)</option><option value="hosp-status-epileptico">🧠 Status Epiléptico</option><option value="hosp-escroto-agudo">💧 Escroto Agudo</option><option value="hosp-hematuria">💧 Hematuria</option></optgroup></select>
+                </div>
+                <div style="display:flex;gap:10px;margin-bottom:14px;">
+                    <input type="text" id="urgPreguntaInput" placeholder="Ej: ¿Cómo manejar un TEP en urgencias?" spellcheck="false" style="flex:1;padding:12px 16px;border:2px solid rgba(255,255,255,.2);border-radius:var(--radius);font-size:.9rem;font-family:var(--font-body);background:rgba(255,255,255,.1);color:#fff;" onfocus="this.style.borderColor='var(--primary-light)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'">
+                    <button class="btn btn-primary" onclick="urgHacerPregunta()" id="urgBtnPreguntar">Preguntar</button>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+                    <button onclick="urgQuickAsk('Resume los pasos clave de este protocolo')" style="padding:5px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:18px;font-size:.8rem;cursor:pointer;color:rgba(255,255,255,.8);font-family:var(--font-body);">📋 Resumen</button>
+                    <button onclick="urgQuickAsk('¿Cuáles son las señales de alarma y red flags?')" style="padding:5px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:18px;font-size:.8rem;cursor:pointer;color:rgba(255,255,255,.8);font-family:var(--font-body);">🚨 Red Flags</button>
+                    <button onclick="urgQuickAsk('¿Qué tratamiento urgente recomienda?')" style="padding:5px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:18px;font-size:.8rem;cursor:pointer;color:rgba(255,255,255,.8);font-family:var(--font-body);">💊 Tratamiento</button>
+                    <button onclick="urgQuickAsk('¿Cuándo derivar al hospital?')" style="padding:5px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:18px;font-size:.8rem;cursor:pointer;color:rgba(255,255,255,.8);font-family:var(--font-body);">🏥 Derivación</button>
+                    <button onclick="urgQuickAsk('Compara los diagnósticos diferenciales')" style="padding:5px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:18px;font-size:.8rem;cursor:pointer;color:rgba(255,255,255,.8);font-family:var(--font-body);">🔍 Dx Diferencial</button>
+                </div>
+                <div id="urgPreguntasList"><div style="text-align:center;padding:30px;opacity:.5;"><div style="font-size:2rem;margin-bottom:8px;">🩺</div><p>Haz tu primera pregunta sobre urgencias</p></div></div>
+            </div>
+
+            <!-- PACIENTES GUARDIA (Urgencias) -->
+            <div id="urg-studio-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:linear-gradient(135deg,#7f0000,#b71c1c);border-radius:var(--radius);padding:18px 22px;margin-bottom:18px;color:#fff;position:relative;overflow:hidden;">
+                    <div style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:2.5rem;opacity:.15;">✨</div>
+                    <h4 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:5px;">✨ Studio Urgencias — Chat con DeepSeek</h4>
+                    <p style="font-size:.84rem;opacity:.8;font-weight:300;">Chat libre sobre cualquier protocolo de urgencias. DeepSeek tiene acceso a los 77 protocolos.</p>
+                </div>
+
+                <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <label style="font-weight:600;font-size:.84rem;color:rgba(255,255,255,.8);white-space:nowrap;">📄 Contexto:</label>
+                    <select id="urgStudioProtoSelect" style="flex:1;min-width:180px;padding:9px 12px;border:2px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);font-size:.83rem;font-family:var(--font-body);background:rgba(255,255,255,.1);color:#fff;">
+                        <option value="all">📚 Todos los protocolos de urgencias</option>
+                        <optgroup label="📄 Trípticos" style="color:#ccc;">
+                            <option value="trip-fibrilacion-auricular">❤️‍🔥 Fibrilación Auricular</option>
+                            <option value="trip-insuficiencia-cardiaca">❤️‍🔥 Insuficiencia Cardíaca Aguda</option>
+                            <option value="trip-sincope">❤️‍🔥 Síncope</option>
+                            <option value="trip-tvp">🩸 TVP</option>
+                            <option value="trip-diverticulitis">🫀 Diverticulitis</option>
+                            <option value="trip-hemorragia-digestiva">🫀 Hemorragia Digestiva</option>
+                            <option value="trip-pancreatitis">🫀 Pancreatitis Aguda</option>
+                            <option value="trip-emergencias-hiperglucemicas">🧬 Emergencias Hiperglucémicas</option>
+                            <option value="trip-neutropenia">🦠 Neutropenia Febril</option>
+                            <option value="trip-hiperpotasemia">🫘 Hiperpotasemia</option>
+                            <option value="trip-epoc">💨 EPOC Agudizado</option>
+                            <option value="trip-neumonia">💨 Neumonía</option>
+                            <option value="trip-tep">💨 TEP</option>
+                            <option value="trip-cefalea">🧠 Cefalea</option>
+                        </optgroup>
+                        <optgroup label="🏨 Hospitalarios" style="color:#ccc;">
+                            <option value="hosp-sepsis">🦠 Sepsis / Shock Séptico</option>
+                            <option value="hosp-sca">❤️ SCA / Código Infarto</option>
+                            <option value="hosp-ictus">🧠 Ictus Isquémico</option>
+                            <option value="hosp-via-aerea">🔴 Vía Aérea / SRI</option>
+                            <option value="hosp-sva">🔴 SVA</option>
+                            <option value="hosp-shock">⚡ Shock</option>
+                            <option value="hosp-anafilaxia">🌸 Anafilaxia</option>
+                            <option value="hosp-politrauma">🚑 Politrauma</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div id="urgStudioChat" style="min-height:180px;max-height:480px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;" class="scrollbar"></div>
+
+                <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;">
+                    <button onclick="urgStudioQuick('Resume el protocolo paso a paso con dosis exactas')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">📋 Resumen + dosis</button>
+                    <button onclick="urgStudioQuick('¿Cuáles son las red flags y criterios de ingreso urgente?')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">🚨 Red flags + ingreso</button>
+                    <button onclick="urgStudioQuick('Haz un diagnóstico diferencial completo con claves para distinguir cada entidad')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">🔍 Dx diferencial</button>
+                    <button onclick="urgStudioQuick('Crea un caso clínico MIR sobre este protocolo con 4 opciones y respuesta comentada')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">🎓 Caso MIR</button>
+                    <button onclick="urgStudioQuick('Lista todos los fármacos con dosis, vía y contraindicaciones')" style="padding:5px 11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;font-size:.78rem;cursor:pointer;color:rgba(255,255,255,.85);font-family:var(--font-body);">💊 Fármacos</button>
+                    <button onclick="urgStudioClear()" style="padding:5px 11px;background:rgba(239,83,80,.2);border:1px solid rgba(239,83,80,.4);border-radius:16px;font-size:.78rem;cursor:pointer;color:#ef9a9a;font-family:var(--font-body);">🗑️ Limpiar</button>
+                </div>
+
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="urgStudioInput" placeholder="Escribe tu pregunta... (Enter para enviar)" rows="2" spellcheck="false" style="flex:1;padding:11px 14px;border:2px solid rgba(255,255,255,.2);border-radius:var(--radius);font-size:.88rem;font-family:var(--font-body);background:rgba(255,255,255,.08);color:#fff;resize:none;transition:.2s;line-height:1.5;" onfocus="this.style.borderColor='rgba(239,83,80,.7)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();urgStudioEnviar();}"></textarea>
+                    <button onclick="urgStudioEnviar()" id="urgStudioBtn" style="padding:11px 18px;background:linear-gradient(135deg,#c62828,#b71c1c);color:#fff;border:none;border-radius:var(--radius);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font-body);white-space:nowrap;">Enviar ✨</button>
+                </div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:5px;text-align:right;">DeepSeek V3 · 77 protocolos de urgencias</div>
+            </div>
+
+            <div id="urg-pacientes-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:rgba(255,193,7,.12);border:1px solid rgba(255,193,7,.35);border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#ffc107;margin-bottom:20px;line-height:1.6;">
+                    🔒 <strong>Datos anonimizados.</strong> No incluyas nombre, DNI, NHC ni datos identificativos. Usa solo iniciales o número de cama. Los datos se guardan localmente en tu dispositivo.
+                </div>
+                <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
+                    <h4 style="font-family:var(--font-display);margin-bottom:14px;">➕ Nuevo paciente de guardia</h4>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                        <input type="text" id="gpCamaUrg" placeholder="Cama / Box (ej: Box3, C12)" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
+                        <input type="text" id="gpIdUrg" placeholder="ID anónimo (ej: JM, Pac.3)" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                        <input type="text" id="gpEdadUrg" placeholder="Edad / Sexo (ej: 72M)" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
+                        <select id="gpPrioridadUrg" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
+                            <option value="normal">🟢 Normal</option>
+                            <option value="atento">🟡 Atento</option>
+                            <option value="urgente">🔴 Urgente</option>
+                        </select>
+                    </div>
+                    <input type="text" id="gpMotivoUrg" placeholder="Motivo ingreso / consulta" style="width:100%;padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;margin-bottom:10px;">
+                    <textarea id="gpNotasUrg" placeholder="Notas / pendientes / recordatorios..." style="width:100%;padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;min-height:70px;resize:vertical;background:rgba(255,255,255,.08);color:#fff;margin-bottom:10px;"></textarea>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-primary btn-small" onclick="gpAdd('Urg')">🛏️ Añadir paciente</button>
+                        <button class="btn btn-secondary btn-small" onclick="gpClearForm('Urg')">Limpiar</button>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <h4 style="font-family:var(--font-display);">🛏️ Lista de pacientes en guardia</h4>
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="gpExport('Urg')" style="padding:6px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;font-family:var(--font-body);font-weight:600;color:#fff;">📋 Copiar</button>
+                        <button onclick="if(confirm('¿Borrar todos los pacientes?'))gpClearAll('Urg')" style="padding:6px 12px;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.4);border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;font-family:var(--font-body);font-weight:600;color:#fca5a5;">🗑️ Borrar todo</button>
+                    </div>
+                </div>
+                <div id="gpListUrg"><div style="text-align:center;padding:30px;opacity:.5;"><div style="font-size:2rem;margin-bottom:8px;">🛏️</div><p>No hay pacientes registrados en esta guardia</p></div></div>
+            </div>
+
+            <!-- FÁRMACOS DE URGENCIA -->
+            <div id="urg-farmacos-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.5rem;">💊</span>
+                    <div><strong style="font-size:.92rem;">Fármacos de Urgencia</strong><br><span style="font-size:.82rem;opacity:.8;">51 fármacos · Ampolla, bolus, perfusión y notas. Fuente: SuperVHivencia · H.G.U. Santa Lucía</span></div>
+                </div>
+                <div style="position:relative;margin-bottom:12px;">
+                    <input type="text" id="urgFarmSearch" placeholder="🔍 Buscar fármaco..." oninput="urgFarmFilter()" style="width:100%;padding:11px 14px 11px 14px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-size:.9rem;font-family:var(--font-body);background:rgba(255,255,255,.06);color:#fff;box-sizing:border-box;">
+                </div>
+                <div id="urgFarmCats" style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;-ms-overflow-style:none;scrollbar-width:none;">
+                    <button class="urgFarmCat active" onclick="urgFarmSetCat('all',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:600;background:#dc2626;color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0;">Todos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('pcr',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">PCR/SVA</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('sed',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Sedación</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('arritmia',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antiarrítmicos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('vaso',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Vasoactivos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('antidoto',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antídotos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('hta',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antihipertensivos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('epi',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antiepilépticos</button>
+                </div>
+                <div id="urgFarmCount" style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:10px;"></div>
+                <div id="urgFarmList" style="display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DETALLE PROTOCOLO URGENCIAS -->
+<div id="urgProtoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1002;overflow:auto;padding:20px;backdrop-filter:blur(3px);">
+    <div style="background:#fff;border-radius:16px;max-width:750px;margin:30px auto;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.5);">
+        <div id="urgProtoModalHeader" style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:24px;color:#fff;position:relative;">
+            <div style="position:absolute;top:12px;right:16px;cursor:pointer;font-size:1.5rem;opacity:.7;" onclick="urgCloseModal()">✕</div>
+            <div id="urgProtoModalCat" style="font-size:.82rem;opacity:.8;margin-bottom:4px;"></div>
+            <h3 id="urgProtoModalTitle" style="font-family:var(--font-display);font-size:1.4rem;"></h3>
+            <div id="urgProtoModalSummary" style="font-size:.88rem;opacity:.85;margin-top:6px;"></div>
+        </div>
+        <div id="urgProtoModalBody" style="padding:24px;color:#333;font-size:.92rem;line-height:1.7;max-height:55vh;overflow-y:auto;"></div>
+        <div id="urgProtoModalPdf" style="display:none;padding:0 24px 24px;">
+            <div style="display:flex;gap:10px;align-items:center;">
+                <a id="urgProtoModalPdfLink" href="" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:12px 24px;background:linear-gradient(135deg,#d32f2f,#b71c1c);color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:.9rem;transition:.2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(211,47,47,.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">📄 Abrir Tríptico PDF Completo</a>
+                <span style="font-size:.8rem;color:#999;">Se abre en nueva pestaña</span>
+            </div>
+        </div>
+    </div>
+</div>
+

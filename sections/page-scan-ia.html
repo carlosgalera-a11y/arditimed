@@ -1,0 +1,1302 @@
+<div class="page" id="pageScanIA">
+    <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-subir-contenido" onclick="abrirModalSubir('ScanIA')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);">📤 Proponer</button></div></nav>
+    <!-- Botones de moderación — visibles solo para usuarios logueados -->
+    <div id="modBar_pageScanIA" style="display:none;padding:6px 16px;background:linear-gradient(90deg,#f0f9ff,#e0f2fe);border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.75rem;color:#0369a1;font-weight:600;">👤 <span id="modBarUser_pageScanIA" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"></span></span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <button class="btn-subir-contenido" onclick="abrirModalSubir('Profesionales')" style="display:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">📤 Proponer contenido</button>
+            <button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;background:linear-gradient(135deg,#1a6b4a,#0d4a33);color:#fff;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:var(--font-body);align-items:center;gap:5px;">🛡️ Moderación<span class="mod-badge-count" style="font-size:.72rem;"></span></button>
+        </span>
+    </div>
+    <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;">
+        <div style="max-width:800px;margin:0 auto;">
+            <div style="background:linear-gradient(135deg,#0066cc,#004499);border-radius:var(--radius);padding:28px;color:#fff;margin-bottom:28px;position:relative;overflow:hidden;">
+                <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.15;">🔬</div>
+                <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px;">🔬 Herramientas</h2>
+                <p style="opacity:.85;font-size:.95rem;font-weight:300;">Análisis de imágenes médicas con IA y casos clínicos NIH para formación.</p>
+            </div>
+
+            <!-- TABS: Herramientas -->
+            <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:3px solid var(--border);flex-wrap:wrap;">
+                <button id="tabScanIA" onclick="switchScanTab('scanIA')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🔬 Analizar imagen</button>
+                <button id="tabCalc" onclick="switchScanTab('calc')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧮 Calculadoras</button>
+                <button id="tabNotebooks" onclick="switchScanTab('notebooks')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🤖 NotebookLM</button>
+                <button id="tabPlantillas" onclick="switchScanTab('plantillas')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📋 Plantillas</button>
+                <button id="tabTriaje" onclick="switchScanTab('triaje')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🚨 Triaje IA</button>
+                <button id="tabTurnos" onclick="switchScanTab('turnos')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">⏰ Turnos</button>
+            </div>
+
+            <!-- TAB 1: SCAN IA (existing) -->
+            <div id="panelScanIA">
+            <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#856404;margin-bottom:12px;line-height:1.6;">
+                ⚠️ <strong>Uso exclusivamente docente.</strong> No sustituye el juicio clínico profesional. Las interpretaciones pueden contener errores y nunca deben usarse como diagnóstico definitivo.
+            </div>
+            <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:var(--radius);padding:14px 18px;font-size:.82rem;color:#991b1b;margin-bottom:12px;line-height:1.6;">
+                🔒 <strong>RGPD Art. 9 — Protección de datos de salud:</strong> NO suba imágenes que contengan nombre, NHC, DNI, pegatinas identificativas ni datos del paciente. Las imágenes se envían a servicios IA externos para análisis y <strong>no se almacenan permanentemente</strong>. Este sistema <strong>NO es un producto sanitario</strong> conforme al Reglamento MDR 2017/745.
+            </div>
+            <div style="margin-bottom:20px;text-align:right;">
+                <button onclick="if(confirm('¿Borrar todo el historial clínico almacenado en este dispositivo? (preguntas, notas, pacientes de guardia, historial IA, análisis de imagen)')){secureStore.clearAll();localStorage.removeItem('scan_hist_v2');localStorage.removeItem('guardia_pacientes_v1');localStorage.removeItem('aiHistory');localStorage.removeItem('cartagena_preguntas');localStorage.removeItem('cartagena_notas');localStorage.removeItem('enf_preguntas_v1');alert('✅ Datos clínicos eliminados de este dispositivo.');location.reload();}" style="background:none;border:1px solid #dc2626;color:#dc2626;padding:6px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;font-weight:600;">🗑️ Borrar mis datos clínicos</button>
+            </div>
+            <!-- QR for mobile image upload -->
+            <div id="scanQRSection" style="display:block;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:var(--radius);padding:16px;margin-bottom:20px;">
+                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:200px;">
+                        <p style="font-size:.95rem;font-weight:700;color:#1e40af;margin:0 0 4px;">📱 Sube imágenes desde el móvil</p>
+                        <p style="font-size:.82rem;color:#3b82f6;margin:0 0 10px;">Escanea el QR con tu móvil para hacer fotos y subirlas directamente aquí</p>
+                        <button onclick="scanShowQR()" id="scanQRBtn" style="padding:10px 18px;background:#1d4ed8;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;">📱 Mostrar QR</button>
+                        <button onclick="scanCheckUploads()" style="padding:10px 18px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;margin-left:6px;">🔄 Ver imágenes recibidas</button>
+                    </div>
+                    <div id="scanQRDisplay" style="display:none;text-align:center;">
+                        <div id="scanQRImg"></div>
+                        <p id="scanQRCode" style="font-family:monospace;font-size:.72rem;color:#888;margin-top:4px;word-break:break-all;max-width:220px;"></p>
+                    </div>
+                </div>
+                <div id="scanUploadedList" style="display:none;margin-top:12px;"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+                <button class="scan-mode-btn active" onclick="scanSetType('derma',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🩹 Dermatología</button>
+                <button class="scan-mode-btn" onclick="scanSetType('torax',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🫁 Rx Tórax</button>
+                <button class="scan-mode-btn" onclick="scanSetType('osea',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🦴 Rx Ósea</button>
+                <button class="scan-mode-btn" onclick="scanSetType('abdomen',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🔬 Rx Abdomen</button>
+                <button class="scan-mode-btn" onclick="scanSetType('ecg',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">💓 ECG</button>
+                <button class="scan-mode-btn" onclick="scanSetType('eco',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🫀 Ecografía</button>
+            </div>
+            <!-- AI Models Reference -->
+            <div id="scanModelInfo" style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;font-size:.8rem;color:var(--text-light);margin-bottom:20px;line-height:1.5;display:flex;align-items:center;gap:10px;">
+                <span style="font-size:1.2rem;">🤖</span>
+                <span id="scanModelRef">Modelo: <strong>Vision Transformers (ViT)</strong> · Dataset: <strong>ISIC Archive</strong> · Arquitectura sugerida: ViT · Análisis por Llama 4 Scout (Groq)</span>
+            </div>
+            <div id="scanDropZone" onclick="document.getElementById('scanFileIn').click()" style="border:2px dashed var(--border);border-radius:var(--radius);padding:48px 20px;text-align:center;cursor:pointer;background:var(--bg-card);margin-bottom:20px;transition:.3s;" tabindex="0">
+                <input type="file" id="scanFileIn" accept="image/*" style="display:none" onchange="scanHandleFile(event)">
+                <div id="scanDropContent"><div style="font-size:3rem;margin-bottom:12px;opacity:.5;">📷</div><div style="color:var(--text-light);font-size:.95rem;margin-bottom:4px;">Arrastra, haz clic, o <strong>pega (Ctrl+V)</strong> una imagen</div><div style="color:var(--text-muted);font-size:.82rem;">JPG, PNG · Capturas de pantalla, fotos clínicas, radiografías o ECGs</div><div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--bg-section);border-radius:6px;font-size:.78rem;color:var(--text-muted);"><span style="font-size:1.1rem;">⌨️</span> Ctrl+V / Cmd+V para pegar desde portapapeles</div></div>
+                <img id="scanImgPreview" style="display:none;max-width:100%;max-height:380px;border-radius:8px;object-fit:contain;margin:0 auto;" alt="Preview">
+            </div>
+            <input type="text" id="scanCtx" placeholder="Contexto clínico (opcional): edad, sexo, síntomas, localización..." style="width:100%;padding:13px 18px;border:2px solid var(--border);border-radius:var(--radius);font-size:.92rem;font-family:var(--font-body);margin-bottom:16px;background:var(--bg-card);">
+            <div style="display:flex;gap:12px;margin-bottom:24px;">
+                <button id="scanBtnGo" onclick="scanAnalyze()" disabled style="padding:14px 32px;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;border:none;border-radius:var(--radius);font-size:.98rem;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:.3s;display:flex;align-items:center;gap:8px;">🔬 Analizar con IA</button>
+                <button onclick="scanClear()" style="padding:14px 24px;background:var(--bg-subtle);color:var(--text);border:none;border-radius:var(--radius);font-size:.92rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">🗑️ Limpiar</button>
+            </div>
+            <div id="scanResult"></div>
+            <div style="margin-top:30px;"><h4 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:14px;">📋 Historial de análisis</h4><div id="scanHistList"><div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:10px;opacity:.5;">🔬</div><p style="font-size:.92rem;">Aún no hay análisis realizados</p></div></div></div>
+            </div><!-- end panelScanIA -->
+
+            <!-- TAB 3: CALCULADORAS MÉDICAS -->
+            <div id="panelCalc" style="display:none;">
+              <!-- Filter bar -->
+              <div id="calcFilterBar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:8px;background:rgba(0,0,0,.02);border-radius:10px;">
+                <button onclick="filterCalc('all')" class="calc-filter active" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#1a6b4a;color:#fff;">📋 Todas</button>
+                <button onclick="filterCalc('neumo')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🫁 Neumo</button>
+                <button onclick="filterCalc('cardio')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">❤️ Cardio</button>
+                <button onclick="filterCalc('neuro')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🧠 Neuro</button>
+                <button onclick="filterCalc('urgencias')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🏥 Urgencias</button>
+                <button onclick="filterCalc('digestivo')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🍽️ Digestivo</button>
+                <button onclick="filterCalc('otros')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">📌 Otros</button>
+                <button onclick="toggleAddCalc()" style="padding:6px 12px;border:1px solid #16a34a;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#16a34a;color:#fff;margin-left:auto;">➕ Añadir escala</button>
+              </div>
+              <!-- Form añadir escala personalizada -->
+              <div id="addCalcForm" style="display:none;background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:14px;">
+                <h3 style="font-size:.95rem;font-weight:700;color:#1a6b4a;margin-bottom:10px;">➕ Nueva escala personalizada</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                  <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Nombre</label><input type="text" id="newCalcName" placeholder="Ej: Escala MELD" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;"></div>
+                  <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Especialidad</label>
+                    <select id="newCalcCat" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;">
+                      <option value="neumo">🫁 Neumología</option><option value="cardio">❤️ Cardiología</option>
+                      <option value="neuro">🧠 Neurología</option><option value="urgencias">🏥 Urgencias</option>
+                      <option value="digestivo">🍽️ Digestivo</option><option value="nefro">💧 Nefrología</option>
+                      <option value="uro">💧 Urología</option><option value="endocrino">🧬 Endocrino</option>
+                      <option value="pediatria">👶 Pediatría</option><option value="reuma">🦴 Reumatología</option>
+                      <option value="derma">🩹 Dermatología</option><option value="psiq">🧠 Psiquiatría</option>
+                      <option value="otros" selected>📌 Otros</option>
+                    </select></div>
+                </div>
+                <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Descripción breve</label><input type="text" id="newCalcDesc" placeholder="Ej: Gravedad hepatopatía" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;margin-bottom:8px;"></div>
+                <div><label style="font-size:.72rem;font-weight:600;color:#64748b;">Ítems (uno por línea: nombre del ítem | puntos)</label>
+                <textarea id="newCalcItems" rows="5" placeholder="Confusión mental | 1&#10;Urea >7mmol/L | 1&#10;FR ≥30/min | 1&#10;TA baja | 1&#10;Edad ≥65 | 1" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;font-family:inherit;margin-bottom:8px;"></textarea></div>
+                <div style="display:flex;gap:8px;">
+                  <button onclick="saveCustomCalc()" style="padding:8px 16px;background:#1a6b4a;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:.82rem;">💾 Guardar</button>
+                  <button onclick="toggleAddCalc()" style="padding:8px 16px;background:#eee;color:#333;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;">Cancelar</button>
+                </div>
+              </div>
+              <!-- Custom scales rendered here -->
+              <div id="customCalcGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px;"></div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:4px;" id="calcGrid">
+
+                <!-- CURB-65 -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 CURB-65 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Neumonía</span></h3>
+                  <div id="curb65Fields">
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> Confusión mental</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> Urea &gt;7 mmol/L</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> FR ≥30/min</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> TA sistólica &lt;90 o diastólica ≤60</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="curb-chk" onchange="calcCURB65()"> Edad ≥65 años</label>
+                  </div>
+                  <div id="curb65Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Puntaje: 0 / 5</div>
+                </div>
+
+                <!-- qSOFA -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">⚠️ qSOFA <span style="font-size:.75rem;font-weight:400;color:#64748b;">Sepsis</span></h3>
+                  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="qsofa-chk" onchange="calcQSOFA()"> FR ≥22/min</label>
+                  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="qsofa-chk" onchange="calcQSOFA()"> Alteración del nivel de conciencia (GCS &lt;15)</label>
+                  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="qsofa-chk" onchange="calcQSOFA()"> TAS ≤100 mmHg</label>
+                  <div id="qsofaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Puntaje: 0 / 3</div>
+                </div>
+
+                <!-- Wells TVP -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🩸 Wells TVP <span style="font-size:.75rem;font-weight:400;color:#64748b;">Trombosis venosa</span></h3>
+                  <div id="wellsFields">
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Cáncer activo (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Parálisis / inmovilización de EEII (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Encamado &gt;3d o cirugía reciente (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Dolor en trayecto venoso profundo (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Edema unilateral de toda la pierna (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Edema de pantorrilla &gt;3cm vs contralateral (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> Venas colaterales superficiales (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="1" onchange="calcWells()"> TVP previa (+1)</label>
+                    <label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="wells-chk" data-pts="-2" onchange="calcWells()"> Diagnóstico alternativo tan probable (-2)</label>
+                  </div>
+                  <div id="wellsResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Puntaje: 0</div>
+                </div>
+
+                <!-- Glasgow -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 Glasgow <span style="font-size:.75rem;font-weight:400;color:#64748b;">Nivel de conciencia</span></h3>
+                  <div style="margin-bottom:8px;">
+                    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Apertura ocular</label>
+                    <select id="gcsEye" onchange="calcGlasgow()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+                      <option value="4">4 – Espontánea</option><option value="3">3 – A la voz</option><option value="2">2 – Al dolor</option><option value="1">1 – Ninguna</option>
+                    </select>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Respuesta verbal</label>
+                    <select id="gcsVerbal" onchange="calcGlasgow()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+                      <option value="5">5 – Orientado</option><option value="4">4 – Confuso</option><option value="3">3 – Palabras inapropiadas</option><option value="2">2 – Sonidos inespecíficos</option><option value="1">1 – Ninguna</option>
+                    </select>
+                  </div>
+                  <div style="margin-bottom:8px;">
+                    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Respuesta motora</label>
+                    <select id="gcsMotor" onchange="calcGlasgow()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+                      <option value="6">6 – Obedece órdenes</option><option value="5">5 – Localiza el dolor</option><option value="4">4 – Retirada al dolor</option><option value="3">3 – Flexión anormal</option><option value="2">2 – Extensión anormal</option><option value="1">1 – Ninguna</option>
+                    </select>
+                  </div>
+                  <div id="glasgowResult" style="padding:10px;border-radius:8px;font-size:.9rem;font-weight:700;text-align:center;background:#dbeafe;color:#1e40af;">GCS: 15 / 15 — Sin deterioro</div>
+                </div>
+
+                <!-- NIHSS simplificado -->
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧩 NIHSS <span style="font-size:.75rem;font-weight:400;color:#64748b;">Ictus</span></h3>
+                  <p style="font-size:.75rem;color:#94a3b8;margin-bottom:10px;">Versión abreviada — suma total estimada</p>
+                  <div style="display:grid;grid-template-columns:1fr 60px;gap:6px;align-items:center;">
+                    <span style="font-size:.82rem;">Nivel de conciencia (0-3)</span><input type="number" id="nihss1" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Mirada conjugada (0-2)</span><input type="number" id="nihss2" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Campo visual (0-3)</span><input type="number" id="nihss3" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Paresia facial (0-3)</span><input type="number" id="nihss4" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Motor brazo izq (0-4)</span><input type="number" id="nihss5" min="0" max="4" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Motor brazo der (0-4)</span><input type="number" id="nihss6" min="0" max="4" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Ataxia miembros (0-2)</span><input type="number" id="nihss7" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Sensibilidad (0-2)</span><input type="number" id="nihss8" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Lenguaje (0-3)</span><input type="number" id="nihss9" min="0" max="3" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                    <span style="font-size:.82rem;">Disartria (0-2)</span><input type="number" id="nihss10" min="0" max="2" value="0" onchange="calcNIHSS()" style="width:50px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;">
+                  </div>
+                  <div id="nihssResult" style="margin-top:12px;padding:10px;border-radius:8px;font-size:.9rem;font-weight:700;text-align:center;background:#f0fdf4;color:#166534;">NIHSS: 0 — Sin déficit</div>
+                </div>
+
+            <!-- separator -->
+<div style="margin:24px 0 16px;padding:12px 16px;background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:10px;color:#fff;font-weight:700;font-size:.95rem;">🏥 Escalas Clínicas Avanzadas</div>
+
+<!-- 1. FINE / PORT (PSI) -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 Escala Fine / PORT (PSI) <span style="font-size:.75rem;font-weight:400;color:#64748b;">Neumonía comunitaria</span></h3>
+  <div style="margin-bottom:8px;">
+    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Edad del paciente</label>
+    <input type="number" id="fineAge" placeholder="Edad" onchange="calcFine()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+  </div>
+  <div style="margin-bottom:8px;">
+    <label style="font-size:.8rem;color:#64748b;display:block;margin-bottom:3px;">Sexo</label>
+    <select id="fineSex" onchange="calcFine()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+      <option value="M">Varón</option><option value="F">Mujer (−10 pts)</option>
+    </select>
+  </div>
+  <div style="font-size:.8rem;font-weight:600;color:#334155;margin:10px 0 4px;">Comorbilidades</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Asilo/residencia (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="30" onchange="calcFine()"> Neoplasia (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="20" onchange="calcFine()"> Hepatopatía (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Insuficiencia cardíaca (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Enfermedad cerebrovascular (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-chk" data-pts="10" onchange="calcFine()"> Enfermedad renal (+10)</label>
+  <div style="font-size:.8rem;font-weight:600;color:#334155;margin:10px 0 4px;">Exploración física</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="20" onchange="calcFine()"> Alteración conciencia (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="20" onchange="calcFine()"> FR ≥30/min (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="20" onchange="calcFine()"> TAS <90 mmHg (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="10" onchange="calcFine()"> Tª <35 o ≥40°C (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-exp" data-pts="10" onchange="calcFine()"> FC ≥125 lpm (+10)</label>
+  <div style="font-size:.8rem;font-weight:600;color:#334155;margin:10px 0 4px;">Laboratorio / Radiología</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="30" onchange="calcFine()"> pH arterial <7.35 (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="20" onchange="calcFine()"> Urea ≥64 mg/dL (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="20" onchange="calcFine()"> Sodio <130 mEq/L (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> Glucosa ≥250 mg/dL (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> Hematocrito <30% (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> pO₂ <60 mmHg (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="fine-lab" data-pts="10" onchange="calcFine()"> Derrame pleural (+10)</label>
+  <div id="fineResult" style="margin-top:12px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;line-height:1.4;">Introduce edad para calcular</div>
+</div>
+
+<!-- 2. PESI -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫀 PESI <span style="font-size:.75rem;font-weight:400;color:#64748b;">Severidad Embolismo Pulmonar</span></h3>
+  <div style="margin-bottom:8px;">
+    <label style="font-size:.8rem;color:#64748b;">Edad</label>
+    <input type="number" id="pesiAge" placeholder="Edad" onchange="calcPESI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;">
+  </div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="10" onchange="calcPESI()"> Sexo masculino (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="30" onchange="calcPESI()"> Cáncer (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="10" onchange="calcPESI()"> Insuficiencia cardíaca (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="10" onchange="calcPESI()"> Enfermedad pulmonar crónica (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> FC ≥110 lpm (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="30" onchange="calcPESI()"> TAS <100 mmHg (+30)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> FR ≥30/min (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> Tª <36°C (+20)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="60" onchange="calcPESI()"> Alteración estado mental (+60)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pesi-chk" data-pts="20" onchange="calcPESI()"> SatO₂ <90% (+20)</label>
+  <div id="pesiResult" style="margin-top:12px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">Introduce edad para calcular</div>
+</div>
+
+<!-- 3. BODE -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 Índice BODE <span style="font-size:.75rem;font-weight:400;color:#64748b;">Pronóstico EPOC</span></h3>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">FEV1 (% predicho)</label>
+    <select id="bodeFEV1" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">≥65% (0)</option><option value="1">50-64% (1)</option><option value="2">36-49% (2)</option><option value="3">≤35% (3)</option></select></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Test marcha 6 min (metros)</label>
+    <select id="bode6MWT" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">≥350m (0)</option><option value="1">250-349m (1)</option><option value="2">150-249m (2)</option><option value="3">≤149m (3)</option></select></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Disnea mMRC</label>
+    <select id="bodeMRC" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">0-1 (0)</option><option value="1">2 (1)</option><option value="2">3 (2)</option><option value="3">4 (3)</option></select></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">IMC</label>
+    <select id="bodeBMI" onchange="calcBODE()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="0">≥21 (0)</option><option value="1">&lt;21 (1)</option></select></div>
+  <div id="bodeResult" style="margin-top:12px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">BODE: 0/10</div>
+</div>
+
+<!-- 4. CRB-65 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 CRB-65 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Neumonía comunitaria (sin analítica)</span></h3>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> Confusión mental</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> FR ≥30/min</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> TAS &lt;90 o TAD ≤60 mmHg</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="crb65-chk" onchange="calcCRB65()"> Edad ≥65 años</label>
+  <div id="crb65Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">CRB-65: 0/4</div>
+</div>
+
+<!-- 5. BAP-65 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 BAP-65 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Exacerbación EPOC</span></h3>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="bap65-chk" onchange="calcBAP65()"> BUN ≥25 mg/dL (Urea elevada)</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="bap65-chk" onchange="calcBAP65()"> Alteración del estado mental</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" class="bap65-chk" onchange="calcBAP65()"> FC ≥109 lpm</label>
+  <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.85rem;cursor:pointer;"><input type="checkbox" id="bap65Age" onchange="calcBAP65()"> Edad ≥65 años</label>
+  <div id="bap65Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">BAP-65: Clase I</div>
+</div>
+
+<!-- 6. Wood-Downes-Ferrés -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👶 Wood-Downes-Ferrés <span style="font-size:.75rem;font-weight:400;color:#64748b;">Bronquiolitis</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Sibilancias</label>
+    <select id="wdSibilancias" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Final espiración (1)</option><option value="2">Toda espiración (2)</option><option value="3">Inspiración + espiración (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Tiraje</label>
+    <select id="wdTiraje" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Subcostal + intercostal inferior (1)</option><option value="2">+ supraclavicular + aleteo nasal (2)</option><option value="3">+ intercostal superior + supraesternal (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Entrada de aire</label>
+    <select id="wdEntrada" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Regular (1)</option><option value="2">Disminuida (2)</option><option value="3">Muy disminuida / ausente (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Cianosis</label>
+    <select id="wdCianosis" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Frecuencia respiratoria</label>
+    <select id="wdFR" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Aumentada (1)</option><option value="2">Muy aumentada (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Frecuencia cardíaca</label>
+    <select id="wdFC" onchange="calcWoodDownes()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Aumentada (1)</option><option value="2">Muy aumentada (2)</option></select></div>
+  <div id="wdResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Wood-Downes-Ferrés: 0/14</div>
+</div>
+
+<!-- 7. Taussig Score -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👶 Taussig <span style="font-size:.75rem;font-weight:400;color:#64748b;">Valoración del Crup</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Estridor</label>
+    <select id="taussigEstridor" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Ausente (0)</option><option value="1">En actividad (1)</option><option value="2">En reposo (2)</option><option value="3">En reposo, bifásico (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Tiraje</label>
+    <select id="taussigTiraje" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Ausente (0)</option><option value="1">Leve (1)</option><option value="2">Moderado (2)</option><option value="3">Grave (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Entrada de aire</label>
+    <select id="taussigEntrada" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Levemente disminuida (1)</option><option value="2">Disminuida (2)</option><option value="3">Muy disminuida (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Color</label>
+    <select id="taussigColor" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Pálido (1)</option><option value="2">Cianótico (2)</option><option value="3">Cianosis central (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Nivel de conciencia</label>
+    <select id="taussigConciencia" onchange="calcTaussig()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Agitado si molesto (1)</option><option value="2">Agitado en reposo (2)</option><option value="3">Letárgico (3)</option></select></div>
+  <div id="taussigResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Taussig: 0/15</div>
+</div>
+
+<!-- 8. DECAF -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 DECAF <span style="font-size:.75rem;font-weight:400;color:#64748b;">Mortalidad EPOC agudizada</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Disnea eMRCD 5a (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="2" onchange="calcDECAF()"> Disnea eMRCD 5b — confinado en cama (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Eosinopenia &lt;0.05×10⁹/L (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Consolidación en Rx tórax (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> Acidosis: pH &lt;7.30 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="decaf-chk" data-pts="1" onchange="calcDECAF()"> FA en ECG (+1)</label>
+  <div id="decafResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">DECAF: 0/6</div>
+</div>
+
+<!-- 9. CAUDA-70 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 CAUDA-70 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Mortalidad intrahospitalaria EPOC</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Confusión (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Acidosis pH &lt;7.35 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Urea &gt;30 mg/dL (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Disnea basal mMRC ≥3 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Albúmina &lt;3.5 g/dL (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="cauda-chk" data-pts="1" onchange="calcCAUDA70()"> Edad ≥70 años (+1)</label>
+  <div id="cauda70Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">CAUDA-70: 0</div>
+</div>
+
+<!-- 10. Riesgo fracaso VNI en EPOC -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💨 Riesgo Fracaso VNI <span style="font-size:.75rem;font-weight:400;color:#64748b;">EPOC agudizada</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> pH &lt;7.25 al ingreso (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> GCS &lt;11 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> FR &gt;35/min tras 1h VNI (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> pH no mejora tras 1h VNI (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> APACHE II ≥20 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="vni-chk" data-pts="1" onchange="calcVNIFracaso()"> Neumonía como causa (+1)</label>
+  <div id="vniResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Riesgo fracaso VNI: 0</div>
+</div>
+
+<!-- 11. Escala de Pisa -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫀 Estudio de Pisa <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo TEP con hallazgos Rx</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> Edad ≥65 años (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="25" onchange="calcPisa()"> Inmovilización / cirugía reciente (+25)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> TVP previa (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> FC ≥100 lpm (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="10" onchange="calcPisa()"> Disnea de inicio súbito (+10)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> Dolor torácico pleurítico (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="15" onchange="calcPisa()"> Hallazgos Rx tórax compatibles con TEP (+15)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="pisa-chk" data-pts="10" onchange="calcPisa()"> Hipoxemia PaO₂ &lt;80 mmHg (+10)</label>
+  <div id="pisaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Pisa: 0%</div>
+</div>
+
+            <!-- 12. HEART Score -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">❤️ HEART Score <span style="font-size:.75rem;font-weight:400;color:#64748b;">Dolor torácico — ¿SCA?</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Historia clínica</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Poco sospechosa (0)</option><option value="1">Moderadamente sospechosa (1)</option><option value="2">Altamente sospechosa (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">ECG</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">Alteración inespecífica (1)</option><option value="2">Desviación ST significativa (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Edad</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;45 años (0)</option><option value="1">45-64 años (1)</option><option value="2">≥65 años (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Factores de riesgo</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Ninguno (0)</option><option value="1">1-2 FRCV (1)</option><option value="2">≥3 FRCV o ateroesclerosis conocida (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Troponina</label><select class="heart-sel" onchange="calcHEART()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Normal (0)</option><option value="1">1-3x límite superior (1)</option><option value="2">&gt;3x límite superior (2)</option></select></div>
+  <div id="heartResult" style="margin-top:10px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">HEART: 0/10</div>
+</div>
+
+<!-- 13. CHA2DS2-VASc -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💓 CHA₂DS₂-VASc <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo ictus en FA</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> ICC (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> HTA (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="2" onchange="calcCHADS()"> Edad ≥75 años (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Diabetes (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="2" onchange="calcCHADS()"> Ictus/AIT/tromboembolismo previo (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Enfermedad vascular (IAM, aorta, arteriopatía periférica) (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Edad 65-74 años (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="chads-chk" data-pts="1" onchange="calcCHADS()"> Sexo femenino (+1)</label>
+  <div id="chadsResult" style="margin-top:10px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">CHA₂DS₂-VASc: 0/9</div>
+</div>
+
+<!-- 14. HAS-BLED -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🩸 HAS-BLED <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo hemorrágico en ACO</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> HTA no controlada (TAS >160)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Alteración renal (diálisis, trasplante, Cr >2.26)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Alteración hepática (cirrosis, bilirrubina >2x, GOT/GPT >3x)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Ictus previo</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Hemorragia previa o predisposición</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> INR lábil (TTR &lt;60%)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Edad &gt;65 años</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Fármacos (antiagregantes, AINEs)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="hasbled-chk" onchange="calcHASBLED()"> Alcohol (≥8 bebidas/semana)</label>
+  <div id="hasbResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">HAS-BLED: 0/9</div>
+</div>
+
+<!-- 15. NEWS2 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🏥 NEWS2 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Early Warning Score</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">FR (resp/min)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">12-20</option><option value="1">9-11</option><option value="2">21-24</option><option value="3">≤8 o ≥25</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">SpO₂ (%)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥96</option><option value="1">94-95</option><option value="2">92-93</option><option value="3">≤91</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">TAS (mmHg)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">111-219</option><option value="1">101-110</option><option value="2">91-100</option><option value="3">≤90 o ≥220</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">FC (lpm)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">51-90</option><option value="1">41-50 o 91-110</option><option value="2">111-130</option><option value="3">≤40 o ≥131</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Conciencia</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Alerta</option><option value="3">CVPU (Confusión/Voz/Dolor/Arrespuesta)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Temperatura (°C)</label><select class="news2-sel" onchange="calcNEWS2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">36.1-38.0</option><option value="1">35.1-36.0 o 38.1-39.0</option><option value="2">≥39.1</option><option value="3">≤35.0</option></select></div>
+  <div id="news2Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">NEWS2: 0</div>
+</div>
+
+<!-- 16. SOFA -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🏥 SOFA <span style="font-size:.75rem;font-weight:400;color:#64748b;">Fallo orgánico secuencial</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">PaO₂/FiO₂</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥400 (0)</option><option value="1">300-399 (1)</option><option value="2">200-299 (2)</option><option value="3">100-199 con VM (3)</option><option value="4">&lt;100 con VM (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Plaquetas (×10³/µL)</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥150 (0)</option><option value="1">100-149 (1)</option><option value="2">50-99 (2)</option><option value="3">20-49 (3)</option><option value="4">&lt;20 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Bilirrubina (mg/dL)</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;1.2 (0)</option><option value="1">1.2-1.9 (1)</option><option value="2">2.0-5.9 (2)</option><option value="3">6.0-11.9 (3)</option><option value="4">≥12 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Hipotensión (PAM/vasopresores)</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">PAM ≥70 (0)</option><option value="1">PAM &lt;70 (1)</option><option value="2">Dopa ≤5 o dobutamina (2)</option><option value="3">Dopa &gt;5 o NA ≤0.1 (3)</option><option value="4">Dopa &gt;15 o NA &gt;0.1 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Glasgow</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">15 (0)</option><option value="1">13-14 (1)</option><option value="2">10-12 (2)</option><option value="3">6-9 (3)</option><option value="4">&lt;6 (4)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Creatinina (mg/dL) o diuresis</label><select class="sofa-sel" onchange="calcSOFA()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;1.2 (0)</option><option value="1">1.2-1.9 (1)</option><option value="2">2.0-3.4 (2)</option><option value="3">3.5-4.9 o diuresis &lt;500ml/d (3)</option><option value="4">≥5.0 o diuresis &lt;200ml/d (4)</option></select></div>
+  <div id="sofaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">SOFA: 0/24</div>
+</div>
+
+<!-- 17. Glasgow-Blatchford -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🩸 Glasgow-Blatchford <span style="font-size:.75rem;font-weight:400;color:#64748b;">Hemorragia digestiva alta</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Urea (mg/dL)</label><select class="blatch-sel" onchange="calcBlatchford()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;39 (0)</option><option value="2">39-48 (2)</option><option value="3">49-59 (3)</option><option value="4">60-149 (4)</option><option value="6">≥150 (6)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Hemoglobina varón (g/dL)</label><select class="blatch-sel" onchange="calcBlatchford()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥13 (0)</option><option value="1">12-12.9 (1)</option><option value="3">10-11.9 (3)</option><option value="6">&lt;10 (6)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">TAS (mmHg)</label><select class="blatch-sel" onchange="calcBlatchford()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≥110 (0)</option><option value="1">100-109 (1)</option><option value="2">90-99 (2)</option><option value="3">&lt;90 (3)</option></select></div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="1" onchange="calcBlatchford()"> FC ≥100 (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Melenas (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Síncope (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Enfermedad hepática (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="blatch-chk" data-pts="2" onchange="calcBlatchford()"> Insuficiencia cardíaca (+2)</label>
+  <div id="blatchResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Glasgow-Blatchford: 0/23</div>
+</div>
+
+<!-- 18. Child-Pugh -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 Child-Pugh <span style="font-size:.75rem;font-weight:400;color:#64748b;">Estadificación cirrosis</span></h3>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Bilirrubina (mg/dL)</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">&lt;2 (1)</option><option value="2">2-3 (2)</option><option value="3">&gt;3 (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Albúmina (g/dL)</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">&gt;3.5 (1)</option><option value="2">2.8-3.5 (2)</option><option value="3">&lt;2.8 (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">INR / TP</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">&lt;1.7 (1)</option><option value="2">1.7-2.3 (2)</option><option value="3">&gt;2.3 (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Ascitis</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">Ausente (1)</option><option value="2">Leve (2)</option><option value="3">Moderada-grave (3)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Encefalopatía</label><select class="childp-sel" onchange="calcChildPugh()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="1">Ausente (1)</option><option value="2">Grado I-II (2)</option><option value="3">Grado III-IV (3)</option></select></div>
+  <div id="childpResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Child-Pugh: 5 — Clase A</div>
+</div>
+
+<!-- 19. Alvarado -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🔬 Alvarado <span style="font-size:.75rem;font-weight:400;color:#64748b;">Sospecha de apendicitis</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Dolor migratorio a FID (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Anorexia (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Náuseas / vómitos (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="2" onchange="calcAlvarado()"> Dolor en FID a la palpación (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Rebote (Blumberg +) (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Temperatura ≥37.3°C (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="2" onchange="calcAlvarado()"> Leucocitosis &gt;10.000 (+2)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="alva-chk" data-pts="1" onchange="calcAlvarado()"> Desviación izquierda (neutrofilia) (+1)</label>
+  <div id="alvaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Alvarado: 0/10</div>
+</div>
+
+<!-- 20. PHQ-9 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 PHQ-9 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Depresión</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">En las últimas 2 semanas, ¿con qué frecuencia le han molestado?</div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">1. Poco interés o placer</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">2. Ánimo bajo, deprimido, sin esperanza</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">3. Problemas de sueño</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">4. Cansancio o poca energía</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">5. Apetito alterado</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">6. Sentirse mal consigo mismo</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">7. Dificultad para concentrarse</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">8. Moverse/hablar lento o inquieto</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">9. Pensamientos de muerte o autolesión</label><select class="phq9-sel" onchange="calcPHQ9()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div id="phq9Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">PHQ-9: 0/27</div>
+</div>
+
+<!-- 21. GAD-7 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 GAD-7 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Ansiedad</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">En las últimas 2 semanas, ¿con qué frecuencia?</div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">1. Nerviosismo o ansiedad</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">2. No poder dejar de preocuparse</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">3. Preocupación excesiva por distintas cosas</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">4. Dificultad para relajarse</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">5. Inquietud, no poder estar quieto</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">6. Irritabilidad</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">7. Miedo a que algo terrible ocurra</label><select class="gad7-sel" onchange="calcGAD7()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Nunca (0)</option><option value="1">Varios días (1)</option><option value="2">Más de la mitad (2)</option><option value="3">Casi todos los días (3)</option></select></div>
+  <div id="gad7Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">GAD-7: 0/21</div>
+</div>
+
+<!-- 22. Barthel -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👴 Barthel <span style="font-size:.75rem;font-weight:400;color:#64748b;">Dependencia funcional</span></h3>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Comer</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Trasladarse sillón-cama</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="15">Independiente (15)</option><option value="10">Mínima ayuda (10)</option><option value="5">Gran ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Aseo personal</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="5">Independiente (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Uso del retrete</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Bañarse</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="5">Independiente (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Desplazarse</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="15">Independiente (15)</option><option value="10">Necesita ayuda (10)</option><option value="5">Silla de ruedas (5)</option><option value="0">Inmóvil (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Escaleras</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Incapaz (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Vestirse</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Independiente (10)</option><option value="5">Necesita ayuda (5)</option><option value="0">Dependiente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Control de heces</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Continente (10)</option><option value="5">Accidente ocasional (5)</option><option value="0">Incontinente (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">Control de orina</label><select class="barthel-sel" onchange="calcBarthel()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="10">Continente (10)</option><option value="5">Accidente ocasional (5)</option><option value="0">Incontinente (0)</option></select></div>
+  <div id="barthelResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Barthel: 100/100 — Independiente</div>
+</div>
+
+<!-- 23. CKD-EPI -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💧 CKD-EPI 2021 <span style="font-size:.75rem;font-weight:400;color:#64748b;">Filtrado glomerular estimado</span></h3>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Creatinina sérica (mg/dL)</label><input type="number" step="0.01" id="ckdCreat" placeholder="Ej: 1.2" oninput="calcCKDEPI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Edad</label><input type="number" id="ckdAge" placeholder="Edad" oninput="calcCKDEPI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"></div>
+  <div style="margin-bottom:8px;"><label style="font-size:.8rem;color:#64748b;">Sexo</label><select id="ckdSex" onchange="calcCKDEPI()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem;"><option value="M">Varón</option><option value="F">Mujer</option></select></div>
+  <div id="ckdResult" style="margin-top:10px;padding:12px;border-radius:8px;font-size:.88rem;text-align:center;background:#f1f5f9;color:#475569;">Introduce creatinina y edad</div>
+</div>
+
+<!-- 24. Ottawa Tobillo/Pie -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🦴 Regla de Ottawa <span style="font-size:.75rem;font-weight:400;color:#64748b;">¿Necesita Rx tobillo/pie?</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">Rx indicada si cumple CUALQUIERA:</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Dolor en los últimos 6 cm del maléolo posterior (peroné o tibia)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Incapacidad para cargar peso (4 pasos) inmediato y en urgencias</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Dolor en base del 5° metatarsiano</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:6px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ottawa-chk" onchange="calcOttawa()"> Dolor en escafoides (navicular)</label>
+  <div id="ottawaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f0fdf4;color:#166534;"><strong>Rx NO indicada</strong><br>No cumple criterios Ottawa — Sensibilidad ~98%</div>
+</div>
+
+<!-- 25. ABCD2 -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧠 ABCD² <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo ictus tras AIT</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="abcd2-chk" data-pts="1" onchange="calcABCD2()"> Edad ≥60 años (+1)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="abcd2-chk" data-pts="1" onchange="calcABCD2()"> TA ≥140/90 (+1)</label>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Clínica</label><select class="abcd2-sel" onchange="calcABCD2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Otros síntomas (0)</option><option value="1">Alteración del habla sin debilidad (1)</option><option value="2">Debilidad unilateral (2)</option></select></div>
+  <div style="margin-bottom:6px;"><label style="font-size:.8rem;color:#64748b;">Duración</label><select class="abcd2-sel" onchange="calcABCD2()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">&lt;10 min (0)</option><option value="1">10-59 min (1)</option><option value="2">≥60 min (2)</option></select></div>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="abcd2-chk" data-pts="1" onchange="calcABCD2()"> Diabetes (+1)</label>
+  <div id="abcd2Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">ABCD²: 0/7</div>
+</div>
+
+<!-- 26. Ranson -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🔬 Ranson <span style="font-size:.75rem;font-weight:400;color:#64748b;">Gravedad pancreatitis aguda</span></h3>
+  <div style="font-size:.78rem;font-weight:600;color:#334155;margin-bottom:4px;">Al ingreso</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Edad &gt;55 años</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Leucocitos &gt;16.000</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Glucosa &gt;200 mg/dL</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> LDH &gt;350 UI/L</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> GOT &gt;250 UI/L</label>
+  <div style="font-size:.78rem;font-weight:600;color:#334155;margin:8px 0 4px;">A las 48 horas</div>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Caída Hto &gt;10%</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Aumento BUN &gt;5 mg/dL</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Ca² &lt;8 mg/dL</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> PaO₂ &lt;60 mmHg</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Déficit bases &gt;4 mEq/L</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="ranson-chk" onchange="calcRanson()"> Secuestro líquidos &gt;6L</label>
+  <div id="ransonResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Ranson: 0/11</div>
+</div>
+
+<!-- 27. Downton -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">👴 Downton <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo de caídas</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Caídas previas</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma sedantes/hipnóticos</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma antihipertensivos (no diuréticos)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma antiparkinsonianos</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Toma antidepresivos</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Déficit sensorial (visual/auditivo)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Alteración cognitiva</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:5px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="downton-chk" onchange="calcDownton()"> Marcha insegura (con o sin ayuda)</label>
+  <div id="downtonResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Downton: 0</div>
+</div>
+
+<!-- 28. Fagerström -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🚬 Fagerström <span style="font-size:.75rem;font-weight:400;color:#64748b;">Dependencia nicotínica</span></h3>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Cuánto tarda en fumar tras despertar?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="3">≤5 min (3)</option><option value="2">6-30 min (2)</option><option value="1">31-60 min (1)</option><option value="0">&gt;60 min (0)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Cigarrillos/día?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">≤10 (0)</option><option value="1">11-20 (1)</option><option value="2">21-30 (2)</option><option value="3">&gt;30 (3)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Fuma más por la mañana?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Dificultad para no fumar en sitios prohibidos?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Cuál le costaría más dejar?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">Cualquiera (0)</option><option value="1">El primero de la mañana (1)</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#64748b;">¿Fuma estando enfermo en cama?</label><select class="fager-sel" onchange="calcFagerstrom()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">No (0)</option><option value="1">Sí (1)</option></select></div>
+  <div id="fagerResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Fagerström: 0/10</div>
+</div>
+
+<!-- 29. Epworth -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">😴 Epworth <span style="font-size:.75rem;font-weight:400;color:#64748b;">Somnolencia diurna (SAOS)</span></h3>
+  <div style="font-size:.78rem;color:#64748b;margin-bottom:8px;">Probabilidad de quedarse dormido (0=nunca, 1=escasa, 2=moderada, 3=elevada)</div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado leyendo</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Viendo la televisión</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado en lugar público</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Pasajero en coche (1h)</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Tumbado por la tarde</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado hablando con alguien</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">Sentado tras comida sin alcohol</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div style="margin-bottom:5px;"><label style="font-size:.8rem;color:#475569;">En coche parado (tráfico)</label><select class="epworth-sel" onchange="calcEpworth()" style="width:100%;padding:5px;border:1px solid #e2e8f0;border-radius:6px;font-size:.82rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div id="epworthResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Epworth: 0/24</div>
+</div>
+
+              </div>
+            </div><!-- end panelCalc -->
+
+            <!-- TAB 4: MEGACUADERNO IA -->
+            <div id="panelNotebooks" style="display:none;">
+                <div style="background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                        <span style="font-size:1.8rem;">🤖</span>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;">MegaCuaderno Clínico</div>
+                            <div style="font-size:.78rem;opacity:.85;">Urgencias · Atención Primaria · Farmacología · Antibióticos</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">🚨 Urgencias</span>
+                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">🩺 Atención Primaria</span>
+                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">💊 Farmacología</span>
+                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">🦠 Antibióticos HSL</span>
+                    </div>
+                </div>
+
+                <!-- Sugerencias rápidas -->
+                <div style="margin-bottom:14px;">
+                    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px;font-weight:600;">💡 Preguntas frecuentes:</p>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <button onclick="megaSend('¿Cuál es el antibiótico de primera elección para neumonía comunitaria?')" style="padding:6px 12px;border:1px solid #90caf9;border-radius:20px;background:#e3f2fd;color:#0d47a1;font-size:.72rem;cursor:pointer;font-family:var(--font-body);">Neumonía comunitaria</button>
+                        <button onclick="megaSend('¿Cómo se maneja la crisis hipertensiva en urgencias?')" style="padding:6px 12px;border:1px solid #90caf9;border-radius:20px;background:#e3f2fd;color:#0d47a1;font-size:.72rem;cursor:pointer;font-family:var(--font-body);">Crisis hipertensiva</button>
+                        <button onclick="megaSend('¿Cuáles son los criterios de ingreso en una pancreatitis aguda?')" style="padding:6px 12px;border:1px solid #90caf9;border-radius:20px;background:#e3f2fd;color:#0d47a1;font-size:.72rem;cursor:pointer;font-family:var(--font-body);">Pancreatitis aguda</button>
+                        <button onclick="megaSend('Protocolo de manejo del dolor lumbar en AP')" style="padding:6px 12px;border:1px solid #90caf9;border-radius:20px;background:#e3f2fd;color:#0d47a1;font-size:.72rem;cursor:pointer;font-family:var(--font-body);">Dolor lumbar</button>
+                        <button onclick="megaSend('¿Qué antibiótico usar en infección urinaria sin complicaciones?')" style="padding:6px 12px;border:1px solid #90caf9;border-radius:20px;background:#e3f2fd;color:#0d47a1;font-size:.72rem;cursor:pointer;font-family:var(--font-body);">ITU sin complicaciones</button>
+                        <button onclick="megaSend('Manejo de la EPOC agudizada en Atención Primaria')" style="padding:6px 12px;border:1px solid #90caf9;border-radius:20px;background:#e3f2fd;color:#0d47a1;font-size:.72rem;cursor:pointer;font-family:var(--font-body);">EPOC agudizada</button>
+                    </div>
+                </div>
+
+                <!-- Chat window -->
+                <div id="megaChat" style="height:380px;overflow-y:auto;background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;scroll-behavior:smooth;">
+                    <div style="text-align:center;padding:30px 20px;color:var(--text-muted);">
+                        <div style="font-size:2.5rem;margin-bottom:10px;">🤖</div>
+                        <p style="font-size:.9rem;font-weight:600;color:var(--text);">MegaCuaderno Clínico listo</p>
+                        <p style="font-size:.8rem;margin-top:6px;">Pregunta sobre protocolos de urgencias, Atención Primaria, farmacología y antibióticos del Área II Cartagena.</p>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div style="display:flex;gap:8px;">
+                    <input id="megaInput" type="text" placeholder="Pregunta sobre urgencias, AP, fármacos, antibióticos..." 
+                        style="flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:.9rem;font-family:var(--font-body);background:var(--bg-card);"
+                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();megaSendInput()}"
+                        onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'">
+                    <button id="megaBtn" onclick="megaSendInput()" style="padding:12px 20px;background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border:none;border-radius:var(--radius);font-weight:700;cursor:pointer;font-family:var(--font-body);white-space:nowrap;font-size:.9rem;">
+                        Enviar
+                    </button>
+                </div>
+                <p style="font-size:.7rem;color:var(--text-muted);margin-top:8px;text-align:center;">⚠️ Uso exclusivamente docente. No sustituye el juicio clínico profesional.</p>
+
+                <!-- ═══ CHECKLIST CLÍNICO IA ═══ -->
+                <div id="ckSection" style="margin-top:16px;border-top:2px solid var(--border);padding-top:14px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:1.3rem;">📋</span>
+                            <div>
+                                <div style="font-weight:800;font-size:.95rem;color:var(--text);">Checklist Clínico IA</div>
+                                <div style="font-size:.7rem;color:var(--text-muted);">Anamnesis · Exploración · Pruebas · Tto Hospital · Tto Domicilio</div>
+                            </div>
+                        </div>
+                        <div id="ckProgress" style="display:none;text-align:center;">
+                            <div style="font-size:1.1rem;font-weight:800;color:var(--text);" id="ckPctText">0%</div>
+                            <div style="font-size:.65rem;color:var(--text-muted);" id="ckCountText">0/0</div>
+                        </div>
+                    </div>
+
+                    <!-- Auto-detect banner (when MegaCuaderno has context) -->
+                    <div id="ckAutoBanner" style="display:none;padding:10px 14px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(22,163,74,.06),rgba(22,163,74,.12));border:1.5px solid rgba(22,163,74,.3);margin-bottom:10px;cursor:pointer;" onclick="ckFromChat()">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:1.1rem;">🔗</span>
+                            <div>
+                                <div style="font-size:.82rem;font-weight:700;color:#16a34a;">Generar checklist desde el MegaCuaderno</div>
+                                <div style="font-size:.7rem;color:var(--text-muted);" id="ckAutoDesc">Usa la conversación actual como contexto</div>
+                            </div>
+                            <span style="margin-left:auto;font-size:1.2rem;">→</span>
+                        </div>
+                    </div>
+
+                    <!-- Checklist search -->
+                    <div style="display:flex;gap:8px;margin-bottom:10px;">
+                        <input id="ckInput" type="text" placeholder="Ej: Neumonía comunitaria, TEP, SCA..."
+                            style="flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius);font-size:.85rem;font-family:var(--font-body);background:var(--bg-card);color:var(--text);"
+                            onkeydown="if(event.key==='Enter')ckGenerate()"
+                            onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='var(--border)'">
+                        <button id="ckBtn" onclick="ckGenerate()" style="padding:10px 18px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:var(--radius);font-weight:700;cursor:pointer;font-family:var(--font-body);white-space:nowrap;font-size:.85rem;">
+                            📋 Generar
+                        </button>
+                    </div>
+
+                    <!-- Quick chips -->
+                    <div id="ckChips" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;"></div>
+
+                    <!-- Loading -->
+                    <div id="ckLoading" style="display:none;text-align:center;padding:30px 16px;background:var(--bg-subtle);border-radius:var(--radius);border:1px solid var(--border);">
+                        <div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:#16a34a;border-radius:50%;animation:ckSpin .7s linear infinite;margin:0 auto 12px;"></div>
+                        <div id="ckLoadMsg" style="font-size:.85rem;font-weight:600;color:var(--text);">Consultando protocolos...</div>
+                        <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Esto puede tardar unos segundos</div>
+                    </div>
+                    <style>@keyframes ckSpin{to{transform:rotate(360deg)}}</style>
+
+                    <!-- Error -->
+                    <div id="ckError" style="display:none;padding:14px;border-radius:var(--radius);background:#fef2f2;border:1px solid #fecaca;color:#dc2626;font-size:.85rem;text-align:center;"></div>
+
+                    <!-- Results -->
+                    <div id="ckResult" style="display:none;"></div>
+                </div>
+
+                <!-- Links a NotebookLM originales -->
+                <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;">
+                    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px;font-weight:600;">🔗 También en NotebookLM (IA de Google):</p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="https://notebooklm.google.com/notebook/9d377e7d-51ec-4773-acd7-fc84534a4b29" target="_blank" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:.72rem;color:#555;text-decoration:none;background:#f5f5f5;">🚨 Urgencias ↗</a>
+                        <a href="https://notebooklm.google.com/notebook/10df02b6-e1f6-4e4c-b7e7-8b758e4e8d0d" target="_blank" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:.72rem;color:#555;text-decoration:none;background:#f5f5f5;">🩺 AP ↗</a>
+                        <a href="https://notebooklm.google.com/notebook/24996c1c-e88b-4716-87f1-15df52c8dc5e" target="_blank" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:.72rem;color:#555;text-decoration:none;background:#f5f5f5;">💊 Farmacología ↗</a>
+                        <a href="https://notebooklm.google.com/notebook/d8b9054c-a565-4916-8667-4ff1cb9cd77f" target="_blank" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:.72rem;color:#555;text-decoration:none;background:#f5f5f5;">📋 Enfermería ↗</a>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+                    <a href="https://notebooklm.google.com/notebook/d8b9054c-a565-4916-8667-4ff1cb9cd77f" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">📋</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Enfermería</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Vacunas, protocolos, documentación</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/9d377e7d-51ec-4773-acd7-fc84534a4b29" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">🚨</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Urgencias</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Trípticos, SEMFyC, hospitalarios</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/10df02b6-e1f6-4e4c-b7e7-8b758e4e8d0d" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">🩺</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Atención Primaria</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Protocolos AP y guías clínicas</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/24996c1c-e88b-4716-87f1-15df52c8dc5e" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">💊</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Farmacología</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Fármacos, dosis, interacciones</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                    <a href="https://notebooklm.google.com/notebook/8a4e3e50-a33c-4bd9-821d-8ec320b74276" target="_blank" style="display:flex;align-items:center;gap:12px;border:2px solid #e3f2fd;border-radius:12px;padding:14px;background:#fff;text-decoration:none;transition:all .2s;grid-column:1/-1;" onmouseover="this.style.borderColor='#1565c0';this.style.background='#f3f8ff'" onmouseout="this.style.borderColor='#e3f2fd';this.style.background='#fff'">
+                        <div style="font-size:1.8rem;flex-shrink:0;">📖</div>
+                        <div>
+                            <div style="font-weight:700;font-size:.85rem;color:#0d47a1;">Formación y Docencia</div>
+                            <div style="font-size:.72rem;color:#555;margin-top:2px;">Material docente MFyC</div>
+                        </div>
+                        <div style="margin-left:auto;color:#90caf9;font-size:1rem;">↗</div>
+                    </a>
+                </div>
+
+                <!-- Selector de cuaderno para ver embedded -->
+                <div style="margin-bottom:12px;">
+                    <p style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">📺 Abrir cuaderno en esta pantalla:</p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                        <button onclick="loadNotebook('d8b9054c-a565-4916-8667-4ff1cb9cd77f','Enfermería')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">📋 Enfermería</button>
+                        <button onclick="loadNotebook('9d377e7d-51ec-4773-acd7-fc84534a4b29','Urgencias')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">🚨 Urgencias</button>
+                        <button onclick="loadNotebook('10df02b6-e1f6-4e4c-b7e7-8b758e4e8d0d','Atención Primaria')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">🩺 AP</button>
+                        <button onclick="loadNotebook('24996c1c-e88b-4716-87f1-15df52c8dc5e','Farmacología')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">💊 Farmacología</button>
+                        <button onclick="loadNotebook('8a4e3e50-a33c-4bd9-821d-8ec320b74276','Docencia')" style="padding:7px 14px;border:1px solid #90caf9;border-radius:8px;background:#e3f2fd;color:#0d47a1;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);">📖 Docencia</button>
+                    </div>
+                    <div id="notebookFrame" style="display:none;border-radius:12px;overflow:hidden;border:2px solid #90caf9;">
+                        <div style="background:#0d47a1;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+                            <span id="notebookFrameTitle" style="color:#fff;font-size:.85rem;font-weight:700;"></span>
+                            <div style="display:flex;gap:8px;">
+                                <a id="notebookFrameLink" href="#" target="_blank" style="color:#90caf9;font-size:.78rem;text-decoration:none;padding:4px 10px;border:1px solid #90caf9;border-radius:6px;">↗ Abrir en pestaña</a>
+                                <button onclick="document.getElementById('notebookFrame').style.display='none'" style="background:none;border:none;color:#90caf9;cursor:pointer;font-size:1.1rem;line-height:1;">✕</button>
+                            </div>
+                        </div>
+                        <iframe id="notebookIframe" src="" style="width:100%;height:600px;border:none;display:block;" allow="clipboard-write"></iframe>
+                    </div>
+                    <div id="notebookEmbedInfo" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 14px;font-size:.8rem;color:#856404;margin-top:8px;">
+                        ⚠️ <strong>NotebookLM no permite embeber.</strong> Usa el botón <strong>"↗ Abrir en pestaña"</strong> para acceder al cuaderno completo, o pulsa directamente sobre cualquiera de las tarjetas de arriba.
+                    </div>
+                </div>
+
+            </div><!-- end panelNotebooks -->
+
+            <!-- TAB 5: PLANTILLAS DE PACIENTES -->
+            <div id="panelPlantillas" style="display:none;">
+              <style>
+                #tablaPacientes { width:100%; border-collapse:collapse; font-size:.82rem; font-family:var(--font-body); }
+                #tablaPacientes th { background:var(--bg-dark,#0a1628); color:#fff; padding:10px 10px; text-align:left; font-weight:700; font-size:.78rem; letter-spacing:.03em; white-space:nowrap; position:sticky; top:0; z-index:2; }
+                #tablaPacientes td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--text); }
+                #tablaPacientes tr:hover td { background:var(--bg-subtle); }
+                #tablaPacientes tr.alerta-alta td { background:#fff0f0!important; }
+                #tablaPacientes tr.alerta-media td { background:#fffbe6!important; }
+                #tablaPacientes tr.alerta-alta:hover td { background:#ffe0e0!important; }
+                #tablaPacientes tr.alerta-media:hover td { background:#fff3cd!important; }
+                .pt-col-nombre { min-width:150px; font-weight:600; }
+                .pt-col-nhc { min-width:80px; color:var(--text-light); font-size:.75rem; font-variant-numeric:tabular-nums; }
+                .pt-col-motivo { min-width:130px; }
+                .pt-col-pendiente { min-width:140px; }
+                .pt-col-diagnostico { min-width:140px; }
+                .pt-col-tto-casa { min-width:130px; }
+                .pt-col-tto-hosp { min-width:130px; }
+                .pt-col-resultado { min-width:130px; }
+                .pt-col-alerta { min-width:90px; text-align:center; }
+                .pt-input { width:100%; border:1px solid var(--border); border-radius:5px; padding:5px 7px; font-size:.8rem; background:var(--bg-card); color:var(--text); font-family:var(--font-body); resize:vertical; min-height:32px; box-sizing:border-box; }
+                .pt-input:focus { outline:none; border-color:#0d6b4a; }
+                .pt-alerta-btn { border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:1rem; display:inline-flex; align-items:center; justify-content:center; transition:.15s; margin:0 2px; }
+                .pt-alerta-btn:hover { transform:scale(1.15); }
+                .pt-alerta-alta { background:#fee2e2; }
+                .pt-alerta-alta.active { background:#ef4444; color:#fff; box-shadow:0 0 0 2px #ef4444; }
+                .pt-alerta-media { background:#fef3c7; }
+                .pt-alerta-media.active { background:#f59e0b; color:#fff; box-shadow:0 0 0 2px #f59e0b; }
+                .pt-alerta-ok { background:#dcfce7; }
+                .pt-alerta-ok.active { background:#22c55e; color:#fff; box-shadow:0 0 0 2px #22c55e; }
+                .pt-badge-alta { display:inline-block; background:#ef4444; color:#fff; font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:20px; vertical-align:middle; margin-left:4px; }
+                .pt-badge-media { display:inline-block; background:#f59e0b; color:#fff; font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:20px; vertical-align:middle; margin-left:4px; }
+                @media(max-width:700px){ .pt-col-tto-casa,.pt-col-tto-hosp,.pt-col-resultado{ display:none; } }
+              </style>
+
+              <!-- Header card -->
+              <div style="background:linear-gradient(135deg,#0a1628,#1a3050);border-radius:var(--radius);padding:22px 24px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;">
+                <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.12;">📋</div>
+                <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:6px;">📋 Plantilla de pacientes</h2>
+                <p style="opacity:.75;font-size:.88rem;font-weight:300;margin:0;">Registro de seguimiento durante la guardia. Tus datos se sincronizan en la nube y solo tú puedes verlos.</p>
+              </div>
+
+              <!-- Supabase Auth Panel -->
+              <div id="sbAuthPanel" style="display:none;background:var(--bg-card);border:2px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;text-align:center;">
+                <div style="font-size:2rem;margin-bottom:8px;">🔐</div>
+                <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;color:var(--text);">Inicia sesión para acceder</h3>
+                <p style="font-size:.82rem;color:var(--text-light);margin-bottom:16px;">Tus pacientes se guardan de forma privada en la nube. Nadie más puede verlos.</p>
+                
+                <div style="max-width:340px;margin:0 auto;">
+                  <input id="sbEmail" type="email" placeholder="Email profesional" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:var(--font-body);margin-bottom:8px;background:var(--bg-card);color:var(--text);box-sizing:border-box;" />
+                  <input id="sbPass" type="password" placeholder="Contraseña (min. 6 caracteres)" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:var(--font-body);margin-bottom:12px;background:var(--bg-card);color:var(--text);box-sizing:border-box;" />
+                  <div style="display:flex;gap:8px;margin-bottom:12px;">
+                    <button id="sbSignInBtn" onclick="sbSignIn()" style="flex:1;padding:10px;background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);">Entrar</button>
+                    <button id="sbSignUpBtn" onclick="sbSignUp()" style="flex:1;padding:10px;background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;font-family:var(--font-body);">Registrarse</button>
+                  </div>
+                  <div style="position:relative;text-align:center;margin:12px 0;"><span style="background:var(--bg-card);padding:0 12px;font-size:.78rem;color:var(--text-light);position:relative;z-index:1;">o bien</span><div style="position:absolute;top:50%;left:0;right:0;border-top:1px solid var(--border);"></div></div>
+                  <button onclick="sbSignInGoogle()" style="width:100%;padding:10px;background:#fff;color:#333;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;font-family:var(--font-body);display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+                    Continuar con Google
+                  </button>
+                </div>
+              </div>
+
+              <!-- Data panel (visible after login) -->
+              <div id="sbDataPanel" style="display:block;">
+              
+              <!-- User info bar -->
+              <div id="sbUserBar" style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 14px;background:var(--bg-subtle);border-radius:8px;font-size:.82rem;">
+                <span style="color:var(--text-light);">💾 <strong id="sbUserInfo">Datos guardados en este dispositivo</strong></span>
+                <span id="sbStatus" style="color:var(--text-light);font-size:.75rem;margin-left:auto;"></span>
+                <button id="sbCloudBtn" onclick="document.getElementById('sbAuthPanel').style.display=document.getElementById('sbAuthPanel').style.display==='none'?'block':'none'" style="padding:4px 12px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.78rem;color:var(--text-light);font-family:var(--font-body);">☁️ Sincronizar en la nube</button>
+                <button id="sbLogoutBtn" onclick="sbSignOut()" style="display:none;padding:4px 12px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.78rem;color:var(--text-light);font-family:var(--font-body);">Cerrar sesión</button>
+              </div>
+
+              <!-- Toolbar -->
+              <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+                <button onclick="sbAddPaciente()" style="background:linear-gradient(135deg,#0d6b4a,#1a8b60);color:#fff;border:none;padding:8px 16px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);display:flex;align-items:center;gap:6px;">➕ Añadir paciente</button>
+                <button onclick="sbExportCSV()" title="Exportar tabla a CSV" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">⬇️ Exportar CSV</button>
+                <button onclick="sbPrint()" title="Imprimir tabla" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🖨️ Imprimir</button>
+                <button onclick="sbClearAll()" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:var(--font-body);">🗑️ Limpiar</button>
+              </div>
+              <!-- Contador alertas + filtros -->
+              <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+                <div id="ptContador" style="font-size:.78rem;color:var(--text-light);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                  <span>Total: <strong id="ptTotalCount">0</strong></span>
+                  <span style="color:#ef4444;">🔴 <strong id="ptAltaCount">0</strong> alta prioridad</span>
+                  <span style="color:#f59e0b;">🟡 <strong id="ptMediaCount">0</strong> atención media</span>
+                </div>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <span style="font-size:.78rem;color:var(--text-light);">Filtrar:</span>
+                  <button onclick="ptFilter('all')" id="ptFiltroAll" style="background:#0d6b4a;color:#fff;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">Todos</button>
+                  <button onclick="ptFilter('alta')" id="ptFiltroAlta" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:5px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🔴 Alerta alta</button>
+                  <button onclick="ptFilter('media')" id="ptFiltroMedia" style="background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);padding:5px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:var(--font-body);">🟡 Alerta media</button>
+                </div>
+              </div>
+
+              <!-- Leyenda -->
+              <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;font-size:.78rem;color:var(--text-light);align-items:center;">
+                <span>Alertas:</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:50%;vertical-align:middle;margin-right:4px;"></span>Alta prioridad — vigilancia estrecha</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:#f59e0b;border-radius:50%;vertical-align:middle;margin-right:4px;"></span>Atención media</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:#22c55e;border-radius:50%;vertical-align:middle;margin-right:4px;"></span>Sin alerta</span>
+              </div>
+
+              <!-- Table wrapper -->
+              <div style="overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-card);">
+                <table id="tablaPacientes">
+                  <thead>
+                    <tr>
+                      <th class="pt-col-alerta">Alerta</th>
+                      <th class="pt-col-nombre">Paciente</th>
+                      <th class="pt-col-nhc">N.H.C.</th>
+                      <th class="pt-col-motivo">Motivo / Sospecha</th>
+                      <th class="pt-col-pendiente">Pendiente</th>
+                      <th class="pt-col-diagnostico">Posible diagnóstico</th>
+                      <th class="pt-col-tto-casa">Tto. en casa</th>
+                      <th class="pt-col-tto-hosp">Tto. en hospital</th>
+                      <th class="pt-col-resultado">Resultado pruebas</th>
+                      <th style="min-width:40px;text-align:center;">✕</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaPacientesTbody">
+                  </tbody>
+                </table>
+              </div>
+              <p style="font-size:.72rem;color:var(--text-light);margin-top:10px;text-align:center;">💾 Los datos se guardan automáticamente en este navegador (localStorage). No se envían a ningún servidor ni se almacenan en la nube.</p>
+
+              <script>
+              (function(){
+                var PT_KEY = 'plantilla_pacientes_v1';
+                var ptFiltroActual = 'all';
+                var ptRowId = 0;
+
+                function ptSave(){
+                  var rows = [];
+                  document.querySelectorAll('#tablaPacientesTbody tr').forEach(function(tr){
+                    var cells = tr.querySelectorAll('textarea, input[type=text]');
+                    var alerta = tr.dataset.alerta || 'none';
+                    var rowData = {id: tr.dataset.id, alerta: alerta, cols: []};
+                    cells.forEach(function(el){ rowData.cols.push(el.value); });
+                    rows.push(rowData);
+                  });
+                  try{ localStorage.setItem(PT_KEY, JSON.stringify(rows)); } catch(e){}
+                  // Cloud backup (debounced)
+                  clearTimeout(window._ptCloudTimer);
+                  window._ptCloudTimer = setTimeout(function(){
+                    try {
+                      if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+                        db.collection('plantillas_backup').doc(firebase.auth().currentUser.uid).set({
+                          rows: rows.slice(0, 50),
+                          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true }).catch(function(){});
+                      }
+                    } catch(e){}
+                  }, 3000);
+                }
+
+                function ptLoad(){
+                  try{
+                    var saved = localStorage.getItem(PT_KEY);
+                    if(saved){
+                      var rows = JSON.parse(saved);
+                      rows.forEach(function(row){
+                        ptAddRow(row.cols, row.alerta, row.id);
+                      });
+                    } else {
+                      // Start with 3 empty rows
+                      ptAddRow(); ptAddRow(); ptAddRow();
+                    }
+                  } catch(e){ ptAddRow(); ptAddRow(); ptAddRow(); }
+                  // Cloud restore (delayed, checks if cloud has newer data)
+                  setTimeout(function(){
+                    try {
+                      if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+                        db.collection('plantillas_backup').doc(firebase.auth().currentUser.uid).get().then(function(doc){
+                          if (doc.exists && doc.data().rows && doc.data().rows.length > 0) {
+                            var cloudRows = doc.data().rows;
+                            var localRows = [];
+                            try { localRows = JSON.parse(localStorage.getItem(PT_KEY) || '[]'); } catch(e){}
+                            // Use cloud if local is empty or cloud has more data
+                            var localHasData = localRows.some(function(r){ return r.cols && r.cols.some(function(c){return c;}); });
+                            var cloudHasData = cloudRows.some(function(r){ return r.cols && r.cols.some(function(c){return c;}); });
+                            if (!localHasData && cloudHasData) {
+                              var tbody = document.getElementById('tablaPacientesTbody');
+                              if(tbody) tbody.innerHTML = '';
+                              cloudRows.forEach(function(row){ ptAddRow(row.cols, row.alerta, row.id); });
+                              console.log('[Plantillas] Restored ' + cloudRows.length + ' rows from Firestore');
+                            }
+                          }
+                        }).catch(function(){});
+                      }
+                    } catch(e){}
+                  }, 3000);
+                }
+
+                window.ptAddRow = function(data, alerta, id){
+                  var tbody = document.getElementById('tablaPacientesTbody');
+                  if(!tbody) return;
+                  var rid = id || ('pt_' + (++ptRowId));
+                  var d = data || ['','','','','','','',''];
+                  var al = alerta || 'none';
+                  var tr = document.createElement('tr');
+                  tr.dataset.id = rid;
+                  tr.dataset.alerta = al;
+                  if(al==='alta') tr.className='alerta-alta';
+                  else if(al==='media') tr.className='alerta-media';
+
+                  // Alerta cell
+                  var tdAlerta = document.createElement('td');
+                  tdAlerta.className = 'pt-col-alerta';
+                  tdAlerta.innerHTML = '<button class="pt-alerta-btn pt-alerta-alta'+(al==='alta'?' active':'')+'" title="Alerta alta — vigilancia estrecha" onclick="ptSetAlerta(this,&#39;alta&#39;)">🔴</button><button class="pt-alerta-btn pt-alerta-media'+(al==='media'?' active':'')+'" title="Alerta media" onclick="ptSetAlerta(this,&#39;media&#39;)">🟡</button><button class="pt-alerta-btn pt-alerta-ok'+(al==='ok'?' active':'')+'" title="Sin alerta" onclick="ptSetAlerta(this,&#39;ok&#39;)">🟢</button>';
+                  tr.appendChild(tdAlerta);
+
+                  // Text cols: nombre, nhc, motivo, pendiente, diagnostico, tto-casa, tto-hosp, resultado
+                  var colClasses = ['pt-col-nombre','pt-col-nhc','pt-col-motivo','pt-col-pendiente','pt-col-diagnostico','pt-col-tto-casa','pt-col-tto-hosp','pt-col-resultado'];
+                  var placeholders = ['Apellidos, Nombre','N.H.C.','Motivo / Sospecha diagnóstica','Actuaciones pendientes','Posible diagnóstico','Tratamiento en domicilio','Tratamiento hospitalario','Resultados de pruebas'];
+                  var isTextarea = [true, false, true, true, true, true, true, true];
+
+                  d.forEach(function(val, i){
+                    var td = document.createElement('td');
+                    td.className = colClasses[i];
+                    if(isTextarea[i]){
+                      var ta = document.createElement('textarea');
+                      ta.className='pt-input'; ta.rows=2; ta.placeholder=placeholders[i]; ta.value=val;
+                      ta.addEventListener('input', function(){ ptSave(); ptAutoResize(ta); });
+                      td.appendChild(ta);
+                    } else {
+                      var inp = document.createElement('input');
+                      inp.type='text'; inp.className='pt-input'; inp.placeholder=placeholders[i]; inp.value=val;
+                      inp.addEventListener('input', ptSave);
+                      td.appendChild(inp);
+                    }
+                    tr.appendChild(td);
+                  });
+
+                  // Delete cell
+                  var tdDel = document.createElement('td');
+                  tdDel.style.textAlign='center';
+                  tdDel.innerHTML='<button onclick="ptDeleteRow(this)" title="Eliminar fila" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem;padding:4px 6px;border-radius:5px;" onmouseover="this.style.background=&#39;#fee2e2&#39;" onmouseout="this.style.background=&#39;none&#39;">✕</button>';
+                  tr.appendChild(tdDel);
+
+                  tbody.appendChild(tr);
+                  if(!id) ptSave();
+                  ptApplyFilter();
+                  if(typeof ptUpdateCounts==='function') ptUpdateCounts();
+                };
+
+                window.ptAutoResize = function(el){
+                  el.style.height='auto';
+                  el.style.height=(el.scrollHeight)+'px';
+                };
+
+                window.ptSetAlerta = function(btn, nivel){
+                  var tr = btn.closest('tr');
+                  if(!tr) return;
+                  var wasActive = btn.classList.contains('active');
+                  // Reset all buttons in this row
+                  tr.querySelectorAll('.pt-alerta-btn').forEach(function(b){ b.classList.remove('active'); });
+                  tr.className='';
+                  tr.dataset.alerta='none';
+                  if(!wasActive){
+                    btn.classList.add('active');
+                    tr.dataset.alerta=nivel;
+                    if(nivel==='alta') tr.className='alerta-alta';
+                    else if(nivel==='media') tr.className='alerta-media';
+                  }
+                  ptSave();
+                  ptApplyFilter();
+                  if(typeof ptUpdateCounts==='function') ptUpdateCounts();
+                };
+
+                window.ptDeleteRow = function(btn){
+                  var tr = btn.closest('tr');
+                  if(tr && confirm('¿Eliminar este paciente de la tabla?')){ tr.remove(); ptSave(); if(typeof ptUpdateCounts==='function') ptUpdateCounts(); }
+                };
+
+                window.ptClear = function(){
+                  if(!confirm('¿Limpiar toda la tabla? Esta acción no se puede deshacer.')) return;
+                  document.getElementById('tablaPacientesTbody').innerHTML='';
+                  try{ localStorage.removeItem(PT_KEY); } catch(e){}
+                  ptAddRow(); ptAddRow(); ptAddRow();
+                };
+
+                window.ptFilter = function(tipo){
+                  ptFiltroActual = tipo;
+                  ['All','Alta','Media'].forEach(function(t){
+                    var btn = document.getElementById('ptFiltro'+t);
+                    if(btn){ btn.style.background = tipo===t.toLowerCase() ? '#0d6b4a' : 'var(--bg-subtle)'; btn.style.color = tipo===t.toLowerCase() ? '#fff' : 'var(--text)'; btn.style.border = tipo===t.toLowerCase() ? 'none' : '1px solid var(--border)'; }
+                  });
+                  ptApplyFilter();
+                };
+
+                window.ptApplyFilter = function(){
+                  document.querySelectorAll('#tablaPacientesTbody tr').forEach(function(tr){
+                    if(ptFiltroActual==='all'){ tr.style.display=''; }
+                    else if(ptFiltroActual==='alta'){ tr.style.display = tr.dataset.alerta==='alta' ? '' : 'none'; }
+                    else if(ptFiltroActual==='media'){ tr.style.display = tr.dataset.alerta==='media' ? '' : 'none'; }
+                  });
+                  ptUpdateCounts();
+                };
+
+                function ptUpdateCounts(){
+                  var rows = document.querySelectorAll('#tablaPacientesTbody tr');
+                  var total=0, alta=0, media=0;
+                  rows.forEach(function(tr){
+                    total++;
+                    if(tr.dataset.alerta==='alta') alta++;
+                    else if(tr.dataset.alerta==='media') media++;
+                  });
+                  var tc=document.getElementById('ptTotalCount');
+                  var ac=document.getElementById('ptAltaCount');
+                  var mc=document.getElementById('ptMediaCount');
+                  if(tc) tc.textContent=total;
+                  if(ac){ ac.textContent=alta; ac.parentElement.style.fontWeight=alta>0?'700':'400'; ac.parentElement.style.color=alta>0?'#ef4444':'var(--text-light)'; }
+                  if(mc){ mc.textContent=media; mc.parentElement.style.fontWeight=media>0?'700':'400'; mc.parentElement.style.color=media>0?'#f59e0b':'var(--text-light)'; }
+                }
+
+                window.ptExportCSV = function(){
+                  var headers = ['Alerta','Paciente','N.H.C.','Motivo/Sospecha','Pendiente','Posible diagnóstico','Tto. en casa','Tto. en hospital','Resultado pruebas'];
+                  var rows = [headers.map(function(h){return '"'+h+'"';}).join(',')];
+                  document.querySelectorAll('#tablaPacientesTbody tr').forEach(function(tr){
+                    var alerta = tr.dataset.alerta==='alta'?'🔴 Alta':tr.dataset.alerta==='media'?'🟡 Media':tr.dataset.alerta==='ok'?'🟢 OK':'—';
+                    var cols = [alerta];
+                    tr.querySelectorAll('textarea,input[type=text]').forEach(function(el){
+                      cols.push('"'+(el.value||'').replace(/"/g,'""')+'"');
+                    });
+                    rows.push(cols.join(','));
+                  });
+                  var csv = rows.join('\n');
+                  var blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+                  var url = URL.createObjectURL(blob);
+                  var a = document.createElement('a');
+                  var now = new Date();
+                  var fecha = now.getFullYear()+'-'+(now.getMonth()+1).toString().padStart(2,'0')+'-'+now.getDate().toString().padStart(2,'0');
+                  a.href=url; a.download='pacientes_guardia_'+fecha+'.csv'; a.click();
+                  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+                };
+
+                window.ptPrint = function(){
+                  var fecha = new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+                  var rows = document.querySelectorAll('#tablaPacientesTbody tr');
+                  var trHtml = '';
+                  rows.forEach(function(tr){
+                    var alerta = tr.dataset.alerta;
+                    var bg = alerta==='alta'?'#ffeeee':alerta==='media'?'#fff8e1':'white';
+                    var badge = alerta==='alta'?'<span style="background:#ef4444;color:#fff;font-size:10px;padding:1px 5px;border-radius:8px;margin-left:4px;">ALTA</span>':alerta==='media'?'<span style="background:#f59e0b;color:#fff;font-size:10px;padding:1px 5px;border-radius:8px;margin-left:4px;">MEDIA</span>':'';
+                    var inputs = tr.querySelectorAll('textarea,input[type=text]');
+                    var tds = '<td style="background:'+bg+';padding:6px;border:1px solid #ccc;font-size:11px;">'+badge+'</td>';
+                    inputs.forEach(function(el,i){
+                      tds += '<td style="background:'+bg+';padding:6px;border:1px solid #ccc;font-size:11px;'+(i===0?'font-weight:600;':'')+'">'+((el.value||'').replace(/\n/g,'<br>'))+'</td>';
+                    });
+                    trHtml += '<tr>'+tds+'</tr>';
+                  });
+                  var w = window.open('','_blank');
+                  w.document.write('<html><head><title>Pacientes Guardia</title><style>body{font-family:Arial,sans-serif;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#0a1628;color:#fff;padding:7px;text-align:left;font-size:10px}@media print{button{display:none}}</style></head><body>');
+                  w.document.write('<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:2px solid #0a1628;padding-bottom:8px;"><h2 style="margin:0;font-size:14px;">🏥 Plantilla de Pacientes — Área II Cartagena</h2><span style="font-size:10px;color:#666;">'+fecha+'</span></div>');
+                  w.document.write('<button onclick="window.print()" style="margin-bottom:10px;padding:6px 14px;background:#0a1628;color:#fff;border:none;cursor:pointer;border-radius:4px;">🖨️ Imprimir</button>');
+                  w.document.write('<table><thead><tr><th>Alerta</th><th>Paciente</th><th>N.H.C.</th><th>Motivo/Sospecha</th><th>Pendiente</th><th>Posible diagnóstico</th><th>Tto. casa</th><th>Tto. hospital</th><th>Resultado pruebas</th></tr></thead><tbody>'+trHtml+'</tbody></table>');
+                  w.document.write('</body></html>');
+                  w.document.close();
+                  setTimeout(function(){ w.print(); }, 400);
+                };
+
+                // Init on first show
+                var ptInited = false;
+                window.ptInit = function(){
+                  if(ptInited) return;
+                  ptInited = true;
+                  ptLoad();
+                };
+              })();
+              </script>
+              </div><!-- end sbDataPanel -->
+            </div><!-- end panelPlantillas -->
+
+            <!-- TAB: TRIAJE IA -->
+            <div id="panelTriaje" style="display:none;">
+                <div style="background:linear-gradient(135deg,#dc2626,#991b1b);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+                        <span style="font-size:1.8rem;">🚨</span>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;">Triaje Inteligente</div>
+                            <div style="font-size:.78rem;opacity:.85;">Pega una captura del listado de pacientes y la IA genera la tabla de prioridades</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drop zone para captura -->
+                <div id="triajeDropZone" onclick="document.getElementById('triajeFileIn').click()" tabindex="0" style="border:2px dashed var(--border);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;background:var(--bg-card);margin-bottom:16px;transition:.3s;">
+                    <input type="file" id="triajeFileIn" accept="image/*" style="display:none" onchange="triajeHandleFile(event)">
+                    <div id="triajeDropContent">
+                        <div style="font-size:2.5rem;margin-bottom:10px;opacity:.5;">📋</div>
+                        <div style="color:var(--text-light);font-size:.95rem;margin-bottom:4px;">Pega (<strong>Ctrl+V</strong>) o arrastra la captura del listado</div>
+                        <div style="color:var(--text-muted);font-size:.82rem;">Selene, Florence, OCIOGEN, HCIS o cualquier listado de pacientes</div>
+                        <div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--bg-section);border-radius:6px;font-size:.78rem;color:var(--text-muted);"><span style="font-size:1.1rem;">⌨️</span> Ctrl+V / Cmd+V desde captura de pantalla</div>
+                    </div>
+                    <img id="triajeImgPreview" style="display:none;max-width:100%;max-height:300px;border-radius:8px;object-fit:contain;margin:0 auto;" alt="Preview">
+                </div>
+
+                <!-- Contexto opcional -->
+                <div style="margin-bottom:12px;">
+                    <input type="text" id="triajeCtx" placeholder="Contexto (opcional): turno de mañana, urgencias, planta 3..." style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;box-sizing:border-box;font-family:var(--font-body);">
+                </div>
+
+                <!-- Botones -->
+                <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+                    <button id="triajeBtnGo" onclick="triajeAnalyze()" disabled style="padding:12px 28px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-family:var(--font-body);font-size:.92rem;display:flex;align-items:center;gap:8px;">🚨 Generar tabla de triaje</button>
+                    <button onclick="triajeClear()" style="padding:12px 20px;background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-family:var(--font-body);font-size:.88rem;">🗑 Limpiar</button>
+                    <button id="triajeExportBtn" onclick="triajeExportCSV()" style="display:none;padding:12px 20px;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-family:var(--font-body);font-size:.88rem;">📥 Exportar CSV</button>
+                    <button id="triajePrintBtn" onclick="triajePrint()" style="display:none;padding:12px 20px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-family:var(--font-body);font-size:.88rem;">🖨 Imprimir</button>
+                </div>
+
+                <!-- Resultado -->
+                <div id="triajeResult"></div>
+
+                <!-- Disclaimer -->
+                <div style="margin-top:16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:.78rem;color:#991b1b;line-height:1.5;">
+                    <strong>⚠️ Herramienta de apoyo</strong> — La priorización por IA es orientativa. El juicio clínico del profesional prevalece siempre. Datos anonimizados en el análisis.
+                </div>
+            </div><!-- end panelTriaje -->
+
+            <!-- TAB: TURNOS DE GUARDIA -->
+            <div id="panelTurnos" style="display:none;">
+                <div style="background:linear-gradient(135deg,#1e40af,#1d4ed8);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:1.8rem;">⏰</span>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;">Calculadora de Turnos de Guardia</div>
+                            <div style="font-size:.78rem;opacity:.85;">Divide la guardia en turnos equitativos · Asigna nombres · Comparte por WhatsApp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;">
+                    <!-- Tipo de guardia -->
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:6px;">Tipo de guardia</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="turnoPresets">
+                            <button onclick="turnoPreset('17','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🌙 17h→8h (PAC)</button>
+                            <button onclick="turnoPreset('20','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🏥 20h→8h (Hospital)</button>
+                            <button onclick="turnoPreset('15','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">📋 15h→8h (24h)</button>
+                            <button onclick="turnoPreset('08','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🔄 8h→8h (24h completa)</button>
+                            <button onclick="turnoPreset('now','')" style="padding:8px 16px;border:1px solid #0066cc;border-radius:8px;background:#eff6ff;cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:#1d4ed8;">📍 Desde ahora</button>
+                        </div>
+                    </div>
+
+                    <!-- Hora inicio / fin -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                        <div>
+                            <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Inicio de guardia</label>
+                            <input type="time" id="turnoInicio" value="17:00" onchange="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:1rem;font-family:var(--font-body);font-weight:600;">
+                        </div>
+                        <div>
+                            <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Fin de guardia</label>
+                            <input type="time" id="turnoFin" value="08:00" onchange="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:1rem;font-family:var(--font-body);font-weight:600;">
+                        </div>
+                    </div>
+
+                    <!-- Número de turnos -->
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Número de turnos</label>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <button onclick="turnoChangNum(-1)" style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg-subtle);cursor:pointer;font-size:1.2rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;">−</button>
+                            <span id="turnoNumDisplay" style="font-size:1.8rem;font-weight:800;color:#1d4ed8;min-width:40px;text-align:center;">2</span>
+                            <button onclick="turnoChangNum(1)" style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg-subtle);cursor:pointer;font-size:1.2rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;">+</button>
+                            <span id="turnoDuracion" style="font-size:.88rem;color:var(--text-muted);margin-left:8px;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Nombres -->
+                    <div style="margin-bottom:16px;" id="turnoNombresBox">
+                        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Nombres (opcional, separados por coma)</label>
+                        <input type="text" id="turnoNombres" placeholder="Ej: Carlos, Ana, Pedro" oninput="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:var(--font-body);box-sizing:border-box;">
+                    </div>
+
+                    <button onclick="turnoCalc()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1e40af,#1d4ed8);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:1rem;font-family:var(--font-body);">⏰ Calcular turnos</button>
+                </div>
+
+                <!-- Resultado -->
+                <div id="turnoResult"></div>
+            </div><!-- end panelTurnos -->
+
+
+        </div>
+    </div>
+</div>
+
