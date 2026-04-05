@@ -4289,6 +4289,9 @@ window.showNotebooksModal=function(){
 
 <script>
 // ── API KEY PROTECTION (early inline) ──
+// ⚠️ DEPRECATED: _KP será eliminado en futuras versiones.
+// Migrar todas las llamadas a API_CONFIG (api-config.js).
+// Las keys deben ir en el proxy del NAS, no en el cliente.
 var _KP=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
 function _dk(){try{return atob(_KP.join(""));}catch(e){return "";}}
 // ═══ PATIENTS DATA ═══
@@ -4978,6 +4981,7 @@ function infDescargar(formato){
 
 
 <script src="https://js.puter.com/v2/"></script>
+<script src="api-config.js?v=20260405a"></script>
 <script src="app-main.js?v=20260404z"></script>
 <script src="escalas-clinicas.js?v=20260402c"></script>
 <script src="turnos-guardia.js?v=20260402a"></script>

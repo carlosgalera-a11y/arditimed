@@ -1,0 +1,7 @@
+# Local secrets — NEVER commit
+.env
+.env.local
+secrets.js
+api-keys.json
+*.key
+*.pem
