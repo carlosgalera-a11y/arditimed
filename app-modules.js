@@ -696,6 +696,13 @@ function trMostrarResultado(nivel){
   window.scrollTo(0,0);
 }
 
+// ══════════════════════════════════════════════════════════════════════
+// ⚠️  IMPORTANTE — NO ELIMINAR ESTE FALLBACK
+// El Autotriaje es LIBRE (sin login). Si el usuario no está autenticado,
+// los datos del QR se codifican en la URL en lugar de guardarse en Firestore.
+// Sin este fallback aparece "Missing or insufficient permissions".
+// Decisión de diseño permanente — Carlos Galera, abril 2026.
+// ══════════════════════════════════════════════════════════════════════
 // Generate QR from classic triage result
 async function trClasGenerarQR(nivel) {
   var btn = document.getElementById('trClasQRBtn');
@@ -714,7 +721,7 @@ async function trClasGenerarQR(nivel) {
     medicacion: (document.getElementById('trClasMedicacion').value || '').trim(),
     constantes: (document.getElementById('trClasConstantes').value || '').trim(),
     conversacion: [],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    createdAt: (typeof firebase!=='undefined'&&firebase.firestore&&firebase.firestore.FieldValue)?firebase.firestore.FieldValue.serverTimestamp():new Date(),
     expiresAt: new Date(Date.now() + 24*60*60*1000)
   };
 
@@ -1072,6 +1079,7 @@ function trIAShowQRButton(nivel, recomendacion) {
     chat.scrollTop = chat.scrollHeight;
 }
 
+// ⚠️ NO ELIMINAR: Autotriaje es LIBRE sin login. Fallback URL si no hay auth. Ver trClasGenerarQR.
 async function trIASaveAndShowQR(nivel) {
     var btn = document.getElementById('trQRGenBtn');
     if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Generando QR...'; }
@@ -1097,7 +1105,7 @@ async function trIASaveAndShowQR(nivel) {
         conversacion: trIAHistory.slice(-12).map(function(m) {
             return { role: m.role, content: m.content.substring(0, 500) };
         }),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: (typeof firebase!=='undefined'&&firebase.firestore&&firebase.firestore.FieldValue)?firebase.firestore.FieldValue.serverTimestamp():new Date(),
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
     };
 
