@@ -4,7 +4,7 @@
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
-  var APP_VERSION='v17-20260404k';
+  var APP_VERSION='v11-20260405ak';
   // Always delete every cache
   if('caches' in window){caches.keys().then(function(k){k.forEach(function(c){caches.delete(c);});});}
   if('serviceWorker' in navigator){
@@ -1188,6 +1188,7 @@ window.showNotebooksModal=function(){
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">🤖 Preguntas IA</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">✨ Studio</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">🛏️ Pacientes</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.6);">💊 Fármacos</button>
             </div>
             
             <!-- TRÍPTICOS VISUALES -->
@@ -1820,6 +1821,30 @@ window.showNotebooksModal=function(){
                 </div>
                 <div id="gpListUrg"><div style="text-align:center;padding:30px;opacity:.5;"><div style="font-size:2rem;margin-bottom:8px;">🛏️</div><p>No hay pacientes registrados en esta guardia</p></div></div>
             </div>
+
+            <!-- FÁRMACOS DE URGENCIA -->
+            <div id="urg-farmacos-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.5rem;">💊</span>
+                    <div><strong style="font-size:.92rem;">Fármacos de Urgencia</strong><br><span style="font-size:.82rem;opacity:.8;">51 fármacos · Ampolla, bolus, perfusión y notas. Fuente: SuperVHivencia · H.G.U. Santa Lucía</span></div>
+                </div>
+                <div style="position:relative;margin-bottom:12px;">
+                    <input type="text" id="urgFarmSearch" placeholder="🔍 Buscar fármaco..." oninput="urgFarmFilter()" style="width:100%;padding:11px 14px 11px 14px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-size:.9rem;font-family:var(--font-body);background:rgba(255,255,255,.06);color:#fff;box-sizing:border-box;">
+                </div>
+                <div id="urgFarmCats" style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;-ms-overflow-style:none;scrollbar-width:none;">
+                    <button class="urgFarmCat active" onclick="urgFarmSetCat('all',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:600;background:#dc2626;color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0;">Todos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('pcr',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">PCR/SVA</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('sed',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Sedación</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('arritmia',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antiarrítmicos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('vaso',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Vasoactivos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('antidoto',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antídotos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('hta',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antihipertensivos</button>
+                    <button class="urgFarmCat" onclick="urgFarmSetCat('epi',this)" style="padding:5px 12px;border-radius:16px;border:none;font-size:.78rem;font-weight:500;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;">Antiepilépticos</button>
+                </div>
+                <div id="urgFarmCount" style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:10px;"></div>
+                <div id="urgFarmList" style="display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+
         </div>
         </div>
     </div>
@@ -4352,7 +4377,7 @@ function saveConfigToFirestore(){
         var user=firebase.auth().currentUser;
         if(!user||!isAdmin())return;
         var config={
-            version:'v17-20260404k',
+            version:'v11-20260405ak',
             swVersion:'v23',
             timestamp:new Date().toISOString(),
             savedBy:user.email,
@@ -6511,6 +6536,99 @@ function acceptCookies(level){
 }
 </script>
 
+<script>
+// ═══ FÁRMACOS DE URGENCIA ═══
+var URG_FARMACOS=[
+{n:"Adenosina",a:"2 mL = 6 mg",b:"6 mg iv rápido. Repetir 12 mg si no responde",p:"",c:"TSV. Administrar rápido + bolo SSF",cat:"pcr,arritmia"},
+{n:"Adrenalina",a:"1 ml 1/1000 = 1 mg",b:"1 mg iv /3-5 min (PCR). Anafilaxia: 0,3-0,5 mg im",p:"5 amp (5mg) en 250 SSF a 2-20 ml/h",c:"PCR, anafilaxia, shock",cat:"pcr,vaso"},
+{n:"Alteplasa",a:"20 mg/20 ml · 50 mg/50 ml",b:"IAM: 15 mg iv. TEP: 10 mg iv en 1-2'",p:"IAM: 0,75 mg/kg en 30' + 0,5 mg/kg en 60'",c:"Fibrinolítico. Dosis máx 100 mg",cat:"pcr"},
+{n:"Amiodarona",a:"150 mg = 3 ml",b:"300 mg iv en 20' (PCR: bolo directo)",p:"900 mg en 500 SG5% en 24h",c:"Arritmias ventriculares y supraventriculares",cat:"pcr,arritmia"},
+{n:"Atropina",a:"1 ml = 1 mg",b:"0,5-1 mg iv. Repetir /3-5 min (máx 3 mg)",p:"",c:"Bradicardia sintomática",cat:"pcr"},
+{n:"Cisatracurio",a:"5 ml = 10 mg",b:"0,15 mg/kg (≈10 mg en 70 kg)",p:"0,06-0,12 mg/kg/h",c:"BNM no despolarizante",cat:"sed"},
+{n:"Cloruro cálcico",a:"10 ml = 1 g",b:"10-20 ml iv lento (en 10')",p:"",c:"Hiperkaliemia, hipocalcemia, intox. calcioantagonistas",cat:"antidoto"},
+{n:"Cloruro mórfico",a:"1 ml = 10 mg",b:"2-4 mg iv cada 5-15 min",p:"Titular según dolor",c:"Analgesia. Precaución en IR",cat:"sed"},
+{n:"Desmopresina",a:"1 ml = 4 mcg",b:"0,3 mcg/kg iv en 30'",p:"",c:"Hemofilia A leve, Von Willebrand",cat:""},
+{n:"Diazepam",a:"2 ml = 10 mg",b:"5-10 mg iv lento",p:"",c:"Crisis comiciales, sedación",cat:"sed,epi"},
+{n:"Diltiazem",a:"4 ml = 25 mg",b:"0,25 mg/kg en 2' (≈3 ml en 70 kg)",p:"5 amp (125 mg) en 100 SG5% a 5-10 ml/h",c:"",cat:"arritmia"},
+{n:"Dobutamina",a:"20 ml = 250 mg",b:"",p:"1 amp en 230 SSF. Iniciar 2,5-5 mcg/kg/min",c:"Shock cardiogénico, bajo gasto",cat:"vaso"},
+{n:"Dopamina",a:"10 ml = 200 mg",b:"",p:"2 amp en 460 SSF. 2-20 mcg/kg/min",c:"Dosis baja/media/alta",cat:"vaso"},
+{n:"Etomidato",a:"10 ml = 20 mg (2 mg/ml)",b:"0,2-0,3 mg/kg iv",p:"",c:"Inductor. Estabilidad hemodinámica",cat:"sed"},
+{n:"Fenitoína",a:"5 ml = 250 mg",b:"15-20 mg/kg iv a <50 mg/min",p:"100 mg/8h iv",c:"Estatus epiléptico. Monitorizar ECG",cat:"epi"},
+{n:"Fentanilo",a:"150 mcg/3 ml (50 mcg/ml)",b:"1-2 mcg/kg iv",p:"1-3 mcg/kg/h",c:"Analgesia potente, IOT",cat:"sed"},
+{n:"Flecainida",a:"15 ml (10 mg/ml) = 150 mg",b:"1,5-3 mg/kg iv en 10-20'",p:"3 amp en 250 SG5% a 4-10 ml/h",c:"100 mg/comp",cat:"arritmia"},
+{n:"Flumazenilo",a:"10 ml = 1 mg",b:"0,2 mg iv. Repetir 0,1 mg/min (máx 1 mg)",p:"0,1-0,4 mg/h",c:"Antídoto benzodiacepinas",cat:"antidoto"},
+{n:"Furosemida",a:"20 mg / 250 mg (25 ml)",b:"20-80 mg iv",p:"Hasta 1000 mg/24h",c:"Diurético de asa. EAP",cat:""},
+{n:"Gammablogulinas",a:"200 ml = 10 g",b:"",p:"0,4 g/kg/día × 5 días",c:"Guillain-Barré, PTI, Kawasaki",cat:""},
+{n:"Glucagón",a:"1 ml = 1 mg",b:"0,05 mg/kg iv",p:"0,05 mg/kg/h ×6h",c:"Intox. betabloqueantes. Hipoglucemia: 1 mg sc",cat:"antidoto"},
+{n:"Gluconato cálcico",a:"10 ml = 1,375 g",b:"10-20 ml iv lento",p:"",c:"Hiperkaliemia, hipocalcemia",cat:""},
+{n:"Haloperidol",a:"1 ml / 5 mg",b:"2,5-5 mg iv/im",p:"",c:"Agitación, delirium. Vigilar QTc",cat:""},
+{n:"Heparina sódica",a:"5 ml 1%=5000 UI · 5%=25000 UI",b:"80 UI/kg iv",p:"18 UI/kg/h. Ajustar según TTPa",c:"SCA, TEP, TVP",cat:""},
+{n:"Insulina rápida",a:"—",b:"HiperK: 10 UI + 25 g glucosa",p:"Cetoacidosis: 0,1 UI/kg/h",c:"Hiperkaliemia, cetoacidosis",cat:""},
+{n:"Isoproterenol (Aleudrina)",a:"1 ml = 0,2 mg",b:"",p:"5 amp en 250 SG5% a 2-20 ml/h",c:"Bradicardia refractaria, BAV completo",cat:"vaso"},
+{n:"Labetalol",a:"20 ml = 100 mg",b:"20 mg iv en 2'. Repetir /10-15 min",p:"200 mg en 200 SSF a 30-120 ml/h",c:"Emergencia HTA. Seguro en embarazo",cat:"hta"},
+{n:"Levetiracetam",a:"5 ml = 500 mg",b:"60 mg/kg en estatus (máx 4500 mg)",p:"1000-1500 mg /24h",c:"CI relativa en IR",cat:"epi"},
+{n:"Levosimendan",a:"5 ml = 12,5 mg",b:"6-12 mcg/kg en 10' (opcional)",p:"0,05-0,2 mcg/kg/min × 24h",c:"IC aguda, shock cardiogénico",cat:"vaso"},
+{n:"Lidocaína",a:"2 ml = 40 mg",b:"1-1,5 mg/kg iv",p:"1-4 mg/min",c:"TV, FV refractaria",cat:"pcr,arritmia"},
+{n:"Manitol",a:"10-20% · 250 ml = 25-50 g",b:"0,25-1 g/kg iv en 20-30'",p:"",c:"HTIC, edema cerebral. Osm <320",cat:""},
+{n:"Midazolam",a:"3 ml = 15 mg (1 ml/5 mg)",b:"0,1-0,2 mg/kg iv",p:"0,05-0,4 mg/kg/h",c:"Sedación, estatus epiléptico, IOT",cat:"sed,epi"},
+{n:"Naloxona",a:"1 ml = 0,4 mg",b:"1 amp (0,4 mg) iv",p:"5 amp (2 mg) en 500 SG5% a 100 ml/h",c:"Antídoto opiáceos. Vigilar resedación",cat:"antidoto"},
+{n:"Nimodipino",a:"10 mg",b:"",p:"1-2 mg/h iv",c:"Vasoespasmo en HSA",cat:"hta"},
+{n:"Nitroglicerina (Solinitrina)",a:"10 ml = 50 mg",b:"",p:"50 mg en 250 SG5% a 5-200 mcg/min",c:"SCA, EAP, emergencia HTA",cat:"hta"},
+{n:"Nitroprusiato",a:"5 ml = 50 mg",b:"",p:"0,25-10 mcg/kg/min. Proteger de luz",c:"Emergencia HTA. Toxicidad cianuro >48h",cat:"hta"},
+{n:"Noradrenalina",a:"10 ml = 10 mg",b:"",p:"2 amp en 230 SSF a 2-60 ml/h",c:"Shock séptico. Vía central preferible",cat:"vaso"},
+{n:"Procainamida",a:"10 ml = 1000 mg",b:"100 mg iv /5 min (máx 17 mg/kg)",p:"1-4 mg/min",c:"TV estable, FA preexcitada (WPW)",cat:"arritmia"},
+{n:"Propafenona",a:"—",b:"1-2 mg/kg iv lento en 10'",p:"",c:"FA, flutter, TSV",cat:"arritmia"},
+{n:"Propofol",a:"1% (200 mg/20 ml)",b:"1-2,5 mg/kg iv",p:"1-4 mg/kg/h",c:"Inductor, sedación UCI. Hipotensión",cat:"sed"},
+{n:"Propranolol",a:"1 amp = 5 mg",b:"1 mg iv lento /5 min (máx 5 mg)",p:"",c:"Taquiarritmias, tirotoxicosis",cat:"arritmia"},
+{n:"Protromplex",a:"600 UI",b:"25-50 UI/kg iv",p:"",c:"Reversión urgente ACO",cat:"antidoto"},
+{n:"Remifentanilo",a:"10 ml = 5 mg",b:"0,5-1 mcg/kg iv",p:"0,05-0,2 mcg/kg/min",c:"Analgesia ultracorta. IOT",cat:"sed"},
+{n:"Salbutamol",a:"1 ml = 500 mcg",b:"250 mcg iv lento",p:"3-20 mcg/min",c:"Broncoespasmo grave. Hiperkaliemia",cat:""},
+{n:"Somatostatina",a:"3 mg = 2 ml",b:"250 mcg iv",p:"250-500 mcg/h",c:"HDA variceal",cat:""},
+{n:"Succinilcolina",a:"2 ml=100 mg · 10 ml=500 mg",b:"1-1,5 mg/kg iv",p:"",c:"ISR. CI: hiperkaliemia, quemados >24h",cat:"sed"},
+{n:"Sulfato Mg",a:"10 ml = 1500 mg",b:"1-2 g iv en 15-20' (PCR: 2 g bolo)",p:"1-2 g/h",c:"Torsade de Pointes, eclampsia, asma",cat:"pcr"},
+{n:"Teofilina",a:"10 ml = 193,2 mg",b:"5-6 mg/kg iv en 20-30'",p:"0,5-0,9 mg/kg/h",c:"Broncoespasmo refractario",cat:""},
+{n:"Urapidilo",a:"50 mg = 10 ml",b:"25 mg iv en 20''. Repetir a los 5'",p:"50-100 mg en 500 SSF",c:"Emergencia HTA. No taquicardia refleja",cat:"hta"},
+{n:"Valproico",a:"4 ml = 400 mg",b:"15-30 mg/kg iv en 15'",p:"1-2 mg/kg/h",c:"Estatus epiléptico. Hepatotoxicidad",cat:"epi"},
+{n:"Verapamilo",a:"2 ml = 5 mg",b:"2,5-5 mg iv en 2-3'",p:"",c:"TSV, FA con RV rápida. Evitar con BB",cat:"arritmia"}
+];
+var urgFarmCatActiva='all';
+function urgFarmNorm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function urgFarmSetCat(cat,btn){urgFarmCatActiva=cat;document.querySelectorAll('.urgFarmCat').forEach(function(b){b.style.background='rgba(255,255,255,.08)';b.style.color='rgba(255,255,255,.6)';b.style.fontWeight='500';});btn.style.background='#dc2626';btn.style.color='#fff';btn.style.fontWeight='600';urgFarmFilter();}
+function urgFarmFilter(){
+  var q=urgFarmNorm(document.getElementById('urgFarmSearch').value);
+  var list=document.getElementById('urgFarmList');var html='';var count=0;
+  URG_FARMACOS.forEach(function(f){
+    var matchCat=urgFarmCatActiva==='all'||f.cat.indexOf(urgFarmCatActiva)!==-1;
+    var matchQ=!q||urgFarmNorm(f.n).indexOf(q)!==-1||urgFarmNorm(f.a).indexOf(q)!==-1;
+    if(!matchCat||!matchQ)return;count++;
+    var hasDetail=f.b||f.p||f.c;
+    var id='uf_'+count;
+    html+='<div id="'+id+'_wrap" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;overflow:hidden;">';
+    html+='<div onclick="urgFarmToggle(\''+id+'\')" style="padding:12px 14px;cursor:'+(hasDetail?'pointer':'default')+';display:flex;justify-content:space-between;align-items:center;">';
+    html+='<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:.9rem;color:#f1f1f1;">'+f.n+'</div>';
+    html+='<div style="font-family:monospace;font-size:.78rem;color:rgba(255,255,255,.4);margin-top:2px;">'+f.a+'</div></div>';
+    if(hasDetail)html+='<div id="'+id+'_arr" style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;color:rgba(255,255,255,.4);transition:transform .25s;">▼</div>';
+    html+='</div>';
+    if(hasDetail){
+      html+='<div id="'+id+'" style="display:none;padding:0 14px 14px;">';
+      if(f.b)html+='<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15);border-left:3px solid #22c55e;border-radius:8px;padding:8px 10px;margin-bottom:6px;"><div style="font-size:.68rem;font-weight:700;letter-spacing:.05em;color:#22c55e;margin-bottom:2px;">BOLUS</div><div style="font-size:.82rem;color:rgba(255,255,255,.85);line-height:1.4;">'+f.b+'</div></div>';
+      if(f.p)html+='<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);border-left:3px solid #3b82f6;border-radius:8px;padding:8px 10px;margin-bottom:6px;"><div style="font-size:.68rem;font-weight:700;letter-spacing:.05em;color:#3b82f6;margin-bottom:2px;">PERFUSIÓN</div><div style="font-size:.82rem;color:rgba(255,255,255,.85);line-height:1.4;">'+f.p+'</div></div>';
+      if(f.c)html+='<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-left:3px solid #f59e0b;border-radius:8px;padding:8px 10px;"><div style="font-size:.68rem;font-weight:700;letter-spacing:.05em;color:#f59e0b;margin-bottom:2px;">NOTA</div><div style="font-size:.82rem;color:rgba(255,255,255,.85);line-height:1.4;">'+f.c+'</div></div>';
+      html+='</div>';}
+    html+='</div>';
+  });
+  if(!count)html='<div style="text-align:center;padding:40px;opacity:.4;"><div style="font-size:2.5rem;margin-bottom:8px;">💊</div><p>No se encontraron fármacos</p></div>';
+  list.innerHTML=html;
+  document.getElementById('urgFarmCount').textContent=count+' fármaco'+(count!==1?'s':'');
+}
+function urgFarmToggle(id){
+  var el=document.getElementById(id);if(!el)return;
+  var arr=document.getElementById(id+'_arr');
+  var wrap=document.getElementById(id+'_wrap');
+  if(el.style.display==='none'){el.style.display='block';if(arr)arr.style.transform='rotate(180deg)';if(wrap){wrap.style.background='rgba(220,38,38,.05)';wrap.style.borderColor='rgba(220,38,38,.25)';}}
+  else{el.style.display='none';if(arr)arr.style.transform='rotate(0deg)';if(wrap){wrap.style.background='rgba(255,255,255,.03)';wrap.style.borderColor='rgba(255,255,255,.06)';}}
+}
+</script>
+
 </body>
 </html>
-<!-- deploy 2026-03-13 03:02:45 -->

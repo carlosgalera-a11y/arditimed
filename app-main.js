@@ -624,6 +624,7 @@ function switchUrgTab(tabName, btnEl) {
     btnEl.classList.add('active');
     btnEl.style.color='#fff';
     if(tabName==='urg-pacientes')gpRender('Urg');
+    if(tabName==='urg-farmacos'&&typeof urgFarmFilter==='function')urgFarmFilter();
 }
 
 function urgViewProtocol(id) {
