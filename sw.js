@@ -1,27 +1,69 @@
-// Service Worker - Área II Cartagena PWA v33 - network only + auto-update
-const CACHE_NAME = 'area2-v33';
+// Service Worker - Área II Cartagena PWA v34 - network-first + precache sections
+const CACHE_NAME = 'area2-v34';
+
+const PRECACHE = [
+  '/Cartagenaeste/',
+  '/Cartagenaeste/index.html',
+  '/Cartagenaeste/app-main.js',
+  '/Cartagenaeste/app-modules.js',
+  '/Cartagenaeste/api-config.js',
+  '/Cartagenaeste/triaje-ia.js',
+  '/Cartagenaeste/escalas-clinicas.js',
+  '/Cartagenaeste/guardia-notas.js',
+  '/Cartagenaeste/turnos-guardia.js',
+  '/Cartagenaeste/sections/page-scan-ia.html',
+  '/Cartagenaeste/sections/page-urgencias.html',
+  '/Cartagenaeste/sections/page-enfermeria.html',
+  '/Cartagenaeste/manifest.json'
+];
 
 self.addEventListener('install', event => {
-  // Skip waiting immediately — new SW takes control right away
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[SW v34] Pre-caching', PRECACHE.length, 'files');
+      return Promise.all(PRECACHE.map(url =>
+        cache.add(url).catch(() => console.warn('[SW] Skip:', url))
+      ));
+    }).then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => {
+        console.log('[SW v34] Purging old cache:', k);
+        return caches.delete(k);
+      }))
+    ).then(() => self.clients.claim())
   );
 });
 
-// Network only — never cache, always fresh
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  if (event.request.url.includes('firestore.googleapis.com')) return;
+  if (event.request.url.includes('googleapis.com/identitytoolkit')) return;
+  if (event.request.url.startsWith('chrome-extension://')) return;
+
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request).then(response => {
+      if (response.ok && (response.type === 'basic' || response.type === 'cors')) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      }
+      return response;
+    }).catch(() => {
+      return caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        if (event.request.mode === 'navigate') {
+          return caches.match('/Cartagenaeste/index.html');
+        }
+        return new Response('Offline', { status: 503 });
+      });
+    })
   );
 });
 
-// Listen for SKIP_WAITING message
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
