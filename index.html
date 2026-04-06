@@ -2522,19 +2522,12 @@ async function infGenerar(){
   document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">⏳</div>Generando informe...</div>';
   document.getElementById('infBtnGenerar').disabled=true;
 
-  // If using images and Groq (which doesn't support vision well), use a text-only approach
-  var useVision=infArchivos.length>0 && (model.includes('llama-3.2')||model.includes('llava')||provider==='qwen');
+  // Vision: when images are attached, use vision-capable models
+  var hasImages=infArchivos.length>0;
   
   var body={model:model,messages:messages,max_tokens:4096,temperature:0.3};
-  
-  // If model doesn't support vision, convert images to text note
-  if(infArchivos.length>0 && !useVision){
-    messages=[{role:'system',content:sysPrompt},{role:'user',content:texto+'\n\n[Se han adjuntado '+infArchivos.length+' imagen(es) del caso clínico. El profesional ha proporcionado estas capturas como referencia. Elabora el informe basándote en la descripción textual proporcionada.]'}];
-    body.messages=messages;
-  }
 
   try{
-    // ═══ Multi-provider fallback: NAS → OpenRouter → Pollinations ═══
     var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
     var infDone=false;
     function infShowResult(text){
@@ -2547,6 +2540,40 @@ async function infGenerar(){
       if(infDone)return;infDone=true;
       document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">\u274c Error: '+msg+'</span>';
       document.getElementById('infBtnGenerar').disabled=false;
+    }
+
+    if(hasImages){
+      // ═══ VISION PATH: images → GPT-4o / Qwen 2.5 VL / Llama 4 Scout ═══
+      console.log('[Informe] '+infArchivos.length+' images, using vision models');
+      var visionMsgs=[{role:'system',content:sysPrompt}];
+      var userContent=[{type:'text',text:(texto||'Genera el informe cl\u00ednico bas\u00e1ndote en las im\u00e1genes adjuntas.')}];
+      infArchivos.forEach(function(f){userContent.push({type:'image_url',image_url:{url:f.data}});});
+      visionMsgs.push({role:'user',content:userContent});
+
+      // 1) Pollinations (GPT-4o vision, free)
+      document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">\u23f3</div>Analizando im\u00e1genes con GPT-4o Vision...</div>';
+      try{
+        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},30000);
+        var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
+        if(rP.ok){var dP=await rP.json();var tP=(dP.choices&&dP.choices[0])?dP.choices[0].message.content:'';if(tP){infShowResult(tP);return;}}
+      }catch(e){console.log('[Informe] Pollinations vision:',e.message);}
+
+      // 2) OpenRouter — Qwen 2.5 VL + Llama 4 Scout
+      if(!infDone){
+        try{document.getElementById('infResultContent').querySelector('div').innerHTML='\u23f3 Probando Qwen 2.5 VL...';}catch(e){}
+        var orKey=_dk()||'';
+        var vModels=['qwen/qwen2.5-vl-72b-instruct:free','meta-llama/llama-4-scout:free','qwen/qwen2.5-vl-32b-instruct'];
+        for(var vi=0;vi<vModels.length&&!infDone;vi++){
+          try{
+            var orH={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'};
+            if(orKey)orH['Authorization']='Bearer '+orKey;
+            var rV=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
+            if(rV.ok){var dV=await rV.json();var tV=(dV.choices&&dV.choices[0])?dV.choices[0].message.content:'';if(tV){infShowResult(tV);return;}}
+          }catch(e){console.log('[Informe] '+vModels[vi]+':',e.message);}
+        }
+      }
+      if(!infDone)infShowError('No se pudo analizar las im\u00e1genes. Describe el caso por texto.');
+      return;
     }
 
     // 1) Try NAS proxy (only on HTTP to avoid mixed content)
