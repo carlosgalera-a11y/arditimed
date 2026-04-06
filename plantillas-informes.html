@@ -541,6 +541,9 @@ async function iaGenerar(){
     document.getElementById('iaChatMessages').innerHTML='<div style="background:#e8f5e9;padding:8px 12px;border-radius:8px;font-size:.82rem;color:#2e7d32;">Informe generado. Escribe qué cambios necesitas y los aplicaré directamente.</div>';
     if(typeof firebase!=='undefined' && firebase.auth().currentUser){
       document.getElementById('iaSaveBar').style.display='flex';
+    } else {
+      document.getElementById('iaSaveBar').style.display='flex';
+      document.getElementById('iaSaveMsg').textContent='Haz login para guardar';
     }
   }
   output.scrollIntoView({behavior:'smooth'});
@@ -606,12 +609,13 @@ async function iaRefinar(){
   var _DS = _xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');
 
   var providers = [];
+  var msgContent = hasImages ? content : promptText;
   if(!hasImages){
     providers.push({name:'DeepSeek', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat',messages:[{role:'user',content:promptText}],max_tokens:4000,temperature:0.3}});
   }
-  providers.push({name:'OR:qwen3.5-flash', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-flash',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3}, isOR:true});
-  providers.push({name:'OR:qwen3.6-plus:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.6-plus:free',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3}, isOR:true});
-  providers.push({name:'OR:gemma-3-27b:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'google/gemma-3-27b-it:free',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3}, isOR:true});
+  providers.push({name:'OR:qwen3.5-flash', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-flash',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
+  providers.push({name:'OR:qwen3.6-plus:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.6-plus:free',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
+  providers.push({name:'OR:gemma-3-27b:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'google/gemma-3-27b-it:free',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
 
   var text='', success=false;
   for(var p=0;p<providers.length&&!success;p++){
@@ -623,7 +627,7 @@ async function iaRefinar(){
       var resp=await fetch(prov.url,{method:'POST',headers:hdrs,body:JSON.stringify(prov.body),signal:AbortSignal.timeout(90000)});
       var data=await resp.json();
       if(data.choices&&data.choices[0]&&data.choices[0].message){text=data.choices[0].message.content;success=true;}
-    }catch(e){}
+    }catch(e){console.log('[Refine] '+prov.name+': '+e.message);}
   }
 
   var t = document.getElementById('iaChatTyping');
@@ -635,7 +639,7 @@ async function iaRefinar(){
     output.innerHTML = '<button class="copy-btn" onclick="iaCopiar()">Copiar</button>' + fmtInf(text);
     _addChatMsg('ai', 'Informe actualizado con los cambios solicitados.');
   } else {
-    _addChatMsg('ai', 'No pude aplicar los cambios. Intenta de nuevo.');
+    _addChatMsg('ai', 'No pude aplicar los cambios. Intenta de nuevo. (Abre consola F12 para ver detalles)');
   }
 
   btn.disabled=false; btn.textContent='Enviar ➤';
@@ -646,7 +650,7 @@ async function iaRefinar(){
 // ═══════ GUARDAR / CARGAR INFORMES EN FIRESTORE ═══════
 async function iaGuardar(){
   var user = firebase.auth().currentUser;
-  if(!user){alert('Inicia sesión para guardar informes');return;}
+  if(!user){iaToggleAuth();return;}
   if(!window._iaLastText){alert('No hay informe que guardar');return;}
   var btn = document.getElementById('iaSaveBtn');
   btn.disabled=true; btn.textContent='Guardando...';
