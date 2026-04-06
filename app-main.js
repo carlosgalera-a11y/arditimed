@@ -52,6 +52,7 @@ var secureStore=(function(){
 try{secureStore.cleanExpired();}catch(e){}
 
 // ── API KEY PROTECTION ───────────────────────────────
+function _xd(c){return c.split(',').map(function(n){return String.fromCharCode(parseInt(n)^42)}).join('');}
 var _KP_ENC='x';
 function _dk(){return _xd('89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31');}
 
