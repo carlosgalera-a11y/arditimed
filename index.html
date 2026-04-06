@@ -2552,32 +2552,30 @@ async function infGenerar(){
 
       var infTxt=null;
 
-      // 1) OpenRouter — Qwen 2.5 VL (primary, same as Scan IA)
-      var orKey=_dk();
-      if(orKey){
-        var vModels=typeof VISION_CONFIG!=='undefined'&&VISION_CONFIG.openrouterModels?VISION_CONFIG.openrouterModels:['qwen/qwen2.5-vl-32b-instruct','meta-llama/llama-4-scout:free'];
-        console.log('[Informe] Vision primary: OpenRouter',vModels);
-        document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">\u23f3</div>Analizando im\u00e1genes con Qwen 2.5 VL...</div>';
-        for(var vi=0;vi<vModels.length&&!infDone;vi++){
-          try{
-            try{document.getElementById('infResultContent').querySelector('div:last-child').textContent='Analizando con '+vModels[vi].split('/')[1].split(':')[0]+'...';}catch(e){}
-            var orH={'Content-Type':'application/json','Authorization':'Bearer '+orKey,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informe Area II Cartagena'};
-            var rV=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
-            var dV=await rV.json();
-            if(rV.ok&&dV.choices&&dV.choices[0]&&dV.choices[0].message){infTxt=dV.choices[0].message.content||'';if(infTxt){infShowResult(infTxt);return;}}
-            else{console.log('[Informe] '+vModels[vi]+': HTTP '+rV.status+' '+(dV.error&&dV.error.message||''));}
-          }catch(e){console.log('[Informe] '+vModels[vi]+':',e.message);}
-        }
-      }
+      // 1) Pollinations (GPT-4o vision, gratis — same as Scan IA)
+      document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">\u23f3</div>Analizando im\u00e1genes con GPT-4o Vision...</div>';
+      try{
+        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},30000);
+        var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
+        if(rP.ok){var dP=await rP.json();infTxt=(dP.choices&&dP.choices[0])?dP.choices[0].message.content:'';if(infTxt){infShowResult(infTxt);return;}}
+      }catch(e){console.log('[Informe] Pollinations vision:',e.message);}
 
-      // 2) Pollinations GPT-4o (fallback)
+      // 2) OpenRouter — Llama 4 Scout + Qwen 2.5 VL (con _dk() key, same as Scan IA)
       if(!infDone){
-        try{document.getElementById('infResultContent').querySelector('div:last-child').textContent='Probando GPT-4o Vision...';}catch(e){}
-        try{
-          var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},30000);
-          var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
-          if(rP.ok){var dP=await rP.json();infTxt=(dP.choices&&dP.choices[0])?dP.choices[0].message.content:'';if(infTxt){infShowResult(infTxt);return;}}
-        }catch(e){console.log('[Informe] Pollinations vision:',e.message);}
+        var orKey=_dk();
+        if(orKey){
+          var vModels=typeof VISION_CONFIG!=='undefined'&&VISION_CONFIG.openrouterModels?VISION_CONFIG.openrouterModels:['meta-llama/llama-4-scout:free','qwen/qwen2.5-vl-32b-instruct'];
+          for(var vi=0;vi<vModels.length&&!infDone;vi++){
+            try{
+              try{document.getElementById('infResultContent').querySelector('div:last-child').textContent='Probando '+vModels[vi].split('/')[1].split(':')[0]+'...';}catch(e){}
+              var orH={'Content-Type':'application/json','Authorization':'Bearer '+orKey,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informe Area II Cartagena'};
+              var rV=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
+              var dV=await rV.json();
+              if(rV.ok&&dV.choices&&dV.choices[0]&&dV.choices[0].message){infTxt=dV.choices[0].message.content||'';if(infTxt){infShowResult(infTxt);return;}}
+              else{console.log('[Informe] '+vModels[vi]+': HTTP '+rV.status+' '+(dV.error&&dV.error.message||''));}
+            }catch(e){console.log('[Informe] '+vModels[vi]+':',e.message);}
+          }
+        }
       }
 
       // 3) Puter.js img2txt (Gemini gratis — same as Scan IA step 3)

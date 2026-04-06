@@ -1567,13 +1567,13 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
-    fallbackChain:["openrouter","pollinations","puter"],
-    openrouterModels:["qwen/qwen2.5-vl-32b-instruct","meta-llama/llama-4-scout:free"],
+    fallbackChain:["pollinations","openrouter","puter"],
+    openrouterModels:["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
     temperature:0.3,
-    version:"20260406"
+    version:"20260406b"
 };
 function saveVisionConfigToFirestore(){
     try{db.collection("config").doc("vision_scan_config").set({
@@ -1878,28 +1878,7 @@ async function scanAnalyze(){
     var userText=ctx?"Analiza esta imagen médica. Contexto clínico: "+ctx:"Analiza esta imagen médica de forma sistemática y detallada.";
     var txt=null;var usedModel="";var errors=[];
 
-    // ── 1. OpenRouter — Qwen 2.5 VL (primary) + fallbacks ──
-    try{
-        var orKey=_dk();
-        if(orKey){
-            var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen2.5-vl-32b-instruct","meta-llama/llama-4-scout:free"];
-            for(var mi=0;mi<orModels.length&&!txt;mi++){
-                var vm=orModels[mi];
-                res.querySelector('div:last-child').textContent='Analizando con '+vm.split('/')[1].split(':')[0]+'...';
-                var r2=await fetch("https://openrouter.ai/api/v1/chat/completions",{
-                    method:"POST",
-                    headers:{"Content-Type":"application/json","Authorization":"Bearer "+orKey,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
-                    body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}],max_tokens:2000,temperature:0.3})
-                });
-                var d2=await r2.json();
-                if(r2.ok&&d2.choices&&d2.choices[0]&&d2.choices[0].message){txt=d2.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
-                else{errors.push(vm.split('/')[1]+": HTTP "+r2.status+" "+(d2.error?.message||""));if(r2.status===429||r2.status===502||r2.status===503)continue;}
-            }
-        }
-    }catch(e){errors.push("OpenRouter: "+e.message);}
-
-    // ── 2. Pollinations GPT-4o (fallback) ──
-    if(!txt){
+    // ── 1. Pollinations (GPT-4o vision, gratis sin key) ──
     try{
         var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},25000);
         var r=await fetch("https://text.pollinations.ai/openai",{
@@ -1913,6 +1892,27 @@ async function scanAnalyze(){
         if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel="GPT-4o (Pollinations)";}
         else errors.push("Pollinations: HTTP "+r.status);
     }catch(e){errors.push("Pollinations: "+e.message);}
+
+    // ── 2. OpenRouter — Llama 4 Scout + Qwen 2.5 VL (con _dk() key) ──
+    if(!txt){
+        try{
+            var orKey=_dk();
+            if(orKey){
+                var orModels=VISION_CONFIG.openrouterModels||["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];
+                for(var mi=0;mi<orModels.length&&!txt;mi++){
+                    var vm=orModels[mi];
+                    res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
+                    var r2=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+                        method:"POST",
+                        headers:{"Content-Type":"application/json","Authorization":"Bearer "+orKey,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
+                        body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}],max_tokens:2000,temperature:0.3})
+                    });
+                    var d2=await r2.json();
+                    if(r2.ok&&d2.choices&&d2.choices[0]&&d2.choices[0].message){txt=d2.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
+                    else{errors.push(vm.split('/')[1]+": HTTP "+r2.status+" "+(d2.error?.message||""));if(r2.status===429||r2.status===502||r2.status===503)continue;}
+                }
+            }
+        }catch(e){errors.push("OpenRouter: "+e.message);}
     }
 
     // ── 3. Puter.js img2txt (Gemini gratis) ──
