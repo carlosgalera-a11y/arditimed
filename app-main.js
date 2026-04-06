@@ -1575,8 +1575,6 @@ var VISION_CONFIG={
     temperature:0.3,
     version:"20260406"
 };
-    version:"20260406b"
-};
 function saveVisionConfigToFirestore(){
     try{db.collection("config").doc("vision_scan_config").set({
         config:JSON.stringify(VISION_CONFIG),
