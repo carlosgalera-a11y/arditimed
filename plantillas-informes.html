@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  var REQUIRED_V = 49;
+  var REQUIRED_V = 50;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -180,6 +180,12 @@ Tratamiento habitual:"></textarea></div>
 </div>
 
 <div class="output" id="iaOutput"><button class="copy-btn" onclick="iaCopiar()">📋 Copiar</button></div>
+
+<div id="iaRefineBar" style="display:none;gap:8px;margin-top:12px;align-items:center;background:#f0fdf4;border:2px solid #1a6b4a;border-radius:10px;padding:12px;">
+<span style="font-size:1.1rem;">✏️</span>
+<input type="text" id="iaRefineInput" placeholder="Ej: Añade signos de alarma, cambia el diagnóstico a..." style="flex:1;padding:10px 12px;border:2px solid #d0d0d0;border-radius:8px;font-size:.85rem;font-family:inherit;">
+<button id="iaRefineBtn" onclick="iaRefinar()" class="btn btn-green" style="white-space:nowrap;">✏️ Aplicar cambios</button>
+</div>
 </div>
 
 <!-- ═══════ TAB 3: MIS PLANTILLAS ═══════ -->
@@ -494,30 +500,84 @@ async function iaGenerar(){
 
   if(!success) text = 'No se pudo generar el informe.\nUltimo error: ' + lastErr + '\n\nPrueba de nuevo en unos segundos.';
 
-  // Render
-  function fmtInf(t){
-    return t
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/^#{3}\s+(.+)$/gm,'<h4 style="color:#0f6b4a;margin:12px 0 4px">$1</h4>')
-      .replace(/^#{2}\s+(.+)$/gm,'<h3 style="color:#0f6b4a;border-bottom:1px solid #c8e6c9;padding-bottom:4px;margin:16px 0 6px">$1</h3>')
-      .replace(/^#{1}\s+(.+)$/gm,'<h2 style="color:#0f6b4a;margin:18px 0 8px">$1</h2>')
-      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g,'<em>$1</em>')
-      .replace(/^[-]\s+(.+)$/gm,'<li style="margin:3px 0">$1</li>')
-      .replace(/(<li.*<\/li>\n?)+/g,'<ul style="margin:6px 0 6px 18px">$&</ul>')
-      .replace(/\n{2,}/g,'</p><p style="margin:8px 0">')
-      .replace(/\n/g,'<br>')
-      .replace(/^(.)/,'<p style="margin:8px 0">$1')
-      .replace(/(.)$/,'$1</p>');
-  }
-
   var output = document.getElementById('iaOutput');
   output.innerHTML = '<button class="copy-btn" onclick="iaCopiar()">Copiar</button>' + fmtInf(text);
   output.classList.add('show');
+  if(success){
+    window._iaLastText = text;
+    window._iaLastProvider = providers.find(function(x){return true;});
+    document.getElementById('iaRefineBar').style.display='flex';
+  }
   output.scrollIntoView({behavior:'smooth'});
 
   btn.disabled=false; btn.textContent='Generar Informe con IA';
   document.getElementById('iaLoading').classList.remove('show');
+}
+
+// Refinar informe con IA
+async function iaRefinar(){
+  var instruccion = document.getElementById('iaRefineInput').value.trim();
+  if(!instruccion){alert('Escribe que quieres cambiar');return;}
+  if(!window._iaLastText){alert('Genera un informe primero');return;}
+
+  var btn = document.getElementById('iaRefineBtn');
+  btn.disabled=true; btn.textContent='Mejorando...';
+  document.getElementById('iaRefineInput').disabled=true;
+
+  var prompt = 'Eres un asistente clinico docente. Tienes el siguiente informe medico generado previamente:\n\n';
+  prompt += '---INFORME ACTUAL---\n' + window._iaLastText + '\n---FIN INFORME---\n\n';
+  prompt += 'El medico solicita los siguientes cambios o mejoras:\n' + instruccion + '\n\n';
+  prompt += 'Genera el informe COMPLETO con los cambios aplicados. Devuelve el informe entero modificado, no solo los cambios.';
+
+  var _OR = _xd('89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31');
+  var _DS = _xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');
+
+  var providers = [
+    {name:'DeepSeek', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat',messages:[{role:'user',content:prompt}],max_tokens:4000,temperature:0.3}},
+    {name:'OR:qwen3.5-flash', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-flash',messages:[{role:'user',content:prompt}],max_tokens:4000,temperature:0.3}, isOR:true}
+  ];
+
+  var text='', success=false;
+  for(var p=0;p<providers.length&&!success;p++){
+    var prov=providers[p];
+    try{
+      var hdrs={'Content-Type':'application/json'};
+      if(prov.key) hdrs['Authorization']='Bearer '+prov.key;
+      if(prov.isOR){hdrs['HTTP-Referer']='https://carlosgalera-a11y.github.io/Cartagenaeste/';hdrs['X-Title']='Informes Area II';}
+      var resp=await fetch(prov.url,{method:'POST',headers:hdrs,body:JSON.stringify(prov.body),signal:AbortSignal.timeout(60000)});
+      var data=await resp.json();
+      if(data.choices&&data.choices[0]&&data.choices[0].message){text=data.choices[0].message.content;success=true;}
+    }catch(e){}
+  }
+
+  if(success){
+    window._iaLastText = text;
+    var output = document.getElementById('iaOutput');
+    output.innerHTML = '<button class="copy-btn" onclick="iaCopiar()">Copiar</button>' + fmtInf(text);
+  } else {
+    alert('No se pudo refinar. Intenta de nuevo.');
+  }
+
+  btn.disabled=false; btn.textContent='Aplicar cambios';
+  document.getElementById('iaRefineInput').disabled=false;
+  document.getElementById('iaRefineInput').value='';
+}
+
+// fmtInf global para reusar en refinar
+function fmtInf(t){
+  return t
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^#{3}\s+(.+)$/gm,'<h4 style="color:#0f6b4a;margin:12px 0 4px">$1</h4>')
+    .replace(/^#{2}\s+(.+)$/gm,'<h3 style="color:#0f6b4a;border-bottom:1px solid #c8e6c9;padding-bottom:4px;margin:16px 0 6px">$1</h3>')
+    .replace(/^#{1}\s+(.+)$/gm,'<h2 style="color:#0f6b4a;margin:18px 0 8px">$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^[-]\s+(.+)$/gm,'<li style="margin:3px 0">$1</li>')
+    .replace(/(<li.*<\/li>\n?)+/g,'<ul style="margin:6px 0 6px 18px">$&</ul>')
+    .replace(/\n{2,}/g,'</p><p style="margin:8px 0">')
+    .replace(/\n/g,'<br>')
+    .replace(/^(.)/,'<p style="margin:8px 0">$1')
+    .replace(/(.)$/,'$1</p>');
 }
 
 function iaCopiar(){

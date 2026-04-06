@@ -4,7 +4,7 @@
 <script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
-  var REQUIRED_V = 49;
+  var REQUIRED_V = 50;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
