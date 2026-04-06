@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  var REQUIRED_V = 50;
+  var REQUIRED_V = 51;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -809,4 +809,3 @@ function escAttr(t){return (t||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 </script>
 </body>
 </html>
-/* 1775485168 */
