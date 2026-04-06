@@ -157,6 +157,37 @@ window.gaTrack=function(event,params){
         });
     }
     var db = firebase.firestore();
+
+    // ═══ PER-USER SESSION MANAGER ═══
+    firebase.auth().onAuthStateChanged(function(user){
+      if(user){
+        // Store active uid for key prefix
+        localStorage.setItem('_active_uid', user.uid);
+        // Reload notebooks from Firestore
+        db.collection('mis_notebooks').doc(user.uid).get().then(function(doc){
+          if(doc.exists && doc.data().notebooks){
+            localStorage.setItem(user.uid+'_mis_notebooks_v1', JSON.stringify(doc.data().notebooks));
+            if(typeof nbRenderAll==='function') try{nbRenderAll();}catch(e){}
+          }
+        }).catch(function(){});
+        // Reload megacuaderno from Firestore
+        db.collection('megacuaderno_backups').doc(user.uid).get().then(function(doc){
+          if(doc.exists && doc.data().history){
+            localStorage.setItem(user.uid+'_megacuaderno_history_v1', JSON.stringify(doc.data().history));
+            if(typeof megaHistory!=='undefined') try{megaHistory=doc.data().history;}catch(e){}
+          }
+        }).catch(function(){});
+        // Update login buttons
+        document.querySelectorAll('[id^="loginBtn"]').forEach(function(btn){
+          btn.textContent='👤 '+user.email.split('@')[0];
+        });
+      } else {
+        localStorage.removeItem('_active_uid');
+        document.querySelectorAll('[id^="loginBtn"]').forEach(function(btn){
+          btn.textContent='🔐 Login';
+        });
+      }
+    });
     </script>
     <link rel="stylesheet" href="styles.css?v=20260404z">
         <script>
@@ -617,15 +648,19 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 </div>
 
 <script>
+// ═══ SESSION PER USER: localStorage keys prefixed with uid ═══
+function _uid(){try{var u=firebase.auth().currentUser;return u?u.uid:'anon';}catch(e){return 'anon';}}
+function _userKey(base){return _uid()+'_'+base;}
+
 // ═══ CUADERNOS NOTEBOOKLM PERSONALES ═══
-var NB_KEY='mis_notebooks_v1';
+function _nbKey(){return _userKey('mis_notebooks_v1');}
 
 function nbGetAll(){
-  try{return JSON.parse(localStorage.getItem(NB_KEY)||'[]');}catch(e){return [];}
+  try{return JSON.parse(localStorage.getItem(_nbKey())||'[]');}catch(e){return [];}
 }
 
 function nbSaveAll(list){
-  localStorage.setItem(NB_KEY,JSON.stringify(list));
+  localStorage.setItem(_nbKey(),JSON.stringify(list));
   try{
     if(typeof firebase!=='undefined'&&firebase.auth().currentUser){
       var uid=firebase.auth().currentUser.uid;
@@ -720,7 +755,7 @@ window.showNotebooksModal=function(){
           var cloud=doc.data().notebooks;
           var local=nbGetAll();
           if(cloud.length>local.length){
-            localStorage.setItem(NB_KEY,JSON.stringify(cloud));
+            localStorage.setItem(_nbKey(),JSON.stringify(cloud));
             nbRender();
           }
         }
@@ -3063,7 +3098,7 @@ function megaSaveHistory() {
       var compact = megaHistory.slice(-50).map(function(m) {
         return { role: m.role, content: m.content.substring(0, 1000) };
       });
-      localStorage.setItem('megacuaderno_history_v1', JSON.stringify(compact));
+      localStorage.setItem(_userKey('megacuaderno_history_v1'), JSON.stringify(compact));
     } catch(e) {}
     
     // 2. If logged in, also save to Firestore (cloud backup)
@@ -3085,7 +3120,7 @@ function megaSaveHistory() {
 // Restore history on load
 (function megaRestoreHistory() {
   try {
-    var saved = localStorage.getItem('megacuaderno_history_v1');
+    var saved = localStorage.getItem(_userKey('megacuaderno_history_v1'));
     if (saved) {
       megaHistory = JSON.parse(saved);
       console.log('[MegaCuaderno] Restored ' + megaHistory.length + ' messages from localStorage');
@@ -3103,7 +3138,7 @@ function megaSaveHistory() {
             // Only use cloud data if it has more messages than local
             if (cloudHistory.length > megaHistory.length) {
               megaHistory = cloudHistory;
-              localStorage.setItem('megacuaderno_history_v1', JSON.stringify(cloudHistory));
+              localStorage.setItem(_userKey('megacuaderno_history_v1'), JSON.stringify(cloudHistory));
               console.log('[MegaCuaderno] Restored ' + cloudHistory.length + ' messages from Firestore');
               // Re-render chat if it's visible
               var chatEl = document.getElementById('megaChat');

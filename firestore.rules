@@ -55,7 +55,18 @@ service cloud.firestore {
     match /informes_ia/{docId} {
       allow create: if isAuth() && request.resource.data.uid == request.auth.uid;
       allow read, delete: if isAuth() && resource.data.uid == request.auth.uid;
-      allow update: if false; // informes are immutable, generate a new one
+      allow update: if false;
+    }
+
+    // Per-user data — doc ID must match user's uid
+    match /mis_plantillas/{docId} {
+      allow read, write: if isAuth() && docId == request.auth.uid;
+    }
+    match /mis_notebooks/{docId} {
+      allow read, write: if isAuth() && docId == request.auth.uid;
+    }
+    match /megacuaderno_backups/{docId} {
+      allow read, write: if isAuth() && docId == request.auth.uid;
     }
 
     // Default: deny all
