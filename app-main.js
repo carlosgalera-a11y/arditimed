@@ -879,7 +879,7 @@ async function llamarIA(up,sp){
   providers.push({type:'ds'});
   providers.push({type:'poll'});
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
-  providers.push({type:'or',model:'qwen/qwen3.5-9b'});
+  providers.push({type:'or',model:'qwen/qwen3.5-flash'});
   providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
@@ -1577,7 +1577,7 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
     fallbackChain:["openrouter","pollinations","puter"],
-    openrouterModels:["qwen/qwen3.5-9b","google/gemma-3-27b-it:free","qwen/qwen2.5-vl-72b-instruct"],
+    openrouterModels:["qwen/qwen3.5-flash","google/gemma-3-27b-it:free","qwen/qwen3.5-9b"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
@@ -1911,7 +1911,7 @@ async function scanAnalyze(){
     if(!txt){
         try{
             var orKey=_dk();
-                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen3.5-9b","google/gemma-3-27b-it:free","qwen/qwen2.5-vl-72b-instruct"];
+                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen3.5-flash","google/gemma-3-27b-it:free","qwen/qwen3.5-9b"];
                 for(var mi=0;mi<orModels.length&&!txt;mi++){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
