@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  var REQUIRED_V = 45;
+  var REQUIRED_V = 46;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -446,7 +446,7 @@ async function iaGenerar(){
   // Keys (double-obfuscated: reversed then base64)
   function _rk(s){return atob(s).split('').reverse().join('');}
   var _DS = _rk('OWI5OGJjY2E2ZWM2YTBhYTJjODQ0OGFhZjcxZGQ5OGEta3M=');
-  var _OR = _rk('MTFiZDkxYTRjYTczNTBjZTBiMDNkMzBhYWY3Yjg4OTllYTk0OTBmOGVmZjc2MjA0ZDdiMzI3MTA3'+'YTVkYWNjOS0xdi1yby1rcw==');
+  var _OR = _rk('MWZjM2E2MDU0OWI0NDdmN2VjNDY3M2Y1YzNhOWE0NDE4NGViZmFmODNkMzMzYjI0MWZiOTIxNTJhNmZkNWI0Ny0xdi1yby1rcw==');
 
   // Provider chain
   var providers = [];
@@ -464,7 +464,7 @@ async function iaGenerar(){
     providers.push({name:'DeepSeek V3.2', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3}});
   }
   // OpenRouter vision models - multiple fallbacks
-  var orVisionModels = ['qwen/qwen3.6-plus:free','google/gemma-3-27b-it:free','mistralai/mistral-small-3.1-24b-instruct:free'];
+  var orVisionModels = ['qwen/qwen3.6-plus:free','google/gemma-3-27b-it:free','qwen/qwen2.5-vl-32b-instruct:free'];
   var orTextModels = ['deepseek/deepseek-chat-v3-0324:free','meta-llama/llama-3.3-70b-instruct:free'];
   var orModels = hasImages ? orVisionModels : orTextModels;
   orModels.forEach(function(m){
