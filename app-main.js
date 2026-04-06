@@ -1567,12 +1567,14 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
-    fallbackChain:["pollinations","openrouter","puter"],
-    openrouterModels:["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"],
+    fallbackChain:["openrouter","pollinations","puter"],
+    openrouterModels:["qwen/qwen2.5-vl-32b-instruct","meta-llama/llama-4-scout:free"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
     temperature:0.3,
+    version:"20260406"
+};
     version:"20260406b"
 };
 function saveVisionConfigToFirestore(){
