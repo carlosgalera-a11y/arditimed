@@ -80,6 +80,7 @@ var db = firebase.firestore();
 <div class="nav">
 <a href="index.html">← Inicio</a>
 <h1>📄 Informes Clínicos</h1>
+<button id="iaLoginBtn" onclick="iaToggleAuth()" style="margin-left:auto;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit;">🔐 Login</button>
 </div>
 
 <div class="container">
@@ -728,13 +729,27 @@ function iaEliminarInforme(id){
   db.collection('informes_ia').doc(id).delete().then(function(){iaCargarHistorial();});
 }
 
+// Auth toggle
+function iaToggleAuth(){
+  var user = firebase.auth().currentUser;
+  if(user){
+    if(confirm('¿Cerrar sesión de '+user.email+'?')) firebase.auth().signOut();
+  } else {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).catch(function(e){console.error('Login error:',e);});
+  }
+}
+
 // Auth listener - show/hide save button and load history
 firebase.auth().onAuthStateChanged(function(user){
-  var saveBar = document.getElementById('iaSaveBar');
+  var btn = document.getElementById('iaLoginBtn');
   if(user){
+    btn.textContent='👤 '+user.email.split('@')[0];
     iaCargarHistorial();
   } else {
+    btn.textContent='🔐 Login';
     document.getElementById('iaHistorialList').innerHTML='<p style="color:#999;font-size:.82rem;">Inicia sesión para ver tus informes guardados.</p>';
+    document.getElementById('iaSaveBar').style.display='none';
   }
 });
 
