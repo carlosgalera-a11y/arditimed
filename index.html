@@ -4380,6 +4380,60 @@ function urgFarmToggle(id){
   console.log('[GA4] Custom events tracking initialized');
 })();
 </script>
+<script>
+// ═══ CRONÓMETRO MEGACUADERNO ═══
+var _cronoInterval=null,_cronoSeconds=0,_cronoRunning=false,_cronoLaps=[];
+function cronoUpdate(){
+  var m=Math.floor(_cronoSeconds/60),s=_cronoSeconds%60;
+  var d=document.getElementById('cronoDisplay');
+  if(d)d.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  // Color changes at thresholds
+  if(d){
+    if(_cronoSeconds>=600)d.style.color='#ef4444'; // red >10min
+    else if(_cronoSeconds>=300)d.style.color='#f59e0b'; // yellow >5min
+    else d.style.color='#60a5fa'; // blue
+  }
+}
+function cronoToggle(){
+  var btn=document.getElementById('cronoPlayBtn');
+  var lapBtn=document.getElementById('cronoLapBtn');
+  if(_cronoRunning){
+    clearInterval(_cronoInterval);_cronoRunning=false;
+    if(btn){btn.textContent='▶ Reanudar';btn.style.background='#22c55e';}
+    if(lapBtn)lapBtn.style.display='none';
+  } else {
+    _cronoInterval=setInterval(function(){_cronoSeconds++;cronoUpdate();},1000);
+    _cronoRunning=true;
+    if(btn){btn.textContent='⏸ Pausa';btn.style.background='#f59e0b';}
+    if(lapBtn)lapBtn.style.display='block';
+  }
+}
+function cronoReset(){
+  clearInterval(_cronoInterval);_cronoRunning=false;_cronoSeconds=0;_cronoLaps=[];
+  cronoUpdate();
+  var btn=document.getElementById('cronoPlayBtn');
+  var lapBtn=document.getElementById('cronoLapBtn');
+  var laps=document.getElementById('cronoLaps');
+  if(btn){btn.textContent='▶ Iniciar';btn.style.background='#22c55e';}
+  if(lapBtn)lapBtn.style.display='none';
+  if(laps)laps.innerHTML='';
+}
+function cronoLap(){
+  if(!_cronoRunning)return;
+  var m=Math.floor(_cronoSeconds/60),s=_cronoSeconds%60;
+  var t=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  _cronoLaps.push(t);
+  var laps=document.getElementById('cronoLaps');
+  if(laps){
+    var html='';
+    for(var i=_cronoLaps.length-1;i>=0;i--){
+      html+='<div style="font-family:monospace;font-size:.6rem;color:rgba(255,255,255,.5);padding:1px 0;">L'+(i+1)+' '+_cronoLaps[i]+'</div>';
+    }
+    laps.innerHTML=html;
+  }
+}
+</script>
 </body>
 </html>
+
 

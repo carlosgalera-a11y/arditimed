@@ -625,7 +625,28 @@
             </div><!-- end panelCalc -->
 
             <!-- TAB 4: MEGACUADERNO IA -->
-            <div id="panelNotebooks" style="display:none;">
+            <div id="panelNotebooks" style="display:none;position:relative;">
+                <!-- ═══ CRONÓMETRO LATERAL ═══ -->
+                <style>
+                @media(max-width:600px){
+                    #megaCrono{float:none!important;position:relative!important;width:100%!important;margin:0 0 12px 0!important;display:flex!important;align-items:center;gap:12px;padding:8px 14px!important;}
+                    #megaCrono>div:first-child{display:none!important;}
+                    #cronoDisplay{font-size:1.3rem!important;margin:0!important;min-width:70px;}
+                    #cronoLaps{display:none!important;}
+                    #cronoLapBtn{display:none!important;}
+                }
+                </style>
+                <div id="megaCrono" style="position:sticky;top:10px;float:right;z-index:50;width:140px;background:linear-gradient(135deg,#0f172a,#1e293b);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.3);margin-left:10px;margin-bottom:10px;">
+                    <div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;margin-bottom:4px;">⏱️ CRONÓMETRO</div>
+                    <div id="cronoDisplay" style="font-family:'Courier New',monospace;font-size:1.6rem;font-weight:900;color:#60a5fa;letter-spacing:.05em;margin-bottom:8px;">00:00</div>
+                    <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">
+                        <button onclick="cronoToggle()" id="cronoPlayBtn" style="padding:4px 10px;border:none;border-radius:8px;background:#22c55e;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer;">▶ Iniciar</button>
+                        <button onclick="cronoReset()" style="padding:4px 10px;border:none;border-radius:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:.7rem;font-weight:700;cursor:pointer;">↺ Reset</button>
+                    </div>
+                    <div id="cronoLaps" style="max-height:80px;overflow-y:auto;margin-top:6px;scrollbar-width:none;"></div>
+                    <button onclick="cronoLap()" id="cronoLapBtn" style="display:none;margin-top:4px;padding:3px 8px;border:none;border-radius:6px;background:rgba(96,165,250,.15);color:#60a5fa;font-size:.62rem;font-weight:600;cursor:pointer;width:100%;">+ Parcial</button>
+                </div>
+
                 <div style="background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
                         <span style="font-size:1.8rem;">🤖</span>
