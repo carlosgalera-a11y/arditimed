@@ -482,7 +482,7 @@ async function iaGenerar(){
       try {
         var r = await fetch(proxyUrl + '/api/openrouter', {
           method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body),
-          signal: AbortSignal.timeout(4000)
+          signal: AbortSignal.timeout(1500)
         });
         data = await r.json();
         if(data.choices && data.choices[0]) success = true;

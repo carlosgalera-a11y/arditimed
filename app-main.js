@@ -867,18 +867,19 @@ function cambiarProvider(){var v=document.getElementById("cfgProvider").value;do
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 var lastAIModel='';/* EU AI Act Art. 52: transparency — track which model generates each response */
 async function llamarIA(up,sp){
-  /* ═══ SECURITY: No paid API keys in client code ═══
-     Chain: NAS proxy (local) → Pollinations (free) → OpenRouter (free tier only)
-     DeepSeek paid key REMOVED — use NAS proxy for DeepSeek access */
-  var OR_KEY=_dk();/* OpenRouter FREE tier only — no cost risk, rate-limit only */
+  /* ═══ Fallback chain: DeepSeek API → Pollinations → OpenRouter ═══ */
+  var OR_KEY=_dk();
   var NAS_URL=localStorage.getItem('api_proxy_url')||'http://REDACTED_INTERNAL_IP:3100';
-  var isHTTPS=location.protocol==='https:';
+  var DS_KEY='REDACTED_DEEPSEEK_2026-04';
   var providers=[];
-  if(!isHTTPS) providers.push({type:'nas'});
+  /* NAS solo funciona en HTTP (red local) */
+  if(location.protocol!=='https:') providers.push({type:'nas'});
+  /* DeepSeek V3.2 directo — primario fuera de red local */
+  providers.push({type:'ds'});
   providers.push({type:'poll'});
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
-  providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
   providers.push({type:'or',model:'meta-llama/llama-4-maverick:free'});
+  providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
 
@@ -893,6 +894,13 @@ async function llamarIA(up,sp){
         r=await fetch(NAS_URL+'/ai/chat',{
           method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3}),
+          signal:ctrl.signal
+        });
+      } else if(p.type==='ds'){
+        r=await fetch('https://api.deepseek.com/chat/completions',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+          body:JSON.stringify({model:'deepseek-chat',messages:msgs,max_tokens:2000,temperature:0.3}),
           signal:ctrl.signal
         });
       } else if(p.type==='poll'){
@@ -920,7 +928,7 @@ async function llamarIA(up,sp){
       c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
       if(!c) continue;
       /* EU AI Act Art. 52 — Track model for transparency */
-      lastAIModel=p.type==='nas'?'DeepSeek V3 (NAS proxy)':p.type==='poll'?'Pollinations AI (GPT-4o)':'OpenRouter · '+(p.model||'').split('/').pop().replace(':free','');
+      lastAIModel=p.type==='nas'?'DeepSeek V3 (NAS proxy)':p.type==='ds'?'DeepSeek V3.2':p.type==='poll'?'Pollinations AI (GPT-4o)':'OpenRouter · '+(p.model||'').split('/').pop().replace(':free','');
       /* EU AI Act Art. 14 — Log interaction to Firestore for traceability (no patient data) */
       try{if(typeof db!=='undefined'&&firebase.auth().currentUser){db.collection('ai_audit_log').add({ts:new Date(),model:lastAIModel,section:currentCategory||'general',type:sp&&sp.indexOf('enferm')>-1?'enfermeria':sp&&sp.indexOf('urgencia')>-1?'urgencias':'consulta',user:firebase.auth().currentUser.email,queryLen:up.length,responseLen:c.length});}}catch(le){}
       try{secureStore.set('aiHistory',JSON.stringify((function(){var h=JSON.parse(secureStore.get('aiHistory')||'[]');h.push({q:up.substring(0,100),s:currentCategory||'',t:Date.now(),m:lastAIModel});if(h.length>100)h=h.slice(-100);return h;})()),48);}catch(he){}
