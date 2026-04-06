@@ -878,7 +878,7 @@ async function llamarIA(up,sp){
   providers.push({type:'ds'});
   providers.push({type:'poll'});
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
-  providers.push({type:'or',model:'meta-llama/llama-4-maverick:free'});
+  providers.push({type:'or',model:'qwen/qwen3.6-plus:free'});
   providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
@@ -1576,7 +1576,7 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
     fallbackChain:["openrouter","pollinations","puter"],
-    openrouterModels:["meta-llama/llama-4-maverick:free","meta-llama/llama-4-scout:free","google/gemini-flash-1.5:free"],
+    openrouterModels:["qwen/qwen3.6-plus:free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
@@ -1910,7 +1910,7 @@ async function scanAnalyze(){
     if(!txt){
         try{
             var orKey=_dk();
-                var orModels=VISION_CONFIG.openrouterModels||["meta-llama/llama-4-maverick:free","meta-llama/llama-4-scout:free","google/gemini-flash-1.5:free"];
+                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen3.6-plus:free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"];
                 for(var mi=0;mi<orModels.length&&!txt;mi++){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
