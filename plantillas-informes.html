@@ -512,7 +512,7 @@ async function iaGenerar(){
       try {
         var pollContent = hasImages ? content : prompt;
         var pollBody = {model:'openai', messages:[{role:'user',content:pollContent}], max_tokens:4000, temperature:0.3, seed:Math.floor(Math.random()*99999), private:true};
-        var rP = await fetch('https://text.pollinations.ai/', {
+        var rP = await fetch('https://text.pollinations.ai/openai', {
           method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(pollBody),
           signal: AbortSignal.timeout(30000)
         });
