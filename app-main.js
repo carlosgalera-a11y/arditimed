@@ -1568,7 +1568,7 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
     fallbackChain:["openrouter","pollinations","puter"],
-    openrouterModels:["qwen/qwen2.5-vl-32b-instruct","meta-llama/llama-4-scout:free"],
+    openrouterModels:["meta-llama/llama-4-maverick:free","meta-llama/llama-4-scout:free","google/gemini-flash-1.5:free"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
@@ -1902,7 +1902,7 @@ async function scanAnalyze(){
     if(!txt){
         try{
             var orKey=_dk();
-                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen2.5-vl-32b-instruct","meta-llama/llama-4-scout:free"];
+                var orModels=VISION_CONFIG.openrouterModels||["meta-llama/llama-4-maverick:free","meta-llama/llama-4-scout:free","google/gemini-flash-1.5:free"];
                 for(var mi=0;mi<orModels.length&&!txt;mi++){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';

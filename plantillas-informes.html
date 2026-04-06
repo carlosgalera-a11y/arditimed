@@ -493,7 +493,7 @@ async function iaGenerar(){
     if(!success){
       try {
         var orKey = _dkInf();
-        var orModel = hasImages ? 'qwen/qwen2.5-vl-32b-instruct:free' : 'deepseek/deepseek-chat-v3-0324:free';
+        var orModel = hasImages ? 'meta-llama/llama-4-maverick:free' : 'deepseek/deepseek-chat-v3-0324:free';
         var orBody = Object.assign({}, body, {model: orModel});
         var orHeaders = {'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informes Area II'};
         if(orKey) orHeaders['Authorization'] = 'Bearer ' + orKey;
