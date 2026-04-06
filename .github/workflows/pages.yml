@@ -24,25 +24,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Sync notebook-local.html → index.html
-        run: |
-          python3 - <<'PYEOF'
-          with open('notebook-local.html', 'r', encoding='utf-8') as f:
-              content = f.read()
-          # index.html: canonical apunta a la URL raíz
-          content = content.replace(
-              'href="https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html"',
-              'href="https://ramongalera22-ai.github.io/Cartagenaeste/"'
-          )
-          content = content.replace(
-              'content="https://ramongalera22-ai.github.io/Cartagenaeste/notebook-local.html"',
-              'content="https://ramongalera22-ai.github.io/Cartagenaeste/"'
-          )
-          with open('index.html', 'w', encoding='utf-8') as f:
-              f.write(content)
-          print(f"index.html sincronizado: {len(content)} bytes")
-          PYEOF
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
