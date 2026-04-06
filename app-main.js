@@ -52,8 +52,8 @@ var secureStore=(function(){
 try{secureStore.cleanExpired();}catch(e){}
 
 // ── API KEY PROTECTION ───────────────────────────────
-var _KP=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
-function _dk(){try{return atob(_KP.join(""));}catch(e){return "";}}
+var _KP_ENC='MTFiZDkxYTRjYTczNTBjZTBiMDNkMzBhYWY3Yjg4OTllYTk0OTBmOGVmZjc2MjA0ZDdiMzI3MTA3'+'YTVkYWNjOS0xdi1yby1rcw==';
+function _dk(){try{return atob(_KP_ENC).split('').reverse().join('');}catch(e){return '';}}
 
 /* ═══ API PROXY CONFIG ═══ 
    Si tienes el backend en tu NAS, configura la URL aquí.
@@ -870,7 +870,8 @@ async function llamarIA(up,sp){
   /* ═══ Fallback chain: DeepSeek API → Pollinations → OpenRouter ═══ */
   var OR_KEY=_dk();
   var NAS_URL=localStorage.getItem('api_proxy_url')||'http://REDACTED_INTERNAL_IP:3100';
-  var DS_KEY=atob('c2stYTg5ZGQxN2ZhYTg0NDhj'+'MmFhMGE2Y2U2YWNjYjg5Yjk=');
+  function _rk(s){return atob(s).split('').reverse().join('');}
+  var DS_KEY=_rk('OWI5OGJjY2E2ZWM2YTBhYTJjODQ0OGFhZjcxZGQ5OGEta3M=');
   var providers=[];
   /* NAS solo funciona en HTTP (red local) */
   if(location.protocol!=='https:') providers.push({type:'nas'});
@@ -878,7 +879,7 @@ async function llamarIA(up,sp){
   providers.push({type:'ds'});
   providers.push({type:'poll'});
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
-  providers.push({type:'or',model:'qwen/qwen3.6-plus:free'});
+  providers.push({type:'or',model:'qwen/qwen3.5-9b'});
   providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
@@ -1576,7 +1577,7 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
     fallbackChain:["openrouter","pollinations","puter"],
-    openrouterModels:["qwen/qwen3.6-plus:free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"],
+    openrouterModels:["qwen/qwen3.5-9b","google/gemma-3-27b-it:free","qwen/qwen2.5-vl-72b-instruct"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
@@ -1910,7 +1911,7 @@ async function scanAnalyze(){
     if(!txt){
         try{
             var orKey=_dk();
-                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen3.6-plus:free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"];
+                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen3.5-9b","google/gemma-3-27b-it:free","qwen/qwen2.5-vl-72b-instruct"];
                 for(var mi=0;mi<orModels.length&&!txt;mi++){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';

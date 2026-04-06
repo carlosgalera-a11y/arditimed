@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  var REQUIRED_V = 44;
+  var REQUIRED_V = 45;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -443,9 +443,20 @@ async function iaGenerar(){
   content.push({ type: 'text', text: prompt });
   var hasImages = content.some(function(c){ return c.type === 'image_url'; });
 
-  // Keys (obfuscated)
-  var _DS = atob('c2stYTg5ZGQxN2ZhYTg0NDhj'+'MmFhMGE2Y2U2YWNjYjg5Yjk=');
-  var _OR = (function(){try{return atob(["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="].join(""));}catch(e){return "";}})();
+  // Keys (double-obfuscated: reversed then base64)
+  function _rk(s){return atob(s).split('').reverse().join('');}
+  var _DS = _rk('OWI5OGJjY2E2ZWM2YTBhYTJjODQ0OGFhZjcxZGQ5OGEta3M=');
+  var _OR = _rk('MTFiZDkxYTRjYTczNTBjZTBiMDNkMzBhYWY3Yjg4OTllYTk0OTBmOGVmZjc2MjA0ZDdiMzI3MTA3'+'YTVkYWNjOS0xdi1yby1rcw==');
+
+  // Provider chain
+  var providers = [];
+  if(!hasImages){
+    providers.push({name:'DeepSeek V3.2', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3}});
+  }
+  // Qwen paid vision models (stable, cheap with credits)
+  var orVisionModels = ['qwen/qwen3.5-9b','qwen/qwen2.5-vl-72b-instruct','google/gemma-3-27b-it:free'];
+  var orTextModels = ['deepseek/deepseek-chat-v3-0324:free','qwen/qwen3-32b:free'];
+  var orModels = hasImages ? orVisionModels : orTextModels;;
 
   // Provider chain
   var providers = [];
