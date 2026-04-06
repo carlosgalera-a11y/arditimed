@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  var REQUIRED_V = 56;
+  var REQUIRED_V = 57;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -508,7 +508,7 @@ async function iaGenerar(){
     providers.push({name:'DeepSeek V3.2', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3}});
   }
   // Qwen paid vision models (stable, cheap with credits)
-  var orVisionModels = ['qwen/qwen3.5-flash','qwen/qwen3.6-plus:free','google/gemma-3-27b-it:free','openrouter/free'];
+  var orVisionModels = ['qwen/qwen3.5-flash','qwen/qwen3.5-9b','google/gemini-3.1-flash-lite-preview','qwen/qwen3.6-plus:free'];
   var orTextModels = ['deepseek/deepseek-chat-v3-0324:free','meta-llama/llama-3.3-70b-instruct:free'];
   var orModels = hasImages ? orVisionModels : orTextModels;
 
@@ -632,8 +632,8 @@ async function iaRefinar(){
     providers.push({name:'DeepSeek', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat',messages:[{role:'user',content:promptText}],max_tokens:4000,temperature:0.3}});
   }
   providers.push({name:'OR:qwen3.5-flash', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-flash',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
-  providers.push({name:'OR:qwen3.6-plus:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.6-plus:free',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
-  providers.push({name:'OR:gemma-3-27b:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'google/gemma-3-27b-it:free',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
+  providers.push({name:'OR:qwen3.5-9b', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-9b',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
+  providers.push({name:'OR:gemini-3.1-flash-lite', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'google/gemini-3.1-flash-lite-preview',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
 
   var text='', success=false, lastErr='';
   for(var p=0;p<providers.length&&!success;p++){
