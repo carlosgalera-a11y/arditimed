@@ -2465,12 +2465,11 @@ async function infGenerar(){
     model=localStorage.getItem('qwenModel')||'qwen-turbo';
     apiUrl='https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions';
   }else{
-    key=_dk();
-    if(!key)try{key=atob(['Z3NrX0dUVHFmVFhwQzV','IR3lNSFRrRzByV0dkeW','IzRllPSHNnVVRBOE5Za','lVWVDROOVd5ak1NeFQ='].join(''));}catch(e){}
+    // ⚠️ NAS proxy first, then OpenRouter free (no key needed for :free models)
+    key=_dk()||'';
     model='deepseek/deepseek-chat-v3-0324:free';
     apiUrl='https://openrouter.ai/api/v1/chat/completions';
   }
-  if(!key){alert('Configura una API key en la pestaña Config IA');return;}
 
   var instrucciones=document.getElementById('infInstrucciones').value.trim();
 
@@ -2535,24 +2534,52 @@ async function infGenerar(){
   }
 
   try{
-    fetch(apiUrl,{method:'POST',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify(body)})
+    // ═══ Multi-provider fallback: NAS → OpenRouter → Pollinations ═══
+    var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
+    var infDone=false;
+    function infShowResult(text){
+      if(infDone)return;infDone=true;
+      infResultadoTexto=text.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+      document.getElementById('infResultContent').textContent=infResultadoTexto;
+      document.getElementById('infBtnGenerar').disabled=false;
+    }
+    function infShowError(msg){
+      if(infDone)return;infDone=true;
+      document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">\u274c Error: '+msg+'</span>';
+      document.getElementById('infBtnGenerar').disabled=false;
+    }
+
+    // 1) Try NAS proxy (only on HTTP to avoid mixed content)
+    if(location.protocol!=='https:'){
+      try{
+        var rNas=await fetch(NAS_URL+'/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages,max_tokens:4096,temperature:0.3})});
+        if(rNas.ok){var dNas=await rNas.json();var t=(dNas.choices&&dNas.choices[0])?dNas.choices[0].message.content:(dNas.text||'');if(t){infShowResult(t);return;}}
+      }catch(e){console.log('[Informe] NAS unavailable:',e.message);}
+    }
+
+    // 2) Try OpenRouter (with key if available, or without for :free models)
+    var orHeaders={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'};
+    if(key)orHeaders['Authorization']='Bearer '+key;
+    fetch(apiUrl,{method:'POST',headers:orHeaders,body:JSON.stringify(body)})
     .then(function(res){
-      if(!res.ok)throw new Error('Error API: '+res.status);
+      if(!res.ok)throw new Error('OpenRouter '+res.status);
       return res.json();
     })
     .then(function(data){
-      infResultadoTexto=data.choices[0]?.message?.content||'Sin respuesta';
-      // Clean thinking tags if present
-      infResultadoTexto=infResultadoTexto.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-      document.getElementById('infResultContent').textContent=infResultadoTexto;
-      document.getElementById('infBtnGenerar').disabled=false;
+      var t=data.choices&&data.choices[0]?data.choices[0].message.content:'';
+      if(t)infShowResult(t);
+      else throw new Error('Respuesta vacia');
     })
     .catch(function(e){
-      document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ Error: '+e.message+'</span>';
-      document.getElementById('infBtnGenerar').disabled=false;
+      console.log('[Informe] OpenRouter failed:',e.message,'. Trying Pollinations...');
+      // 3) Fallback: Pollinations (free, no key)
+      fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:sysPrompt},{role:'user',content:texto||'Genera el informe clinico'}],max_tokens:4096})})
+      .then(function(r2){if(!r2.ok)throw new Error('Pollinations '+r2.status);return r2.json();})
+      .then(function(d2){infShowResult(d2.choices[0].message.content);})
+      .catch(function(e2){infShowError(e.message+' / Pollinations: '+e2.message);});
     });
   }catch(e){
-    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ '+e.message+'</span>';
+    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">\u274c '+e.message+'</span>';
     document.getElementById('infBtnGenerar').disabled=false;
   }
 }
