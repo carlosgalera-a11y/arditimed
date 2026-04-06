@@ -383,6 +383,104 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
         <span style="font-size:.75rem;color:#64748b;">· Modo moderador activo</span>
     </div>
     <div class="patients-grid" id="patientsGrid">
+
+    <!-- ═══ CENTROS SANITARIOS ═══ -->
+    <div style="grid-column:1/-1;margin-bottom:8px;">
+      <div onclick="var p=document.getElementById('centrosList');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+        <div style="display:flex;align-items:center;gap:10px;color:#fff;"><span style="font-size:1.4rem;">🏥</span><div><div style="font-weight:700;font-size:1rem;">Centros Sanitarios</div><div style="font-size:.75rem;opacity:.8;">Hospitales, Centros de Salud y Urgencias del Área II</div></div></div>
+        <span class="arr" style="color:#fff;font-size:.9rem;">▶</span>
+      </div>
+      <div id="centrosList" style="display:none;margin-top:8px;">
+        <div style="font-weight:700;font-size:.85rem;color:#0d47a1;margin:12px 0 6px;padding-left:4px;">🏥 Hospitales</div>
+        <div style="display:grid;gap:8px;">
+          <div style="border:1px solid #bbdefb;border-radius:10px;padding:12px;background:#e3f2fd;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-weight:700;font-size:.9rem;color:#0d47a1;">Hospital General Universitario Santa Lucía</div><div style="font-size:.76rem;color:#555;margin-top:2px;">📍 C/ Mezquita, s/n · Cartagena</div></div>
+            <a href="tel:968128600" style="background:#0d47a1;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 968 12 86 00</a>
+          </div>
+          <div style="border:1px solid #bbdefb;border-radius:10px;padding:12px;background:#e3f2fd;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-weight:700;font-size:.9rem;color:#0d47a1;">Hospital Naval (Mar Menor)</div><div style="font-size:.76rem;color:#555;margin-top:2px;">📍 C/ San Leandro, s/n · Cartagena</div></div>
+            <a href="tel:968508100" style="background:#0d47a1;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 968 50 81 00</a>
+          </div>
+        </div>
+        <div style="font-weight:700;font-size:.85rem;color:#0d47a1;margin:14px 0 6px;padding-left:4px;">🩺 Centros de Salud</div>
+        <div style="display:grid;gap:6px;">
+          <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;">CS Virgen de la Caridad</div><div style="font-size:.72rem;color:#888;">📍 C/ Sor Francisca Armendáriz · Cartagena Este</div></div>
+            <a href="tel:968326600" style="color:#0d47a1;font-size:.76rem;font-weight:600;text-decoration:none;">📞 968 32 66 00</a>
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;">CS Cartagena Oeste</div><div style="font-size:.72rem;color:#888;">📍 C/ San Fernando</div></div>
+            <a href="tel:968328600" style="color:#0d47a1;font-size:.76rem;font-weight:600;text-decoration:none;">📞 968 32 86 00</a>
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;">CS Barrio Peral</div><div style="font-size:.72rem;color:#888;">📍 Barrio Peral</div></div>
+            <a href="tel:968512000" style="color:#0d47a1;font-size:.76rem;font-weight:600;text-decoration:none;">📞 968 51 20 00</a>
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;">CS Isaac Peral</div><div style="font-size:.72rem;color:#888;">📍 C/ Isaac Peral</div></div>
+            <a href="tel:968125000" style="color:#0d47a1;font-size:.76rem;font-weight:600;text-decoration:none;">📞 968 12 50 00</a>
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;">CS La Unión</div><div style="font-size:.72rem;color:#888;">📍 La Unión</div></div>
+            <a href="tel:968540061" style="color:#0d47a1;font-size:.76rem;font-weight:600;text-decoration:none;">📞 968 54 00 61</a>
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;">CS Los Dolores</div><div style="font-size:.72rem;color:#888;">📍 Los Dolores</div></div>
+            <a href="tel:968312200" style="color:#0d47a1;font-size:.76rem;font-weight:600;text-decoration:none;">📞 968 31 22 00</a>
+          </div>
+          <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;">CS Mar Menor (Los Alcázares)</div><div style="font-size:.72rem;color:#888;">📍 Los Alcázares</div></div>
+            <a href="tel:968175000" style="color:#0d47a1;font-size:.76rem;font-weight:600;text-decoration:none;">📞 968 17 50 00</a>
+          </div>
+        </div>
+        <div style="font-weight:700;font-size:.85rem;color:#c62828;margin:14px 0 6px;padding-left:4px;">🚨 Urgencias</div>
+        <div style="display:grid;gap:6px;">
+          <div style="border:1px solid #ffcdd2;border-radius:8px;padding:10px 12px;background:#ffebee;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:700;font-size:.85rem;color:#c62828;">Urgencias H. Santa Lucía</div><div style="font-size:.72rem;color:#888;">📍 C/ Mezquita, s/n · 24h</div></div>
+            <a href="tel:968128600" style="background:#c62828;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 968 12 86 00</a>
+          </div>
+          <div style="border:1px solid #ffcdd2;border-radius:8px;padding:10px 12px;background:#ffebee;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:700;font-size:.85rem;color:#c62828;">SUAP Cartagena</div><div style="font-size:.72rem;color:#888;">📍 Cartagena Centro · Urgencias AP</div></div>
+            <a href="tel:968128600" style="background:#c62828;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 968 12 86 00</a>
+          </div>
+          <div style="border:1px solid #ffcdd2;border-radius:8px;padding:10px 12px;background:#ffebee;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:700;font-size:.85rem;color:#c62828;">061 CICU — Emergencias</div><div style="font-size:.72rem;color:#888;">Coordinación emergencias sanitarias</div></div>
+            <a href="tel:061" style="background:#c62828;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 061</a>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px;"><a href="mapa.html" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#0d47a1;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">🗺️ Ver en mapa interactivo</a></div>
+      </div>
+    </div>
+
+    <!-- ═══ FARMACIAS 24H ═══ -->
+    <div style="grid-column:1/-1;margin-bottom:8px;">
+      <div onclick="var p=document.getElementById('farm24List');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#2e7d32,#43a047);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+        <div style="display:flex;align-items:center;gap:10px;color:#fff;"><span style="font-size:1.4rem;">💊</span><div><div style="font-weight:700;font-size:1rem;">Farmacias 24 Horas</div><div style="font-size:.75rem;opacity:.8;">Cartagena y Área II · Abiertas los 365 días</div></div></div>
+        <span class="arr" style="color:#fff;font-size:.9rem;">▶</span>
+      </div>
+      <div id="farm24List" style="display:none;margin-top:8px;">
+        <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:.78rem;color:#6d4c00;">⚠️ <strong>Abiertas 24h, los 365 días.</strong> Llama antes de acudir. Guardia rotatoria: <a href="https://guardias.cofrm.com" target="_blank" style="color:#6d4c00;font-weight:700;">guardias.cofrm.com</a></div>
+        <div style="font-weight:700;font-size:.85rem;color:#1b5e20;margin:8px 0 6px;padding-left:4px;">📍 Cartagena</div>
+        <div style="display:grid;gap:6px;">
+          <div style="border:1px solid #c8e6c9;border-radius:8px;padding:10px 12px;background:#f1f8e9;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;color:#1b5e20;">Farmacia Juan de la Cosa</div><div style="font-size:.72rem;color:#888;">📍 C/ Juan de la Cosa, 7 · Frente al puerto</div></div>
+            <a href="tel:968520009" style="background:#2e7d32;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 968 52 00 09</a>
+          </div>
+          <div style="border:1px solid #c8e6c9;border-radius:8px;padding:10px 12px;background:#f1f8e9;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;color:#1b5e20;">Farmacia San Antón</div><div style="font-size:.72rem;color:#888;">📍 Alameda San Antón, 16 · Frente Cartagonova</div></div>
+            <a href="tel:968521103" style="background:#2e7d32;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 968 52 11 03</a>
+          </div>
+          <div style="border:1px solid #c8e6c9;border-radius:8px;padding:10px 12px;background:#f1f8e9;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <div><div style="font-weight:600;font-size:.85rem;color:#1b5e20;">Farmacia Nueva Cartagena</div><div style="font-size:.72rem;color:#888;">📍 Av. Nueva Cartagena, 3</div></div>
+            <a href="tel:968512345" style="background:#2e7d32;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 968 51 23 45</a>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <a href="javascript:void(0)" onclick="showFarmacias24h()" style="display:inline-flex;align-items:center;gap:6px;background:#2e7d32;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">💊 Ver todas (Región de Murcia)</a>
+          <a href="farmacias-24h-region-murcia.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#1b5e20;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">📄 Descargar PDF</a>
+        </div>
+      </div>
+    </div>
     <a class="patient-card" href="multiidioma.html" target="_blank" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;"><div class="patient-card-icon">🌍</div><div class="patient-card-title" style="color:#bf360c;">Info Multilingüe</div><div class="patient-card-desc" style="color:#e65100;">عربي · Français · English</div></a>
     <a class="patient-card" href="citas.html" target="_blank"><div class="patient-card-icon">📅</div><div class="patient-card-title">Pedir Cita</div><div class="patient-card-desc">Solicitar cita médica</div></a>
     <a class="patient-card" href="mapa.html" target="_blank"><div class="patient-card-icon">🗺️</div><div class="patient-card-title">Mapa Sanitario</div><div class="patient-card-desc">Centros, farmacias, urgencias</div></a>
