@@ -4656,6 +4656,17 @@ function cronoLap(){
   }
 }
 </script>
+<button id="floatingHomeBtn" onclick="showPage('pageLanding')" style="display:none;position:fixed;bottom:20px;left:20px;z-index:9999;background:linear-gradient(135deg,#0a2e1a,#145a32);color:#fff;border:none;padding:10px 18px;border-radius:50px;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);font-family:inherit;align-items:center;gap:6px;">🏠 Inicio</button>
+<script>
+(function(){
+  var _orig=window.showPage;
+  if(_orig) window.showPage=function(id){
+    _orig(id);
+    var b=document.getElementById('floatingHomeBtn');
+    if(b) b.style.display=(id==='pageLanding')?'none':'flex';
+  };
+})();
+</script>
 </body>
 </html>
 
