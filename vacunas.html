@@ -527,40 +527,47 @@
             </div>
         </div>
 
-        <div id="loginSection" class="login-section" style="display: none;">
-            <h2>🔐 Acceso Restringido</h2>
-            <p>Para añadir o editar notas, necesitas acceder con tu cuenta de Gmail.<br>Tus notas serán guardadas automáticamente.</p>
-            <button class="btn" onclick="loginWithGmail()">
-                <span>📧</span>
-                <span>Acceder con Gmail</span>
-            </button>
+        
         </div>
+<div style="background:#fff;border-radius:12px;padding:24px;margin:24px 0;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);">
+<h2 style="color:var(--primary-dark);font-family:var(--font-display);margin-bottom:16px;">🔍 Buscador por Edad</h2>
+<p style="font-size:.85rem;color:#64748b;margin-bottom:12px;">Introduce la edad para consultar las vacunas recomendadas (calendario SNS/Murcia 2025).</p>
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+<input type="number" id="vacEdad" placeholder="Edad" min="0" max="120" style="padding:10px;border:2px solid #d0d0d0;border-radius:8px;font-size:1rem;width:100px;" onkeydown="if(event.key==='Enter')buscarVacunas()">
+<select id="vacUnidad" style="padding:10px;border:2px solid #d0d0d0;border-radius:8px;font-size:.9rem;"><option value="meses">meses</option><option value="anios" selected>años</option></select>
+<button onclick="buscarVacunas()" style="padding:10px 20px;background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.9rem;">Buscar</button>
+</div>
+<div id="vacResultado" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;"></div>
+</div>
+<script>
+function buscarVacunas(){
+var edad=parseInt(document.getElementById('vacEdad').value);
+var u=document.getElementById('vacUnidad').value;
+if(isNaN(edad)){alert('Introduce una edad');return;}
+var m=u==='meses'?edad:edad*12;
+var v=[];
+if(m>=0) v.push(['Nacimiento','Hepatitis B (1a dosis)']);
+if(m>=2) v.push(['2 meses','Hexavalente (DTPa-VPI-Hib-HB), Neumococo 13v, Rotavirus (1a)']);
+if(m>=4) v.push(['4 meses','Hexavalente (2a), Neumococo 13v (2a), Rotavirus (2a), MenB (1a)']);
+if(m>=6) v.push(['6 meses','Hexavalente (3a), MenB (2a)']);
+if(m>=11) v.push(['11 meses','Neumococo 13v (refuerzo), MenB (3a)']);
+if(m>=12) v.push(['12 meses','Triple Virica (SRP) 1a, MenACWY (1a), Varicela (1a)']);
+if(m>=15) v.push(['15 meses','DTPa-VPI (refuerzo 4a dosis)']);
+if(m>=36) v.push(['3 años','Triple Virica (SRP) 2a, Varicela 2a']);
+if(m>=72) v.push(['6 años','DTPa-VPI (5a dosis refuerzo)']);
+if(m>=144) v.push(['12 años','MenACWY (refuerzo), VPH (2 dosis), Tdpa']);
+if(m>=168) v.push(['14 años','Tdpa (si no a los 12), MenACWY (si no a los 12)']);
+if(m>=240) v.push(['Adultos','Td cada 10 años, Gripe si grupo de riesgo']);
+if(m>=780) v.push(['65+ años','Gripe (anual), Neumococo 23v, COVID-19, Herpes zoster']);
+var r=document.getElementById('vacResultado');
+var h='<h3 style="color:#1a6b4a;margin-bottom:10px;">💉 Vacunas para '+edad+' '+(u==='meses'?'meses':'años')+'</h3>';
+if(v.length===0)h+='<p>No se encontraron vacunas.</p>';
+else v.forEach(function(x){h+='<div style="padding:8px 0;border-bottom:1px solid #d1fae5;"><strong style="color:#0d47a1;">'+x[0]+':</strong> '+x[1]+'</div>';});
+h+='<p style="font-size:.75rem;color:#94a3b8;margin-top:10px;">Fuente: Calendario Vacunal SNS / Region de Murcia 2025. Consulta con tu medico.</p>';
+r.innerHTML=h;r.style.display='block';
+}
+</script>
 
-        <div id="tablonSection" class="tablon-section active">
-            <div class="tablon-header">
-                <h2>📝 Añadir Nota</h2>
-                <div class="note-form">
-                    <input type="text" id="noteTitle" placeholder="Título de la nota" maxlength="100">
-                    <textarea id="noteContent" placeholder="Contenido de la nota..."></textarea>
-                    <div class="form-actions">
-                        <button class="btn btn-secondary" onclick="clearForm()">Limpiar</button>
-                        <button class="btn" onclick="addNote()">
-                            <span id="submitBtn">➕ Publicar Nota</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <h3 style="color:var(--primary-dark); font-family:var(--font-display); margin-bottom:16px;">Notas del Centro</h3>
-                <div id="notesContainer" class="notes-grid">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📝</div>
-                        <p>Aún no hay notas. ¡Sé el primero en añadir una!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="editModal" class="modal">
