@@ -1112,7 +1112,7 @@ function initProfessionals(){
     document.getElementById("cfgGroqKey").value=CONFIG.groqKey||"";document.getElementById("cfgGroqModel").value=CONFIG.groqModel;
     document.getElementById("cfgQwenKey").value=CONFIG.qwenKey||"";document.getElementById("cfgQwenModel").value=CONFIG.qwenModel;
     cargarDatos();updateStatus();actualizarUI();
-    fetch("documents.json").then(function(r){return r.json()}).then(function(d){documents=d.categories;actualizarUI();}).catch(function(){});
+    fetch("documents.json").then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(function(d){documents=d.categories;console.log("[Docs] Loaded "+Object.keys(d.categories).length+" categories");actualizarUI();}).catch(function(e){console.error("[Docs] Error loading documents.json:",e.message);});
     document.getElementById("preguntaInput").addEventListener("keypress",function(e){if(e.key==="Enter")hacerPregunta()});
     if(!isReady())setTimeout(function(){switchTab("config",document.querySelectorAll(".tab-btn")[4])},500);
 }
