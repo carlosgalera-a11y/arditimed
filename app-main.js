@@ -1578,7 +1578,7 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
     fallbackChain:["openrouter","pollinations","puter"],
-    openrouterModels:["qwen/qwen3.5-flash","google/gemma-3-27b-it:free","qwen/qwen3.5-9b"],
+    openrouterModels:["qwen/qwen3.5-flash","qwen/qwen3.5-9b","google/gemini-3.1-flash-lite-preview"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
@@ -1895,7 +1895,7 @@ async function scanAnalyze(){
 
     // ── 1. Pollinations (GPT-4o vision, gratis sin key) ──
     try{
-        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},25000);
+        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},45000);
         var r=await fetch("https://text.pollinations.ai/openai",{
             method:"POST",signal:ctrl.signal,
             headers:{"Content-Type":"application/json"},
