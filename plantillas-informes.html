@@ -400,166 +400,110 @@ async function fileToBase64(file){
 async function iaGenerar(){
   var tipo = document.getElementById('iaType').value;
   if(!tipo){alert('Selecciona el tipo de informe');return;}
-  if(tipo==='otro') tipo = document.getElementById('iaOtro').value.trim() || 'Informe clínico';
-  
+  if(tipo==='otro') tipo = document.getElementById('iaOtro').value.trim() || 'Informe clinico';
+
   var instrucciones = document.getElementById('iaInstrucciones').value.trim();
   var dr = drInput.value.trim();
-  
+
   var btn = document.getElementById('iaBtnGen');
-  btn.disabled=true; btn.textContent='⏳ Generando...';
+  btn.disabled=true; btn.textContent='Generando...';
   document.getElementById('iaLoading').classList.add('show');
   document.getElementById('iaOutput').classList.remove('show');
-  
-  // Build prompt
-  var prompt = 'Eres un asistente clínico docente del Área II Cartagena (H.G.U. Santa Lucía, Servicio Murciano de Salud).\n\n';
+  var loadMsg = document.getElementById('iaLoadMsg');
+
+  // Prompt
+  var prompt = 'Eres un asistente clinico docente del Area II Cartagena (H.G.U. Santa Lucia, Servicio Murciano de Salud).\n\n';
   prompt += 'GENERA un ' + tipo.toUpperCase() + ' completo y profesional.\n\n';
-  if(instrucciones) prompt += 'INSTRUCCIONES DEL MÉDICO: ' + instrucciones + '\n\n';
-  if(dr) prompt += 'MÉDICO RESPONSABLE: ' + dr + '\n\n';
-  prompt += 'REGLAS:\n';
-  prompt += '- Formato profesional de informe hospitalario español\n';
-  prompt += '- Incluye todas las secciones estándar del tipo de informe\n';
-  prompt += '- Usa terminología médica correcta\n';
-  prompt += '- Si hay documentos adjuntos, extrae e integra la información relevante\n';
-  prompt += '- Incluye fecha actual: ' + new Date().toLocaleDateString('es-ES') + '\n';
-  prompt += '- Firma con el nombre del médico al final si se proporciona\n';
-  prompt += '- NO inventes datos clínicos que no estén en los documentos o instrucciones\n';
-  prompt += '- Uso exclusivamente DOCENTE e INFORMATIVO\n';
-  
-  // Build messages with images if any
+  if(instrucciones) prompt += 'INSTRUCCIONES DEL MEDICO: ' + instrucciones + '\n\n';
+  if(dr) prompt += 'MEDICO RESPONSABLE: ' + dr + '\n\n';
+  prompt += 'REGLAS:\n- Formato profesional de informe hospitalario espanol\n- Incluye todas las secciones estandar del tipo de informe\n- Usa terminologia medica correcta\n- Si hay documentos adjuntos, extrae e integra la informacion relevante\n- Incluye fecha actual: ' + new Date().toLocaleDateString('es-ES') + '\n- Firma con el nombre del medico al final si se proporciona\n- NO inventes datos clinicos que no esten en los documentos o instrucciones\n- Uso exclusivamente DOCENTE e INFORMATIVO\n';
+
+  // Images
   var content = [];
-  
-  // Add images as base64
   for(var i=0; i<iaFiles.length && i<5; i++){
     try {
       if(iaFiles[i].type.startsWith('image/')){
         var b64 = await fileToBase64(iaFiles[i]);
-        content.push({
-          type: 'image_url',
-          image_url: { url: b64 }
-        });
+        content.push({ type: 'image_url', image_url: { url: b64 } });
       }
     } catch(e){}
   }
-  
   content.push({ type: 'text', text: prompt });
-  
-  // Use vision model if images attached, text model otherwise
   var hasImages = content.some(function(c){ return c.type === 'image_url'; });
-  var model = hasImages ? 'qwen/qwen3.6-plus:free' : 'deepseek-chat';
-  
-  var body = {
-    model: model,
-    messages: [{ role: 'user', content: content }],
-    max_tokens: 4000,
-    temperature: 0.3
-  };
-  
-  // OR key from main app (same as VISION_CONFIG)
-  var _KP_INF=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
-  function _dkInf(){try{return atob(_KP_INF.join(""));}catch(e){return "";}}
 
-  try {
-    var data;
-    var success = false;
+  // Keys (obfuscated)
+  var _DS = atob('c2stYTg5ZGQxN2ZhYTg0NDhj'+'MmFhMGE2Y2U2YWNjYjg5Yjk=');
+  var _OR = (function(){try{return atob(["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="].join(""));}catch(e){return "";}})();
 
-    // 1. DeepSeek V3.2 directo (texto) / NAS proxy (imágenes)
-    var proxyUrl = localStorage.getItem('api_proxy_url') || 'http://REDACTED_INTERNAL_IP:3100';
-    if(!hasImages){
-      try {
-        var dsBody = {model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3};
-        var rDS = await fetch('https://api.deepseek.com/chat/completions', {
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer '+atob('c2stYTg5ZGQxN2ZhYTg0NDhj'+'MmFhMGE2Y2U2YWNjYjg5Yjk=')},
-          body:JSON.stringify(dsBody),
-          signal: AbortSignal.timeout(30000)
-        });
-        data = await rDS.json();
-        if(data.choices && data.choices[0]) success = true;
-        else console.log('[Informe] DeepSeek error:', data.error);
-      } catch(e){ console.log('[Informe] DeepSeek failed:', e.message); }
-    } else {
-      // NAS proxy para visión
-      try {
-        var r = await fetch(proxyUrl + '/api/openrouter', {
-          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body),
-          signal: AbortSignal.timeout(1500)
-        });
-        data = await r.json();
-        if(data.choices && data.choices[0]) success = true;
-      } catch(e){ console.log('[Informe] Proxy failed:', e.message); }
-    }
-
-    // 2. OpenRouter con key (Qwen visión / DeepSeek fallback texto)
-    if(!success){
-      try {
-        var orKey = _dkInf();
-        var orModel = hasImages ? 'qwen/qwen3.6-plus:free' : 'deepseek/deepseek-chat-v3-0324:free';
-        var orBody = Object.assign({}, body, {model: orModel});
-        var orHeaders = {'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informes Area II'};
-        if(orKey) orHeaders['Authorization'] = 'Bearer ' + orKey;
-        var rOR = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-          method:'POST', headers: orHeaders, body:JSON.stringify(orBody),
-          signal: AbortSignal.timeout(30000)
-        });
-        data = await rOR.json();
-        if(data.choices && data.choices[0]) success = true;
-        else console.log('[Informe] OR error:', data.error);
-      } catch(e){ console.log('[Informe] OpenRouter failed:', e.message); }
-    }
-
-    // 3. Pollinations (gratis, sin key)
-    if(!success){
-      try {
-        var pollContent = hasImages ? content : prompt;
-        var pollBody = {model:'openai', messages:[{role:'user',content:pollContent}], max_tokens:4000, temperature:0.3, seed:Math.floor(Math.random()*99999), private:true};
-        var rP = await fetch('https://text.pollinations.ai/openai', {
-          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(pollBody),
-          signal: AbortSignal.timeout(30000)
-        });
-        data = await rP.json();
-        if(data.choices && data.choices[0]) success = true;
-      } catch(e){ console.log('[Informe] Pollinations failed:', e.message); }
-    }
-
-    var text = '';
-    if(data && data.choices && data.choices[0]) text = data.choices[0].message.content;
-    else if(data && data.error) text = 'Error: ' + (data.error.message || JSON.stringify(data.error));
-    else text = 'No se pudo generar el informe. Inténtalo de nuevo.';
-
-    // Render markdown
-    function fmtInf(t){
-      return t
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/^#{3}\s+(.+)$/gm,'<h4 style="color:#0f6b4a;margin:12px 0 4px">$1</h4>')
-        .replace(/^#{2}\s+(.+)$/gm,'<h3 style="color:#0f6b4a;border-bottom:1px solid #c8e6c9;padding-bottom:4px;margin:16px 0 6px">$1</h3>')
-        .replace(/^#{1}\s+(.+)$/gm,'<h2 style="color:#0f6b4a;margin:18px 0 8px">$1</h2>')
-        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g,'<em>$1</em>')
-        .replace(/^[-•]\s+(.+)$/gm,'<li style="margin:3px 0">$1</li>')
-        .replace(/(<li.*<\/li>\n?)+/g,'<ul style="margin:6px 0 6px 18px">$&</ul>')
-        .replace(/\n{2,}/g,'</p><p style="margin:8px 0">')
-        .replace(/\n/g,'<br>')
-        .replace(/^(.)/,'<p style="margin:8px 0">$1')
-        .replace(/(.)$/,'$1</p>');
-    }
-
-    var output = document.getElementById('iaOutput');
-    output.innerHTML = '<button class="copy-btn" onclick="iaCopiar()">📋 Copiar</button>' + fmtInf(text);
-    output.classList.add('show');
-    output.scrollIntoView({behavior:'smooth'});
-    
-  } catch(e){
-    alert('Error: ' + e.message);
+  // Provider chain
+  var providers = [];
+  if(!hasImages){
+    providers.push({name:'DeepSeek V3.2', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3}});
   }
-  
-  btn.disabled=false; btn.textContent='🤖 Generar Informe con IA';
+  // OpenRouter vision models - multiple fallbacks
+  var orVisionModels = ['qwen/qwen3.6-plus:free','google/gemma-3-27b-it:free','mistralai/mistral-small-3.1-24b-instruct:free'];
+  var orTextModels = ['deepseek/deepseek-chat-v3-0324:free','meta-llama/llama-3.3-70b-instruct:free'];
+  var orModels = hasImages ? orVisionModels : orTextModels;
+  orModels.forEach(function(m){
+    providers.push({name:'OR:'+m.split('/')[1], url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:m, messages:[{role:'user',content:content}], max_tokens:4000, temperature:0.3}, isOR:true});
+  });
+
+  var data, text='', success=false, lastErr='';
+  for(var p=0; p<providers.length && !success; p++){
+    var prov = providers[p];
+    loadMsg.textContent = 'Intentando ' + prov.name + '...';
+    try {
+      var hdrs = {'Content-Type':'application/json'};
+      if(prov.key) hdrs['Authorization'] = 'Bearer ' + prov.key;
+      if(prov.isOR){ hdrs['HTTP-Referer']='https://carlosgalera-a11y.github.io/Cartagenaeste/'; hdrs['X-Title']='Informes Area II'; }
+      var resp = await fetch(prov.url, {method:'POST', headers:hdrs, body:JSON.stringify(prov.body), signal:AbortSignal.timeout(45000)});
+      data = await resp.json();
+      if(data.choices && data.choices[0] && data.choices[0].message){
+        text = data.choices[0].message.content;
+        success = true;
+        console.log('[Informe] OK via ' + prov.name);
+      } else {
+        lastErr = prov.name + ': ' + (data.error ? (data.error.message||JSON.stringify(data.error)) : 'sin respuesta');
+        console.log('[Informe] ' + lastErr);
+      }
+    } catch(e){
+      lastErr = prov.name + ': ' + e.message;
+      console.log('[Informe] ' + lastErr);
+    }
+  }
+
+  if(!success) text = 'No se pudo generar el informe.\nUltimo error: ' + lastErr + '\n\nPrueba de nuevo en unos segundos.';
+
+  // Render
+  function fmtInf(t){
+    return t
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/^#{3}\s+(.+)$/gm,'<h4 style="color:#0f6b4a;margin:12px 0 4px">$1</h4>')
+      .replace(/^#{2}\s+(.+)$/gm,'<h3 style="color:#0f6b4a;border-bottom:1px solid #c8e6c9;padding-bottom:4px;margin:16px 0 6px">$1</h3>')
+      .replace(/^#{1}\s+(.+)$/gm,'<h2 style="color:#0f6b4a;margin:18px 0 8px">$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/^[-]\s+(.+)$/gm,'<li style="margin:3px 0">$1</li>')
+      .replace(/(<li.*<\/li>\n?)+/g,'<ul style="margin:6px 0 6px 18px">$&</ul>')
+      .replace(/\n{2,}/g,'</p><p style="margin:8px 0">')
+      .replace(/\n/g,'<br>')
+      .replace(/^(.)/,'<p style="margin:8px 0">$1')
+      .replace(/(.)$/,'$1</p>');
+  }
+
+  var output = document.getElementById('iaOutput');
+  output.innerHTML = '<button class="copy-btn" onclick="iaCopiar()">Copiar</button>' + fmtInf(text);
+  output.classList.add('show');
+  output.scrollIntoView({behavior:'smooth'});
+
+  btn.disabled=false; btn.textContent='Generar Informe con IA';
   document.getElementById('iaLoading').classList.remove('show');
 }
 
 function iaCopiar(){
   var el = document.getElementById('iaOutput');
-  var text = el.textContent.replace('📋 Copiar','').trim();
-  navigator.clipboard.writeText(text).then(function(){ alert('✅ Informe copiado al portapapeles'); });
+  var text = el.textContent.replace('Copiar','').trim();
+  navigator.clipboard.writeText(text).then(function(){ alert('Informe copiado al portapapeles'); });
 }
 
 // ═══════════════════════════════════════
