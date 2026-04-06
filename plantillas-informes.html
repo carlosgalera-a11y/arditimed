@@ -523,12 +523,25 @@ async function iaGenerar(){
   });
 
   var data, text='', success=false, lastErr='';
+
+  // ═══ Pollinations GPT-4o FIRST for vision (free, no key needed) ═══
+  if(hasImages){
+    loadMsg.textContent = 'Analizando imágenes con GPT-4o Vision...';
+    try{
+      var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3,seed:Math.floor(Math.random()*99999)}),signal:AbortSignal.timeout(60000)});
+      var dP=await rP.json();
+      if(dP.choices&&dP.choices[0]&&dP.choices[0].message){text=dP.choices[0].message.content;success=true;console.log('[Informe] OK via Pollinations GPT-4o Vision');}
+      else{lastErr='Pollinations: sin respuesta';}
+    }catch(e){lastErr='Pollinations: '+e.message;console.log('[Informe] '+lastErr);}
+  }
+
   for(var p=0; p<providers.length && !success; p++){
     var prov = providers[p];
     loadMsg.textContent = 'Intentando ' + prov.name + '...';
     try {
       var hdrs = {'Content-Type':'application/json'};
-      if(prov.key) hdrs['Authorization'] = 'Bearer ' + prov.key;
+      // ⚠️ NO enviar key para modelos :free — causa 'No cookie auth credentials'
+      if(prov.key && prov.body.model.indexOf(':free')===-1) hdrs['Authorization'] = 'Bearer ' + prov.key;
       if(prov.isOR){ hdrs['HTTP-Referer']='https://carlosgalera-a11y.github.io/Cartagenaeste/'; hdrs['X-Title']='Informes Area II'; }
       var resp = await fetch(prov.url, {method:'POST', headers:hdrs, body:JSON.stringify(prov.body), signal:AbortSignal.timeout(90000)});
       data = await resp.json();
@@ -544,6 +557,16 @@ async function iaGenerar(){
       lastErr = prov.name + ': ' + e.message;
       console.log('[Informe] ' + lastErr);
     }
+  }
+
+  // ═══ Último recurso: Pollinations texto ═══
+  if(!success){
+    loadMsg.textContent = 'Último intento...';
+    try{
+      var rF=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'user',content:hasImages?content:prompt}],max_tokens:4000,temperature:0.3}),signal:AbortSignal.timeout(60000)});
+      var dF=await rF.json();
+      if(dF.choices&&dF.choices[0]&&dF.choices[0].message){text=dF.choices[0].message.content;success=true;}
+    }catch(e){lastErr+=' / Pollinations: '+e.message;}
   }
 
   if(!success) text = 'No se pudo generar el informe.\nUltimo error: ' + lastErr + '\n\nPrueba de nuevo en unos segundos.';
