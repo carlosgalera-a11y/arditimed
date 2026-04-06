@@ -617,9 +617,11 @@ async function iaRefinar(){
   providers.push({name:'OR:qwen3.6-plus:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.6-plus:free',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
   providers.push({name:'OR:gemma-3-27b:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'google/gemma-3-27b-it:free',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
 
-  var text='', success=false;
+  var text='', success=false, lastErr='';
   for(var p=0;p<providers.length&&!success;p++){
     var prov=providers[p];
+    var typingEl=document.getElementById('iaChatTyping');
+    if(typingEl) typingEl.textContent='🤖 Probando '+prov.name+'...';
     try{
       var hdrs={'Content-Type':'application/json'};
       if(prov.key) hdrs['Authorization']='Bearer '+prov.key;
@@ -627,7 +629,8 @@ async function iaRefinar(){
       var resp=await fetch(prov.url,{method:'POST',headers:hdrs,body:JSON.stringify(prov.body),signal:AbortSignal.timeout(90000)});
       var data=await resp.json();
       if(data.choices&&data.choices[0]&&data.choices[0].message){text=data.choices[0].message.content;success=true;}
-    }catch(e){console.log('[Refine] '+prov.name+': '+e.message);}
+      else{lastErr=prov.name+': '+(data.error?(data.error.message||JSON.stringify(data.error)):'sin respuesta');console.log('[Refine] '+lastErr);}
+    }catch(e){lastErr=prov.name+': '+e.message;console.log('[Refine] '+lastErr);}
   }
 
   var t = document.getElementById('iaChatTyping');
@@ -639,7 +642,7 @@ async function iaRefinar(){
     output.innerHTML = '<button class="copy-btn" onclick="iaCopiar()">Copiar</button>' + fmtInf(text);
     _addChatMsg('ai', 'Informe actualizado con los cambios solicitados.');
   } else {
-    _addChatMsg('ai', 'No pude aplicar los cambios. Intenta de nuevo. (Abre consola F12 para ver detalles)');
+    _addChatMsg('ai', 'Error: ' + lastErr);
   }
 
   btn.disabled=false; btn.textContent='Enviar ➤';
