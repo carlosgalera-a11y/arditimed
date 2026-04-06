@@ -1890,23 +1890,12 @@ async function scanAnalyze(){
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";if(document.getElementById("scanImgPreview").src.indexOf("image/png")>-1)mt="image/png";
     var dataUrl="data:"+mt+";base64,"+scanB64;
+    // Compress image to reduce payload (max 1024px, JPEG 70%)
+    try{var _cimg=new Image();_cimg.src=dataUrl;await new Promise(function(r){_cimg.onload=r;_cimg.onerror=r;});var _cw=_cimg.width,_ch=_cimg.height,_MAX=1024;if(_cw>_MAX||_ch>_MAX){if(_cw>_ch){_ch=Math.round(_ch*_MAX/_cw);_cw=_MAX;}else{_cw=Math.round(_cw*_MAX/_ch);_ch=_MAX;}}var _cc=document.createElement('canvas');_cc.width=_cw;_cc.height=_ch;_cc.getContext('2d').drawImage(_cimg,0,0,_cw,_ch);dataUrl=_cc.toDataURL('image/jpeg',0.7);console.log('[Scan] Compressed image to '+Math.round(dataUrl.length/1024)+'KB');}catch(e){console.log('[Scan] Compression skipped:',e.message);}
     var userText=ctx?"Analiza esta imagen médica. Contexto clínico: "+ctx:"Analiza esta imagen médica de forma sistemática y detallada.";
     var txt=null;var usedModel="";var errors=[];
 
-    // ── 1. Pollinations (GPT-4o vision, gratis sin key) ──
-    try{
-        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},45000);
-        var r=await fetch("https://text.pollinations.ai/openai",{
-            method:"POST",signal:ctrl.signal,
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({model:"openai",messages:[
-                {role:"system",content:sys},
-                {role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}
-            ],seed:Math.floor(Math.random()*99999)})
-        });
-        if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel="GPT-4o (Pollinations)";}
-        else errors.push("Pollinations: HTTP "+r.status);
-    }catch(e){errors.push("Pollinations: "+e.message);}
+    // Pollinations removed (CORS blocked from HTTPS)
 
     // ── 2. OpenRouter — Qwen 2.5 VL + Llama 4 Scout ──
     if(!txt){
@@ -1917,7 +1906,7 @@ async function scanAnalyze(){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
                     var orH={"Content-Type":"application/json","HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"};
-                    if(orKey && vm.indexOf(':free')===-1)orH["Authorization"]="Bearer "+orKey;
+                    if(orKey)orH["Authorization"]="Bearer "+orKey;
                     var r2=await fetch("https://openrouter.ai/api/v1/chat/completions",{
                         method:"POST",
                         headers:orH,
