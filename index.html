@@ -2666,7 +2666,8 @@ async function infGenerar(){
           for(var vi=0;vi<vModels.length&&!infDone;vi++){
             try{
               try{document.getElementById('infResultContent').querySelector('div:last-child').textContent='Probando '+vModels[vi].split('/')[1].split(':')[0]+'...';}catch(e){}
-              var orH={'Content-Type':'application/json','Authorization':'Bearer '+orKey,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informe Area II Cartagena'};
+              var orH={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informe Area II Cartagena'};
+              if(orKey && vModels[vi].indexOf(':free')===-1)orH['Authorization']='Bearer '+orKey;
               var rV=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
               var dV=await rV.json();
               if(rV.ok&&dV.choices&&dV.choices[0]&&dV.choices[0].message){infTxt=dV.choices[0].message.content||'';if(infTxt){infShowResult(infTxt);return;}}
@@ -2699,9 +2700,10 @@ async function infGenerar(){
       }catch(e){console.log('[Informe] NAS unavailable:',e.message);}
     }
 
-    // 2) Try OpenRouter (with key if available, or without for :free models)
+    // 2) Try OpenRouter — :free models don't need auth key
     var orHeaders={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'};
-    if(key)orHeaders['Authorization']='Bearer '+key;
+    // Don't send key for :free models — avoids 'No cookie auth credentials' error
+    if(key && model.indexOf(':free')===-1)orHeaders['Authorization']='Bearer '+key;
     fetch(apiUrl,{method:'POST',headers:orHeaders,body:JSON.stringify(body)})
     .then(function(res){
       if(!res.ok)throw new Error('OpenRouter '+res.status);
@@ -3102,7 +3104,7 @@ function megaSaveHistory() {
 })();
 
 // Groq key (embedded, free tier)
-var _mgk = atob(["Z3NrX0dUVHFmVFhwQzV","IR3lNSFRrRzByV0dkeW","IzRllPSHNnVVRBOE5Za","lVWVDROOVd5ak1NeFQ="].join(""));
+// ⚠️ KEY REMOVED — was _mgk, unused broken key
 
 // Models to try in order
 var MEGA_MODELS = ["llama-3.1-8b-instant","llama3-8b-8192","gemma2-9b-it"];

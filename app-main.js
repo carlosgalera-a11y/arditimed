@@ -1779,16 +1779,21 @@ async function scanCheckUploads(){
   list.style.display="block";
   list.innerHTML='<p style="font-size:.82rem;color:#888;">⏳ Buscando imágenes...</p>';
   try{
-    var snap=await db.collection("scan_uploads").where("uid","==",user.uid).where("status","==","pending").orderBy("createdAt","desc").limit(10).get();
+    // Simple query without orderBy to avoid composite index requirement
+    var snap=await db.collection("scan_uploads").where("uid","==",user.uid).where("status","==","pending").limit(20).get();
     if(snap.empty){
       list.innerHTML='<p style="font-size:.82rem;color:#888;">No hay imágenes pendientes. Escanea el QR y sube desde el móvil.</p>';
       return;
     }
-    var html='<p style="font-size:.82rem;font-weight:700;color:#1e40af;margin-bottom:8px;">📸 '+snap.size+' imagen(es) recibida(s):</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;">';
-    snap.forEach(function(doc){
-      var d=doc.data();
+    // Sort client-side by createdAt desc
+    var docs=[];snap.forEach(function(d){docs.push({id:d.id,data:d.data()});});
+    docs.sort(function(a,b){return (b.data.createdAt?.toMillis?b.data.createdAt.toMillis():0)-(a.data.createdAt?.toMillis?a.data.createdAt.toMillis():0);});
+    docs=docs.slice(0,10);
+    var html='<p style="font-size:.82rem;font-weight:700;color:#1e40af;margin-bottom:8px;">📸 '+docs.length+' imagen(es) recibida(s):</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;">';
+    docs.forEach(function(item){
+      var d=item.data;
       var thumb=d.imageURL||d.imageData||'';
-      html+='<div style="position:relative;border-radius:8px;overflow:hidden;border:2px solid #3b82f6;cursor:pointer;" onclick="scanLoadUploaded(\''+doc.id+'\')">';
+      html+='<div style="position:relative;border-radius:8px;overflow:hidden;border:2px solid #3b82f6;cursor:pointer;" onclick="scanLoadUploaded(\''+item.id+'\')">';
       if(thumb) html+='<img src="'+thumb+'" style="width:100%;aspect-ratio:1;object-fit:cover;" />';
       html+='<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:3px 6px;font-size:.68rem;color:#fff;">'+({derma:'🩹 Derma',torax:'🫁 Tórax',osea:'🦴 Ósea',abdomen:'🔬 Abdomen',ecg:'💓 ECG',eco:'🫀 Eco'}[d.type]||d.type)+'</div>';
       html+='</div>';
@@ -1895,25 +1900,25 @@ async function scanAnalyze(){
         else errors.push("Pollinations: HTTP "+r.status);
     }catch(e){errors.push("Pollinations: "+e.message);}
 
-    // ── 2. OpenRouter — Llama 4 Scout + Qwen 2.5 VL (con _dk() key) ──
+    // ── 2. OpenRouter — Qwen 2.5 VL + Llama 4 Scout ──
     if(!txt){
         try{
             var orKey=_dk();
-            if(orKey){
-                var orModels=VISION_CONFIG.openrouterModels||["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];
+                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen2.5-vl-32b-instruct","meta-llama/llama-4-scout:free"];
                 for(var mi=0;mi<orModels.length&&!txt;mi++){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
+                    var orH={"Content-Type":"application/json","HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"};
+                    if(orKey && vm.indexOf(':free')===-1)orH["Authorization"]="Bearer "+orKey;
                     var r2=await fetch("https://openrouter.ai/api/v1/chat/completions",{
                         method:"POST",
-                        headers:{"Content-Type":"application/json","Authorization":"Bearer "+orKey,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"},
+                        headers:orH,
                         body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}],max_tokens:2000,temperature:0.3})
                     });
                     var d2=await r2.json();
                     if(r2.ok&&d2.choices&&d2.choices[0]&&d2.choices[0].message){txt=d2.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
                     else{errors.push(vm.split('/')[1]+": HTTP "+r2.status+" "+(d2.error?.message||""));if(r2.status===429||r2.status===502||r2.status===503)continue;}
                 }
-            }
         }catch(e){errors.push("OpenRouter: "+e.message);}
     }
 
