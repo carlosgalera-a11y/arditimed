@@ -234,40 +234,40 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <!-- ── GRID PRINCIPAL DE SECCIONES ── -->
                 <div class="hero-buttons">
                     <div style="display:flex;gap:8px;margin-bottom:16px;justify-content:center;flex-wrap:wrap;">
-                        <button onclick="abrirBuscador()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">🔍 Buscar</button>
-                        <button onclick="abrirFavoritos()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">⭐ Favoritos</button>
+                        <button onclick="if(!firebase.auth().currentUser){showLoginModal();return;}abrirBuscador()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">🔍 Buscar</button>
+                        <button onclick="if(!firebase.auth().currentUser){showLoginModal();return;}abrirFavoritos()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">⭐ Favoritos</button>
                     </div>
                     <!-- 2 BOTONES PRINCIPALES -->
                     <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')" aria-label="Acceder a sección de Pacientes" ><span class="hero-btn-icon">👤</span> Pacientes</a>
-                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProfessionals')" aria-label="Acceder a sección de Profesionales"><span class="hero-btn-icon">🩺</span> Profesionales</a>
+                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="if(!firebase.auth().currentUser){showLoginModal('Profesionales');return;}showPage('pageProfessionals')" aria-label="Acceder a sección de Profesionales"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
 
                 <!-- GRID COMPACTO DE CATEGORÍAS -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;max-width:520px;width:100%;position:relative;z-index:5;">
 
                     <!-- PROTOCOLOS Y GUÍAS -->
-                    <button onclick="toggleSubMenu('subProtocolos')" aria-label="Ver protocolos clínicos" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Protocolos');return;}toggleSubMenu('subProtocolos')" aria-label="Ver protocolos clínicos" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">📋</div>
                         <div style="font-weight:700;font-size:.88rem;">Protocolos</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">AP · Urgencias · Antibióticos</div>
                     </button>
 
                     <!-- ENFERMERÍA -->
-                    <button onclick="showPage('pageEnfermeria')" aria-label="Acceder a sección de Enfermería" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Enfermería');return;}showPage('pageEnfermeria')" aria-label="Acceder a sección de Enfermería" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">👩‍⚕️</div>
                         <div style="font-weight:700;font-size:.88rem;">Enfermería</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Protocolos · Técnicas · Vacunas</div>
                     </button>
 
                     <!-- HERRAMIENTAS CLÍNICAS -->
-                    <button onclick="toggleSubMenu('subHerramientas')" aria-label="Ver herramientas clínicas" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Herramientas');return;}toggleSubMenu('subHerramientas')" aria-label="Ver herramientas clínicas" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">🛠️</div>
                         <div style="font-weight:700;font-size:.88rem;">Herramientas</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">IA · Calculadoras · Informes</div>
                     </button>
 
                     <!-- TELÉFONOS Y BUSCAS -->
-                    <button onclick="showPage('pageTelefonos')" aria-label="Directorio de teléfonos y buscas" style="background:linear-gradient(135deg,rgba(202,138,4,.25),rgba(161,98,7,.2));border:2px solid rgba(202,138,4,.5);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Teléfonos');return;}showPage('pageTelefonos')" aria-label="Directorio de teléfonos y buscas" style="background:linear-gradient(135deg,rgba(202,138,4,.25),rgba(161,98,7,.2));border:2px solid rgba(202,138,4,.5);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">📞</div>
                         <div style="font-weight:700;font-size:.88rem;">Teléfonos Buscas</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Hospital · Centros · Buscas</div>
