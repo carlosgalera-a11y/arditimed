@@ -2543,36 +2543,55 @@ async function infGenerar(){
     }
 
     if(hasImages){
-      // ═══ VISION PATH: images → GPT-4o / Qwen 2.5 VL / Llama 4 Scout ═══
-      console.log('[Informe] '+infArchivos.length+' images, using vision models');
+      // ═══ VISION PATH — Mismos modelos y key que Scan IA / Rx Tórax ═══
+      console.log('[Informe] '+infArchivos.length+' images, using VISION_CONFIG (same as Scan IA)');
       var visionMsgs=[{role:'system',content:sysPrompt}];
       var userContent=[{type:'text',text:(texto||'Genera el informe cl\u00ednico bas\u00e1ndote en las im\u00e1genes adjuntas.')}];
       infArchivos.forEach(function(f){userContent.push({type:'image_url',image_url:{url:f.data}});});
       visionMsgs.push({role:'user',content:userContent});
 
-      // 1) Pollinations (GPT-4o vision, free)
+      var infTxt=null;
+
+      // 1) Pollinations (GPT-4o vision, free — same as Scan IA step 1)
       document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">\u23f3</div>Analizando im\u00e1genes con GPT-4o Vision...</div>';
       try{
         var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},30000);
-        var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
-        if(rP.ok){var dP=await rP.json();var tP=(dP.choices&&dP.choices[0])?dP.choices[0].message.content:'';if(tP){infShowResult(tP);return;}}
+        var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:typeof VISION_CONFIG!=='undefined'?VISION_CONFIG.pollinationsModel||'openai':'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
+        if(rP.ok){var dP=await rP.json();infTxt=(dP.choices&&dP.choices[0])?dP.choices[0].message.content:'';if(infTxt){infShowResult(infTxt);return;}}
       }catch(e){console.log('[Informe] Pollinations vision:',e.message);}
 
-      // 2) OpenRouter — Qwen 2.5 VL + Llama 4 Scout
+      // 2) OpenRouter — mismos modelos y key que Scan IA (_dk() = OpenRouter API key)
       if(!infDone){
-        try{document.getElementById('infResultContent').querySelector('div').innerHTML='\u23f3 Probando Qwen 2.5 VL...';}catch(e){}
-        var orKey=_dk()||'';
-        var vModels=['qwen/qwen2.5-vl-72b-instruct:free','meta-llama/llama-4-scout:free','qwen/qwen2.5-vl-32b-instruct'];
+        var orKey=_dk();
+        var vModels=typeof VISION_CONFIG!=='undefined'&&VISION_CONFIG.openrouterModels?VISION_CONFIG.openrouterModels:['meta-llama/llama-4-scout:free','qwen/qwen2.5-vl-32b-instruct'];
+        console.log('[Informe] OpenRouter vision models:',vModels,'key:',orKey?'present':'missing');
         for(var vi=0;vi<vModels.length&&!infDone;vi++){
           try{
-            var orH={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'};
+            document.getElementById('infResultContent').querySelector('div').innerHTML='\u23f3 Probando '+vModels[vi].split('/')[1].split(':')[0]+'...';
+          }catch(e){}
+          try{
+            var orH={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informe Area II Cartagena'};
             if(orKey)orH['Authorization']='Bearer '+orKey;
-            var rV=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
-            if(rV.ok){var dV=await rV.json();var tV=(dV.choices&&dV.choices[0])?dV.choices[0].message.content:'';if(tV){infShowResult(tV);return;}}
+            var rV=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:typeof VISION_CONFIG!=='undefined'?VISION_CONFIG.temperature||0.3:0.3})});
+            var dV=await rV.json();
+            if(rV.ok&&dV.choices&&dV.choices[0]&&dV.choices[0].message){infTxt=dV.choices[0].message.content||'';if(infTxt){infShowResult(infTxt);return;}}
+            else{console.log('[Informe] '+vModels[vi]+': HTTP '+rV.status+' '+(dV.error&&dV.error.message||''));}
           }catch(e){console.log('[Informe] '+vModels[vi]+':',e.message);}
         }
       }
-      if(!infDone)infShowError('No se pudo analizar las im\u00e1genes. Describe el caso por texto.');
+
+      // 3) Puter.js img2txt (Gemini gratis — same as Scan IA step 3)
+      if(!infDone && typeof puter!=='undefined' && puter.ai && puter.ai.img2txt){
+        try{
+          document.getElementById('infResultContent').querySelector('div').innerHTML='\u23f3 Probando Gemini...';
+          var puterModel=typeof VISION_CONFIG!=='undefined'?VISION_CONFIG.puterModel||'gemini-2.5-flash':'gemini-2.5-flash';
+          var pr=await puter.ai.img2txt(infArchivos[0].data,sysPrompt+'\n\n'+texto,{model:puterModel});
+          var pt=typeof pr==='string'?pr:(pr&&pr.text?pr.text:null);
+          if(pt&&pt.length>20){infShowResult(pt);return;}
+        }catch(e){console.log('[Informe] Puter:',e.message);}
+      }
+
+      if(!infDone)infShowError('No se pudo analizar las im\u00e1genes. Verifica tu conexi\u00f3n o describe el caso por texto.');
       return;
     }
 
