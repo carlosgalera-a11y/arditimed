@@ -181,10 +181,13 @@ Tratamiento habitual:"></textarea></div>
 
 <div class="output" id="iaOutput"><button class="copy-btn" onclick="iaCopiar()">📋 Copiar</button></div>
 
-<div id="iaRefineBar" style="display:none;gap:8px;margin-top:12px;align-items:center;background:#f0fdf4;border:2px solid #1a6b4a;border-radius:10px;padding:12px;">
-<span style="font-size:1.1rem;">✏️</span>
-<input type="text" id="iaRefineInput" placeholder="Ej: Añade signos de alarma, cambia el diagnóstico a..." style="flex:1;padding:10px 12px;border:2px solid #d0d0d0;border-radius:8px;font-size:.85rem;font-family:inherit;">
-<button id="iaRefineBtn" onclick="iaRefinar()" class="btn btn-green" style="white-space:nowrap;">✏️ Aplicar cambios</button>
+<div id="iaChatBox" style="display:none;margin-top:16px;border:2px solid #1a6b4a;border-radius:12px;overflow:hidden;background:#f8fdf9;">
+<div style="background:#1a6b4a;color:#fff;padding:10px 16px;font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:8px;">🤖 Chat con IA — Pide cambios sobre el informe</div>
+<div id="iaChatMessages" style="max-height:300px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;"></div>
+<div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid #d4edda;background:#fff;">
+<input type="text" id="iaChatInput" placeholder="Ej: Añade signos de alarma, cambia diagnóstico a EIP..." style="flex:1;padding:10px 12px;border:2px solid #d0d0d0;border-radius:8px;font-size:.85rem;font-family:inherit;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();iaRefinar();}">
+<button id="iaRefineBtn" onclick="iaRefinar()" class="btn btn-green" style="white-space:nowrap;min-width:auto;padding:8px 16px;">Enviar ➤</button>
+</div>
 </div>
 </div>
 
@@ -460,7 +463,7 @@ async function iaGenerar(){
     providers.push({name:'DeepSeek V3.2', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3}});
   }
   // Qwen paid vision models (stable, cheap with credits)
-  var orVisionModels = ['qwen/qwen3.5-flash','qwen/qwen3.5-9b','qwen/qwen3.6-plus:free'];
+  var orVisionModels = ['qwen/qwen3.5-flash','qwen/qwen3.6-plus:free','google/gemma-3-27b-it:free','openrouter/free'];
   var orTextModels = ['deepseek/deepseek-chat-v3-0324:free','meta-llama/llama-3.3-70b-instruct:free'];
   var orModels = hasImages ? orVisionModels : orTextModels;
 
@@ -505,8 +508,10 @@ async function iaGenerar(){
   output.classList.add('show');
   if(success){
     window._iaLastText = text;
-    window._iaLastProvider = providers.find(function(x){return true;});
-    document.getElementById('iaRefineBar').style.display='flex';
+    window._iaChatHistory = [];
+    var chatBox = document.getElementById('iaChatBox');
+    chatBox.style.display='block';
+    document.getElementById('iaChatMessages').innerHTML='<div style="background:#e8f5e9;padding:8px 12px;border-radius:8px;font-size:.82rem;color:#2e7d32;">Informe generado. Escribe qué cambios necesitas y los aplicaré directamente.</div>';
   }
   output.scrollIntoView({behavior:'smooth'});
 
@@ -514,21 +519,43 @@ async function iaGenerar(){
   document.getElementById('iaLoading').classList.remove('show');
 }
 
-// Refinar informe con IA
+// Chat con IA para refinar informe
+function _addChatMsg(who, text){
+  var box = document.getElementById('iaChatMessages');
+  var d = document.createElement('div');
+  d.style.cssText = who==='user' ? 'align-self:flex-end;background:#dbeafe;color:#1e3a5f;padding:8px 12px;border-radius:12px 12px 2px 12px;max-width:80%;font-size:.83rem;' : 'align-self:flex-start;background:#f0fdf4;color:#1a4731;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:80%;font-size:.83rem;';
+  d.textContent = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
 async function iaRefinar(){
-  var instruccion = document.getElementById('iaRefineInput').value.trim();
-  if(!instruccion){alert('Escribe que quieres cambiar');return;}
+  var input = document.getElementById('iaChatInput');
+  var instruccion = input.value.trim();
+  if(!instruccion){return;}
   if(!window._iaLastText){alert('Genera un informe primero');return;}
 
+  _addChatMsg('user', instruccion);
+  input.value='';
+
   var btn = document.getElementById('iaRefineBtn');
-  btn.disabled=true; btn.textContent='Mejorando...';
-  document.getElementById('iaRefineInput').disabled=true;
+  btn.disabled=true; btn.textContent='...';
+  input.disabled=true;
+
+  // Show typing indicator
+  var typing = document.createElement('div');
+  typing.id='iaChatTyping';
+  typing.style.cssText='align-self:flex-start;color:#64748b;font-size:.8rem;padding:4px 12px;';
+  typing.textContent='🤖 Aplicando cambios...';
+  document.getElementById('iaChatMessages').appendChild(typing);
+  document.getElementById('iaChatMessages').scrollTop=99999;
 
   var prompt = 'Eres un asistente clinico docente. Tienes el siguiente informe medico generado previamente:\n\n';
   prompt += '---INFORME ACTUAL---\n' + window._iaLastText + '\n---FIN INFORME---\n\n';
   prompt += 'El medico solicita los siguientes cambios o mejoras:\n' + instruccion + '\n\n';
   prompt += 'Genera el informe COMPLETO con los cambios aplicados. Devuelve el informe entero modificado, no solo los cambios.';
 
+  function _xd(c){return c.split(',').map(function(n){return String.fromCharCode(parseInt(n)^42)}).join('');}
   var _OR = _xd('89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31');
   var _DS = _xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');
 
@@ -550,17 +577,21 @@ async function iaRefinar(){
     }catch(e){}
   }
 
+  var t = document.getElementById('iaChatTyping');
+  if(t) t.remove();
+
   if(success){
     window._iaLastText = text;
     var output = document.getElementById('iaOutput');
     output.innerHTML = '<button class="copy-btn" onclick="iaCopiar()">Copiar</button>' + fmtInf(text);
+    _addChatMsg('ai', 'Informe actualizado con los cambios solicitados.');
   } else {
-    alert('No se pudo refinar. Intenta de nuevo.');
+    _addChatMsg('ai', 'No pude aplicar los cambios. Intenta de nuevo.');
   }
 
-  btn.disabled=false; btn.textContent='Aplicar cambios';
-  document.getElementById('iaRefineInput').disabled=false;
-  document.getElementById('iaRefineInput').value='';
+  btn.disabled=false; btn.textContent='Enviar ➤';
+  input.disabled=false;
+  input.focus();
 }
 
 // fmtInf global para reusar en refinar
