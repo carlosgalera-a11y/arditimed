@@ -51,6 +51,13 @@ service cloud.firestore {
       allow write: if isSuperAdmin();
     }
 
+    // Informes IA — each user can only CRUD their own reports
+    match /informes_ia/{docId} {
+      allow create: if isAuth() && request.resource.data.uid == request.auth.uid;
+      allow read, delete: if isAuth() && resource.data.uid == request.auth.uid;
+      allow update: if false; // informes are immutable, generate a new one
+    }
+
     // Default: deny all
     match /{document=**} {
       allow read, write: if false;
