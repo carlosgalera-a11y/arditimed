@@ -469,7 +469,7 @@ async function iaGenerar(){
         var dsBody = {model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3};
         var rDS = await fetch('https://api.deepseek.com/chat/completions', {
           method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer REDACTED_DEEPSEEK_OLD_2026-04'},
+          headers:{'Content-Type':'application/json','Authorization':'Bearer REDACTED_DEEPSEEK_2026-04'},
           body:JSON.stringify(dsBody),
           signal: AbortSignal.timeout(30000)
         });
