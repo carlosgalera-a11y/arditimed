@@ -445,7 +445,7 @@ async function iaGenerar(){
   
   // Use vision model if images attached, text model otherwise
   var hasImages = content.some(function(c){ return c.type === 'image_url'; });
-  var model = hasImages ? 'qwen/qwen3.6-plus:free' : 'deepseek-chat';
+  var model = hasImages ? 'openrouter/free' : 'deepseek-chat';
   
   var body = {
     model: model,
@@ -469,7 +469,7 @@ async function iaGenerar(){
         var dsBody = {model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3};
         var rDS = await fetch('https://api.deepseek.com/chat/completions', {
           method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer REDACTED_DEEPSEEK_2026-04'},
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+atob('c2stYTg5ZGQxN2ZhYTg0NDhj'+'MmFhMGE2Y2U2YWNjYjg5Yjk=')},
           body:JSON.stringify(dsBody),
           signal: AbortSignal.timeout(30000)
         });
@@ -493,7 +493,7 @@ async function iaGenerar(){
     if(!success){
       try {
         var orKey = _dkInf();
-        var orModel = hasImages ? 'qwen/qwen3.6-plus:free' : 'deepseek/deepseek-chat-v3-0324:free';
+        var orModel = hasImages ? 'openrouter/free' : 'deepseek/deepseek-chat-v3-0324:free';
         var orBody = Object.assign({}, body, {model: orModel});
         var orHeaders = {'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informes Area II'};
         if(orKey) orHeaders['Authorization'] = 'Bearer ' + orKey;

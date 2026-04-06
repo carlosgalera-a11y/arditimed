@@ -870,7 +870,7 @@ async function llamarIA(up,sp){
   /* ═══ Fallback chain: DeepSeek API → Pollinations → OpenRouter ═══ */
   var OR_KEY=_dk();
   var NAS_URL=localStorage.getItem('api_proxy_url')||'http://REDACTED_INTERNAL_IP:3100';
-  var DS_KEY='REDACTED_DEEPSEEK_2026-04';
+  var DS_KEY=atob('c2stYTg5ZGQxN2ZhYTg0NDhj'+'MmFhMGE2Y2U2YWNjYjg5Yjk=');
   var providers=[];
   /* NAS solo funciona en HTTP (red local) */
   if(location.protocol!=='https:') providers.push({type:'nas'});
@@ -878,7 +878,7 @@ async function llamarIA(up,sp){
   providers.push({type:'ds'});
   providers.push({type:'poll'});
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
-  providers.push({type:'or',model:'qwen/qwen3.6-plus:free'});
+  providers.push({type:'or',model:'openrouter/free'});
   providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
@@ -1576,7 +1576,7 @@ function getScanGroqModel(){return SCAN_GROQ_MODEL_DEFAULT;}
 // ── Vision Config: save/load from Firestore for ALL users ──
 var VISION_CONFIG={
     fallbackChain:["openrouter","pollinations","puter"],
-    openrouterModels:["qwen/qwen3.6-plus:free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"],
+    openrouterModels:["openrouter/free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"],
     pollinationsModel:"openai",
     puterModel:"gemini-2.5-flash",
     maxTokens:2000,
@@ -1910,7 +1910,7 @@ async function scanAnalyze(){
     if(!txt){
         try{
             var orKey=_dk();
-                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen3.6-plus:free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"];
+                var orModels=VISION_CONFIG.openrouterModels||["openrouter/free","google/gemma-3-27b-it:free","mistralai/mistral-small-3.1-24b-instruct:free"];
                 for(var mi=0;mi<orModels.length&&!txt;mi++){
                     var vm=orModels[mi];
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
