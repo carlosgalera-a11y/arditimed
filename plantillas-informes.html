@@ -58,6 +58,22 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:1
 .dr-bar{position:sticky;bottom:0;background:#fff;border-top:2px solid #e0e0e0;padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:50}
 .dr-bar input{flex:1;padding:8px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.88rem;font-family:inherit}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script>
+if(!firebase.apps.length){
+  firebase.initializeApp({
+    apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
+    authDomain:"docenciacartagenaeste.firebaseapp.com",
+    projectId:"docenciacartagenaeste",
+    storageBucket:"docenciacartagenaeste.firebasestorage.app",
+    messagingSenderId:"1056320755107",
+    appId:"1:1056320755107:web:126637bf63c13bbb297616"
+  });
+}
+var db = firebase.firestore();
+</script>
 </head>
 <body>
 
@@ -189,6 +205,16 @@ Tratamiento habitual:"></textarea></div>
 <button id="iaRefineBtn" onclick="iaRefinar()" class="btn btn-green" style="white-space:nowrap;min-width:auto;padding:8px 16px;">Enviar ➤</button>
 </div>
 </div>
+
+<div id="iaSaveBar" style="display:none;margin-top:12px;gap:8px;align-items:center;">
+<button class="btn btn-green" onclick="iaGuardar()" id="iaSaveBtn">💾 Guardar informe</button>
+<span id="iaSaveMsg" style="font-size:.8rem;color:#64748b;"></span>
+</div>
+
+<div class="card" style="margin-top:20px;" id="iaHistorialCard">
+<h3>📂 Mis Informes Guardados</h3>
+<p style="font-size:.82rem;color:#64748b;margin-bottom:12px;">Solo tú puedes ver tus informes. Inicia sesión para guardar y acceder.</p>
+<div id="iaHistorialList"><p style="color:#999;font-size:.82rem;">Inicia sesión para ver tus informes guardados.</p></div>
 </div>
 
 <!-- ═══════ TAB 3: MIS PLANTILLAS ═══════ -->
@@ -512,6 +538,9 @@ async function iaGenerar(){
     var chatBox = document.getElementById('iaChatBox');
     chatBox.style.display='block';
     document.getElementById('iaChatMessages').innerHTML='<div style="background:#e8f5e9;padding:8px 12px;border-radius:8px;font-size:.82rem;color:#2e7d32;">Informe generado. Escribe qué cambios necesitas y los aplicaré directamente.</div>';
+    if(typeof firebase!=='undefined' && firebase.auth().currentUser){
+      document.getElementById('iaSaveBar').style.display='flex';
+    }
   }
   output.scrollIntoView({behavior:'smooth'});
 
@@ -612,6 +641,102 @@ async function iaRefinar(){
   input.disabled=false;
   input.focus();
 }
+
+// ═══════ GUARDAR / CARGAR INFORMES EN FIRESTORE ═══════
+async function iaGuardar(){
+  var user = firebase.auth().currentUser;
+  if(!user){alert('Inicia sesión para guardar informes');return;}
+  if(!window._iaLastText){alert('No hay informe que guardar');return;}
+  var btn = document.getElementById('iaSaveBtn');
+  btn.disabled=true; btn.textContent='Guardando...';
+  var tipo = document.getElementById('iaType').value || 'Informe';
+  try {
+    await db.collection('informes_ia').add({
+      uid: user.uid,
+      email: user.email,
+      tipo: tipo,
+      texto: window._iaLastText,
+      medico: (document.getElementById('drInput') || {}).value || '',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    btn.textContent='✅ Guardado';
+    document.getElementById('iaSaveMsg').textContent='Informe guardado correctamente';
+    setTimeout(function(){btn.textContent='💾 Guardar informe';btn.disabled=false;document.getElementById('iaSaveMsg').textContent='';},2000);
+    iaCargarHistorial();
+  } catch(e){
+    btn.textContent='❌ Error';btn.disabled=false;
+    console.error('Error guardando informe:',e);
+  }
+}
+
+function iaCargarHistorial(){
+  var user = firebase.auth().currentUser;
+  var list = document.getElementById('iaHistorialList');
+  if(!user){list.innerHTML='<p style="color:#999;font-size:.82rem;">Inicia sesión para ver tus informes guardados.</p>';return;}
+  list.innerHTML='<p style="color:#999;font-size:.82rem;">Cargando...</p>';
+  db.collection('informes_ia').where('uid','==',user.uid).orderBy('createdAt','desc').limit(20).get().then(function(snap){
+    if(snap.empty){list.innerHTML='<p style="color:#999;font-size:.82rem;">No tienes informes guardados aún.</p>';return;}
+    var html='';
+    snap.forEach(function(doc){
+      var d=doc.data();
+      var fecha=d.createdAt?d.createdAt.toDate().toLocaleString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Sin fecha';
+      var preview=d.texto.substring(0,120).replace(/[<>]/g,'')+'...';
+      html+='<div style="border:1px solid #e0e0e0;border-radius:8px;padding:12px;margin-bottom:8px;background:#fafafa;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">';
+      html+='<span style="font-weight:600;font-size:.85rem;color:#1a6b4a;">'+d.tipo+'</span>';
+      html+='<span style="font-size:.75rem;color:#999;">'+fecha+'</span></div>';
+      html+='<p style="font-size:.8rem;color:#555;margin-bottom:8px;">'+preview+'</p>';
+      html+='<div style="display:flex;gap:6px;">';
+      html+='<button onclick="iaVerInforme(\''+doc.id+'\')" style="font-size:.78rem;padding:4px 10px;border:1px solid #1a6b4a;background:#fff;color:#1a6b4a;border-radius:6px;cursor:pointer;">👁 Ver</button>';
+      html+='<button onclick="iaCopiarGuardado(\''+doc.id+'\')" style="font-size:.78rem;padding:4px 10px;border:1px solid #2196f3;background:#fff;color:#2196f3;border-radius:6px;cursor:pointer;">📋 Copiar</button>';
+      html+='<button onclick="iaEliminarInforme(\''+doc.id+'\')" style="font-size:.78rem;padding:4px 10px;border:1px solid #e53935;background:#fff;color:#e53935;border-radius:6px;cursor:pointer;">🗑 Eliminar</button>';
+      html+='</div></div>';
+    });
+    list.innerHTML=html;
+  }).catch(function(e){
+    console.error('Error cargando informes:',e);
+    list.innerHTML='<p style="color:#e53935;font-size:.82rem;">Error cargando informes. Verifica tu conexión.</p>';
+  });
+}
+
+function iaVerInforme(id){
+  db.collection('informes_ia').doc(id).get().then(function(doc){
+    if(!doc.exists){alert('Informe no encontrado');return;}
+    var d=doc.data();
+    if(d.uid!==firebase.auth().currentUser.uid){alert('No tienes acceso a este informe');return;}
+    var output=document.getElementById('iaOutput');
+    output.innerHTML='<button class="copy-btn" onclick="iaCopiar()">📋 Copiar</button>'+fmtInf(d.texto);
+    output.classList.add('show');
+    window._iaLastText=d.texto;
+    document.getElementById('iaChatBox').style.display='block';
+    document.getElementById('iaChatMessages').innerHTML='<div style="background:#e8f5e9;padding:8px 12px;border-radius:8px;font-size:.82rem;color:#2e7d32;">Informe cargado. Puedes pedir cambios.</div>';
+    output.scrollIntoView({behavior:'smooth'});
+  });
+}
+
+function iaCopiarGuardado(id){
+  db.collection('informes_ia').doc(id).get().then(function(doc){
+    if(!doc.exists)return;
+    var d=doc.data();
+    if(d.uid!==firebase.auth().currentUser.uid)return;
+    navigator.clipboard.writeText(d.texto).then(function(){alert('Informe copiado al portapapeles');});
+  });
+}
+
+function iaEliminarInforme(id){
+  if(!confirm('¿Eliminar este informe? No se puede deshacer.'))return;
+  db.collection('informes_ia').doc(id).delete().then(function(){iaCargarHistorial();});
+}
+
+// Auth listener - show/hide save button and load history
+firebase.auth().onAuthStateChanged(function(user){
+  var saveBar = document.getElementById('iaSaveBar');
+  if(user){
+    iaCargarHistorial();
+  } else {
+    document.getElementById('iaHistorialList').innerHTML='<p style="color:#999;font-size:.82rem;">Inicia sesión para ver tus informes guardados.</p>';
+  }
+});
 
 // fmtInf global para reusar en refinar
 function fmtInf(t){
