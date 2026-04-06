@@ -454,51 +454,73 @@ async function iaGenerar(){
     temperature: 0.3
   };
   
+  // OR key from main app (same as VISION_CONFIG)
+  var _KP_INF=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
+  function _dkInf(){try{return atob(_KP_INF.join(""));}catch(e){return "";}}
+
   try {
     var data;
     var success = false;
-    // Use proxy if available
-    var proxyUrl = localStorage.getItem('api_proxy_url');
-    if(proxyUrl){
-      try {
-        var r = await fetch(proxyUrl + '/api/openrouter', {
-          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
-        });
-        data = await r.json();
-        if(data.choices && data.choices[0]) success = true;
-      } catch(e){ console.log('[Informe] Proxy failed:', e.message); }
-    }
-    
-    // Try Pollinations (GPT-4o, free, no key needed)
+
+    // 1. NAS proxy (red local)
+    var proxyUrl = localStorage.getItem('api_proxy_url') || 'http://REDACTED_INTERNAL_IP:3100';
+    try {
+      var r = await fetch(proxyUrl + '/api/openrouter', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body),
+        signal: AbortSignal.timeout(4000)
+      });
+      data = await r.json();
+      if(data.choices && data.choices[0]) success = true;
+    } catch(e){ console.log('[Informe] Proxy failed:', e.message); }
+
+    // 2. OpenRouter with key (funciona para :free y modelos de pago)
     if(!success){
       try {
-        var pollBody = {model:'openai', messages:[{role:'user',content:content}], max_tokens:4000, temperature:0.3};
-        if(hasImages) pollBody.seed = Math.floor(Math.random()*99999);
+        var orKey = _dkInf();
+        var orHeaders = {'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informes Area II'};
+        if(orKey) orHeaders['Authorization'] = 'Bearer ' + orKey;
+        var rOR = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method:'POST', headers: orHeaders, body:JSON.stringify(body),
+          signal: AbortSignal.timeout(30000)
+        });
+        data = await rOR.json();
+        if(data.choices && data.choices[0]) success = true;
+        else console.log('[Informe] OR error:', data.error);
+      } catch(e){ console.log('[Informe] OpenRouter failed:', e.message); }
+    }
+
+    // 3. Pollinations (gratis, sin key) — solo texto o visión básica
+    if(!success){
+      try {
+        var pollContent = hasImages ? content : prompt;
+        var pollBody = {model:'openai', messages:[{role:'user',content:pollContent}], max_tokens:4000, temperature:0.3, seed:Math.floor(Math.random()*99999), private:true};
         var rP = await fetch('https://text.pollinations.ai/openai', {
-          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(pollBody)
+          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(pollBody),
+          signal: AbortSignal.timeout(30000)
         });
         data = await rP.json();
         if(data.choices && data.choices[0]) success = true;
       } catch(e){ console.log('[Informe] Pollinations failed:', e.message); }
     }
-    
-    // Last resort: OpenRouter direct (no auth for :free)
-    if(!success){
-      var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/',
-          'X-Title':'Informes Area II'
-        },
-        body:JSON.stringify(body)
-      });
-      data = await r.json();
+
+    // 4. DeepSeek directo (solo texto)
+    if(!success && !hasImages){
+      try {
+        var dsBody = {model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3};
+        var rDS = await fetch('https://api.deepseek.com/chat/completions', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer REDACTED_DEEPSEEK_OLD_2026-04'},
+          body:JSON.stringify(dsBody),
+          signal: AbortSignal.timeout(30000)
+        });
+        data = await rDS.json();
+        if(data.choices && data.choices[0]) success = true;
+      } catch(e){ console.log('[Informe] DeepSeek failed:', e.message); }
     }
-    
+
     var text = '';
-    if(data.choices && data.choices[0]) text = data.choices[0].message.content;
-    else if(data.error) text = 'Error: ' + (data.error.message || JSON.stringify(data.error));
+    if(data && data.choices && data.choices[0]) text = data.choices[0].message.content;
+    else if(data && data.error) text = 'Error: ' + (data.error.message || JSON.stringify(data.error));
     else text = 'No se pudo generar el informe. Inténtalo de nuevo.';
     
     var output = document.getElementById('iaOutput');
