@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  var REQUIRED_V = 55;
+  var REQUIRED_V = 56;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -445,6 +445,24 @@ async function fileToBase64(file){
   });
 }
 
+// Compress image to max 1024px and JPEG quality 0.7 (~100-200KB)
+async function compressImage(file){
+  return new Promise(function(res,rej){
+    var img=new Image();
+    img.onload=function(){
+      var MAX=1024, w=img.width, h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      res(c.toDataURL('image/jpeg',0.7));
+    };
+    img.onerror=function(){rej(new Error('Image load error'));};
+    var r=new FileReader();
+    r.onload=function(){img.src=r.result;};
+    r.readAsDataURL(file);
+  });
+}
+
 async function iaGenerar(){
   var tipo = document.getElementById('iaType').value;
   if(!tipo){alert('Selecciona el tipo de informe');return;}
@@ -471,7 +489,7 @@ async function iaGenerar(){
   for(var i=0; i<iaFiles.length && i<5; i++){
     try {
       if(iaFiles[i].type.startsWith('image/')){
-        var b64 = await fileToBase64(iaFiles[i]);
+        var b64 = await compressImage(iaFiles[i]);
         content.push({ type: 'image_url', image_url: { url: b64 } });
       }
     } catch(e){}
@@ -595,7 +613,7 @@ async function iaRefinar(){
     for(var i=0; i<iaFiles.length && i<5; i++){
       try {
         if(iaFiles[i].type.startsWith('image/')){
-          var b64 = await fileToBase64(iaFiles[i]);
+          var b64 = await compressImage(iaFiles[i]);
           content.push({ type: 'image_url', image_url: { url: b64 } });
           hasImages = true;
         }
