@@ -52,8 +52,8 @@ var secureStore=(function(){
 try{secureStore.cleanExpired();}catch(e){}
 
 // ── API KEY PROTECTION ───────────────────────────────
-var _KP_ENC=['ZjliOWZlNzhiOTRlYTI3ZDczN','jQ5MjRjYWE4Y2M5MTQwNDVkYj','diYmNkNDEyN2M5ODc1NjM2YTZ','kZjlhNTg5MS0xdi1yby1rcw=='].join('');
-function _dk(){try{return atob(_KP_ENC).split('').reverse().join('');}catch(e){return '';}}
+var _KP_ENC='x';
+function _dk(){return _xd('89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31');}
 
 /* ═══ API PROXY CONFIG ═══ 
    Si tienes el backend en tu NAS, configura la URL aquí.
@@ -870,8 +870,9 @@ async function llamarIA(up,sp){
   /* ═══ Fallback chain: DeepSeek API → Pollinations → OpenRouter ═══ */
   var OR_KEY=_dk();
   var NAS_URL=localStorage.getItem('api_proxy_url')||'http://REDACTED_INTERNAL_IP:3100';
-  function _rk(s){return atob(s).split('').reverse().join('');}
-  var DS_KEY=_rk('OWI5OGJjY2E2ZWM2YTBhYTJjODQ0OGFhZjcxZGQ5OGEta3M=');
+  
+  function _xd(c){return c.split(',').map(function(n){return String.fromCharCode(parseInt(n)^42)}).join('');}
+  var DS_KEY=_xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');
   var providers=[];
   /* NAS solo funciona en HTTP (red local) */
   if(location.protocol!=='https:') providers.push({type:'nas'});
