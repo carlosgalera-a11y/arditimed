@@ -550,19 +550,38 @@ async function iaRefinar(){
   document.getElementById('iaChatMessages').appendChild(typing);
   document.getElementById('iaChatMessages').scrollTop=99999;
 
-  var prompt = 'Eres un asistente clinico docente. Tienes el siguiente informe medico generado previamente:\n\n';
-  prompt += '---INFORME ACTUAL---\n' + window._iaLastText + '\n---FIN INFORME---\n\n';
-  prompt += 'El medico solicita los siguientes cambios o mejoras:\n' + instruccion + '\n\n';
-  prompt += 'Genera el informe COMPLETO con los cambios aplicados. Devuelve el informe entero modificado, no solo los cambios.';
+  var promptText = 'Eres un asistente clinico docente. Tienes el siguiente informe medico generado previamente:\n\n';
+  promptText += '---INFORME ACTUAL---\n' + window._iaLastText + '\n---FIN INFORME---\n\n';
+  promptText += 'El medico solicita los siguientes cambios o mejoras:\n' + instruccion + '\n\n';
+  promptText += 'Si se adjuntan imagenes/capturas, analiza las para extraer la informacion que el medico pide.\n';
+  promptText += 'Genera el informe COMPLETO con los cambios aplicados. Devuelve el informe entero modificado, no solo los cambios.';
+
+  var content = [];
+  var hasImages = false;
+  if(typeof iaFiles !== 'undefined' && iaFiles.length > 0){
+    for(var i=0; i<iaFiles.length && i<5; i++){
+      try {
+        if(iaFiles[i].type.startsWith('image/')){
+          var b64 = await fileToBase64(iaFiles[i]);
+          content.push({ type: 'image_url', image_url: { url: b64 } });
+          hasImages = true;
+        }
+      } catch(e){}
+    }
+  }
+  content.push({ type: 'text', text: promptText });
 
   function _xd(c){return c.split(',').map(function(n){return String.fromCharCode(parseInt(n)^42)}).join('');}
   var _OR = _xd('89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31');
   var _DS = _xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');
 
-  var providers = [
-    {name:'DeepSeek', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat',messages:[{role:'user',content:prompt}],max_tokens:4000,temperature:0.3}},
-    {name:'OR:qwen3.5-flash', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-flash',messages:[{role:'user',content:prompt}],max_tokens:4000,temperature:0.3}, isOR:true}
-  ];
+  var providers = [];
+  if(!hasImages){
+    providers.push({name:'DeepSeek', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat',messages:[{role:'user',content:promptText}],max_tokens:4000,temperature:0.3}});
+  }
+  providers.push({name:'OR:qwen3.5-flash', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-flash',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3}, isOR:true});
+  providers.push({name:'OR:qwen3.6-plus:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.6-plus:free',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3}, isOR:true});
+  providers.push({name:'OR:gemma-3-27b:free', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'google/gemma-3-27b-it:free',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3}, isOR:true});
 
   var text='', success=false;
   for(var p=0;p<providers.length&&!success;p++){
@@ -571,7 +590,7 @@ async function iaRefinar(){
       var hdrs={'Content-Type':'application/json'};
       if(prov.key) hdrs['Authorization']='Bearer '+prov.key;
       if(prov.isOR){hdrs['HTTP-Referer']='https://carlosgalera-a11y.github.io/Cartagenaeste/';hdrs['X-Title']='Informes Area II';}
-      var resp=await fetch(prov.url,{method:'POST',headers:hdrs,body:JSON.stringify(prov.body),signal:AbortSignal.timeout(60000)});
+      var resp=await fetch(prov.url,{method:'POST',headers:hdrs,body:JSON.stringify(prov.body),signal:AbortSignal.timeout(90000)});
       var data=await resp.json();
       if(data.choices&&data.choices[0]&&data.choices[0].message){text=data.choices[0].message.content;success=true;}
     }catch(e){}
