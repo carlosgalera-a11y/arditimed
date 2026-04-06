@@ -456,15 +456,34 @@ async function iaGenerar(){
   
   try {
     var data;
+    var success = false;
     // Use proxy if available
     var proxyUrl = localStorage.getItem('api_proxy_url');
     if(proxyUrl){
-      var r = await fetch(proxyUrl + '/api/openrouter', {
-        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
-      });
-      data = await r.json();
-    } else {
-      // Direct (fallback)
+      try {
+        var r = await fetch(proxyUrl + '/api/openrouter', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+        });
+        data = await r.json();
+        if(data.choices && data.choices[0]) success = true;
+      } catch(e){ console.log('[Informe] Proxy failed:', e.message); }
+    }
+    
+    // Try Pollinations (GPT-4o, free, no key needed)
+    if(!success){
+      try {
+        var pollBody = {model:'openai', messages:[{role:'user',content:content}], max_tokens:4000, temperature:0.3};
+        if(hasImages) pollBody.seed = Math.floor(Math.random()*99999);
+        var rP = await fetch('https://text.pollinations.ai/openai', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(pollBody)
+        });
+        data = await rP.json();
+        if(data.choices && data.choices[0]) success = true;
+      } catch(e){ console.log('[Informe] Pollinations failed:', e.message); }
+    }
+    
+    // Last resort: OpenRouter direct (no auth for :free)
+    if(!success){
       var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method:'POST',
         headers:{
