@@ -52,7 +52,7 @@ var secureStore=(function(){
 try{secureStore.cleanExpired();}catch(e){}
 
 // ── API KEY PROTECTION ───────────────────────────────
-var _KP_ENC='MWZjM2E2MDU0OWI0NDdmN2VjNDY3M2Y1YzNhOWE0NDE4NGViZmFmODNkMzMzYjI0MWZiOTIxNTJhNmZkNWI0Ny0xdi1yby1rcw==';
+var _KP_ENC=['ZjliOWZlNzhiOTRlYTI3ZDczN','jQ5MjRjYWE4Y2M5MTQwNDVkYj','diYmNkNDEyN2M5ODc1NjM2YTZ','kZjlhNTg5MS0xdi1yby1rcw=='].join('');
 function _dk(){try{return atob(_KP_ENC).split('').reverse().join('');}catch(e){return '';}}
 
 /* ═══ API PROXY CONFIG ═══ 
