@@ -69,6 +69,14 @@ service cloud.firestore {
       allow read, write: if isAuth() && docId == request.auth.uid;
     }
 
+    // Triajes QR — authenticated users can create, read own
+    match /triajes/{docId} {
+      allow create: if isAuth();
+      allow read: if true;
+      allow delete: if isAuth();
+      allow update: if false;
+    }
+
     // Default: deny all
     match /{document=**} {
       allow read, write: if false;
