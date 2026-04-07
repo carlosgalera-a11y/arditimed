@@ -2713,7 +2713,7 @@ function saveDeeplKey(){
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){var im=document.getElementById("instruccionesModal");if(im&&im.style.display==="flex"){im.style.display="none";return;}var ap=document.getElementById("adminPanel");if(ap&&ap.style.display!=="none"){ap.style.display="none";return;}var sl=document.getElementById("scanLoginModal");if(sl&&sl.style.display==="flex"){sl.style.display="none";return;}var mn=document.getElementById("modalNotebooks");if(mn&&mn.style.display==="flex"){mn.style.display="none";return;}}});
 document.addEventListener("DOMContentLoaded",function(){
     initLoginSession();
-    renderPatients();
+    // renderPatients(); // DISABLED: use static HTML grid instead
     var p=new URLSearchParams(window.location.search);
     if(p.get("view")==="professionals"||p.get("category"))showPage("pageProfessionals");
     else if(p.get("view")==="patients")showPage("pagePatients");
