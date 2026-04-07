@@ -879,10 +879,10 @@ async function llamarIA(up,sp){
   if(location.protocol!=='https:') providers.push({type:'nas'});
   /* DeepSeek V3.2 directo — primario fuera de red local */
   providers.push({type:'ds'});
-  providers.push({type:'poll'});
+  // providers.push({type:'poll'}); // CORS blocked
   providers.push({type:'or',model:'deepseek/deepseek-chat-v3-0324:free'});
   providers.push({type:'or',model:'qwen/qwen3.5-flash'});
-  providers.push({type:'or',model:'google/gemma-3-27b-it:free'});
+  providers.push({type:'or',model:'qwen/qwen3.5-9b'});
   var sysMsg=sp||'Eres un asistente médico. Responde en español.';
   var msgs=[{role:'system',content:sysMsg},{role:'user',content:up}];
 
@@ -890,7 +890,7 @@ async function llamarIA(up,sp){
     try{
       var p=providers[i];
       var ctrl=new AbortController();
-      var tid=setTimeout(function(){ctrl.abort();},p.type==='poll'?18000:12000);
+      var tid=setTimeout(function(){ctrl.abort();},30000);
       var r;
 
       if(p.type==='nas'){
