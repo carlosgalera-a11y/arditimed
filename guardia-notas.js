@@ -3,13 +3,14 @@
    guardia-notas.js
    
    Tabla personal de pacientes por guardia.
-   localStorage-first + Firestore sync opcional.
+   Datos en Firestore: guardia_pacientes (root collection, uid filter)
+   + localStorage backup
    ═══════════════════════════════════════════════════════════════ */
 
 (function() {
   'use strict';
 
-  var FS_COLLECTION = 'guardia_pacientes';
+  var COLLECTION = 'guardia_pacientes';
   var LS_PREFIX = 'guardia_pac_';
   var guardiaPacientes = [];
   var guardiaListener = null;
@@ -17,7 +18,6 @@
 
   function lsKey() { return LS_PREFIX + (currentUid || 'anon'); }
   function lsSave() { try { localStorage.setItem(lsKey(), JSON.stringify(guardiaPacientes)); } catch(e) {} }
-  function lsLoad() { try { return JSON.parse(localStorage.getItem(lsKey()) || '[]'); } catch(e) { return []; } }
 
   window.openGuardiaNotas = function() {
     var user = firebase.auth().currentUser;
@@ -39,9 +39,7 @@
     document.getElementById('guardiaUserEmail').textContent = user.email;
     document.getElementById('guardiaDate').textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    guardiaPacientes = lsLoad();
-    renderGuardiaTable();
-    tryFirestoreSync(user.uid);
+    loadGuardia(user.uid);
   };
 
   function buildModalHTML() {
@@ -70,23 +68,31 @@
       '<div style="padding:12px 20px;border-top:1px solid var(--border,#e2e8f0);font-size:.7rem;color:var(--text-muted,#94a3b8);text-align:center;">Datos privados · Solo visible para ti · Área II Cartagena</div></div>';
   }
 
-  function tryFirestoreSync(uid) {
-    try {
-      var db = firebase.firestore();
-      if (guardiaListener) guardiaListener();
-      guardiaListener = db.collection('users').doc(uid).collection(FS_COLLECTION)
-        .orderBy('created', 'desc')
-        .onSnapshot(function(snap) {
-          guardiaPacientes = [];
-          snap.forEach(function(doc) { var d = doc.data(); d._id = doc.id; d._source = 'firestore'; guardiaPacientes.push(d); });
-          lsSave();
-          renderGuardiaTable();
-        }, function(err) {
-          console.warn('[Guardia] Firestore no disponible, usando localStorage:', err.code || err.message);
+  // ─── LOAD: Firestore real-time listener ───
+  function loadGuardia(uid) {
+    var db = firebase.firestore();
+    if (guardiaListener) guardiaListener();
+    guardiaListener = db.collection(COLLECTION)
+      .where('uid', '==', uid)
+      .orderBy('created', 'desc')
+      .onSnapshot(function(snap) {
+        guardiaPacientes = [];
+        snap.forEach(function(doc) {
+          var d = doc.data();
+          d._id = doc.id;
+          guardiaPacientes.push(d);
         });
-    } catch(e) { console.warn('[Guardia] Firestore init error:', e); }
+        lsSave();
+        renderGuardiaTable();
+      }, function(err) {
+        console.error('[Guardia] Firestore error:', err.code, err.message);
+        // Fallback: load from localStorage
+        try { guardiaPacientes = JSON.parse(localStorage.getItem(lsKey()) || '[]'); } catch(e) { guardiaPacientes = []; }
+        renderGuardiaTable();
+      });
   }
 
+  // ─── RENDER TABLE ───
   function renderGuardiaTable() {
     var body = document.getElementById('guardiaBody');
     var empty = document.getElementById('guardiaEmpty');
@@ -107,44 +113,50 @@
     return '<td contenteditable="true" style="'+s+'" data-field="'+field+'" data-idx="'+idx+'" onfocus="this.style.background=\'#f0fdfa\'" onblur="this.style.background=\'\';updateGuardiaCell(this);">'+(val||'')+'</td>';
   }
 
-  // ─── ADD (localStorage-first, Firestore optional) ───
+  // ─── ADD PATIENT → Firestore ───
   window.addGuardiaPaciente = function() {
     var user = firebase.auth().currentUser;
     if (!user) { alert('Inicia sesión primero'); return; }
-    var newPac = { _id:'local_'+Date.now(), nombre:'', nhc:'', motivo:'', diagnostico:'', pruebas:'', tratamiento:'', pendiente:'', created:new Date().toISOString(), uid:user.uid };
-    guardiaPacientes.unshift(newPac);
-    lsSave();
-    renderGuardiaTable();
-    setTimeout(function() { var c = document.querySelector('#guardiaBody tr:first-child td[contenteditable]'); if(c) c.focus(); }, 100);
-    // Firestore (non-blocking)
-    try {
-      firebase.firestore().collection('users').doc(user.uid).collection(FS_COLLECTION)
-        .add({ nombre:'',nhc:'',motivo:'',diagnostico:'',pruebas:'',tratamiento:'',pendiente:'', created:firebase.firestore.FieldValue.serverTimestamp(), uid:user.uid })
-        .then(function(ref) { newPac._id = ref.id; newPac._source = 'firestore'; lsSave(); })
-        .catch(function(e) { console.warn('[Guardia] Firestore add failed (saved locally):', e.code||e.message); });
-    } catch(e) {}
+    var db = firebase.firestore();
+    db.collection(COLLECTION).add({
+      nombre: '', nhc: '', motivo: '', diagnostico: '',
+      pruebas: '', tratamiento: '', pendiente: '',
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+      uid: user.uid
+    }).then(function() {
+      // onSnapshot will auto-render
+      setTimeout(function() {
+        var c = document.querySelector('#guardiaBody tr:first-child td[contenteditable]');
+        if (c) c.focus();
+      }, 300);
+    }).catch(function(err) {
+      console.error('[Guardia] Add error:', err);
+      alert('Error al guardar en Firestore: ' + (err.code || err.message) + '\nVerifica las reglas de seguridad.');
+    });
   };
 
-  // ─── UPDATE CELL ───
+  // ─── UPDATE CELL → Firestore ───
   window.updateGuardiaCell = function(td) {
     var idx = parseInt(td.dataset.idx), field = td.dataset.field, val = td.textContent.trim();
     var pac = guardiaPacientes[idx];
     if (!pac || pac[field] === val) return;
-    pac[field] = val;
-    lsSave();
     var user = firebase.auth().currentUser;
-    if (!user || !pac._id || pac._id.startsWith('local_')) return;
-    try { var u={}; u[field]=val; u.updated=firebase.firestore.FieldValue.serverTimestamp(); firebase.firestore().collection('users').doc(user.uid).collection(FS_COLLECTION).doc(pac._id).update(u).catch(function(){}); } catch(e){}
+    if (!user || !pac._id) return;
+    var update = {};
+    update[field] = val;
+    update.updated = firebase.firestore.FieldValue.serverTimestamp();
+    firebase.firestore().collection(COLLECTION).doc(pac._id).update(update)
+      .catch(function(err) { console.error('[Guardia] Update error:', err.code); });
   };
 
-  // ─── DELETE ───
+  // ─── DELETE → Firestore ───
   window.deleteGuardiaPac = function(idx) {
     var pac = guardiaPacientes[idx]; if (!pac) return;
-    if (!confirm('¿Eliminar a ' + (pac.nombre||'este paciente') + ' de la guardia?')) return;
-    guardiaPacientes.splice(idx, 1); lsSave(); renderGuardiaTable();
+    if (!confirm('¿Eliminar a ' + (pac.nombre || 'este paciente') + ' de la guardia?')) return;
     var user = firebase.auth().currentUser;
-    if (!user || !pac._id || pac._id.startsWith('local_')) return;
-    try { firebase.firestore().collection('users').doc(user.uid).collection(FS_COLLECTION).doc(pac._id).delete().catch(function(){}); } catch(e){}
+    if (!user || !pac._id) return;
+    firebase.firestore().collection(COLLECTION).doc(pac._id).delete()
+      .catch(function(err) { console.error('[Guardia] Delete error:', err.code); });
   };
 
   // ─── EXPORT CSV ───

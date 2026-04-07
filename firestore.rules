@@ -85,6 +85,17 @@ service cloud.firestore {
       allow delete: if isAuth() && resource.data.uid == request.auth.uid;
     }
 
+    // Guardia pacientes — each user can only CRUD their own patients
+    match /guardia_pacientes/{docId} {
+      allow create: if isAuth() && request.resource.data.uid == request.auth.uid;
+      allow read, update, delete: if isAuth() && resource.data.uid == request.auth.uid;
+    }
+
+    // Plantillas backup — per-user doc (docId = uid)
+    match /plantillas_backup/{docId} {
+      allow read, write: if isAuth() && docId == request.auth.uid;
+    }
+
     // Default: deny all
     match /{document=**} {
       allow read, write: if false;
