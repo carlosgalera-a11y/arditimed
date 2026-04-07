@@ -25,6 +25,7 @@
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">✨</span> Studio</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🛏️</span> Pacientes</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">💊</span> Fármacos</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-biblioteca',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📚</span> Biblioteca</button>
             </div>
             
             <!-- TRÍPTICOS VISUALES -->
@@ -681,12 +682,198 @@
                 <div id="urgFarmList" style="display:flex;flex-direction:column;gap:6px;"></div>
             </div>
 
+            <!-- BIBLIOTECA PROFESIONAL — Upload + listado docs grandes -->
+            <div id="urg-biblioteca-content" class="urg-tab-content" style="display:none;margin-top:20px;">
+                <div style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.5rem;">📚</span>
+                    <div><strong style="font-size:.92rem;">Biblioteca de Urgencias</strong><br><span style="font-size:.82rem;opacity:.8;">Sube y consulta documentos grandes (ATLS, guías, manuales). Hasta 200 MB por archivo.</span></div>
+                </div>
+
+                <!-- Upload zone -->
+                <div id="urgUpDropzone" style="border:2px dashed rgba(255,255,255,.2);border-radius:var(--radius);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:rgba(255,255,255,.03);margin-bottom:16px;" onmouseover="this.style.borderColor='#f43f5e';this.style.background='rgba(244,63,94,.05)'" onmouseout="this.style.borderColor='rgba(255,255,255,.2)';this.style.background='rgba(255,255,255,.03)'">
+                    <div style="font-size:2.5rem;margin-bottom:.5rem;">📄</div>
+                    <h4 style="margin:0 0 .2rem;font-size:.95rem;color:#fff;">Arrastra tu archivo aquí</h4>
+                    <p style="margin:0;font-size:.75rem;opacity:.5;">PDF, DOCX, PPTX, ZIP — hasta 200 MB</p>
+                    <input type="file" id="urgUpFileInput" accept=".pdf,.doc,.docx,.pptx,.xlsx,.zip,.rar" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+                </div>
+
+                <!-- File info + metadata (hidden until file selected) -->
+                <div id="urgUpFileInfo" style="display:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.8rem 1rem;margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;gap:.8rem;">
+                        <div id="urgUpFileExt" style="width:38px;height:38px;background:linear-gradient(135deg,#ef4444,#dc2626);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;color:#fff;flex-shrink:0;">PDF</div>
+                        <div style="flex:1;min-width:0;"><div id="urgUpFileName" style="font-weight:600;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;">—</div><div id="urgUpFileSize" style="font-size:.75rem;opacity:.5;font-family:monospace;">—</div></div>
+                        <button id="urgUpFileRemove" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:1.1rem;">✕</button>
+                    </div>
+                </div>
+                <div id="urgUpMeta" style="display:none;flex-direction:column;gap:.6rem;margin-bottom:12px;">
+                    <input type="text" id="urgUpTitle" placeholder="Título (ej: ATLS 11ª Edición 2025)" style="width:100%;padding:.5rem .7rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:6px;font-size:.85rem;font-family:var(--font-body);box-sizing:border-box;">
+                    <select id="urgUpCat" style="width:100%;padding:.5rem .7rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:6px;font-size:.85rem;font-family:var(--font-body);">
+                        <option value="trauma">🩹 Trauma / ATLS</option>
+                        <option value="rcp">❤️ RCP / Soporte Vital</option>
+                        <option value="guias">📋 Guías Clínicas</option>
+                        <option value="protocolos">📌 Protocolos</option>
+                        <option value="farmacologia">💊 Farmacología</option>
+                        <option value="pediatria">👶 Urgencias Pediátricas</option>
+                        <option value="otros">📁 Otros</option>
+                    </select>
+                </div>
+
+                <!-- Upload button -->
+                <button id="urgUpBtn" onclick="urgUpStart()" style="display:none;width:100%;padding:.8rem;background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-bottom:12px;">🚀 Subir Documento</button>
+
+                <!-- Progress -->
+                <div id="urgUpProgress" style="display:none;margin-bottom:12px;">
+                    <div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;"><div id="urgUpProgressFill" style="height:100%;background:linear-gradient(90deg,#f43f5e,#fb7185);border-radius:3px;width:0%;transition:width .3s;"></div></div>
+                    <div style="display:flex;justify-content:space-between;margin-top:.3rem;font-size:.75rem;opacity:.7;font-family:monospace;"><span id="urgUpPct">0%</span><span id="urgUpDetail">Preparando...</span></div>
+                </div>
+
+                <!-- Status -->
+                <div id="urgUpStatus" style="display:none;margin-bottom:12px;padding:.8rem;border-radius:8px;font-size:.8rem;text-align:center;"></div>
+
+                <!-- Document list -->
+                <div style="margin-top:8px;">
+                    <h4 style="font-size:.9rem;color:rgba(255,255,255,.7);margin-bottom:.6rem;">📚 Documentos subidos</h4>
+                    <div id="urgUpDocsList"><em style="opacity:.4;font-size:.8rem;">Cargando...</em></div>
+                </div>
+
+                <script>
+                (function(){
+                    var STORAGE_PATH = 'urgencias_hospitalarias/profesionales/';
+                    var FS_COLLECTION = 'urgencias_hospitalarias_docs';
+                    var CHUNK_SIZE = 20 * 1024 * 1024;
+                    var selectedFile = null;
+
+                    var dz = document.getElementById('urgUpDropzone');
+                    var fi = document.getElementById('urgUpFileInput');
+
+                    ['dragenter','dragover'].forEach(function(e){ dz.addEventListener(e, function(ev){ ev.preventDefault(); dz.style.borderColor='#f43f5e'; dz.style.background='rgba(244,63,94,.08)'; }); });
+                    ['dragleave','drop'].forEach(function(e){ dz.addEventListener(e, function(ev){ ev.preventDefault(); dz.style.borderColor='rgba(255,255,255,.2)'; dz.style.background='rgba(255,255,255,.03)'; }); });
+                    dz.addEventListener('drop', function(ev){ if(ev.dataTransfer.files[0]) pickFile(ev.dataTransfer.files[0]); });
+                    fi.addEventListener('change', function(){ if(fi.files[0]) pickFile(fi.files[0]); });
+                    document.getElementById('urgUpFileRemove').addEventListener('click', clearFile);
+
+                    function pickFile(f){
+                        if(f.size > 200*1024*1024){ alert('Máximo 200 MB'); return; }
+                        selectedFile = f;
+                        var ext = f.name.split('.').pop().toUpperCase();
+                        document.getElementById('urgUpFileExt').textContent = ext;
+                        document.getElementById('urgUpFileName').textContent = f.name;
+                        document.getElementById('urgUpFileSize').textContent = fmtSize(f.size);
+                        document.getElementById('urgUpFileInfo').style.display = 'flex';
+                        document.getElementById('urgUpMeta').style.display = 'flex';
+                        document.getElementById('urgUpBtn').style.display = 'block';
+                        if(!document.getElementById('urgUpTitle').value)
+                            document.getElementById('urgUpTitle').value = f.name.replace(/\.[^.]+$/,'').replace(/[_-]/g,' ');
+                        hideStatus();
+                    }
+
+                    function clearFile(){
+                        selectedFile = null; fi.value = '';
+                        document.getElementById('urgUpFileInfo').style.display = 'none';
+                        document.getElementById('urgUpMeta').style.display = 'none';
+                        document.getElementById('urgUpBtn').style.display = 'none';
+                        hideStatus();
+                    }
+
+                    window.urgUpStart = function(){
+                        if(!selectedFile) return;
+                        var user = firebase.auth().currentUser;
+                        if(!user){ alert('Inicia sesión primero'); return; }
+                        var btn = document.getElementById('urgUpBtn');
+                        btn.disabled = true; btn.textContent = '⏳ Subiendo...';
+                        document.getElementById('urgUpProgress').style.display = 'block';
+                        hideStatus();
+
+                        var storage = firebase.storage();
+                        var ts = Date.now();
+                        var safeName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+                        var ref = storage.ref(STORAGE_PATH + ts + '_' + safeName);
+
+                        document.getElementById('urgUpDetail').textContent = 'Subiendo...';
+                        var task = ref.put(selectedFile, { contentType: selectedFile.type });
+                        task.on('state_changed', function(snap){
+                            var pct = (snap.bytesTransferred / snap.totalBytes) * 100;
+                            document.getElementById('urgUpProgressFill').style.width = pct.toFixed(1) + '%';
+                            document.getElementById('urgUpPct').textContent = pct.toFixed(1) + '%';
+                            document.getElementById('urgUpDetail').textContent = fmtSize(snap.bytesTransferred) + ' / ' + fmtSize(snap.totalBytes);
+                        }, function(err){
+                            showStatus('error', '❌ Error: ' + (err.code || err.message));
+                            btn.disabled = false; btn.textContent = '🚀 Subir Documento';
+                        }, function(){
+                            task.snapshot.ref.getDownloadURL().then(function(url){
+                                // Save metadata to Firestore
+                                firebase.firestore().collection(FS_COLLECTION).add({
+                                    titulo: document.getElementById('urgUpTitle').value.trim() || selectedFile.name,
+                                    categoria: document.getElementById('urgUpCat').value,
+                                    archivo: selectedFile.name,
+                                    tamano: selectedFile.size,
+                                    url: url,
+                                    storagePath: STORAGE_PATH + ts + '_' + safeName,
+                                    subidoEl: firebase.firestore.FieldValue.serverTimestamp(),
+                                    uid: user.uid,
+                                    email: user.email
+                                }).catch(function(e){ console.warn('[Biblioteca] Firestore save:', e); });
+
+                                showStatus('success', '✅ ¡Subido correctamente!');
+                                document.getElementById('urgUpDetail').textContent = '¡Completado!';
+                                btn.disabled = false; btn.textContent = '🚀 Subir Documento';
+                                clearFile();
+                                loadDocs();
+                            });
+                        });
+                    };
+
+                    function showStatus(type, msg){
+                        var s = document.getElementById('urgUpStatus');
+                        s.style.display = 'block';
+                        s.style.background = type==='success' ? 'rgba(52,211,153,.15)' : 'rgba(239,68,68,.15)';
+                        s.style.border = '1px solid ' + (type==='success' ? '#34d399' : '#ef4444');
+                        s.style.color = type==='success' ? '#34d399' : '#fca5a5';
+                        s.textContent = msg;
+                    }
+                    function hideStatus(){
+                        document.getElementById('urgUpStatus').style.display = 'none';
+                        document.getElementById('urgUpProgress').style.display = 'none';
+                        document.getElementById('urgUpProgressFill').style.width = '0%';
+                        document.getElementById('urgUpPct').textContent = '0%';
+                    }
+
+                    function fmtSize(b){ if(b<1024)return b+' B'; if(b<1048576)return(b/1024).toFixed(1)+' KB'; return(b/1048576).toFixed(1)+' MB'; }
+
+                    window.urgUpLoadDocs = loadDocs;
+                    function loadDocs(){
+                        var el = document.getElementById('urgUpDocsList');
+                        if(!el) return;
+                        try {
+                            firebase.firestore().collection(FS_COLLECTION).orderBy('subidoEl','desc').limit(20).get().then(function(snap){
+                                if(snap.empty){ el.innerHTML='<em style="opacity:.4;font-size:.8rem;">No hay documentos aún</em>'; return; }
+                                var catLabels = {trauma:'🩹 Trauma',rcp:'❤️ RCP',guias:'📋 Guías',protocolos:'📌 Protocolos',farmacologia:'💊 Fármacos',pediatria:'👶 Pediatría',otros:'📁 Otros'};
+                                el.innerHTML = '';
+                                snap.forEach(function(doc){
+                                    var d = doc.data();
+                                    var div = document.createElement('div');
+                                    div.style.cssText = 'display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;background:rgba(255,255,255,.03);border-radius:6px;margin-bottom:.4rem;font-size:.8rem;transition:background .2s;';
+                                    div.innerHTML = '<span style="font-size:.65rem;padding:.15rem .4rem;border-radius:4px;background:rgba(244,63,94,.2);color:#fb7185;white-space:nowrap;">'+(catLabels[d.categoria]||d.categoria)+'</span>' +
+                                        '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;" title="'+(d.titulo||d.archivo)+'">'+(d.titulo||d.archivo)+'</span>' +
+                                        '<span style="opacity:.4;font-size:.7rem;font-family:monospace;">'+fmtSize(d.tamano||0)+'</span>' +
+                                        (d.url ? '<a href="'+d.url+'" target="_blank" rel="noopener" style="color:#60a5fa;text-decoration:none;font-size:.75rem;white-space:nowrap;">⬇ Descargar</a>' : '');
+                                    el.appendChild(div);
+                                });
+                            }).catch(function(e){ el.innerHTML='<em style="opacity:.4;font-size:.8rem;">Error cargando</em>'; console.warn(e); });
+                        } catch(e){ el.innerHTML='<em style="opacity:.4;font-size:.8rem;">Firestore no disponible</em>'; }
+                    }
+
+                    // Auto-load on tab switch
+                    setTimeout(loadDocs, 500);
+                })();
+                </script>
+            </div>
+
         </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL DETALLE PROTOCOLO URGENCIAS -->
 <div id="urgProtoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1002;overflow:auto;padding:20px;backdrop-filter:blur(3px);">
     <div style="background:#fff;border-radius:16px;max-width:750px;margin:30px auto;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.5);">
         <div id="urgProtoModalHeader" style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:24px;color:#fff;position:relative;">
