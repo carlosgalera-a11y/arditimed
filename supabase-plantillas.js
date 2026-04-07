@@ -158,6 +158,7 @@
 
   // Override sbAddPaciente: local first, cloud optional
   window.sbAddPaciente = function() {
+    if (typeof ptInit === 'function') ptInit();
     if (typeof ptAddRow === 'function') ptAddRow();
     if (sbClient && sbUser) {
       sbClient.from(TABLE).insert({ user_id: sbUser.id, alerta: 'ok' }).then(function(){}).catch(function(e) { console.warn('[Supabase] Insert error:', e); });

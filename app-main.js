@@ -779,6 +779,13 @@ function showPage(id){
                 if(inner){pageEl.innerHTML=inner.innerHTML;}
                 else{pageEl.innerHTML=html;}
                 pageEl.removeAttribute("data-src");
+                // Execute any <script> tags injected via innerHTML
+                pageEl.querySelectorAll("script").forEach(function(oldScript){
+                    var newScript=document.createElement("script");
+                    if(oldScript.src){newScript.src=oldScript.src;}
+                    else{newScript.textContent=oldScript.textContent;}
+                    oldScript.parentNode.replaceChild(newScript,oldScript);
+                });
                 console.log("[LazyLoad] ✓ "+id+" loaded from "+src);
                 // Run page-specific initializations after load
                 _showPageInit(id);

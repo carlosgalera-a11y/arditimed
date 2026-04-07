@@ -152,9 +152,8 @@
     var style = 'padding:8px;cursor:text;min-width:80px;' + (bold ? 'font-weight:700;' : '');
     return '<td contenteditable="true" style="' + style + '" ' +
       'data-field="' + field + '" data-idx="' + idx + '" ' +
-      'onblur="updateGuardiaCell(this)" ' +
       'onfocus="this.style.background=\'#f0fdfa\'" ' +
-      'onblur="this.style.background=\'\';">' +
+      'onblur="this.style.background=\'\';updateGuardiaCell(this);">' +
       (val || '') + '</td>';
   }
 
