@@ -74,13 +74,18 @@
     if (guardiaListener) guardiaListener();
     guardiaListener = db.collection(COLLECTION)
       .where('uid', '==', uid)
-      .orderBy('created', 'desc')
       .onSnapshot(function(snap) {
         guardiaPacientes = [];
         snap.forEach(function(doc) {
           var d = doc.data();
           d._id = doc.id;
           guardiaPacientes.push(d);
+        });
+        // Sort client-side (newest first)
+        guardiaPacientes.sort(function(a, b) {
+          var ta = a.created ? (a.created.toMillis ? a.created.toMillis() : new Date(a.created).getTime()) : 0;
+          var tb = b.created ? (b.created.toMillis ? b.created.toMillis() : new Date(b.created).getTime()) : 0;
+          return tb - ta;
         });
         lsSave();
         renderGuardiaTable();
