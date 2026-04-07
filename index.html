@@ -2828,8 +2828,7 @@ function infDescargar(formato){
     htmlDoc+='<p class="meta">Centro de Salud Virgen de la Caridad · Área II Cartagena · '+new Date().toLocaleDateString('es-ES')+'</p>';
     htmlDoc+='<pre>'+infResultadoTexto.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
     htmlDoc+='<p class="footer">Documento generado con fines docentes · Centro de Salud Virgen de la Caridad · Cartagena</p>';
-    htmlDoc+='
-</body></html>';
+    htmlDoc+='</body></html>';
     var blob=new Blob(['\ufeff'+htmlDoc],{type:'application/msword;charset=utf-8'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName+'.doc';a.click();
     URL.revokeObjectURL(a.href);
