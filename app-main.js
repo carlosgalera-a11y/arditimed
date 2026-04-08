@@ -105,18 +105,28 @@ function calcQSOFA(){
     else{el.style.background='#f0fdf4';el.style.color='#166534';el.textContent='qSOFA: 0/3 — Sin criterios';}
 }
 // Calculator specialty filter
+// SAMIUC classification: samiuc.es/calculadores-medicos/
 var CALC_CATS={
-  'CURB-65':'neumo','qSOFA':'urgencias','Wells':'cardio','Glasgow':'neuro','NIHSS':'neuro',
-  'Fine':'neumo','PORT':'neumo','PESI':'cardio','BODE':'neumo','CRB-65':'neumo','BAP-65':'neumo',
-  'Wood-Downes':'neumo','Taussig':'neumo','DECAF':'neumo','CAUDA-70':'neumo','VNI':'neumo',
-  'Pisa':'cardio','HEART':'cardio','CHA':'cardio','HAS-BLED':'cardio',
-  'NEWS2':'urgencias','SOFA':'urgencias','APACHE':'urgencias','SAPS':'urgencias','SIRS':'urgencias','RTS':'urgencias',
-  'Glasgow-Blatchford':'digestivo','Child-Pugh':'digestivo','Alvarado':'digestivo','Rockall':'digestivo','BISAP':'digestivo','MELD':'digestivo',
-  'TIMI':'cardio','GRACE':'cardio','Wells TEP':'cardio','Padua':'cardio','Caprini':'cardio','QTc':'cardio',
-  'PHQ-9':'neuro','GAD-7':'neuro','ABCD':'neuro',
-  'Barthel':'otros','CKD-EPI':'otros','Ottawa':'otros','IMC':'otros','Anion':'otros','Osmol':'otros','Gradiente':'neumo',
-  'Cockcroft':'otros','Norton':'otros',
-  'Ranson':'digestivo','Downton':'otros','Fager':'otros','Epworth':'neumo'
+  // ── Gravedad (UCI/Urgencias) ──
+  'APACHE':'gravedad','SAPS':'gravedad','SOFA':'gravedad','NEWS2':'gravedad','qSOFA':'gravedad','SIRS':'gravedad',
+  // ── Cardiovascular ──
+  'HEART':'cardio','TIMI':'cardio','GRACE':'cardio','CHA':'cardio','HAS-BLED':'cardio',
+  'Wells TEP':'cardio','Wells':'cardio','Pisa':'cardio','PESI':'cardio','QTc':'cardio','Padua':'cardio',
+  // ── Respiratorio ──
+  'CURB-65':'respiratorio','CRB-65':'respiratorio','Fine':'respiratorio','PORT':'respiratorio',
+  'BODE':'respiratorio','BAP-65':'respiratorio','DECAF':'respiratorio','CAUDA-70':'respiratorio','VNI':'respiratorio',
+  'Wood-Downes':'respiratorio','Taussig':'respiratorio','Epworth':'respiratorio','Gradiente':'respiratorio',
+  // ── Ap. Digestivo ──
+  'Glasgow-Blatchford':'digestivo','Rockall':'digestivo','Child-Pugh':'digestivo','MELD':'digestivo',
+  'Ranson':'digestivo','BISAP':'digestivo','Alvarado':'digestivo',
+  // ── Nefrología y Medio Interno ──
+  'CKD-EPI':'nefro','Cockcroft':'nefro','Anion':'nefro','Osmol':'nefro',
+  // ── Neurología ──
+  'Glasgow':'neuro','NIHSS':'neuro','ABCD':'neuro','PHQ-9':'neuro','GAD-7':'neuro',
+  // ── Enfermería ──
+  'Norton':'enfermeria','Barthel':'enfermeria','Downton':'enfermeria',
+  // ── Quirúrgico / Trauma ──
+  'Caprini':'quirurgico','RTS':'quirurgico','Ottawa':'quirurgico','Fager':'quirurgico','IMC':'quirurgico'
 };
 function filterCalc(cat){
   document.querySelectorAll('.calc-filter').forEach(function(b){b.style.background='#fff';b.style.color='#333';});
