@@ -531,3 +531,148 @@ function calcPadua(){
   if(pts<4){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Padua: '+pts+'</strong><br>Bajo riesgo TEV — No tromboprofilaxis farmacológica';}
   else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Padua: '+pts+'</strong><br>Alto riesgo TEV — Tromboprofilaxis con HBPM indicada';}
 }
+
+// ═══ ESCALAS SAMIUC — Batch 2 ═══
+
+// ── 39. SAPS-II — Gravedad UCI (Le Gall, 1993) ──
+function calcSAPS2(){
+  var pts=0;
+  document.querySelectorAll('.saps2-num').forEach(function(el){pts+=parseInt(el.value)||0;});
+  var el=document.getElementById('saps2Result');
+  // Logistic regression: logit = -7.7631 + 0.0737*pts + 0.9971*ln(pts+1)
+  var logit=-7.7631+0.0737*pts+0.9971*Math.log(pts+1);
+  var mort=Math.round(100*Math.exp(logit)/(1+Math.exp(logit)));
+  if(mort<0)mort=0;if(mort>100)mort=100;
+  if(pts<=29){el.style.background='#f0fdf4';el.style.color='#166534';}
+  else if(pts<=39){el.style.background='#fefce8';el.style.color='#854d0e';}
+  else if(pts<=51){el.style.background='#fff7ed';el.style.color='#9a3412';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';}
+  el.innerHTML='<strong>SAPS-II: '+pts+'</strong><br>Mortalidad estimada: ~'+mort+'%';
+}
+
+// ── 40. IMC — Índice de Masa Corporal ──
+function calcIMC(){
+  var peso=parseFloat(document.getElementById('imcPeso').value)||0;
+  var talla=parseFloat(document.getElementById('imcTalla').value)||0;
+  if(!peso||!talla){document.getElementById('imcResult').textContent='Introduce peso y talla';return;}
+  var h=talla>3?talla/100:talla; // accept cm or m
+  var imc=peso/(h*h);
+  var el=document.getElementById('imcResult');
+  var cat,bg,fg;
+  if(imc<18.5){cat='Bajo peso';bg='#dbeafe';fg='#1e40af';}
+  else if(imc<25){cat='Normopeso';bg='#f0fdf4';fg='#166534';}
+  else if(imc<30){cat='Sobrepeso';bg='#fefce8';fg='#854d0e';}
+  else if(imc<35){cat='Obesidad grado I';bg='#fff7ed';fg='#9a3412';}
+  else if(imc<40){cat='Obesidad grado II';bg='#fef2f2';fg='#991b1b';}
+  else{cat='Obesidad mórbida (grado III)';bg='#fef2f2';fg='#7f1d1d';}
+  el.style.background=bg;el.style.color=fg;
+  el.innerHTML='<strong>IMC: '+imc.toFixed(1)+' kg/m²</strong><br>'+cat;
+}
+
+// ── 41. Anion Gap ──
+function calcAnionGap(){
+  var na=parseFloat(document.getElementById('agNa').value)||140;
+  var cl=parseFloat(document.getElementById('agCl').value)||104;
+  var hco3=parseFloat(document.getElementById('agHCO3').value)||24;
+  var alb=parseFloat(document.getElementById('agAlb').value)||4.0;
+  var ag=na-(cl+hco3);
+  var agCorr=ag+(2.5*(4.0-alb));
+  var el=document.getElementById('agResult');
+  if(agCorr<=12){el.style.background='#f0fdf4';el.style.color='#166534';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';}
+  el.innerHTML='<strong>Anion Gap: '+ag.toFixed(1)+' mEq/L</strong><br>Corregido por albúmina: '+agCorr.toFixed(1)+' mEq/L<br>'+(agCorr>12?'⚠️ Elevado — Acidosis metabólica AG elevado':'✅ Normal (8-12)');
+}
+
+// ── 42. Gradiente Alveolo-arterial O₂ ──
+function calcGradAa(){
+  var fio2=parseFloat(document.getElementById('aaFiO2').value)||21;
+  var pao2=parseFloat(document.getElementById('aaPaO2').value)||95;
+  var paco2=parseFloat(document.getElementById('aaPaCO2').value)||40;
+  var age=parseFloat(document.getElementById('aaAge').value)||40;
+  var PAO2=(fio2/100)*(760-47)-(paco2/0.8);
+  var grad=PAO2-pao2;
+  var expected=(age/4)+4;
+  var el=document.getElementById('aaResult');
+  if(grad<=expected){el.style.background='#f0fdf4';el.style.color='#166534';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';}
+  el.innerHTML='<strong>Gradiente Aa: '+grad.toFixed(1)+' mmHg</strong><br>PAO₂ calculada: '+PAO2.toFixed(1)+' mmHg<br>Esperado para edad: ≤'+expected.toFixed(0)+' mmHg<br>'+(grad>expected?'⚠️ Elevado — Alteración V/Q, shunt, difusión':'✅ Normal');
+}
+
+// ── 43. Osmolalidad sérica calculada ──
+function calcOsm(){
+  var na=parseFloat(document.getElementById('osmNa').value)||140;
+  var glu=parseFloat(document.getElementById('osmGlu').value)||100;
+  var bun=parseFloat(document.getElementById('osmBUN').value)||14;
+  var etoh=parseFloat(document.getElementById('osmEtOH').value)||0;
+  var osm=2*na+(glu/18)+(bun/2.8)+(etoh/4.6);
+  var el=document.getElementById('osmResult');
+  if(osm>=275&&osm<=295){el.style.background='#f0fdf4';el.style.color='#166534';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';}
+  el.innerHTML='<strong>Osmolalidad: '+osm.toFixed(0)+' mOsm/kg</strong><br>Normal: 275-295 mOsm/kg<br>'+(osm<275?'⬇️ Hipoosmolar':osm>295?'⬆️ Hiperosmolar':'✅ Normal');
+}
+
+// ── 44. QTc corregido (Bazett) ──
+function calcQTc(){
+  var qt=parseFloat(document.getElementById('qtcQT').value)||400;
+  var rr=parseFloat(document.getElementById('qtcRR').value)||800;
+  if(rr<=0)return;
+  var qtc=qt/Math.sqrt(rr/1000);
+  var el=document.getElementById('qtcResult');
+  if(qtc<=440){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>QTc: '+Math.round(qtc)+' ms</strong><br>✅ Normal (≤440 ms)';}
+  else if(qtc<=500){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>QTc: '+Math.round(qtc)+' ms</strong><br>⚠️ Prolongado — Revisar fármacos (antiarrítmicos, macrólidos, antipsicóticos)';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>QTc: '+Math.round(qtc)+' ms</strong><br>🚨 Muy prolongado (>500ms) — Riesgo Torsade de Pointes';}
+}
+
+// ── 45. Cockcroft-Gault — Aclaramiento de creatinina ──
+function calcCockcroftGault(){
+  var age=parseFloat(document.getElementById('cgAge').value)||50;
+  var peso=parseFloat(document.getElementById('cgPeso').value)||70;
+  var cr=parseFloat(document.getElementById('cgCr').value)||1.0;
+  var sex=document.getElementById('cgSex').value;
+  if(cr<=0)return;
+  var ccr=(140-age)*peso/(72*cr);
+  if(sex==='F')ccr*=0.85;
+  var el=document.getElementById('cgResult');
+  if(ccr>=90){el.style.background='#f0fdf4';el.style.color='#166534';}
+  else if(ccr>=60){el.style.background='#fefce8';el.style.color='#854d0e';}
+  else if(ccr>=30){el.style.background='#fff7ed';el.style.color='#9a3412';}
+  else if(ccr>=15){el.style.background='#fef2f2';el.style.color='#991b1b';}
+  else{el.style.background='#450a0a';el.style.color='#fecaca';}
+  el.innerHTML='<strong>ClCr: '+ccr.toFixed(1)+' mL/min</strong><br>'+(ccr>=90?'G1 — Normal':ccr>=60?'G2 — Leve ↓':ccr>=30?'G3 — Moderada ↓ — Ajustar dosis':ccr>=15?'G4 — Grave ↓ — Ajustar dosis':'G5 — Fallo renal');
+}
+
+// ── 46. SIRS — Criterios de respuesta inflamatoria sistémica ──
+function calcSIRS(){
+  var pts=[...document.querySelectorAll('.sirs-chk')].filter(c=>c.checked).length;
+  var el=document.getElementById('sirsResult');
+  if(pts<2){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>SIRS: '+pts+'/4</strong><br>No cumple criterios SIRS';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>SIRS: '+pts+'/4</strong><br>⚠️ SIRS positivo (≥2 criterios) — Buscar foco infeccioso → Sepsis?';}
+}
+
+// ── 47. Caprini — Riesgo TEV quirúrgico ──
+function calcCaprini(){
+  var pts=0;
+  document.querySelectorAll('.caprini-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+  var el=document.getElementById('capriniResult');
+  if(pts<=1){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Caprini: '+pts+'</strong><br>Bajo riesgo — Deambulación precoz';}
+  else if(pts<=2){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>Caprini: '+pts+'</strong><br>Riesgo moderado — Considerar HBPM';}
+  else if(pts<=4){el.style.background='#fff7ed';el.style.color='#9a3412';el.innerHTML='<strong>Caprini: '+pts+'</strong><br>Alto riesgo — HBPM recomendada';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Caprini: '+pts+'</strong><br>Muy alto riesgo — HBPM + medias compresivas';}
+}
+
+// ── 48. Revised Trauma Score (RTS) ──
+function calcRTS(){
+  var gcs=parseInt(document.getElementById('rtsGCS').value)||15;
+  var tas=parseInt(document.getElementById('rtsTAS').value)||120;
+  var fr=parseInt(document.getElementById('rtsFR').value)||16;
+  function cGCS(g){return g>=13?4:g>=9?3:g>=6?2:g>=4?1:0;}
+  function cTAS(t){return t>89?4:t>=76?3:t>=50?2:t>=1?1:0;}
+  function cFR(f){return f>=10&&f<=29?4:f>29?3:f>=6?2:f>=1?1:0;}
+  var rts=(0.9368*cGCS(gcs)+0.7326*cTAS(tas)+0.2908*cFR(fr));
+  var el=document.getElementById('rtsResult');
+  if(rts>=7){el.style.background='#f0fdf4';el.style.color='#166534';}
+  else if(rts>=5){el.style.background='#fefce8';el.style.color='#854d0e';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';}
+  el.innerHTML='<strong>RTS: '+rts.toFixed(2)+'</strong><br>'+
+    (rts>=7?'Buen pronóstico — Supervivencia >90%':rts>=5?'Riesgo moderado — Activar código trauma':'Mal pronóstico — UCI/Código trauma');
+}

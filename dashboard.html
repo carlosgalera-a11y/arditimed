@@ -118,6 +118,35 @@ a{color:var(--accent2);text-decoration:none}
 </div>
 <div class="footer">Área II Cartagena — Plataforma Clínica Digital · Dashboard v2.0</div>
 
+<!-- ═══ PASSWORD GATE ═══ -->
+<div id="dashGate" style="position:fixed;inset:0;background:rgba(8,12,20,.98);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 32px;max-width:380px;width:90%;text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>
+    <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;">Dashboard Protegido</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;">Introduce la contraseña para acceder al panel de administración.</p>
+    <input type="password" id="dashPass" placeholder="Contraseña" autofocus
+      style="width:100%;padding:12px 16px;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;font-family:inherit;text-align:center;letter-spacing:2px;margin-bottom:12px;"
+      onkeydown="if(event.key==='Enter')dashLogin()">
+    <button onclick="dashLogin()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;">Acceder</button>
+    <div id="dashPassErr" style="margin-top:10px;font-size:.82rem;color:var(--red);display:none;">❌ Contraseña incorrecta</div>
+  </div>
+</div>
+<script>
+function dashLogin(){
+  var p=document.getElementById('dashPass').value;
+  if(p==='caridad'){
+    document.getElementById('dashGate').style.display='none';
+    sessionStorage.setItem('dash_auth','1');
+  } else {
+    document.getElementById('dashPassErr').style.display='block';
+    document.getElementById('dashPass').value='';
+    document.getElementById('dashPass').focus();
+  }
+}
+// Auto-unlock if already authenticated this session
+if(sessionStorage.getItem('dash_auth')==='1'){document.getElementById('dashGate').style.display='none';}
+</script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>

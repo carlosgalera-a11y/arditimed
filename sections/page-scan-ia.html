@@ -755,6 +755,138 @@
   <div id="paduaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Padua: 0 — Bajo riesgo</div>
 </div>
 
+<!-- 39. SAPS-II -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🏥 SAPS-II <span style="font-size:.75rem;font-weight:400;color:#64748b;">Gravedad UCI (Le Gall 1993)</span></h3>
+  <p style="font-size:.72rem;color:#888;margin-bottom:6px;">Introduce puntos parciales de cada variable (peores valores 24h).</p>
+  <div style="display:grid;gap:3px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Edad (0-18)</span><input type="number" class="saps2-num" min="0" max="18" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">FC (0-11)</span><input type="number" class="saps2-num" min="0" max="11" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">TAS (0-13)</span><input type="number" class="saps2-num" min="0" max="13" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Temperatura (0-3)</span><input type="number" class="saps2-num" min="0" max="3" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">PaO2/FiO2 si VM (0-11)</span><input type="number" class="saps2-num" min="0" max="11" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Diuresis (0-11)</span><input type="number" class="saps2-num" min="0" max="11" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">BUN/Urea (0-10)</span><input type="number" class="saps2-num" min="0" max="10" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Leucocitos (0-12)</span><input type="number" class="saps2-num" min="0" max="12" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">K (0-3)</span><input type="number" class="saps2-num" min="0" max="3" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Na (0-5)</span><input type="number" class="saps2-num" min="0" max="5" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">HCO3 (0-6)</span><input type="number" class="saps2-num" min="0" max="6" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Bilirrubina (0-9)</span><input type="number" class="saps2-num" min="0" max="9" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Glasgow (0-26)</span><input type="number" class="saps2-num" min="0" max="26" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Enf. crónica (0-17)</span><input type="number" class="saps2-num" min="0" max="17" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:.82rem;">Tipo ingreso (0-8)</span><input type="number" class="saps2-num" min="0" max="8" value="0" onchange="calcSAPS2()" style="width:50px;padding:3px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;"></div>
+  </div>
+  <div id="saps2Result" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">SAPS-II: 0</div>
+</div>
+
+<!-- 40. IMC -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">⚖️ IMC <span style="font-size:.75rem;font-weight:400;color:#64748b;">Índice de Masa Corporal</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+    <div><label style="font-size:.78rem;color:#64748b;">Peso (kg)</label><input type="number" id="imcPeso" step="0.1" placeholder="70" onchange="calcIMC()" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Talla (cm)</label><input type="number" id="imcTalla" step="1" placeholder="170" onchange="calcIMC()" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+  </div>
+  <div id="imcResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Introduce peso y talla</div>
+</div>
+
+<!-- 41. Anion Gap -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧪 Anion Gap <span style="font-size:.75rem;font-weight:400;color:#64748b;">Acidosis metabólica</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+    <div><label style="font-size:.78rem;color:#64748b;">Na (mEq/L)</label><input type="number" id="agNa" value="140" onchange="calcAnionGap()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Cl (mEq/L)</label><input type="number" id="agCl" value="104" onchange="calcAnionGap()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">HCO₃ (mEq/L)</label><input type="number" id="agHCO3" value="24" onchange="calcAnionGap()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Albúmina (g/dL)</label><input type="number" id="agAlb" step="0.1" value="4.0" onchange="calcAnionGap()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+  </div>
+  <div id="agResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Anion Gap: 12</div>
+</div>
+
+<!-- 42. Gradiente Aa O2 -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🫁 Gradiente Aa O₂ <span style="font-size:.75rem;font-weight:400;color:#64748b;">Alveolo-arterial</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+    <div><label style="font-size:.78rem;color:#64748b;">FiO₂ (%)</label><input type="number" id="aaFiO2" value="21" onchange="calcGradAa()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">PaO₂ (mmHg)</label><input type="number" id="aaPaO2" value="95" onchange="calcGradAa()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">PaCO₂ (mmHg)</label><input type="number" id="aaPaCO2" value="40" onchange="calcGradAa()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Edad (años)</label><input type="number" id="aaAge" value="40" onchange="calcGradAa()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+  </div>
+  <div id="aaResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Gradiente Aa: introduce valores</div>
+</div>
+
+<!-- 43. Osmolalidad -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🧪 Osmolalidad <span style="font-size:.75rem;font-weight:400;color:#64748b;">Sérica calculada</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+    <div><label style="font-size:.78rem;color:#64748b;">Na (mEq/L)</label><input type="number" id="osmNa" value="140" onchange="calcOsm()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Glucosa (mg/dL)</label><input type="number" id="osmGlu" value="100" onchange="calcOsm()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">BUN (mg/dL)</label><input type="number" id="osmBUN" value="14" onchange="calcOsm()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Etanol (mg/dL)</label><input type="number" id="osmEtOH" value="0" onchange="calcOsm()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+  </div>
+  <div id="osmResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Osmolalidad: introduce valores</div>
+</div>
+
+<!-- 44. QTc -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💓 QTc Bazett <span style="font-size:.75rem;font-weight:400;color:#64748b;">QT corregido</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+    <div><label style="font-size:.78rem;color:#64748b;">QT (ms)</label><input type="number" id="qtcQT" value="400" onchange="calcQTc()" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">RR (ms)</label><input type="number" id="qtcRR" value="800" onchange="calcQTc()" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+  </div>
+  <div id="qtcResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">QTc: introduce valores</div>
+</div>
+
+<!-- 45. Cockcroft-Gault -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">💧 Cockcroft-Gault <span style="font-size:.75rem;font-weight:400;color:#64748b;">ClCr — Ajuste dosis</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+    <div><label style="font-size:.78rem;color:#64748b;">Edad</label><input type="number" id="cgAge" value="50" onchange="calcCockcroftGault()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Peso (kg)</label><input type="number" id="cgPeso" value="70" onchange="calcCockcroftGault()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Creatinina (mg/dL)</label><input type="number" id="cgCr" step="0.1" value="1.0" onchange="calcCockcroftGault()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Sexo</label><select id="cgSex" onchange="calcCockcroftGault()" style="width:100%;padding:6px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"><option value="M">Varón</option><option value="F">Mujer</option></select></div>
+  </div>
+  <div id="cgResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">ClCr: introduce valores</div>
+</div>
+
+<!-- 46. SIRS -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🌡️ SIRS <span style="font-size:.75rem;font-weight:400;color:#64748b;">Respuesta inflamatoria sistémica</span></h3>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="sirs-chk" onchange="calcSIRS()"> Temperatura >38°C o <36°C</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="sirs-chk" onchange="calcSIRS()"> FC >90 lpm</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="sirs-chk" onchange="calcSIRS()"> FR >20 rpm o PaCO₂ <32 mmHg</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.82rem;cursor:pointer;"><input type="checkbox" class="sirs-chk" onchange="calcSIRS()"> Leucocitos >12.000 o <4.000 o >10% bandas</label>
+  <div id="sirsResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">SIRS: 0/4</div>
+</div>
+
+<!-- 47. Caprini -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🩸 Caprini <span style="font-size:.75rem;font-weight:400;color:#64748b;">Riesgo TEV quirúrgico</span></h3>
+  <p style="font-size:.72rem;color:#888;margin-bottom:4px;">1 punto c/u:</p>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="1" onchange="calcCaprini()"> Edad 41-60</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="1" onchange="calcCaprini()"> Cirugía menor prevista</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="1" onchange="calcCaprini()"> IMC >25</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="1" onchange="calcCaprini()"> Edema EEII / Varices</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="1" onchange="calcCaprini()"> Embarazo / Postparto</label>
+  <p style="font-size:.72rem;color:#888;margin:4px 0 2px;">2 puntos c/u:</p>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="2" onchange="calcCaprini()"> Edad 61-74</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="2" onchange="calcCaprini()"> Cirugía mayor (>45 min)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="2" onchange="calcCaprini()"> Inmovilización en cama >72h</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="2" onchange="calcCaprini()"> Cáncer activo</label>
+  <p style="font-size:.72rem;color:#888;margin:4px 0 2px;">3-5 puntos:</p>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="3" onchange="calcCaprini()"> Edad ≥75 (+3)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="5" onchange="calcCaprini()"> TEP/TVP previo (+5)</label>
+  <label style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="caprini-chk" data-pts="5" onchange="calcCaprini()"> ACV (<1 mes) (+5)</label>
+  <div id="capriniResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">Caprini: 0</div>
+</div>
+
+<!-- 48. RTS -->
+<div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #e2e8f0;">
+  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:4px;">🚑 RTS <span style="font-size:.75rem;font-weight:400;color:#64748b;">Revised Trauma Score</span></h3>
+  <div style="display:grid;gap:6px;">
+    <div><label style="font-size:.78rem;color:#64748b;">Glasgow (3-15)</label><input type="number" id="rtsGCS" min="3" max="15" value="15" onchange="calcRTS()" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">TAS (mmHg)</label><input type="number" id="rtsTAS" value="120" onchange="calcRTS()" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+    <div><label style="font-size:.78rem;color:#64748b;">Frec. respiratoria (rpm)</label><input type="number" id="rtsFR" value="16" onchange="calcRTS()" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;"></div>
+  </div>
+  <div id="rtsResult" style="margin-top:10px;padding:10px;border-radius:8px;font-size:.85rem;text-align:center;background:#f1f5f9;color:#475569;">RTS: introduce valores</div>
 
               </div>
             </div><!-- end panelCalc -->
