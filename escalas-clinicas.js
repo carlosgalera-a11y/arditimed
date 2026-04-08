@@ -416,3 +416,118 @@ function calcEpworth(){
     el.style.background=bg;el.style.color=fg;
     el.innerHTML='<strong>Epworth: '+pts+'/24</strong><br>'+txt;
 }
+
+// ═══ ESCALAS SAMIUC — Añadidas ═══
+
+// ── 30. APACHE II — Gravedad UCI ──
+function calcAPACHE2(){
+  var pts=0;
+  document.querySelectorAll('.apache-num').forEach(function(el){pts+=parseInt(el.value)||0;});
+  document.querySelectorAll('.apache-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+  var el=document.getElementById('apache2Result');
+  var mort;
+  if(pts<=4){mort='~4%';el.style.background='#f0fdf4';el.style.color='#166534';}
+  else if(pts<=9){mort='~8%';el.style.background='#f0fdf4';el.style.color='#166534';}
+  else if(pts<=14){mort='~15%';el.style.background='#fefce8';el.style.color='#854d0e';}
+  else if(pts<=19){mort='~25%';el.style.background='#fff7ed';el.style.color='#9a3412';}
+  else if(pts<=24){mort='~40%';el.style.background='#fef2f2';el.style.color='#991b1b';}
+  else if(pts<=29){mort='~55%';el.style.background='#fef2f2';el.style.color='#991b1b';}
+  else if(pts<=34){mort='~73%';el.style.background='#fef2f2';el.style.color='#7f1d1d';}
+  else{mort='>85%';el.style.background='#450a0a';el.style.color='#fecaca';}
+  el.innerHTML='<strong>APACHE II: '+pts+' puntos</strong><br>Mortalidad estimada: '+mort;
+}
+
+// ── 31. Wells TEP — Tromboembolismo pulmonar ──
+function calcWellsPE(){
+  var pts=0;
+  document.querySelectorAll('.wellspe-chk').forEach(function(c){if(c.checked)pts+=parseFloat(c.dataset.pts);});
+  var el=document.getElementById('wellsPEResult');
+  if(pts<=1){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Wells TEP: '+pts+'</strong><br>Baja probabilidad — TEP improbable';}
+  else if(pts<=4){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>Wells TEP: '+pts+'</strong><br>Probabilidad intermedia — Solicitar D-dímero';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Wells TEP: '+pts+'</strong><br>Alta probabilidad — AngioCT urgente';}
+}
+
+// ── 32. TIMI SCASEST — Síndrome coronario sin elevación ST ──
+function calcTIMI(){
+  var pts=[...document.querySelectorAll('.timi-chk')].filter(c=>c.checked).length;
+  var el=document.getElementById('timiResult');
+  var risk,bg,fg;
+  if(pts<=2){risk='Bajo (muerte/IAM <8%)';bg='#f0fdf4';fg='#166534';}
+  else if(pts<=4){risk='Intermedio (muerte/IAM 13-20%)';bg='#fefce8';fg='#854d0e';}
+  else{risk='Alto (muerte/IAM 26-41%)';bg='#fef2f2';fg='#991b1b';}
+  el.style.background=bg;el.style.color=fg;
+  el.innerHTML='<strong>TIMI SCASEST: '+pts+'/7</strong><br>Riesgo: '+risk;
+}
+
+// ── 33. GRACE — Riesgo en SCA ──
+function calcGRACE(){
+  var pts=0;
+  document.querySelectorAll('.grace-num').forEach(function(el){pts+=parseInt(el.value)||0;});
+  document.querySelectorAll('.grace-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+  var el=document.getElementById('graceResult');
+  if(pts<=108){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>GRACE: '+pts+'</strong><br>Bajo riesgo — Mortalidad <1%';}
+  else if(pts<=140){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>GRACE: '+pts+'</strong><br>Riesgo intermedio — Mortalidad 1-3%';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>GRACE: '+pts+'</strong><br>Alto riesgo — Mortalidad >3% — Coronariografía precoz';}
+}
+
+// ── 34. BISAP — Pancreatitis aguda (primeras 24h) ──
+function calcBISAP(){
+  var pts=[...document.querySelectorAll('.bisap-chk')].filter(c=>c.checked).length;
+  var el=document.getElementById('bisapResult');
+  if(pts<=1){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>BISAP: '+pts+'/5</strong><br>Bajo riesgo — Mortalidad <2%';}
+  else if(pts===2){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>BISAP: '+pts+'/5</strong><br>Riesgo intermedio — Mortalidad ~5%';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>BISAP: '+pts+'/5</strong><br>Alto riesgo — Mortalidad ~22% — Considerar UCI';}
+}
+
+// ── 35. Norton — Riesgo úlceras por presión ──
+function calcNorton(){
+  var pts=0;
+  document.querySelectorAll('.norton-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+  var el=document.getElementById('nortonResult');
+  if(pts>=15){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Norton: '+pts+'/20</strong><br>Riesgo mínimo/bajo';}
+  else if(pts>=13){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>Norton: '+pts+'/20</strong><br>Riesgo medio — Medidas preventivas';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Norton: '+pts+'/20</strong><br>Alto riesgo — Protocolo UPP completo';}
+}
+
+// ── 36. Rockall — Hemorragia digestiva (post-endoscopia) ──
+function calcRockall(){
+  var pts=0;
+  document.querySelectorAll('.rockall-sel').forEach(function(s){pts+=parseInt(s.value)||0;});
+  var el=document.getElementById('rockallResult');
+  if(pts<=2){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Rockall: '+pts+'/11</strong><br>Bajo riesgo — Mortalidad ~0.1%';}
+  else if(pts<=4){el.style.background='#fefce8';el.style.color='#854d0e';el.innerHTML='<strong>Rockall: '+pts+'/11</strong><br>Riesgo intermedio — Mortalidad ~5%';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Rockall: '+pts+'/11</strong><br>Alto riesgo — Mortalidad ~25% — UCI/Vigilancia';}
+}
+
+// ── 37. MELD-Na — Hepatopatía crónica / Trasplante ──
+function calcMELD(){
+  var cr=parseFloat(document.getElementById('meldCr').value)||1;
+  var bil=parseFloat(document.getElementById('meldBil').value)||1;
+  var inr=parseFloat(document.getElementById('meldINR').value)||1;
+  var na=parseFloat(document.getElementById('meldNa').value)||140;
+  if(cr<1)cr=1;if(cr>4)cr=4;if(bil<1)bil=1;if(inr<1)inr=1;
+  if(na<125)na=125;if(na>137)na=137;
+  var meld=Math.round(10*(0.957*Math.log(cr)+0.378*Math.log(bil)+1.120*Math.log(inr)+0.643));
+  if(meld<6)meld=6;if(meld>40)meld=40;
+  var meldna=Math.round(meld+1.32*(137-na)-(0.033*meld*(137-na)));
+  if(meldna<6)meldna=6;if(meldna>40)meldna=40;
+  var el=document.getElementById('meldResult');
+  if(meldna<=9){el.style.background='#f0fdf4';el.style.color='#166534';}
+  else if(meldna<=19){el.style.background='#fefce8';el.style.color='#854d0e';}
+  else if(meldna<=29){el.style.background='#fff7ed';el.style.color='#9a3412';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';}
+  el.innerHTML='<strong>MELD: '+meld+' | MELD-Na: '+meldna+'</strong><br>'+
+    (meldna<=9?'Mortalidad 3 meses: 1.9%':meldna<=19?'Mortalidad 3 meses: 6%':meldna<=29?'Mortalidad 3 meses: 19.6%':'Mortalidad 3 meses: 52.6% — Prioridad trasplante');
+}
+
+// ── 38. Wells TEP simplificado (ya existe Wells TVP, este es para TEP) ──
+// Ya implementado arriba como calcWellsPE
+
+// ── 39. Padua — Riesgo TEV en hospitalizados ──
+function calcPadua(){
+  var pts=0;
+  document.querySelectorAll('.padua-chk').forEach(function(c){if(c.checked)pts+=parseInt(c.dataset.pts);});
+  var el=document.getElementById('paduaResult');
+  if(pts<4){el.style.background='#f0fdf4';el.style.color='#166534';el.innerHTML='<strong>Padua: '+pts+'</strong><br>Bajo riesgo TEV — No tromboprofilaxis farmacológica';}
+  else{el.style.background='#fef2f2';el.style.color='#991b1b';el.innerHTML='<strong>Padua: '+pts+'</strong><br>Alto riesgo TEV — Tromboprofilaxis con HBPM indicada';}
+}

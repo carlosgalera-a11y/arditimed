@@ -110,10 +110,13 @@ var CALC_CATS={
   'Fine':'neumo','PORT':'neumo','PESI':'cardio','BODE':'neumo','CRB-65':'neumo','BAP-65':'neumo',
   'Wood-Downes':'neumo','Taussig':'neumo','DECAF':'neumo','CAUDA-70':'neumo','VNI':'neumo',
   'Pisa':'cardio','HEART':'cardio','CHA':'cardio','HAS-BLED':'cardio',
-  'NEWS2':'urgencias','SOFA':'urgencias',
-  'Glasgow-Blatchford':'digestivo','Child-Pugh':'digestivo','Alvarado':'digestivo',
+  'NEWS2':'urgencias','SOFA':'urgencias','APACHE':'urgencias',
+  'Glasgow-Blatchford':'digestivo','Child-Pugh':'digestivo','Alvarado':'digestivo','Rockall':'digestivo','BISAP':'digestivo',
+  'TIMI':'cardio','GRACE':'cardio','Wells TEP':'cardio',
+  'MELD':'digestivo','Norton':'otros','Padua':'cardio',
   'PHQ-9':'neuro','GAD-7':'neuro','ABCD':'neuro',
-  'Barthel':'otros','CKD-EPI':'otros','Ottawa':'otros'
+  'Barthel':'otros','CKD-EPI':'otros','Ottawa':'otros',
+  'Ranson':'digestivo','Downton':'otros','Fager':'otros','Epworth':'neumo'
 };
 function filterCalc(cat){
   document.querySelectorAll('.calc-filter').forEach(function(b){b.style.background='#fff';b.style.color='#333';});
