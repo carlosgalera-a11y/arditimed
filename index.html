@@ -2144,7 +2144,7 @@ function renderPatients(){
 // ═══ SISTEMA DE MODERADORES ═══
 var SUPERADMIN_EMAIL="ramongalera22@gmail.com";
 var SUPERADMIN_EMAILS=["ramongalera22@gmail.com","carlosgalera2roman@gmail.com","esther.montoro@gmail.com"];
-var MODERATOR_EMAILS=["urgenciashuslcartagena@gmail.com"];
+var MODERATOR_EMAILS=["urgenciashuslcartagena@gmail.com","luciagarcia@hotmail.com","ajallomin@hotmail.com"];
 var ADMIN_EMAIL=SUPERADMIN_EMAIL; // compatibilidad hacia atrás
 var isAdminLoggedIn=false;
 var isModerador=false;
@@ -2187,6 +2187,30 @@ function isAdmin(){
     if(SUPERADMIN_EMAILS.indexOf(user.email)!==-1)return true;
     if(moderadoresCache&&moderadoresCache[user.email]&&moderadoresCache[user.email].activo)return true;
     return false;
+}
+
+// Auto-seed MODERATOR_EMAILS into Firestore (runs once per session on superadmin login)
+function seedModeradoresFirestore(){
+    if(sessionStorage.getItem('mods_seeded'))return;
+    try{
+        MODERATOR_EMAILS.forEach(function(email){
+            // Use email as doc ID so Firestore rules exists() check works
+            var ref=db.collection("moderadores").doc(email);
+            ref.get().then(function(doc){
+                if(!doc.exists){
+                    ref.set({
+                        email:email,
+                        nombre:email.split("@")[0],
+                        rol:"moderador",
+                        activo:true,
+                        añadidoPor:"auto-seed",
+                        fechaAlta:new Date()
+                    }).then(function(){console.log("Moderador seeded:",email);});
+                }
+            }).catch(function(){});
+        });
+        sessionStorage.setItem('mods_seeded','1');
+    }catch(e){}
 }
 function isSuperAdmin(){
     var user=firebase.auth().currentUser;
@@ -2246,7 +2270,7 @@ function checkAdminStatus(){
         if(isAdminLoggedIn&&!wasAdmin){
             apShowAdminTab(true);
             saveConfigToFirestore();
-            // Mostrar badge de moderador en navbar
+            if(isSuperAdmin())seedModeradoresFirestore();
             updateModBadgeAll();
         }else if(!isAdminLoggedIn&&wasAdmin){
             apShowAdminTab(false);
