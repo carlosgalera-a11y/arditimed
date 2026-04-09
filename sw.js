@@ -1,5 +1,5 @@
 // Service Worker - Área II Cartagena PWA v36 - network-first + precache sections
-const CACHE_NAME = 'area2-v66';
+const CACHE_NAME = 'area2-v67';
 
 const PRECACHE = [
   '/Cartagenaeste/',
@@ -11,6 +11,7 @@ const PRECACHE = [
   '/Cartagenaeste/triaje-ia.js',
   '/Cartagenaeste/escalas-clinicas.js',
   '/Cartagenaeste/guardia-notas.js',
+  '/Cartagenaeste/supabase-plantillas.js',
   '/Cartagenaeste/turnos-guardia.js',
   '/Cartagenaeste/sections/page-scan-ia.html',
   '/Cartagenaeste/sections/page-urgencias.html',
@@ -23,7 +24,7 @@ const PRECACHE = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('[SW v39] Pre-caching', PRECACHE.length, 'files');
+      console.log('[SW v67] Pre-caching', PRECACHE.length, 'files');
       return Promise.all(PRECACHE.map(url =>
         cache.add(url).catch(() => console.warn('[SW] Skip:', url))
       ));
