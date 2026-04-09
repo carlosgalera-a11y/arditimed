@@ -2200,8 +2200,8 @@ function scanGoogleLogin(){
     }).catch(function(error){
         console.error("Google login error:",error);
         if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"){
-            console.log("Popup blocked, trying redirect...");
-            firebase.auth().signInWithRedirect(provider);
+            console.log("Popup blocked on this browser.");
+            alert("Tu navegador ha bloqueado la ventana de login. Permite las ventanas emergentes para este sitio e inténtalo de nuevo.");
         }else{
             document.getElementById("scanLoginError").innerHTML="❌ "+error.message;
             document.getElementById("scanLoginError").style.display="block";
@@ -2776,20 +2776,8 @@ firebase.auth().onAuthStateChanged(function(user){
     }
 });
 
-// Handle redirect result (for mobile where popup is blocked)
-firebase.auth().getRedirectResult().then(function(result){
-    if(result.user){
-        console.log("Redirect login success:",result.user.email);
-        checkAdminStatus();
-        if(pendingPageAfterLogin){
-            var pg=pendingPageAfterLogin;pendingPageAfterLogin=null;
-            logPageAccess(pg,result.user);
-            showPage(pg);
-        }else{
-            showPage("pageScanIA");scanRenderHist();
-        }
-    }
-}).catch(function(e){console.log("No redirect result:",e);});
+// getRedirectResult deshabilitado para compatibilidad iOS Safari (storage-partitioned browsers)
+// Se usa exclusivamente signInWithPopup
 
 // ═══ INIT ═══
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){var im=document.getElementById("instruccionesModal");if(im&&im.style.display==="flex"){im.style.display="none";return;}var ap=document.getElementById("adminPanel");if(ap&&ap.style.display!=="none"){ap.style.display="none";return;}var sl=document.getElementById("scanLoginModal");if(sl&&sl.style.display==="flex"){sl.style.display="none";return;}}});
