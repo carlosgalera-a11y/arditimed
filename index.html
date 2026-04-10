@@ -529,6 +529,77 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
         </div>
       </div>
     </div>
+
+    <!-- ═══ RECOMENDACIONES PARA PACIENTES ═══ -->
+    <div style="grid-column:1/-1;margin-bottom:8px;">
+      <div onclick="var p=document.getElementById('recoList');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#e65100,#f57c00);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+        <div style="display:flex;align-items:center;gap:10px;color:#fff;"><span style="font-size:1.4rem;">📋</span><div><div style="font-weight:700;font-size:1rem;">Recomendaciones para Pacientes</div><div style="font-size:.75rem;opacity:.8;">Información y consejos sobre patologías frecuentes</div></div></div>
+        <span class="arr" style="color:#fff;font-size:.9rem;">▶</span>
+      </div>
+      <div id="recoList" style="display:none;margin-top:8px;">
+
+        <!-- Hernias -->
+        <div style="margin-bottom:12px;">
+          <div onclick="var p=document.getElementById('recoHernias');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">🩺</span><strong style="font-size:.92rem;color:#e65100;">Hernia Inguinal — Recomendaciones</strong></div>
+            <span class="arr2" style="color:#e65100;font-size:.85rem;">▶</span>
+          </div>
+          <div id="recoHernias" style="display:none;padding:16px;background:#fff;border:1px solid #ffe0b2;border-radius:0 0 10px 10px;border-top:none;">
+
+            <div style="background:#e3f2fd;border-left:4px solid #1565c0;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#0d47a1;margin-bottom:6px;">📖 Lo que dicen las guías sobre conducta expectante</div>
+              <p style="font-size:.82rem;color:#333;line-height:1.6;margin:0;">Según la <strong>Guía Internacional para el Manejo de la Hernia Inguinal</strong> (European Hernia Society y sociedades quirúrgicas españolas):</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:8px 0 0;padding-left:20px;">
+                <li>La <strong>conducta expectante es aceptable</strong> en hombres con hernia asintomática o con molestias mínimas, ya que el riesgo de urgencia es bajo en ese perfil</li>
+                <li>La mayoría de estos pacientes acabarán necesitando cirugía, por lo que se recomienda <strong>no demorarla indefinidamente</strong></li>
+                <li>Las <strong>hernias sintomáticas deben operarse</strong></li>
+                <li>El riesgo de incarceración/estrangulación es mayor en: <strong>mujeres, hernia femoral</strong>, y pacientes con ingreso previo relacionado con la hernia</li>
+              </ul>
+            </div>
+
+            <div style="background:#f1f8e9;border-left:4px solid #558b2f;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#33691e;margin-bottom:6px;">⚠️ Qué evitar mientras esperas la cirugía</div>
+              <p style="font-size:.82rem;color:#333;font-weight:600;margin:8px 0 4px;">💪 Esfuerzos físicos</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:0 0 8px;padding-left:20px;">
+                <li>Evitar levantar objetos pesados (&gt;4-5 kg) o cargas que requieran tensión abdominal</li>
+                <li>No realizar ejercicios de fuerza, abdominales ni de alto impacto</li>
+                <li>Al agacharse, doblar las rodillas en lugar de la espalda</li>
+                <li>Al toser o estornudar, sujetar con la mano la zona de la ingle</li>
+              </ul>
+              <p style="font-size:.82rem;color:#333;font-weight:600;margin:8px 0 4px;">🥗 Tránsito intestinal</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:0 0 8px;padding-left:20px;">
+                <li>Dieta rica en fibra y líquidos abundantes para evitar el estreñimiento</li>
+                <li>No hacer esfuerzos al defecar — usar laxantes si es necesario</li>
+                <li>Evitar alimentos que produzcan gases o distensión abdominal importante</li>
+              </ul>
+              <p style="font-size:.82rem;color:#333;font-weight:600;margin:8px 0 4px;">📌 Otros factores</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:0;padding-left:20px;">
+                <li>Controlar el peso corporal: la obesidad aumenta la presión intraabdominal de forma crónica</li>
+                <li>Tratar la tos crónica si existe (tabaco, EPOC), ya que cada golpe de tos eleva la presión abdominal</li>
+                <li>Si el bulto habitualmente se reduce solo al tumbarse, comprobar que sigue haciéndolo — si deja de reducirse, es señal de alerta</li>
+              </ul>
+            </div>
+
+            <div style="background:#ffebee;border:2px solid #ef5350;border-radius:8px;padding:14px;margin-bottom:8px;">
+              <div style="font-weight:700;font-size:.95rem;color:#c62828;margin-bottom:8px;">🚨 Acude a Urgencias de INMEDIATO si:</div>
+              <p style="font-size:.82rem;color:#b71c1c;margin:0 0 6px;font-style:italic;">Son signos de incarceración o estrangulación — NO esperes a consulta normal:</p>
+              <ul style="font-size:.85rem;color:#333;line-height:1.8;margin:0;padding-left:20px;">
+                <li><strong>El bulto no desaparece al tumbarte</strong> y está tenso o duro (irreductible)</li>
+                <li><strong>Dolor intenso y continuo</strong> en la ingle que no cede o va en aumento</li>
+                <li><strong>Náuseas y/o vómitos</strong></li>
+                <li><strong>Incapacidad de expulsar gases o heces</strong></li>
+                <li><strong>Enrojecimiento, calor o cambio de color</strong> de la piel sobre el bulto</li>
+                <li><strong>Fiebre</strong> con malestar general</li>
+              </ul>
+            </div>
+
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:8px;">Fuente: Guía Internacional para el Manejo de la Hernia Inguinal (European Hernia Society). Uso docente.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <a class="patient-card" href="multiidioma.html" target="_blank" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;"><div class="patient-card-icon">🌍</div><div class="patient-card-title" style="color:#bf360c;">Info Multilingüe</div><div class="patient-card-desc" style="color:#e65100;">عربي · Français · English</div></a>
     <a class="patient-card" href="mapa.html" target="_blank"><div class="patient-card-icon">🗺️</div><div class="patient-card-title">Mapa Sanitario</div><div class="patient-card-desc">Centros, farmacias, urgencias</div></a>
     <a class="patient-card" href="dietas.html" target="_blank"><div class="patient-card-icon">🥗</div><div class="patient-card-title">Dietas</div><div class="patient-card-desc">Planes nutricionales</div></a>
