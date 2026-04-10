@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salud Infantil - Área II Cartagena</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#333}.container{max-width:900px;margin:0 auto;padding:20px}.header{background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;padding:30px;border-radius:12px;margin-bottom:24px;text-align:center}.header h1{font-size:1.8rem;margin-bottom:6px}.header p{font-size:.92rem;opacity:.85}.back{display:inline-flex;align-items:center;gap:6px;color:#f57c00;text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:16px}.back:hover{text-decoration:underline}
+        .section{background:#fff;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        .section-header{padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fff3e0,#ffe0b2);transition:background .2s}
+        .section-header:hover{background:linear-gradient(135deg,#ffe0b2,#ffcc80)}
+        .section-icon{font-size:1.8rem}
+        .section-title{font-weight:800;font-size:1rem;color:#e65100}
+        .section-sub{font-size:.76rem;color:#bf360c;margin-top:2px}
+        .arr{margin-left:auto;color:#e65100;font-size:.9rem;transition:transform .3s}
+        .section-body{display:none;padding:20px;font-size:.88rem;line-height:1.7;color:#444}
+        .section-body.open{display:block}
+        .alert-box{padding:14px;border-radius:10px;margin-bottom:14px}
+        .alert-red{background:#ffebee;border-left:4px solid #f44336}
+        .alert-red strong{color:#c62828}
+        .alert-yellow{background:#fff8e1;border-left:4px solid #ffc107}
+        .alert-yellow strong{color:#f57f17}
+        .alert-green{background:#e8f5e9;border-left:4px solid #4caf50}
+        .alert-green strong{color:#2e7d32}
+        .alert-blue{background:#e3f2fd;border-left:4px solid #2196f3}
+        .alert-blue strong{color:#0d47a1}
+        table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.82rem}
+        th{background:#fff3e0;color:#e65100;padding:8px;text-align:left;font-size:.78rem;text-transform:uppercase}
+        td{padding:8px;border-bottom:1px solid #eee}
+        tr:hover td{background:#fafafa}
+        ul{padding-left:18px}li{margin-bottom:6px}
+        .fuente{font-size:.72rem;color:#999;margin-top:10px;padding-top:8px;border-top:1px solid #eee}
+    </style>
+</head>
+<body>
+<div class="container">
+    <a class="back" href="https://carlosgalera-a11y.github.io/Cartagenaeste/">← Volver</a>
+    <div class="header"><h1>👶 Salud Infantil</h1><p>Guía para padres y madres · Cuándo preocuparse y cuándo esperar</p></div>
+
+    <!-- FIEBRE -->
+    <div class="section">
+        <div class="section-header" onclick="toggle(this)"><span class="section-icon">🌡️</span><div><div class="section-title">Fiebre en niños</div><div class="section-sub">¿Cuándo ir a urgencias?</div></div><span class="arr">▶</span></div>
+        <div class="section-body">
+            <div class="alert-blue"><strong>📏 ¿Qué es fiebre?</strong><br>Temperatura ≥38°C (axilar) o ≥38.5°C (rectal). La febrícula (37.5–38°C) no es fiebre. El termómetro digital axilar es suficiente.</div>
+            <div class="alert-red"><strong>🚨 Ve a Urgencias si:</strong><ul><li>Bebé <strong>menor de 3 meses</strong> con fiebre ≥38°C (SIEMPRE)</li><li>Fiebre >40°C que no baja con antitérmicos</li><li>Manchas rojas en la piel que NO desaparecen al presionar (petequias)</li><li>El niño está muy adormilado, no responde, rigidez de cuello</li><li>Dificultad para respirar, quejido</li><li>Convulsión (aunque sea la primera vez)</li></ul></div>
+            <div class="alert-yellow"><strong>⚠️ Consulta en 24h si:</strong><ul><li>Fiebre >3 días seguidos</li><li>Dolor de oído intenso</li><li>Dolor al orinar</li><li>El niño no quiere beber ni comer nada</li></ul></div>
+            <div class="alert-green"><strong>✅ Puedes esperar en casa si:</strong><ul><li>El niño juega, bebe y está activo entre episodios de fiebre</li><li>La fiebre baja bien con paracetamol o ibuprofeno</li><li>Lleva menos de 3 días con fiebre</li></ul></div>
+            <h4 style="color:#e65100;margin:14px 0 8px">💊 Dosis de antitérmicos por peso</h4>
+            <div class="alert-blue"><strong>📌 Regla rápida:</strong> Paracetamol: 15 mg/kg cada 6-8h · Ibuprofeno: 7-10 mg/kg cada 6-8h (solo >6 meses)<br>Ejemplo: niño de 10 kg → Paracetamol 150mg = 1.5 ml del jarabe de 100mg/ml</div>
+            <table><thead><tr><th>Peso</th><th>Paracetamol 100mg/ml</th><th>Ibuprofeno 20mg/ml</th></tr></thead><tbody>
+                <tr><td>5 kg</td><td>0.75 ml cada 6-8h</td><td>—</td></tr>
+                <tr><td>8 kg</td><td>1.2 ml cada 6-8h</td><td>3 ml cada 6-8h</td></tr>
+                <tr><td>10 kg</td><td>1.5 ml cada 6-8h</td><td>4 ml cada 6-8h</td></tr>
+                <tr><td>12 kg</td><td>1.8 ml cada 6-8h</td><td>5 ml cada 6-8h</td></tr>
+                <tr><td>15 kg</td><td>2.2 ml cada 6-8h</td><td>6 ml cada 6-8h</td></tr>
+                <tr><td>20 kg</td><td>3 ml cada 6-8h</td><td>7.5 ml cada 6-8h</td></tr>
+                <tr><td>25 kg</td><td>3.7 ml cada 6-8h</td><td>Comprimidos 200mg: ½</td></tr>
+            </tbody></table>
+            <div class="alert-yellow"><strong>⚠️ Importante:</strong> NO uses aspirina en niños. NO alternes paracetamol e ibuprofeno por sistema. Consulta siempre con tu pediatra la dosis exacta.</div>
+            <div class="fuente">Fuentes: AEPap, EnFamilia (AEPED), Protocolo fiebre AEPED 2023</div>
+        </div>
+    </div>
+
+    <!-- GASTROENTERITIS -->
+    <div class="section">
+        <div class="section-header" onclick="toggle(this)"><span class="section-icon">🤢</span><div><div class="section-title">Gastroenteritis</div><div class="section-sub">Vómitos y diarrea: qué hacer en casa</div></div><span class="arr">▶</span></div>
+        <div class="section-body">
+            <div class="alert-green"><strong>✅ Tratamiento en casa:</strong><ul><li><strong>Suero de rehidratación oral (SRO):</strong> en farmacias (ej: Bioralsuero, Citorsal). A sorbos pequeños y frecuentes.</li><li>NO usar Aquarius, cola ni limonada casera — no rehidratan bien.</li><li>Si vomita, espera 15 min y ofrece otra vez a cucharaditas.</li><li>Ofrece comida normal cuando pida — NO dieta blanda obligatoria.</li><li>Si toma pecho, sigue con lactancia a demanda.</li></ul></div>
+            <div class="alert-red"><strong>🚨 Ve a Urgencias si:</strong><ul><li>Bebé <3 meses con vómitos o diarrea</li><li>No hace pis en 6-8 horas (pañal seco)</li><li>Llanto sin lágrimas, ojos hundidos, boca muy seca</li><li>Sangre en las heces o vómitos</li><li>Dolor abdominal fuerte que no cede</li><li>El niño está muy decaído o no quiere beber nada</li></ul></div>
+            <div class="fuente">Fuentes: ESPGHAN 2024, AEPap, EnFamilia (AEPED)</div>
+        </div>
+    </div>
+
+    <!-- CALENDARIO VACUNAL -->
+    <div class="section">
+        <div class="section-header" onclick="toggle(this)"><span class="section-icon">💉</span><div><div class="section-title">Calendario vacunal Región de Murcia</div><div class="section-sub">Vacunas por edad · 2025</div></div><span class="arr">▶</span></div>
+        <div class="section-body">
+            <table><thead><tr><th>Edad</th><th>Vacunas</th></tr></thead><tbody>
+                <tr><td><strong>2 meses</strong></td><td>Hexavalente (difteria, tétanos, tos ferina, polio, Hib, hepatitis B) + Neumococo + Rotavirus oral</td></tr>
+                <tr><td><strong>4 meses</strong></td><td>Hexavalente + Neumococo + Meningococo B + Rotavirus oral</td></tr>
+                <tr><td><strong>6 meses</strong></td><td>Meningococo B</td></tr>
+                <tr><td><strong>11 meses</strong></td><td>Hexavalente + Neumococo + Meningococo C</td></tr>
+                <tr><td><strong>12 meses</strong></td><td>Triple vírica (sarampión, rubeola, paperas) + Meningococo B</td></tr>
+                <tr><td><strong>15 meses</strong></td><td>Varicela</td></tr>
+                <tr><td><strong>3-4 años</strong></td><td>Triple vírica (2ª dosis) + Varicela (2ª dosis)</td></tr>
+                <tr><td><strong>6 años</strong></td><td>DTPa + Polio (recuerdo)</td></tr>
+                <tr><td><strong>12 años</strong></td><td>Meningococo ACWY + VPH (chicos y chicas) + Tdpa</td></tr>
+            </tbody></table>
+            <div class="alert-blue"><strong>📌 Recuerda:</strong> Las vacunas son gratuitas y se ponen en tu centro de salud. Si se ha pasado alguna dosis, se puede recuperar. Consulta con tu pediatra o enfermera pediátrica.</div>
+            <div class="fuente">Fuente: Calendario vacunal CARM 2025, CAV-AEP 2025</div>
+        </div>
+    </div>
+
+    <!-- HITOS DESARROLLO -->
+    <div class="section">
+        <div class="section-header" onclick="toggle(this)"><span class="section-icon">📈</span><div><div class="section-title">Hitos del desarrollo</div><div class="section-sub">¿Mi hijo se desarrolla bien?</div></div><span class="arr">▶</span></div>
+        <div class="section-body">
+            <div class="alert-blue"><strong>📌 Cada niño tiene su ritmo.</strong> Estos son orientativos. Si tu hijo no cumple varios a la vez, consulta con pediatría.</div>
+            <table><thead><tr><th>Edad</th><th>Motor</th><th>Social / Lenguaje</th></tr></thead><tbody>
+                <tr><td><strong>2 meses</strong></td><td>Sujeta la cabeza brevemente</td><td>Sonrisa social, sigue con la mirada</td></tr>
+                <tr><td><strong>4 meses</strong></td><td>Agarra objetos, gira la cabeza</td><td>Ríe a carcajadas, balbucea</td></tr>
+                <tr><td><strong>6 meses</strong></td><td>Se sienta con apoyo, rueda</td><td>"Ba-ba", "ma-ma" sin sentido</td></tr>
+                <tr><td><strong>9 meses</strong></td><td>Gatea, pinza inferior</td><td>Señala, dice adiós, extraña</td></tr>
+                <tr><td><strong>12 meses</strong></td><td>Se pone de pie, primeros pasos</td><td>1-3 palabras con sentido, entiende "no"</td></tr>
+                <tr><td><strong>18 meses</strong></td><td>Anda solo, sube escaleras</td><td>~20 palabras, señala lo que quiere</td></tr>
+                <tr><td><strong>2 años</strong></td><td>Corre, chuta pelota</td><td>Frases de 2 palabras, >50 palabras</td></tr>
+                <tr><td><strong>3 años</strong></td><td>Pedalea triciclo, salta</td><td>Frases completas, cuenta hasta 3</td></tr>
+            </tbody></table>
+            <div class="alert-yellow"><strong>⚠️ Consulta si a los 18 meses:</strong> No dice ninguna palabra, no señala, no responde a su nombre, no hace contacto visual. Puede ser normal, pero conviene valorarlo.</div>
+            <div class="fuente">Fuentes: Denver II, Haizea-Llevant, EnFamilia (AEPED)</div>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin:30px 0;font-size:.82rem;color:#999">
+        <p>Información educativa · Área II Cartagena</p>
+        <p>Fuentes: AEPap, AEPED (EnFamilia), CARM, ESPGHAN</p>
+        <p><strong>Ante cualquier duda, consulta con tu pediatra.</strong></p>
+    </div>
+</div>
+<script>function toggle(h){var b=h.nextElementSibling,a=h.querySelector('.arr');b.classList.toggle('open');a.textContent=b.classList.contains('open')?'▼':'▶';}</script>
+</body>
+</html>

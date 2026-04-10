@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preparación para Consulta - Área II Cartagena</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#333}
+        .container{max-width:800px;margin:0 auto;padding:20px}
+        .header{background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;padding:30px;border-radius:12px;margin-bottom:24px;text-align:center}
+        .header h1{font-size:1.8rem;margin-bottom:6px}
+        .header p{font-size:.95rem;opacity:.85}
+        .step{background:#fff;border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid #1565c0}
+        .step-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1565c0;color:#fff;border-radius:50%;font-weight:800;font-size:.85rem;margin-right:10px}
+        .step h3{display:inline;font-size:1.05rem;color:#0d47a1;vertical-align:middle}
+        .step p{font-size:.82rem;color:#666;margin:8px 0 14px}
+        label{display:block;font-size:.85rem;font-weight:600;color:#444;margin:10px 0 4px}
+        input[type=text],input[type=number],input[type=date],textarea,select{width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:inherit;transition:border .2s}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:#1565c0}
+        textarea{min-height:80px;resize:vertical}
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+        @media(max-width:600px){.row,.row3{grid-template-columns:1fr}}
+        .chip-group{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+        .chip{padding:6px 14px;border:2px solid #e0e0e0;border-radius:20px;font-size:.8rem;cursor:pointer;transition:all .2s;background:#fff;user-select:none}
+        .chip.active{background:#1565c0;color:#fff;border-color:#1565c0}
+        .chip:hover{border-color:#1565c0}
+        .med-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+        .med-row input{flex:1}
+        .med-row button{background:#ef5350;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:.85rem}
+        .add-btn{background:#e3f2fd;color:#1565c0;border:2px dashed #90caf9;border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-weight:600;font-size:.85rem;transition:all .2s}
+        .add-btn:hover{background:#bbdefb}
+        .actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+        .btn{padding:14px 28px;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+        .btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+        .btn-primary{background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff}
+        .btn-secondary{background:#fff;color:#1565c0;border:2px solid #1565c0}
+        .btn-green{background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff}
+        #preview{display:none;background:#fff;border-radius:12px;padding:24px;margin-top:20px;box-shadow:0 4px 20px rgba(0,0,0,.1);border:2px solid #1565c0}
+        #preview h2{color:#0d47a1;margin-bottom:16px;font-size:1.2rem}
+        .preview-section{margin-bottom:12px}
+        .preview-section strong{color:#0d47a1;font-size:.85rem}
+        .preview-section p{font-size:.88rem;color:#444;margin-top:2px}
+        #qrResult{text-align:center;margin-top:16px}
+        .back{display:inline-flex;align-items:center;gap:6px;color:#1565c0;text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:16px}
+        .back:hover{text-decoration:underline}
+        .tip{background:#fff3e0;border:1px solid #ffe0b2;border-radius:8px;padding:12px;font-size:.82rem;color:#e65100;margin-bottom:16px;line-height:1.6}
+        @media print{.actions,.back,.tip,.header p{display:none}.header{padding:16px;margin-bottom:12px}.step{box-shadow:none;border:1px solid #ddd;page-break-inside:avoid}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <a class="back" href="https://carlosgalera-a11y.github.io/Cartagenaeste/">← Volver a Área II Cartagena</a>
+    <div class="header">
+        <h1>📋 Preparación para Consulta</h1>
+        <p>Rellena este formulario en casa. Genera un resumen para enseñar a tu médico.</p>
+    </div>
+    <div class="tip">💡 <strong>Consejo:</strong> Rellena esto tranquilamente antes de ir al médico. No necesitas rellenar todo — solo lo que consideres importante. Tus datos NO se envían a ningún servidor, se quedan en tu dispositivo.</div>
+
+    <!-- PASO 1: Datos personales -->
+    <div class="step">
+        <span class="step-num">1</span><h3>Tus datos</h3>
+        <p>Información básica para que el médico te identifique.</p>
+        <div class="row">
+            <div><label>Nombre y apellidos</label><input type="text" id="nombre" placeholder="Ej: María García López"></div>
+            <div><label>Fecha de nacimiento</label><input type="date" id="nacimiento"></div>
+        </div>
+        <div class="row" style="margin-top:8px">
+            <div><label>Nº Tarjeta Sanitaria (SIP)</label><input type="text" id="sip" placeholder="Ej: 30012345678"></div>
+            <div><label>Teléfono de contacto</label><input type="text" id="telefono" placeholder="Ej: 600 123 456"></div>
+        </div>
+    </div>
+
+    <!-- PASO 2: Motivo de consulta -->
+    <div class="step">
+        <span class="step-num">2</span><h3>¿Por qué vienes hoy?</h3>
+        <p>Describe tu problema principal con tus palabras.</p>
+        <label>Motivo principal de la consulta</label>
+        <textarea id="motivo" placeholder="Ej: Llevo 3 días con dolor de cabeza fuerte, sobre todo por las mañanas..."></textarea>
+        <div class="row" style="margin-top:10px">
+            <div><label>¿Desde cuándo?</label><input type="text" id="desde" placeholder="Ej: Hace 3 días, desde el lunes..."></div>
+            <div><label>¿Cómo de fuerte? (1-10)</label>
+                <select id="intensidad"><option value="">Selecciona...</option><option>1 — Muy leve</option><option>2</option><option>3 — Leve</option><option>4</option><option>5 — Moderado</option><option>6</option><option>7 — Fuerte</option><option>8</option><option>9 — Muy fuerte</option><option>10 — Insoportable</option></select>
+            </div>
+        </div>
+        <label style="margin-top:10px">¿Qué lo mejora o empeora?</label>
+        <input type="text" id="mejora" placeholder="Ej: Mejora con ibuprofeno, empeora al agacharme...">
+        <label>Otros síntomas que notes</label>
+        <div class="chip-group" id="sintomasChips">
+            <span class="chip" onclick="this.classList.toggle('active')">Fiebre</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Náuseas</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Mareo</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Cansancio</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Dolor de pecho</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Dificultad para respirar</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Tos</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Dolor de barriga</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Pérdida de peso</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Insomnio</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Tristeza / Ansiedad</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Hinchazón</span>
+        </div>
+        <label>Otros síntomas (escribe libremente)</label>
+        <input type="text" id="otrosSintomas" placeholder="Ej: Me pica la piel, veo borroso...">
+    </div>
+
+    <!-- PASO 3: Medicación -->
+    <div class="step">
+        <span class="step-num">3</span><h3>Tu medicación actual</h3>
+        <p>Apunta todos los medicamentos que tomas, incluidos los que compras sin receta.</p>
+        <div id="medList">
+            <div class="med-row"><input type="text" placeholder="Nombre (ej: Omeprazol 20mg)"><input type="text" placeholder="Cuándo (ej: 1 por la mañana)" style="max-width:200px"><button onclick="this.parentElement.remove()">✕</button></div>
+        </div>
+        <div class="add-btn" onclick="addMed()">+ Añadir otro medicamento</div>
+    </div>
+
+    <!-- PASO 4: Alergias -->
+    <div class="step">
+        <span class="step-num">4</span><h3>Alergias</h3>
+        <p>¿Eres alérgico a algún medicamento, alimento o sustancia?</p>
+        <div class="chip-group" id="alergiasChips">
+            <span class="chip" onclick="this.classList.toggle('active')">Penicilina</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Ibuprofeno / AINEs</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Metamizol (Nolotil)</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Sulfamidas</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Yodo / Contrastes</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Látex</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Ninguna conocida</span>
+        </div>
+        <label>Otras alergias</label>
+        <input type="text" id="otrasAlergias" placeholder="Ej: Marisco, frutos secos, polen...">
+    </div>
+
+    <!-- PASO 5: Antecedentes -->
+    <div class="step">
+        <span class="step-num">5</span><h3>Enfermedades que ya tienes</h3>
+        <p>Marca las que te hayan diagnosticado.</p>
+        <div class="chip-group" id="antecedentesChips">
+            <span class="chip" onclick="this.classList.toggle('active')">Hipertensión</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Diabetes</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Colesterol alto</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Asma / EPOC</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Problemas de tiroides</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Problemas de corazón</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Depresión / Ansiedad</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Artrosis</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Reflujo / Estómago</span>
+            <span class="chip" onclick="this.classList.toggle('active')">Cáncer (previo o actual)</span>
+        </div>
+        <label>Otras enfermedades u operaciones</label>
+        <textarea id="otrosAntecedentes" placeholder="Ej: Operada de vesícula en 2018, prótesis de rodilla derecha..." rows="2"></textarea>
+    </div>
+
+    <!-- PASO 6: Preguntas -->
+    <div class="step">
+        <span class="step-num">6</span><h3>¿Qué quieres preguntarle al médico?</h3>
+        <p>Apunta aquí lo que no quieras olvidar preguntar.</p>
+        <textarea id="preguntas" placeholder="Ej: ¿Necesito hacerme análisis? ¿Puedo conducir con esta medicación? ¿Cuándo tengo que volver?"></textarea>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary" onclick="generarResumen()">📄 Ver resumen</button>
+        <button class="btn btn-secondary" onclick="imprimirResumen()">🖨️ Imprimir</button>
+        <button class="btn btn-green" onclick="guardarLocal()">💾 Guardar en mi dispositivo</button>
+    </div>
+
+    <div id="preview">
+        <h2>📋 Resumen para tu médico</h2>
+        <div id="previewContent"></div>
+        <div style="margin-top:16px;text-align:center;font-size:.75rem;color:#999;">Área II Cartagena · Generado el <span id="previewDate"></span> · cartagenaeste.es</div>
+    </div>
+</div>
+
+<script>
+function addMed(){
+    var d=document.createElement('div');d.className='med-row';
+    d.innerHTML='<input type="text" placeholder="Nombre (ej: Enalapril 10mg)"><input type="text" placeholder="Cuándo (ej: 1-0-1)" style="max-width:200px"><button onclick="this.parentElement.remove()">✕</button>';
+    document.getElementById('medList').appendChild(d);
+}
+function getChips(id){
+    return Array.from(document.querySelectorAll('#'+id+' .chip.active')).map(function(c){return c.textContent;});
+}
+function getMeds(){
+    var meds=[];
+    document.querySelectorAll('#medList .med-row').forEach(function(r){
+        var inputs=r.querySelectorAll('input');
+        var name=inputs[0].value.trim(),when=inputs[1]?inputs[1].value.trim():'';
+        if(name)meds.push(name+(when?' — '+when:''));
+    });
+    return meds;
+}
+function collectData(){
+    return {
+        nombre:document.getElementById('nombre').value.trim(),
+        nacimiento:document.getElementById('nacimiento').value,
+        sip:document.getElementById('sip').value.trim(),
+        telefono:document.getElementById('telefono').value.trim(),
+        motivo:document.getElementById('motivo').value.trim(),
+        desde:document.getElementById('desde').value.trim(),
+        intensidad:document.getElementById('intensidad').value,
+        mejora:document.getElementById('mejora').value.trim(),
+        sintomas:getChips('sintomasChips').concat(document.getElementById('otrosSintomas').value.trim()?[document.getElementById('otrosSintomas').value.trim()]:[]),
+        medicacion:getMeds(),
+        alergias:getChips('alergiasChips').concat(document.getElementById('otrasAlergias').value.trim()?[document.getElementById('otrasAlergias').value.trim()]:[]),
+        antecedentes:getChips('antecedentesChips').concat(document.getElementById('otrosAntecedentes').value.trim()?[document.getElementById('otrosAntecedentes').value.trim()]:[]),
+        preguntas:document.getElementById('preguntas').value.trim()
+    };
+}
+function generarResumen(){
+    var d=collectData();
+    var html='';
+    function sec(t,v){if(v&&v!=='')html+='<div class="preview-section"><strong>'+t+'</strong><p>'+v+'</p></div>';}
+    function secList(t,arr){if(arr.length)html+='<div class="preview-section"><strong>'+t+'</strong><p>'+arr.join(' · ')+'</p></div>';}
+    sec('👤 Paciente',d.nombre+(d.nacimiento?' · Nacimiento: '+d.nacimiento:'')+(d.sip?' · SIP: '+d.sip:''));
+    sec('📞 Teléfono',d.telefono);
+    sec('🩺 Motivo de consulta',d.motivo);
+    sec('📅 Desde cuándo',d.desde);
+    sec('📊 Intensidad',d.intensidad);
+    sec('↕️ Mejora / Empeora',d.mejora);
+    secList('⚠️ Síntomas asociados',d.sintomas);
+    secList('💊 Medicación actual',d.medicacion);
+    secList('🚫 Alergias',d.alergias);
+    secList('📂 Antecedentes',d.antecedentes);
+    sec('❓ Preguntas para el médico',d.preguntas);
+    document.getElementById('previewContent').innerHTML=html;
+    document.getElementById('previewDate').textContent=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    document.getElementById('preview').style.display='block';
+    document.getElementById('preview').scrollIntoView({behavior:'smooth'});
+}
+function imprimirResumen(){
+    generarResumen();
+    setTimeout(function(){window.print();},300);
+}
+function guardarLocal(){
+    var d=collectData();
+    try{localStorage.setItem('preparacion_consulta_v1',JSON.stringify(d));alert('✅ Guardado. La próxima vez que abras esta página, tus datos estarán aquí.');}catch(e){alert('Error al guardar');}
+}
+// Auto-load saved data
+try{
+    var saved=JSON.parse(localStorage.getItem('preparacion_consulta_v1'));
+    if(saved){
+        ['nombre','sip','telefono','motivo','desde','mejora','otrosSintomas','otrasAlergias','preguntas'].forEach(function(k){
+            if(saved[k])document.getElementById(k).value=saved[k];
+        });
+        if(saved.nacimiento)document.getElementById('nacimiento').value=saved.nacimiento;
+        if(saved.intensidad){var sel=document.getElementById('intensidad');for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===saved.intensidad){sel.selectedIndex=i;break;}}}
+        if(saved.otrosAntecedentes)document.getElementById('otrosAntecedentes').value=saved.otrosAntecedentes;
+    }
+}catch(e){}
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Enfermedades Crónicas - Área II Cartagena</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#333}.container{max-width:900px;margin:0 auto;padding:20px}.header{background:linear-gradient(135deg,#ad1457,#c2185b);color:#fff;padding:30px;border-radius:12px;margin-bottom:24px;text-align:center}.header h1{font-size:1.8rem;margin-bottom:6px}.header p{font-size:.92rem;opacity:.85}.back{display:inline-flex;align-items:center;gap:6px;color:#ad1457;text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:16px}.back:hover{text-decoration:underline}
+        .disease{background:#fff;border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        .disease-header{padding:18px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:background .2s}
+        .disease-header:hover{filter:brightness(.95)}
+        .disease-icon{font-size:2rem}
+        .disease-title{font-weight:800;font-size:1.1rem;color:#fff}
+        .disease-sub{font-size:.78rem;color:rgba(255,255,255,.8);margin-top:2px}
+        .arr{margin-left:auto;font-size:1rem;color:rgba(255,255,255,.7);transition:transform .3s}
+        .disease-body{display:none;padding:20px}
+        .disease-body.open{display:block}
+        .info-block{margin-bottom:16px;padding:14px;border-radius:10px;border-left:4px solid}
+        .info-block h4{font-size:.9rem;margin-bottom:6px}
+        .info-block p,.info-block ul{font-size:.86rem;line-height:1.7;color:#444}
+        .info-block ul{padding-left:18px}
+        .info-block li{margin-bottom:4px}
+        .alarm{background:#fff3e0;border-color:#ff9800}
+        .alarm h4{color:#e65100}
+        .urgencia{background:#ffebee;border-color:#f44336}
+        .urgencia h4{color:#c62828}
+        .dieta{background:#e8f5e9;border-color:#4caf50}
+        .dieta h4{color:#2e7d32}
+        .medic{background:#e3f2fd;border-color:#2196f3}
+        .medic h4{color:#0d47a1}
+        .que-es{background:#f3e5f5;border-color:#9c27b0}
+        .que-es h4{color:#6a1b9a}
+        .fuente{font-size:.72rem;color:#999;margin-top:12px;padding-top:8px;border-top:1px solid #eee}
+    </style>
+</head>
+<body>
+<div class="container">
+    <a class="back" href="https://carlosgalera-a11y.github.io/Cartagenaeste/">← Volver</a>
+    <div class="header">
+        <h1>🩺 Mis Enfermedades Crónicas</h1>
+        <p>Información clara y sencilla para entender y controlar tu enfermedad</p>
+    </div>
+
+    <!-- HIPERTENSIÓN -->
+    <div class="disease">
+        <div class="disease-header" style="background:linear-gradient(135deg,#c62828,#e53935)" onclick="toggleDisease(this)">
+            <span class="disease-icon">❤️‍🩹</span>
+            <div><div class="disease-title">Hipertensión Arterial</div><div class="disease-sub">Tensión alta · La más frecuente en Cartagena</div></div>
+            <span class="arr">▶</span>
+        </div>
+        <div class="disease-body">
+            <div class="info-block que-es"><h4>🔍 ¿Qué es?</h4><p>La presión de la sangre dentro de tus arterias está por encima de lo normal (≥140/90 mmHg). No suele dar síntomas, pero daña el corazón, riñones, ojos y cerebro con el tiempo. Se controla con medicación y hábitos de vida.</p></div>
+            <div class="info-block alarm"><h4>⚠️ Señales de alarma</h4><ul><li>Dolor de cabeza muy fuerte y repentino</li><li>Visión borrosa o ver "moscas volantes"</li><li>Sangrado de nariz que no para</li><li>Mareo intenso, confusión</li><li>Dolor en el pecho o falta de aire</li></ul></div>
+            <div class="info-block urgencia"><h4>🚨 Ve a Urgencias si...</h4><ul><li>Tensión superior a 180/110 con síntomas (dolor cabeza, pecho, visión borrosa)</li><li>Debilidad en un lado del cuerpo o dificultad para hablar (puede ser ictus)</li><li>Dolor fuerte en el pecho que no cede</li></ul></div>
+            <div class="info-block medic"><h4>💊 Tu medicación</h4><p>Tómala <strong>siempre a la misma hora</strong>, aunque te encuentres bien. Nunca la dejes por tu cuenta. Si se te olvida una toma, no tomes doble. Los fármacos más habituales son: enalapril, losartán, amlodipino, hidroclorotiazida. Pueden tardar semanas en hacer efecto completo.</p></div>
+            <div class="info-block dieta"><h4>🥗 Alimentación</h4><ul><li><strong>Reduce la sal:</strong> no más de 5g/día (1 cucharadita). Evita embutidos, conservas, snacks salados.</li><li>Come más frutas, verduras, legumbres, pescado.</li><li>Limita el alcohol a máximo 1 copa al día.</li><li>Haz ejercicio suave: caminar 30 min/día, 5 días/semana.</li><li>Si tienes sobrepeso, perder 5 kg puede bajar tu tensión tanto como un medicamento.</li></ul></div>
+            <div class="fuente">Fuentes: Sociedad Española de Hipertensión (SEH-LELHA), Guía ESC 2024, Murciasalud.es</div>
+        </div>
+    </div>
+
+    <!-- DIABETES TIPO 2 -->
+    <div class="disease">
+        <div class="disease-header" style="background:linear-gradient(135deg,#e65100,#f57c00)" onclick="toggleDisease(this)">
+            <span class="disease-icon">🩸</span>
+            <div><div class="disease-title">Diabetes Tipo 2</div><div class="disease-sub">Azúcar alto en sangre</div></div>
+            <span class="arr">▶</span>
+        </div>
+        <div class="disease-body">
+            <div class="info-block que-es"><h4>🔍 ¿Qué es?</h4><p>Tu cuerpo no utiliza bien la insulina (la hormona que controla el azúcar). El azúcar se acumula en la sangre y con los años daña los vasos sanguíneos, nervios, riñones y ojos. Se controla con dieta, ejercicio y a veces medicación.</p></div>
+            <div class="info-block alarm"><h4>⚠️ Señales de alarma</h4><ul><li>Mucha sed y orinar mucho (más de lo habitual)</li><li>Heridas que tardan en curar</li><li>Hormigueo o pérdida de sensibilidad en pies</li><li>Vista borrosa</li><li>Cansancio excesivo sin motivo</li></ul></div>
+            <div class="info-block urgencia"><h4>🚨 Ve a Urgencias si...</h4><ul><li><strong>Hipoglucemia grave:</strong> temblores, sudor frío, confusión, desmayo (azúcar &lt;54 mg/dL). Si puedes, come azúcar o zumo. Si no responde, llama al 112.</li><li><strong>Hiperglucemia grave:</strong> azúcar &gt;400, boca muy seca, respiración rápida, confusión, vómitos.</li><li>Herida en el pie que se pone negra o huele mal</li></ul></div>
+            <div class="info-block medic"><h4>💊 Tu medicación</h4><p><strong>Metformina:</strong> tómala con las comidas para evitar molestias de estómago. No la dejes aunque te encuentres bien. <strong>Si te ponen insulina:</strong> rota los sitios de pinchazo. Lleva siempre sobres de azúcar por si tienes una bajada. Hazte controles de azúcar como te indique tu médico.</p></div>
+            <div class="info-block dieta"><h4>🥗 Alimentación</h4><ul><li>Evita azúcar, bollería, refrescos, zumos envasados.</li><li>Come a horarios regulares, sin saltarte comidas.</li><li>Prioriza legumbres, verduras, proteínas (pollo, pescado).</li><li>Fruta sí, pero mejor entera que en zumo (2-3 piezas/día).</li><li>Arroz, pasta y pan: mejor integrales y en cantidad moderada.</li><li>Ejercicio: caminar 150 min/semana es tan importante como la medicación.</li></ul></div>
+            <div class="fuente">Fuentes: SED (Sociedad Española de Diabetes), ADA 2024, Murciasalud.es</div>
+        </div>
+    </div>
+
+    <!-- EPOC -->
+    <div class="disease">
+        <div class="disease-header" style="background:linear-gradient(135deg,#1565c0,#1976d2)" onclick="toggleDisease(this)">
+            <span class="disease-icon">🫁</span>
+            <div><div class="disease-title">EPOC</div><div class="disease-sub">Enfermedad Pulmonar Obstructiva Crónica</div></div>
+            <span class="arr">▶</span>
+        </div>
+        <div class="disease-body">
+            <div class="info-block que-es"><h4>🔍 ¿Qué es?</h4><p>Tus pulmones están dañados (generalmente por fumar) y te cuesta respirar. Es crónica pero se puede controlar. Los bronquios se inflaman y producen moco. Con el tratamiento adecuado puedes llevar una vida activa.</p></div>
+            <div class="info-block alarm"><h4>⚠️ Señales de alarma (agudización)</h4><ul><li>Más ahogo de lo habitual haciendo cosas normales</li><li>Moco más espeso, amarillo o verdoso</li><li>Fiebre</li><li>Hinchazón de tobillos</li><li>Necesitas usar el inhalador de rescate más de 3 veces al día</li></ul></div>
+            <div class="info-block urgencia"><h4>🚨 Ve a Urgencias si...</h4><ul><li>Ahogo muy fuerte en reposo que no mejora con el inhalador</li><li>Labios o dedos azulados</li><li>Confusión o somnolencia excesiva</li><li>Fiebre alta (&gt;38.5°C) con aumento de la tos</li></ul></div>
+            <div class="info-block medic"><h4>💊 Tu medicación</h4><p><strong>Inhaladores:</strong> Úsalos correctamente (pide a tu enfermera que te enseñe la técnica). El inhalador de mantenimiento se usa TODOS los días. El de rescate (Salbutamol/Ventolín) solo cuando te ahogues. Después de usar un inhalador con corticoide, enjuágate la boca. <strong>Nunca dejes de fumar es lo más importante.</strong></p></div>
+            <div class="info-block dieta"><h4>🥗 Hábitos</h4><ul><li><strong>DEJAR DE FUMAR</strong> es lo único que frena la enfermedad.</li><li>Vacúnate: gripe cada año + neumococo + COVID.</li><li>Ejercicio suave: caminar, bicicleta estática. La rehabilitación pulmonar ayuda mucho.</li><li>Come poco y frecuente (comidas grandes dificultan respirar).</li><li>Bebe agua suficiente para fluidificar el moco.</li></ul></div>
+            <div class="fuente">Fuentes: GOLD 2024, SEPAR, Murciasalud.es</div>
+        </div>
+    </div>
+
+    <!-- ASMA -->
+    <div class="disease">
+        <div class="disease-header" style="background:linear-gradient(135deg,#00838f,#0097a7)" onclick="toggleDisease(this)">
+            <span class="disease-icon">🌬️</span>
+            <div><div class="disease-title">Asma</div><div class="disease-sub">Inflamación bronquial reversible</div></div>
+            <span class="arr">▶</span>
+        </div>
+        <div class="disease-body">
+            <div class="info-block que-es"><h4>🔍 ¿Qué es?</h4><p>Tus bronquios se inflaman y se estrechan de forma intermitente, provocando tos, pitos al respirar y ahogo. A diferencia de la EPOC, es reversible con tratamiento. Puede desencadenarse por alérgenos, ejercicio, frío o infecciones.</p></div>
+            <div class="info-block alarm"><h4>⚠️ Señales de que tu asma empeora</h4><ul><li>Te despiertas por la noche con tos o ahogo</li><li>Necesitas el inhalador de rescate más de 2 veces/semana</li><li>Te ahogas al subir escaleras o hacer ejercicio leve</li><li>Pitos frecuentes al respirar</li></ul></div>
+            <div class="info-block urgencia"><h4>🚨 Ve a Urgencias si...</h4><ul><li>El inhalador de rescate no te alivia en 15 minutos</li><li>No puedes hablar frases completas por el ahogo</li><li>Labios azulados o hundimiento de costillas al respirar</li><li>Crisis de asma en niños que no cede con 3 puffs de Ventolín</li></ul></div>
+            <div class="info-block medic"><h4>💊 Tu medicación</h4><p>El inhalador de mantenimiento (normalmente un corticoide inhalado) se usa TODOS los días, aunque estés bien. El de rescate (Salbutamol) solo en crisis. Técnica correcta: agitar, espirar, apretar e inspirar lento, aguantar 10 seg. Con cámara espaciadora en niños siempre.</p></div>
+            <div class="info-block dieta"><h4>🥗 Hábitos</h4><ul><li>Identifica tus desencadenantes (ácaros, polen, humedad, ejercicio).</li><li>Ventila la casa pero evita días de alta polinización.</li><li>No fumes ni permitas que fumen cerca.</li><li>El ejercicio es bueno — calienta antes y usa el inhalador preventivo si te lo han indicado.</li><li>Vacúnate contra la gripe cada año.</li></ul></div>
+            <div class="fuente">Fuentes: GINA 2024, SEPAR, Murciasalud.es</div>
+        </div>
+    </div>
+
+    <!-- HIPOTIROIDISMO -->
+    <div class="disease">
+        <div class="disease-header" style="background:linear-gradient(135deg,#6a1b9a,#8e24aa)" onclick="toggleDisease(this)">
+            <span class="disease-icon">🦋</span>
+            <div><div class="disease-title">Hipotiroidismo</div><div class="disease-sub">Tiroides lento</div></div>
+            <span class="arr">▶</span>
+        </div>
+        <div class="disease-body">
+            <div class="info-block que-es"><h4>🔍 ¿Qué es?</h4><p>Tu glándula tiroides (en el cuello) no produce suficiente hormona tiroidea. Esto ralentiza tu metabolismo: engordas fácilmente, estás cansado, tienes frío, la piel seca. Es muy frecuente, sobre todo en mujeres. Se trata con una pastilla diaria y se controla perfectamente.</p></div>
+            <div class="info-block alarm"><h4>⚠️ Señales de que necesitas ajuste</h4><ul><li>Cansancio extremo persistente</li><li>Engordas sin cambiar de dieta</li><li>Estreñimiento que no mejora</li><li>Piel muy seca, pelo que se cae más de lo normal</li><li>Sentir mucho frío cuando los demás no</li><li>Hinchazón en la cara o piernas</li></ul></div>
+            <div class="info-block urgencia"><h4>🚨 Consulta pronto si...</h4><ul><li>Estás embarazada y tienes hipotiroidismo (el ajuste de dosis es urgente)</li><li>Síntomas nuevos como palpitaciones o temblor (puede ser exceso de medicación)</li><li>Bocio (bulto en el cuello) que crece o molesta al tragar</li></ul></div>
+            <div class="info-block medic"><h4>💊 Tu medicación</h4><p><strong>Levotiroxina (Eutirox):</strong> tómala SIEMPRE en ayunas, 30 min antes del desayuno, con agua (no café ni leche). Nunca la dejes aunque te encuentres bien. Análisis de TSH cada 6-12 meses para ajustar dosis. Cuidado: el calcio, hierro y omeprazol interfieren — sepáralos 4 horas.</p></div>
+            <div class="info-block dieta"><h4>🥗 Hábitos</h4><ul><li>No necesitas dieta especial, pero come equilibrado.</li><li>La soja en grandes cantidades puede interferir con la absorción.</li><li>El yodo de la sal yodada y el pescado es suficiente.</li><li>El ejercicio regular ayuda con el cansancio y el peso.</li><li>Si te quedas embarazada, avisa inmediatamente a tu médico para ajustar dosis.</li></ul></div>
+            <div class="fuente">Fuentes: SEEN (Sociedad Española de Endocrinología), ATA 2024, Murciasalud.es</div>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin:30px 0;font-size:.8rem;color:#999;">
+        <p>Información educativa para pacientes del Área II de Cartagena</p>
+        <p>Basada en guías oficiales: ESC, GOLD, GINA, SED, SEEN, Murciasalud.es</p>
+        <p><strong>Ante cualquier duda, consulta a tu médico de familia.</strong></p>
+    </div>
+</div>
+<script>
+function toggleDisease(header){
+    var body=header.nextElementSibling;
+    var arr=header.querySelector('.arr');
+    var isOpen=body.classList.contains('open');
+    body.classList.toggle('open');
+    arr.textContent=isOpen?'▶':'▼';
+    if(!isOpen)body.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+</script>
+</body>
+</html>

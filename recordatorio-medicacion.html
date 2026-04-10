@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recordatorio de Medicación - Área II Cartagena</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#333}.container{max-width:700px;margin:0 auto;padding:20px}.header{background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;padding:30px;border-radius:12px;margin-bottom:24px;text-align:center}.header h1{font-size:1.8rem;margin-bottom:6px}.header p{font-size:.92rem;opacity:.85}.back{display:inline-flex;align-items:center;gap:6px;color:#2e7d32;text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:16px}.back:hover{text-decoration:underline}
+        .card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+        .form-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:12px}
+        @media(max-width:600px){.form-row{grid-template-columns:1fr}}
+        label{font-size:.82rem;font-weight:600;color:#444;display:block;margin-bottom:3px}
+        input,select{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:inherit}
+        input:focus,select:focus{outline:none;border-color:#2e7d32}
+        .btn{padding:10px 20px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.9rem;transition:all .2s}
+        .btn-add{background:#2e7d32;color:#fff}.btn-add:hover{background:#1b5e20}
+        .btn-del{background:#ffebee;color:#c62828;font-size:.8rem;padding:6px 10px}.btn-del:hover{background:#ffcdd2}
+        .btn-notify{background:#e3f2fd;color:#1565c0;font-size:.82rem;padding:8px 14px;border:1px solid #90caf9;border-radius:8px;cursor:pointer}.btn-notify:hover{background:#bbdefb}
+        .med-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:10px;border:1px solid #e0e0e0;margin-bottom:8px;transition:all .2s}
+        .med-item:hover{border-color:#2e7d32;background:#f1f8e9}
+        .med-icon{font-size:1.5rem}
+        .med-info{flex:1}
+        .med-name{font-weight:700;font-size:.95rem}
+        .med-detail{font-size:.8rem;color:#666;margin-top:2px}
+        .med-time{background:#e8f5e9;color:#2e7d32;padding:4px 10px;border-radius:6px;font-weight:700;font-size:.82rem;white-space:nowrap}
+        .check-btn{width:36px;height:36px;border-radius:50%;border:2px solid #ccc;background:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+        .check-btn.done{background:#2e7d32;border-color:#2e7d32;color:#fff}
+        .empty{text-align:center;padding:40px;color:#999;font-size:.9rem}
+        .stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+        .stat{flex:1;min-width:120px;background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+        .stat-num{font-size:1.6rem;font-weight:800;color:#2e7d32}
+        .stat-label{font-size:.75rem;color:#999;margin-top:2px}
+        .tip{background:#fff3e0;border:1px solid #ffe0b2;border-radius:8px;padding:12px;font-size:.82rem;color:#e65100;margin-bottom:16px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <a class="back" href="https://carlosgalera-a11y.github.io/Cartagenaeste/">← Volver</a>
+    <div class="header">
+        <h1>💊 Mi Medicación</h1>
+        <p>Apunta tus medicinas y horarios. Te ayudamos a no olvidarlas.</p>
+    </div>
+    <div class="tip">💡 Tus datos se guardan solo en este dispositivo. No se envían a ningún sitio. Si borras los datos del navegador, se perderán.</div>
+    <div class="stats">
+        <div class="stat"><div class="stat-num" id="totalMeds">0</div><div class="stat-label">Medicamentos</div></div>
+        <div class="stat"><div class="stat-num" id="tomasDia">0</div><div class="stat-label">Tomas hoy</div></div>
+        <div class="stat"><div class="stat-num" id="tomasHechas">0</div><div class="stat-label">Tomadas ✅</div></div>
+    </div>
+    <div class="card">
+        <h3 style="margin-bottom:12px;color:#2e7d32;">➕ Añadir medicamento</h3>
+        <div class="form-row">
+            <div><label>Medicamento</label><input type="text" id="medName" placeholder="Ej: Enalapril 10mg"></div>
+            <div><label>Hora</label><input type="time" id="medTime" value="08:00"></div>
+            <div><label>Frecuencia</label><select id="medFreq"><option value="diario">Diario</option><option value="12h">Cada 12h</option><option value="8h">Cada 8h</option><option value="semanal">Semanal</option></select></div>
+            <div style="padding-bottom:2px"><button class="btn btn-add" onclick="addMed()">+</button></div>
+        </div>
+        <div><label>Notas (opcional)</label><input type="text" id="medNotes" placeholder="Ej: Con la comida, no con leche..."></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
+        <h3>📋 Mis medicamentos</h3>
+        <button class="btn-notify" onclick="activarNotif()">🔔 Activar recordatorios</button>
+    </div>
+    <div id="medList"><div class="empty">No tienes medicamentos aún. Añade el primero arriba.</div></div>
+    <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-add" onclick="exportText()">📋 Copiar lista</button>
+        <button class="btn btn-del" onclick="if(confirm('¿Borrar todos?')){meds=[];save();render();}">🗑 Borrar todo</button>
+        <button class="btn" style="background:#e3f2fd;color:#0d47a1" onclick="resetChecks()">↺ Reiniciar tomas de hoy</button>
+    </div>
+</div>
+<script>
+var LS_KEY='recordatorio_med_v1';
+var meds=[];
+try{meds=JSON.parse(localStorage.getItem(LS_KEY)||'[]');}catch(e){}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(meds));}catch(e){}}
+function addMed(){
+    var name=document.getElementById('medName').value.trim();
+    if(!name){alert('Escribe el nombre del medicamento');return;}
+    meds.push({name:name,time:document.getElementById('medTime').value,freq:document.getElementById('medFreq').value,notes:document.getElementById('medNotes').value.trim(),checks:{}});
+    save();render();
+    document.getElementById('medName').value='';document.getElementById('medNotes').value='';
+}
+function deleteMed(i){if(confirm('¿Eliminar '+meds[i].name+'?')){meds.splice(i,1);save();render();}}
+function toggleCheck(i){
+    var today=new Date().toISOString().slice(0,10);
+    if(!meds[i].checks)meds[i].checks={};
+    meds[i].checks[today]=!meds[i].checks[today];
+    save();render();
+}
+function resetChecks(){
+    var today=new Date().toISOString().slice(0,10);
+    meds.forEach(function(m){if(m.checks)m.checks[today]=false;});
+    save();render();
+}
+function render(){
+    var el=document.getElementById('medList');
+    var today=new Date().toISOString().slice(0,10);
+    if(!meds.length){el.innerHTML='<div class="empty">No tienes medicamentos aún. Añade el primero arriba.</div>';updateStats();return;}
+    var freqLabels={diario:'Diario','12h':'Cada 12h','8h':'Cada 8h',semanal:'Semanal'};
+    var sorted=meds.map(function(m,i){return{m:m,i:i};}).sort(function(a,b){return(a.m.time||'99:99').localeCompare(b.m.time||'99:99');});
+    el.innerHTML=sorted.map(function(item){
+        var m=item.m,i=item.i;
+        var done=m.checks&&m.checks[today];
+        return '<div class="med-item" style="'+(done?'opacity:.5;':'')+'">'+
+            '<button class="check-btn '+(done?'done':'')+'" onclick="toggleCheck('+i+')">'+(done?'✓':'')+'</button>'+
+            '<span class="med-icon">💊</span>'+
+            '<div class="med-info"><div class="med-name"'+(done?' style="text-decoration:line-through"':'')+'>'+m.name+'</div><div class="med-detail">'+(freqLabels[m.freq]||m.freq)+(m.notes?' · '+m.notes:'')+'</div></div>'+
+            '<span class="med-time">⏰ '+(m.time||'--:--')+'</span>'+
+            '<button class="btn-del" onclick="deleteMed('+i+')">✕</button>'+
+        '</div>';
+    }).join('');
+    updateStats();
+}
+function updateStats(){
+    document.getElementById('totalMeds').textContent=meds.length;
+    var today=new Date().toISOString().slice(0,10);
+    var total=meds.length;
+    var done=meds.filter(function(m){return m.checks&&m.checks[today];}).length;
+    document.getElementById('tomasDia').textContent=total;
+    document.getElementById('tomasHechas').textContent=done;
+}
+function exportText(){
+    if(!meds.length){alert('No hay medicamentos');return;}
+    var txt='💊 MI MEDICACIÓN\n'+('=').repeat(30)+'\n\n';
+    meds.forEach(function(m,i){txt+=(i+1)+'. '+m.name+' — '+m.time+' ('+m.freq+')'+(m.notes?' — '+m.notes:'')+'\n';});
+    txt+='\nÁrea II Cartagena · '+new Date().toLocaleDateString('es-ES');
+    navigator.clipboard.writeText(txt).then(function(){alert('📋 Lista copiada al portapapeles');});
+}
+function activarNotif(){
+    if(!('Notification' in window)){alert('Tu navegador no soporta notificaciones');return;}
+    Notification.requestPermission().then(function(p){
+        if(p==='granted'){
+            alert('✅ Notificaciones activadas. Recibirás avisos cuando sea hora de tus medicamentos (solo si tienes la página abierta).');
+            checkNotif();
+        }else{alert('❌ Notificaciones denegadas. Actívalas en la configuración del navegador.');}
+    });
+}
+function checkNotif(){
+    setInterval(function(){
+        var now=new Date();
+        var hm=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+        var today=now.toISOString().slice(0,10);
+        meds.forEach(function(m){
+            if(m.time===hm&&!(m.checks&&m.checks[today])){
+                new Notification('💊 Hora de tu medicación',{body:m.name+(m.notes?' — '+m.notes:''),icon:'https://carlosgalera-a11y.github.io/Cartagenaeste/icon-192.png'});
+            }
+        });
+    },60000);
+}
+render();
+if(Notification.permission==='granted')checkNotif();
+</script>
+</body>
+</html>
