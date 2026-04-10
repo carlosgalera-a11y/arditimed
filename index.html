@@ -545,6 +545,97 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
     <a class="patient-card" href="chatbot-medicacion.html" target="_blank" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#0d47a1;">Mi Medicación</div><div class="patient-card-desc" style="color:#1565c0;">Pregunta sobre tus fármacos</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showPage('pageTraductor')" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;"><div class="patient-card-icon">🌍</div><div class="patient-card-title" style="color:#bf360c;">Traductor</div><div class="patient-card-desc" style="color:#e65100;">Traducción en consulta</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showFarmacias24h()" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#1b5e20;">Farmacias 24h</div><div class="patient-card-desc" style="color:#388e3c;">Región de Murcia</div></a>
+    <a class="patient-card" href="javascript:void(0)" onclick="var p=document.getElementById('psicologiaList');if(p){p.style.display=p.style.display==='none'?'block':'none';p.parentElement.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼';}" style="background:linear-gradient(135deg,#ede7f6,#d1c4e9);border-color:#7e57c2;"><div class="patient-card-icon">🧠</div><div class="patient-card-title" style="color:#4527a0;">Atención Psicológica</div><div class="patient-card-desc" style="color:#5e35b1;">Apoyo emocional y salud mental</div></a>
+
+    <!-- ═══ ATENCIÓN PSICOLÓGICA ═══ -->
+    <div style="grid-column:1/-1;margin-bottom:8px;">
+      <div onclick="var p=document.getElementById('psicologiaList');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#5e35b1,#7e57c2);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+        <div style="display:flex;align-items:center;gap:10px;color:#fff;"><span style="font-size:1.4rem;">🧠</span><div><div style="font-weight:700;font-size:1rem;">Atención Psicológica y Salud Mental</div><div style="font-size:.75rem;opacity:.8;">Apoyo emocional gratuito · Cartagena y Área II</div></div></div>
+        <span class="arr" style="color:#fff;font-size:.9rem;">▶</span>
+      </div>
+      <div id="psicologiaList" style="display:none;margin-top:8px;">
+
+        <!-- TELÉFONOS DE CRISIS -->
+        <div style="background:#ffebee;border:2px solid #ef5350;border-radius:12px;padding:16px;margin-bottom:14px;">
+          <div style="font-weight:800;font-size:.95rem;color:#c62828;margin-bottom:10px;">🆘 Teléfonos de ayuda inmediata (gratuitos, 24h)</div>
+          <div style="display:grid;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">024 — Línea de conducta suicida</div><div style="font-size:.72rem;color:#666;">Ministerio de Sanidad · Confidencial · 24/7</div></div>
+              <a href="tel:024" style="background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 024</a>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">Teléfono de la Esperanza</div><div style="font-size:.72rem;color:#666;">Apoyo emocional permanente</div></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;"><a href="tel:717003717" style="background:#c62828;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 717 003 717</a><a href="tel:968343400" style="background:#e65100;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 968 34 34 00 (Murcia)</a></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">Cruz Roja Te Escucha</div><div style="font-size:.72rem;color:#666;">Apoyo psicosocial y acompañamiento emocional</div></div>
+              <a href="tel:900107917" style="background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 900 107 917</a>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">112 — Emergencias</div><div style="font-size:.72rem;color:#666;">Urgencias sanitarias y psiquiátricas</div></div>
+              <a href="tel:112" style="background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 112</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- SERVICIOS SOCIALES AYUNTAMIENTO -->
+        <div style="font-weight:700;font-size:.88rem;color:#5e35b1;margin:14px 0 8px;padding-left:4px;">🏛️ Servicios Sociales — Ayuntamiento de Cartagena</div>
+        <div style="display:grid;gap:8px;">
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Concejalía de Servicios Sociales (PASSS)</div><div style="font-size:.74rem;color:#666;margin-top:2px;">📍 C/ Sor Francisca Armendáriz s/n, Edificio La Milagrosa</div><div style="font-size:.74rem;color:#666;">Acompañamiento social, orientación familiar, atención psicológica</div></div>
+              <a href="tel:900923491" style="background:#5e35b1;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 900 923 491</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- JÓVENES -->
+        <div style="font-weight:700;font-size:.88rem;color:#5e35b1;margin:14px 0 8px;padding-left:4px;">👩‍🎓 Jóvenes (14–35 años)</div>
+        <div style="display:grid;gap:8px;">
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Espacio Salud y Género — Concejalía de Juventud</div><div style="font-size:.74rem;color:#666;margin-top:2px;">Asesoramiento psicológico, terapia breve (2–3 sesiones), grupos de apoyo</div><div style="font-size:.74rem;color:#666;">Autoestima, habilidades sociales, diversidad, TCA</div><div style="font-size:.72rem;color:#999;margin-top:4px;">📧 espaciojoven@ayto-cartagena.es · L–V 09–14h, M–J 17–20h</div></div>
+              <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+                <a href="tel:968128862" style="background:#5e35b1;color:#fff;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;">📞 968 12 88 62</a>
+                <a href="https://wa.me/34661480373" target="_blank" style="background:#25d366;color:#fff;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;">💬 661 480 373</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SALUD MENTAL PÚBLICA -->
+        <div style="font-weight:700;font-size:.88rem;color:#5e35b1;margin:14px 0 8px;padding-left:4px;">🏥 Salud Mental Pública — Servicio Murciano de Salud</div>
+        <div style="display:grid;gap:8px;">
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Centro de Salud Mental — Adultos (≥16 años)</div><div style="font-size:.74rem;color:#666;margin-top:2px;">📍 C/ Real, 8, Cartagena · Psiquiatría, psicología clínica, enfermería</div><div style="font-size:.72rem;color:#999;">Acceso: derivación desde tu médico de familia</div></div>
+            <a href="tel:968326700" style="background:#5e35b1;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 968 32 67 00</a>
+          </div>
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Centro de Salud Mental Infanto‑Juvenil (&lt;16 años)</div><div style="font-size:.74rem;color:#666;margin-top:2px;">Atención psicológica, psiquiátrica y sociofamiliar a menores</div><div style="font-size:.72rem;color:#999;">Acceso: derivación desde pediatra o médico de familia</div></div>
+            <a href="tel:968326720" style="background:#5e35b1;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 968 32 67 20</a>
+          </div>
+        </div>
+
+        <!-- CRUZ ROJA -->
+        <div style="font-weight:700;font-size:.88rem;color:#c62828;margin:14px 0 8px;padding-left:4px;">❤️ Cruz Roja — Programas de salud emocional</div>
+        <div style="border:1px solid #ffcdd2;border-radius:10px;padding:12px;background:#ffebee;">
+          <div style="font-size:.84rem;color:#333;line-height:1.6;">Talleres de gestión emocional, acompañamiento a personas en situación de soledad, campañas de sensibilización. Coordinan con recursos locales para derivar cuando es necesario.</div>
+          <div style="margin-top:8px;"><a href="tel:900107917" style="display:inline-flex;align-items:center;gap:6px;background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 900 107 917 — Cruz Roja Te Escucha</a></div>
+        </div>
+
+        <!-- GUÍA RÁPIDA -->
+        <div style="background:#e8eaf6;border:2px solid #7986cb;border-radius:12px;padding:16px;margin-top:14px;">
+          <div style="font-weight:800;font-size:.92rem;color:#283593;margin-bottom:10px;">📋 ¿Qué hago en la práctica?</div>
+          <div style="font-size:.84rem;color:#333;line-height:1.8;">
+            <div style="margin-bottom:8px;">👉 <strong>Apoyo social y psicológico municipal:</strong> Llama a Servicios Sociales <a href="tel:900923491" style="color:#5e35b1;font-weight:700;">900 923 491</a> o pide derivación a Salud Mental desde tu centro de salud.</div>
+            <div style="margin-bottom:8px;">👉 <strong>Si eres joven (14–35 años):</strong> Contacta con Espacio Salud por WhatsApp al <a href="https://wa.me/34661480373" target="_blank" style="color:#25d366;font-weight:700;">661 480 373</a> o llama al <a href="tel:968128862" style="color:#5e35b1;font-weight:700;">968 12 88 62</a>.</div>
+            <div>👉 <strong>Apoyo inmediato ahora:</strong> Llama al <a href="tel:024" style="color:#c62828;font-weight:700;">024</a>, al <a href="tel:900107917" style="color:#c62828;font-weight:700;">900 107 917</a> (Cruz Roja), o al <a href="tel:717003717" style="color:#c62828;font-weight:700;">717 003 717</a> (Esperanza).</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
 </div>
 
 <!-- Modal farmacias 24h -->
