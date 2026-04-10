@@ -47,6 +47,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f
 </style>
 </head>
 <body>
+<script>
+(function(){
+  if(sessionStorage.getItem('casos_auth')!=='ok'){
+    var p=prompt('🔒 Introduce la contraseña para acceder:');
+    if(p==='ume15'){sessionStorage.setItem('casos_auth','ok')}
+    else{document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;font-size:1.2rem;background:#1a2332;">❌ Acceso denegado. <a href="index.html" style="color:#4fc3f7;margin-left:8px;">Volver</a></div>';return}
+  }
+})();
+</script>
 <div class="nav"><a href="index.html">← Inicio</a><h1>🧠 Casos Clínicos MIR</h1></div>
 <div class="container">
     <div class="score-bar">
