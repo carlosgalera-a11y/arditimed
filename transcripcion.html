@@ -3,457 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Transcripción en Directo | Cartagenaeste</title>
+<title>Transcripción Clínica IA | Cartagenaeste</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
-:root{--bg:#0f172a;--s1:#1e293b;--s2:#334155;--bd:#475569;--ac:#22c55e;--acd:rgba(34,197,94,.15);--red:#ef4444;--amb:#f59e0b;--blu:#3b82f6;--tx:#f1f5f9;--t2:#94a3b8;--t3:#64748b;--font:'DM Sans',system-ui,sans-serif}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#0c1017;--s1:#151c28;--s2:#1c2536;--s3:#243044;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.12);--ac:#10b981;--ac2:#06d6a0;--acd:rgba(16,185,129,.1);--acb:rgba(16,185,129,.15);--red:#f43f5e;--amb:#f59e0b;--blu:#3b82f6;--pur:#8b5cf6;--tx:#f0f4f8;--t2:#94a3b8;--t3:#64748b;--font:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;--r:14px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;min-height:100dvh}
-.nav{background:rgba(15,23,42,.95);padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
-.nav a{color:#86efac;text-decoration:none;font-size:.85rem;font-weight:600}
-.nav h1{font-size:1rem;font-weight:700;flex:1}
-.container{max-width:750px;margin:0 auto;padding:16px}
-
-/* Control panel */
-.ctrl{background:var(--s1);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:12px}
-.ctrl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.btn{border:none;border-radius:10px;padding:12px 20px;font-family:var(--font);font-weight:700;font-size:.88rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.nav{background:rgba(12,16,23,.92);padding:10px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.nav a{color:var(--ac2);text-decoration:none;font-size:.82rem;font-weight:600}
+.nav h1{font-size:.95rem;font-weight:700;flex:1;display:flex;align-items:center;gap:6px}
+.nav .ver{font-size:.6rem;color:var(--t3);background:var(--s2);padding:2px 7px;border-radius:10px}
+.wrap{max-width:800px;margin:0 auto;padding:12px 16px 80px}
+.tabs{display:flex;gap:4px;background:var(--s1);border-radius:12px;padding:4px;margin-bottom:14px;border:1px solid var(--bd)}
+.tab{flex:1;padding:10px 8px;text-align:center;border-radius:9px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:var(--t2)}
+.tab:hover{background:var(--s2)}.tab.active{background:var(--ac);color:#fff;box-shadow:0 2px 12px rgba(16,185,129,.3)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-head h2{font-size:.9rem;flex:1}
+.badge{font-size:.68rem;padding:3px 10px;border-radius:20px;font-weight:600}
+.rec-area{text-align:center;padding:20px 0}
+.rec-btn{width:100px;height:100px;border-radius:50%;border:4px solid var(--ac);background:var(--s2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:2.2rem;transition:all .2s;position:relative}
+.rec-btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(16,185,129,.2)}
+.rec-btn.recording{border-color:var(--red);background:rgba(244,63,94,.1);animation:recPulse 2s infinite}
+.rec-btn.paused{border-color:var(--amb);background:rgba(245,158,11,.08)}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.3)}50%{box-shadow:0 0 0 20px rgba(244,63,94,0)}}
+.rec-label{margin-top:10px;font-size:.82rem;font-weight:600;color:var(--t2)}
+.rec-timer{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--tx);margin-top:4px;letter-spacing:2px}
+.rec-controls{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.btn{border:none;border-radius:10px;padding:10px 16px;font-family:var(--font);font-weight:600;font-size:.82rem;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
 .btn:active{transform:scale(.96)}
-.btn-rec{background:var(--ac);color:#fff;min-width:140px;justify-content:center}
-.btn-rec.recording{background:var(--red);animation:pulse 1.5s infinite}
-.btn-rec.paused{background:var(--amb)}
-.btn-sec{background:rgba(255,255,255,.08);color:var(--tx);border:1px solid rgba(255,255,255,.12)}
-.btn-sec:hover{background:rgba(255,255,255,.12)}
-.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
-
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0)}}
-
-.status{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.8rem;color:var(--t2)}
-.status .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.dot-idle{background:var(--t3)}
-.dot-rec{background:var(--red);animation:blink 1s infinite}
-.dot-paused{background:var(--amb)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-
-.timer{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--t2);margin-left:auto}
-
-/* Settings */
-.settings{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-.settings select{padding:8px 12px;background:var(--s2);color:var(--tx);border:1px solid rgba(255,255,255,.12);border-radius:8px;font-family:var(--font);font-size:.82rem}
-
-/* Transcript area */
-.transcript-card{background:var(--s1);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:0;overflow:hidden;margin-bottom:12px}
-.transcript-header{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
-.transcript-header h2{font-size:.9rem;flex:1}
-.transcript-header .count{font-size:.75rem;color:var(--t3);background:rgba(255,255,255,.06);padding:3px 10px;border-radius:20px}
-.transcript{padding:16px;min-height:300px;max-height:60vh;overflow-y:auto;scroll-behavior:smooth}
-.transcript:empty::before{content:'La transcripción aparecerá aquí cuando empieces a grabar...';color:var(--t3);font-style:italic;font-size:.88rem}
-
-.t-entry{margin-bottom:12px;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid var(--blu);position:relative}
-.t-entry .t-time{font-size:.68rem;color:var(--t3);margin-bottom:4px;font-family:monospace}
-.t-entry .t-text{font-size:.9rem;line-height:1.65;color:var(--tx)}
-.t-entry.t-interim{border-left-color:var(--amb);opacity:.7}
-.t-entry.t-interim .t-text{color:var(--t2);font-style:italic}
-
-/* Actions bar */
-.actions{background:var(--s1);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;display:flex;gap:8px;flex-wrap:wrap}
-
-/* Quick notes */
-.quick-notes{margin-top:12px}
-.quick-notes h3{font-size:.82rem;color:var(--t2);margin-bottom:8px}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{padding:6px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:.78rem;cursor:pointer;transition:.15s;color:var(--t2)}
+.btn-pri{background:var(--ac);color:#fff}.btn-sec{background:var(--s2);color:var(--tx);border:1px solid var(--bd2)}.btn-sec:hover{background:var(--s3)}
+.btn-ai{background:linear-gradient(135deg,var(--pur),var(--blu));color:#fff}.btn-ai:hover{opacity:.9}
+.btn-red{background:rgba(244,63,94,.12);color:var(--red);border:1px solid rgba(244,63,94,.2)}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn-sm{padding:7px 12px;font-size:.75rem;border-radius:8px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--red);padding:4px 10px;background:rgba(244,63,94,.1);border-radius:20px}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.speaker-toggle{display:flex;gap:4px;background:var(--s2);border-radius:10px;padding:3px;border:1px solid var(--bd)}
+.speaker-opt{padding:7px 14px;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s;color:var(--t2)}
+.speaker-opt.active-doc{background:var(--blu);color:#fff}
+.speaker-opt.active-pac{background:var(--amb);color:#fff}
+.transcript{min-height:200px;max-height:55vh;overflow-y:auto;padding:4px 0;scroll-behavior:smooth}
+.transcript:empty::before{content:'Pulsa el botón para empezar a grabar la consulta...';color:var(--t3);font-style:italic;font-size:.85rem;display:block;text-align:center;padding:40px 20px}
+.t-msg{display:flex;gap:10px;margin-bottom:8px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.02);animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.t-msg .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.t-msg.doc .avatar{background:rgba(59,130,246,.15);color:var(--blu)}
+.t-msg.pac .avatar{background:rgba(245,158,11,.15);color:var(--amb)}
+.t-msg.sys .avatar{background:rgba(139,92,246,.15);color:var(--pur)}
+.t-msg .content{flex:1;min-width:0}
+.t-msg .meta{display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--t3);margin-bottom:2px}
+.t-msg .meta .name{font-weight:600}
+.t-msg.doc .meta .name{color:var(--blu)}
+.t-msg.pac .meta .name{color:var(--amb)}
+.t-msg .text{font-size:.88rem;line-height:1.6;color:var(--tx)}
+.t-msg.interim .text{color:var(--t2);font-style:italic}
+.t-msg.marker{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.12)}
+.t-msg.marker .text{color:var(--pur);font-weight:600;font-size:.82rem}
+.ai-notes{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.ai-notes-head{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
+.ai-notes-head h3{font-size:.88rem;flex:1}
+.ai-notes-body{padding:16px;font-size:.88rem;line-height:1.7;white-space:pre-wrap;min-height:120px;max-height:50vh;overflow-y:auto;color:var(--tx)}
+.ai-notes-body:empty::before{content:'Las notas generadas por IA aparecerán aquí...';color:var(--t3);font-style:italic}
+.ai-loading{text-align:center;padding:30px;color:var(--t2)}
+.ai-loading .spinner{display:inline-block;width:30px;height:30px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-bottom:12px}
+.tpl-card{padding:10px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;cursor:pointer;text-align:center;transition:.2s;font-size:.78rem}
+.tpl-card:hover{border-color:var(--ac);background:var(--acd)}
+.tpl-card.sel{border-color:var(--ac);background:var(--acb)}
+.tpl-card .ico{font-size:1.3rem;margin-bottom:4px}.tpl-card .lbl{font-weight:600}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{padding:5px 11px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;font-size:.74rem;cursor:pointer;transition:.15s;color:var(--t2);font-weight:500}
 .chip:hover{background:var(--acd);border-color:var(--ac);color:var(--ac)}
-
-/* Toast */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#22c55e;color:#fff;padding:10px 20px;border-radius:10px;font-weight:600;font-size:.85rem;transition:transform .3s;z-index:999}
+.set-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.set-row label{font-size:.78rem;color:var(--t2)}
+select{padding:8px 12px;background:var(--s2);color:var(--tx);border:1px solid var(--bd2);border-radius:8px;font-family:var(--font);font-size:.8rem}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ac);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600;font-size:.83rem;transition:transform .3s;z-index:999}
 .toast.show{transform:translateX(-50%) translateY(0)}
-
-/* Responsive */
-@media(max-width:500px){
-  .btn{padding:10px 14px;font-size:.82rem}
-  .transcript{min-height:200px;max-height:50vh}
-  .settings select{font-size:.78rem;padding:6px 8px}
-}
+.session-item{padding:12px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:.15s}
+.session-item:hover{border-color:var(--ac)}
+.session-item .s-date{font-size:.72rem;color:var(--t3);font-family:var(--mono)}
+.session-item .s-preview{font-size:.82rem;color:var(--t2);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.session-item .s-stats{font-size:.7rem;color:var(--t3);margin-top:4px}
+@media(max-width:500px){.rec-btn{width:80px;height:80px;font-size:1.8rem}.rec-timer{font-size:1.2rem}.tpl-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<div class="nav">
-<a href="index.html">← Inicio</a>
-<h1>🎙️ Transcripción en Directo</h1>
+<div class="nav"><a href="index.html">← Inicio</a><h1>🎙️ Transcripción Clínica IA <span class="ver">v2.0</span></h1></div>
+<div class="wrap">
+<div class="tabs">
+<div class="tab active" onclick="switchTab('record')">🎙️ Grabar</div>
+<div class="tab" onclick="switchTab('notes')">📋 Notas IA</div>
+<div class="tab" onclick="switchTab('history')">🕐 Historial</div>
 </div>
 
-<div class="container">
-<!-- CONTROLS -->
-<div class="ctrl">
-<div class="ctrl-row">
-  <button class="btn btn-rec" id="btnRec" onclick="toggleRec()">
-    <span id="btnRecIcon">🎙️</span>
-    <span id="btnRecText">Iniciar</span>
-  </button>
-  <button class="btn btn-sec" id="btnPause" onclick="togglePause()" disabled>⏸ Pausar</button>
-  <button class="btn btn-sec" id="btnMark" onclick="addMarker()" disabled>📌 Marcar</button>
+<!-- PANEL RECORD -->
+<div class="panel active" id="panelRecord">
+<div class="card">
+<div class="card-head"><h2>Consulta en curso</h2><span class="live" id="liveTag" style="display:none"><span class="dot"></span>EN DIRECTO</span></div>
+<div class="rec-area">
+<div class="rec-btn" id="recBtn" onclick="toggleRec()">🎙️</div>
+<div class="rec-label" id="recLabel">Toca para grabar</div>
+<div class="rec-timer" id="recTimer">00:00</div>
 </div>
-<div class="settings">
-  <select id="lang">
-    <option value="es-ES" selected>🇪🇸 Español</option>
-    <option value="en-US">🇬🇧 English</option>
-    <option value="fr-FR">🇫🇷 Français</option>
-    <option value="ar-SA">🇸🇦 العربية</option>
-    <option value="ro-RO">🇷🇴 Română</option>
-    <option value="zh-CN">🇨🇳 中文</option>
-  </select>
-  <select id="mode">
-    <option value="continuous" selected>Continuo (consulta)</option>
-    <option value="single">Frase a frase</option>
-  </select>
-</div>
-<div class="status">
-  <div class="dot dot-idle" id="dot"></div>
-  <span id="statusText">Listo para grabar</span>
-  <span class="timer" id="timer">00:00</span>
+<div class="rec-controls">
+<button class="btn btn-sec btn-sm" id="btnPause" onclick="togglePause()" disabled>⏸ Pausar</button>
+<div class="speaker-toggle">
+<div class="speaker-opt active-doc" data-s="doc" onclick="setSpeaker('doc')">👨‍⚕️ Médico</div>
+<div class="speaker-opt" data-s="pac" onclick="setSpeaker('pac')">🧑 Paciente</div>
 </div>
 </div>
-
-<!-- TRANSCRIPT -->
-<div class="transcript-card">
-<div class="transcript-header">
-  <h2>📝 Transcripción</h2>
-  <span class="count" id="wordCount">0 palabras</span>
+<div class="set-row" style="margin-top:12px">
+<label>Idioma:</label>
+<select id="lang" onchange="restartIfRec()">
+<option value="es-ES">🇪🇸 Español</option><option value="en-US">🇬🇧 English</option>
+<option value="fr-FR">🇫🇷 Français</option><option value="ar-SA">🇸🇦 العربية</option>
+<option value="ro-RO">🇷🇴 Română</option><option value="zh-CN">🇨🇳 中文</option>
+<option value="de-DE">🇩🇪 Deutsch</option><option value="pt-PT">🇵🇹 Português</option>
+<option value="uk-UA">🇺🇦 Українська</option><option value="it-IT">🇮🇹 Italiano</option>
+</select>
 </div>
-<div class="transcript" id="transcript"></div>
 </div>
-
-<!-- ACTIONS -->
-<div class="actions">
-<button class="btn btn-sec" onclick="copyAll()">📋 Copiar todo</button>
-<button class="btn btn-sec" onclick="downloadTxt()">💾 Descargar .txt</button>
-<button class="btn btn-sec" onclick="clearAll()">🗑️ Limpiar</button>
-<button class="btn btn-sec" onclick="copyForOMI()">🏥 Copiar para OMI</button>
-</div>
-
-<!-- QUICK STAMPS -->
-<div class="quick-notes">
-<h3>Marcas rápidas (toca para insertar):</h3>
+<div class="card"><div class="card-head"><h2>📌 Secciones</h2></div>
 <div class="chips">
-  <div class="chip" onclick="insertStamp('--- ANAMNESIS ---')">📋 Anamnesis</div>
-  <div class="chip" onclick="insertStamp('--- EXPLORACIÓN FÍSICA ---')">🩺 Exploración</div>
-  <div class="chip" onclick="insertStamp('--- JUICIO CLÍNICO ---')">💡 Juicio clínico</div>
-  <div class="chip" onclick="insertStamp('--- PLAN ---')">📝 Plan</div>
-  <div class="chip" onclick="insertStamp('--- PRUEBAS COMPLEMENTARIAS ---')">🔬 Pruebas</div>
-  <div class="chip" onclick="insertStamp('--- TRATAMIENTO ---')">💊 Tratamiento</div>
-  <div class="chip" onclick="insertStamp('--- DERIVACIÓN ---')">🔄 Derivación</div>
-</div>
-</div>
+<div class="chip" onclick="stamp('📋 ANAMNESIS')">📋 Anamnesis</div>
+<div class="chip" onclick="stamp('🩺 EXPLORACIÓN FÍSICA')">🩺 Exploración</div>
+<div class="chip" onclick="stamp('🔬 PRUEBAS COMPLEMENTARIAS')">🔬 Pruebas</div>
+<div class="chip" onclick="stamp('💡 JUICIO CLÍNICO')">💡 Juicio clínico</div>
+<div class="chip" onclick="stamp('📝 PLAN TERAPÉUTICO')">📝 Plan</div>
+<div class="chip" onclick="stamp('💊 TRATAMIENTO')">💊 Tratamiento</div>
+<div class="chip" onclick="stamp('🔄 DERIVACIÓN')">🔄 Derivación</div>
+<div class="chip" onclick="stamp('⚠️ ALERGIAS')">⚠️ Alergias</div>
+</div></div>
+<div class="card" style="padding:12px">
+<div class="card-head"><h2>📝 Transcripción</h2><span class="badge" style="background:var(--s2);color:var(--t2)" id="wc">0 palabras</span></div>
+<div class="transcript" id="transcript"></div>
+<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+<button class="btn btn-ai" onclick="genNotes()" id="btnGen">✨ Generar notas con IA</button>
+<button class="btn btn-sec btn-sm" onclick="copyRaw()">📋 Copiar</button>
+<button class="btn btn-sec btn-sm" onclick="dlSession()">💾 Guardar</button>
+<button class="btn btn-red btn-sm" onclick="clearAll()">🗑️ Limpiar</button>
+</div></div>
 </div>
 
+<!-- PANEL NOTES -->
+<div class="panel" id="panelNotes">
+<div class="card"><div class="card-head"><h2>📄 Tipo de documento</h2></div>
+<div class="tpl-grid">
+<div class="tpl-card sel" data-t="soap" onclick="selTpl(this)"><div class="ico">🏥</div><div class="lbl">Nota SOAP</div></div>
+<div class="tpl-card" data-t="evol" onclick="selTpl(this)"><div class="ico">📋</div><div class="lbl">Evolución</div></div>
+<div class="tpl-card" data-t="ref" onclick="selTpl(this)"><div class="ico">📤</div><div class="lbl">Derivación</div></div>
+<div class="tpl-card" data-t="urg" onclick="selTpl(this)"><div class="ico">🚑</div><div class="lbl">Urgencias</div></div>
+<div class="tpl-card" data-t="alta" onclick="selTpl(this)"><div class="ico">📝</div><div class="lbl">Alta</div></div>
+<div class="tpl-card" data-t="pac" onclick="selTpl(this)"><div class="ico">👤</div><div class="lbl">Para paciente</div></div>
+</div></div>
+<div class="ai-notes"><div class="ai-notes-head"><h3>📋 Notas generadas</h3>
+<button class="btn btn-sec btn-sm" onclick="copyNotes()">📋 Copiar</button>
+<button class="btn btn-sec btn-sm" onclick="copyOMI()">🏥 OMI</button>
+</div><div class="ai-notes-body" id="aiNotes"></div></div>
+<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+<button class="btn btn-ai" onclick="genNotes()">🔄 Regenerar</button>
+<button class="btn btn-sec btn-sm" onclick="dlNotes()">💾 Descargar</button>
+</div></div>
+
+<!-- PANEL HISTORY -->
+<div class="panel" id="panelHistory">
+<div class="card"><div class="card-head"><h2>🕐 Sesiones guardadas</h2></div>
+<div id="sessList"><p style="color:var(--t3);font-size:.85rem;text-align:center;padding:20px">No hay sesiones</p></div>
+<button class="btn btn-red btn-sm" onclick="clearHist()" style="margin-top:10px">🗑️ Borrar historial</button>
+</div></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ── STATE ──
-let recognition = null;
-let isRecording = false;
-let isPaused = false;
-let entries = [];
-let startTime = null;
-let timerInterval = null;
-let interimEntry = null;
+var S={rec:false,pau:false,spk:'doc',entries:[],t0:null,iv:null,recognition:null,tpl:'soap',aiTxt:''};
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){document.getElementById('recLabel').textContent='❌ Usa Chrome o Edge';document.getElementById('recBtn').style.opacity='.3';}
 
-// ── SPEECH RECOGNITION SETUP ──
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+function switchTab(n){document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',['record','notes','history'][i]===n)});document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});document.getElementById('panel'+n.charAt(0).toUpperCase()+n.slice(1)).classList.add('active');if(n==='history')loadHist();}
 
-if (!SpeechRecognition) {
-  document.getElementById('statusText').textContent = '❌ Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.';
-  document.getElementById('btnRec').disabled = true;
-}
+function mkRec(){var r=new SR();r.lang=document.getElementById('lang').value;r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+r.onresult=function(e){var interim='',final='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}if(interim)showInt(interim);if(final){rmInt();addE(final.trim());}};
+r.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;if(e.error==='not-allowed'){toast('❌ Permite el micrófono');stopR();}};
+r.onend=function(){if(S.rec&&!S.pau)setTimeout(function(){if(S.rec&&!S.pau)try{S.recognition.start();}catch(x){}},80);};return r;}
 
-function createRecognition() {
-  const r = new SpeechRecognition();
-  r.lang = document.getElementById('lang').value;
-  r.continuous = document.getElementById('mode').value === 'continuous';
-  r.interimResults = true;
-  r.maxAlternatives = 1;
+function toggleRec(){S.rec?stopR():startR();}
+function startR(){S.recognition=mkRec();try{S.recognition.start();}catch(e){toast('❌ Error micrófono');return;}S.rec=true;S.pau=false;S.t0=S.t0||Date.now();startTm();updUI();toast('🎙️ Grabando...');}
+function stopR(){S.rec=false;S.pau=false;try{S.recognition.stop();}catch(e){}rmInt();stopTm();updUI();autoSave();toast('⏹ Fin de grabación');}
+function togglePause(){if(!S.rec)return;S.pau=!S.pau;if(S.pau){try{S.recognition.stop();}catch(e){}stopTm();}else{try{S.recognition.start();}catch(e){}startTm();}updUI();toast(S.pau?'⏸ Pausado':'▶️ Reanudado');}
+function restartIfRec(){if(S.rec){stopR();setTimeout(startR,200);}}
 
-  r.onresult = (e) => {
-    let interim = '';
-    let final = '';
+function updUI(){var b=document.getElementById('recBtn'),l=document.getElementById('recLabel'),lv=document.getElementById('liveTag'),p=document.getElementById('btnPause');
+if(S.rec&&!S.pau){b.className='rec-btn recording';b.textContent='⏹';l.textContent='Escuchando consulta...';lv.style.display='inline-flex';p.disabled=false;p.textContent='⏸ Pausar';}
+else if(S.rec&&S.pau){b.className='rec-btn paused';b.textContent='⏹';l.textContent='En pausa';lv.style.display='none';p.textContent='▶️ Reanudar';}
+else{b.className='rec-btn';b.textContent='🎙️';l.textContent='Toca para grabar';lv.style.display='none';p.disabled=true;}}
 
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) {
-        final += t;
-      } else {
-        interim += t;
-      }
-    }
+function startTm(){S.iv=setInterval(function(){var s=Math.floor((Date.now()-S.t0)/1000);document.getElementById('recTimer').textContent=pad(Math.floor(s/60))+':'+pad(s%60);},500);}
+function stopTm(){clearInterval(S.iv);}
+function pad(n){return String(n).padStart(2,'0');}
+function getT(){if(!S.t0)return'00:00';var s=Math.floor((Date.now()-S.t0)/1000);return pad(Math.floor(s/60))+':'+pad(s%60);}
 
-    // Show interim
-    if (interim) {
-      showInterim(interim);
-    }
+function setSpeaker(s){S.spk=s;document.querySelectorAll('.speaker-opt').forEach(function(el){el.className='speaker-opt'+(el.dataset.s===s?(s==='doc'?' active-doc':' active-pac'):'');});}
 
-    // Add final
-    if (final) {
-      removeInterim();
-      addEntry(final.trim());
-    }
-  };
+function addE(txt){if(!txt)return;var e={time:getT(),text:txt,spk:S.spk,type:'speech'};S.entries.push(e);renderM(e);updWC();scrB();}
+function stamp(lbl){var e={time:getT(),text:lbl,spk:'sys',type:'marker'};S.entries.push(e);renderM(e);scrB();}
 
-  r.onerror = (e) => {
-    if (e.error === 'no-speech') return; // Ignore silence
-    if (e.error === 'aborted') return;
-    console.log('Speech error:', e.error);
-    if (e.error === 'not-allowed') {
-      toast('❌ Micrófono no permitido. Activa permisos.');
-      stopRec();
-    }
-  };
+function renderM(e){var d=document.createElement('div');var cls=e.type==='marker'?'marker':e.spk;d.className='t-msg '+cls;
+var av=e.spk==='doc'?'👨‍⚕️':e.spk==='pac'?'🧑':'📌';var nm=e.spk==='doc'?'Médico':e.spk==='pac'?'Paciente':'Sección';
+d.innerHTML='<div class="avatar">'+av+'</div><div class="content"><div class="meta"><span class="name">'+nm+'</span><span>'+e.time+'</span></div><div class="text">'+esc(e.text)+'</div></div>';
+document.getElementById('transcript').appendChild(d);}
 
-  r.onend = () => {
-    // Auto-restart if still recording (continuous mode)
-    if (isRecording && !isPaused) {
-      try {
-        setTimeout(() => {
-          if (isRecording && !isPaused) {
-            recognition.start();
-          }
-        }, 100);
-      } catch(e) {}
-    }
-  };
+function showInt(t){rmInt();var d=document.createElement('div');d.className='t-msg interim '+S.spk;d.id='interim';
+var av=S.spk==='doc'?'👨‍⚕️':'🧑';d.innerHTML='<div class="avatar">'+av+'</div><div class="content"><div class="text">'+esc(t)+'...</div></div>';
+document.getElementById('transcript').appendChild(d);scrB();}
+function rmInt(){var el=document.getElementById('interim');if(el)el.remove();}
+function scrB(){var el=document.getElementById('transcript');el.scrollTop=el.scrollHeight;}
+function updWC(){var w=S.entries.filter(function(e){return e.type==='speech';}).map(function(e){return e.text;}).join(' ').split(/\s+/).filter(function(x){return x;}).length;document.getElementById('wc').textContent=w+' palabras';}
 
-  return r;
-}
+// AI NOTES
+function selTpl(el){document.querySelectorAll('.tpl-card').forEach(function(c){c.classList.remove('sel');});el.classList.add('sel');S.tpl=el.dataset.t;}
 
-// ── CONTROLS ──
-function toggleRec() {
-  if (isRecording) {
-    stopRec();
-  } else {
-    startRec();
-  }
-}
+var TPLS={
+soap:'Genera una nota clínica en formato SOAP:\nS (Subjetivo): motivo de consulta, síntomas.\nO (Objetivo): exploración física, constantes, pruebas.\nA (Análisis): juicio clínico, diagnóstico diferencial.\nP (Plan): tratamiento, pruebas, derivaciones, seguimiento.',
+evol:'Genera una nota de evolución: Motivo de consulta, Enfermedad actual, Antecedentes, Exploración, Pruebas, Juicio clínico, Plan.',
+ref:'Genera carta de derivación a especialista: Motivo, Historia clínica, Exploración/pruebas, Juicio clínico, Pregunta al especialista.',
+urg:'Genera informe de urgencias: Motivo, Anamnesis, Exploración+constantes, Pruebas, Diagnóstico, Tratamiento, Destino.',
+alta:'Genera informe de alta: Diagnósticos, Procedimientos, Evolución, Tratamiento al alta, Recomendaciones, Seguimiento.',
+pac:'Genera un resumen en lenguaje sencillo para el paciente. Sin tecnicismos. Explica diagnóstico, tratamiento y qué vigilar.'
+};
 
-function startRec() {
-  recognition = createRecognition();
-  try {
-    recognition.start();
-  } catch(e) {
-    toast('❌ Error al iniciar micrófono');
-    return;
-  }
-  isRecording = true;
-  isPaused = false;
-  startTime = startTime || Date.now();
-  startTimer();
-  updateUI();
-  toast('🎙️ Grabando...');
-}
+function genNotes(){
+var sp=S.entries.filter(function(e){return e.type==='speech'||e.type==='marker';});
+if(!sp.length){toast('⚠️ No hay transcripción');return;}
+switchTab('notes');
+var ne=document.getElementById('aiNotes');ne.innerHTML='<div class="ai-loading"><div class="spinner"></div><div>Generando notas clínicas con IA...</div></div>';
+var txt=sp.map(function(e){if(e.type==='marker')return'\n'+e.text+'\n';return'['+e.time+'] '+(e.spk==='doc'?'Médico':'Paciente')+': '+e.text;}).join('\n');
+var sys='Eres un asistente clínico experto. Genera documentación clínica estructurada en español a partir de la transcripción. Sé preciso y conciso. Usa terminología médica apropiada. NO inventes información que no aparezca en la transcripción.';
+var usr=TPLS[S.tpl]+'\n\nTRANSCRIPCIÓN:\n'+txt;
 
-function stopRec() {
-  isRecording = false;
-  isPaused = false;
-  if (recognition) {
-    try { recognition.stop(); } catch(e) {}
-  }
-  removeInterim();
-  stopTimer();
-  updateUI();
-  toast('⏹ Grabación detenida');
-}
+fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({model:'deepseek/deepseek-chat-v3-0324:free',messages:[{role:'system',content:sys},{role:'user',content:usr}],max_tokens:2000,temperature:0.2})
+}).then(function(r){if(!r.ok)throw new Error('API '+r.status);return r.json();}).then(function(d){
+var t=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'Error';S.aiTxt=t;ne.innerHTML=fmtN(t);toast('✅ Notas generadas');
+}).catch(function(err){
+// Fallback pollinations
+fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({model:'openai',messages:[{role:'system',content:sys},{role:'user',content:usr}],max_tokens:2000})
+}).then(function(r){return r.json();}).then(function(d){
+var t=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'Error';S.aiTxt=t;ne.innerHTML=fmtN(t);toast('✅ Notas generadas');
+}).catch(function(e2){ne.innerHTML='<p style="color:var(--red)">❌ Error: '+err.message+'</p><p style="color:var(--t2);margin-top:8px">Copia la transcripción manualmente.</p>';});
+});}
 
-function togglePause() {
-  if (!isRecording) return;
-  isPaused = !isPaused;
-  if (isPaused) {
-    try { recognition.stop(); } catch(e) {}
-    stopTimer();
-    toast('⏸ Pausado');
-  } else {
-    try { recognition.start(); } catch(e) {}
-    startTimer();
-    toast('▶️ Reanudado');
-  }
-  updateUI();
-}
+function fmtN(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^#{1,3}\s+(.+)$/gm,'<h4 style="color:var(--ac);font-size:.85rem;margin:12px 0 4px;text-transform:uppercase">$1</h4>').replace(/\n{2,}/g,'\n\n').replace(/\n/g,'<br>');}
 
-// ── UI UPDATES ──
-function updateUI() {
-  const btn = document.getElementById('btnRec');
-  const btnText = document.getElementById('btnRecText');
-  const btnIcon = document.getElementById('btnRecIcon');
-  const dot = document.getElementById('dot');
-  const status = document.getElementById('statusText');
-  const btnPause = document.getElementById('btnPause');
-  const btnMark = document.getElementById('btnMark');
+// ACTIONS
+function copyRaw(){var t=S.entries.map(function(e){if(e.type==='marker')return'\n'+e.text;return'['+e.time+'] '+(e.spk==='doc'?'Médico':'Paciente')+': '+e.text;}).join('\n');navigator.clipboard.writeText(t).then(function(){toast('📋 Copiado');});}
+function copyNotes(){if(S.aiTxt)navigator.clipboard.writeText(S.aiTxt).then(function(){toast('📋 Notas copiadas');});}
+function copyOMI(){var c=(S.aiTxt||'').replace(/\*\*/g,'').replace(/^#+\s+/gm,'');navigator.clipboard.writeText(c).then(function(){toast('🏥 Copiado para OMI');});}
 
-  if (isRecording && !isPaused) {
-    btn.className = 'btn btn-rec recording';
-    btnText.textContent = 'Detener';
-    btnIcon.textContent = '⏹';
-    dot.className = 'dot dot-rec';
-    status.textContent = 'Escuchando...';
-    btnPause.disabled = false;
-    btnPause.innerHTML = '⏸ Pausar';
-    btnMark.disabled = false;
-  } else if (isRecording && isPaused) {
-    btn.className = 'btn btn-rec paused';
-    btnText.textContent = 'Detener';
-    btnIcon.textContent = '⏹';
-    dot.className = 'dot dot-paused';
-    status.textContent = 'En pausa';
-    btnPause.innerHTML = '▶️ Reanudar';
-  } else {
-    btn.className = 'btn btn-rec';
-    btnText.textContent = 'Iniciar';
-    btnIcon.textContent = '🎙️';
-    dot.className = 'dot dot-idle';
-    status.textContent = 'Listo para grabar';
-    btnPause.disabled = true;
-    btnPause.innerHTML = '⏸ Pausar';
-    btnMark.disabled = true;
-  }
-}
+function dlSession(){var now=new Date();var t='TRANSCRIPCIÓN DE CONSULTA\nFecha: '+now.toLocaleDateString('es-ES')+' '+now.toLocaleTimeString('es-ES')+'\n'+'═'.repeat(50)+'\n\n';
+t+=S.entries.map(function(e){if(e.type==='marker')return'\n'+e.text+'\n';return'['+e.time+'] '+(e.spk==='doc'?'MÉDICO':'PACIENTE')+': '+e.text;}).join('\n');
+if(S.aiTxt)t+='\n\n'+'═'.repeat(50)+'\nNOTAS CLÍNICAS IA\n'+'═'.repeat(50)+'\n\n'+S.aiTxt;
+dlFile(t,'consulta_'+now.toISOString().slice(0,10)+'.txt');}
+function dlNotes(){if(!S.aiTxt)return toast('⚠️ No hay notas');dlFile(S.aiTxt,'notas_'+new Date().toISOString().slice(0,10)+'.txt');}
+function dlFile(t,n){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));a.download=n;a.click();toast('💾 Descargado');}
 
-// ── TIMER ──
-function startTimer() {
-  timerInterval = setInterval(() => {
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-    const s = String(elapsed % 60).padStart(2, '0');
-    document.getElementById('timer').textContent = m + ':' + s;
-  }, 1000);
-}
-function stopTimer() {
-  clearInterval(timerInterval);
-}
+function clearAll(){if(S.entries.length&&!confirm('¿Borrar transcripción?'))return;if(S.rec)stopR();S.entries=[];S.t0=null;S.aiTxt='';
+document.getElementById('transcript').innerHTML='';document.getElementById('recTimer').textContent='00:00';document.getElementById('aiNotes').innerHTML='';updWC();toast('🗑️ Limpiado');}
 
-// ── ENTRIES ──
-function addEntry(text) {
-  if (!text) return;
-  const elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-  const s = String(elapsed % 60).padStart(2, '0');
+// HISTORY
+function autoSave(){if(!S.entries.length)return;var ss=JSON.parse(localStorage.getItem('tsc_sess')||'[]');
+ss.unshift({date:new Date().toISOString(),entries:S.entries,ai:S.aiTxt,w:S.entries.filter(function(e){return e.type==='speech';}).map(function(e){return e.text;}).join(' ').split(/\s+/).length});
+if(ss.length>20)ss.length=20;localStorage.setItem('tsc_sess',JSON.stringify(ss));}
 
-  const entry = { time: m + ':' + s, text: text, type: 'speech' };
-  entries.push(entry);
-  renderEntry(entry);
-  updateWordCount();
-  scrollToBottom();
-}
+function loadHist(){var ss=JSON.parse(localStorage.getItem('tsc_sess')||'[]');var el=document.getElementById('sessList');
+if(!ss.length){el.innerHTML='<p style="color:var(--t3);text-align:center;padding:20px">No hay sesiones</p>';return;}
+el.innerHTML=ss.map(function(s,i){var d=new Date(s.date);var pv=s.entries.filter(function(e){return e.type==='speech';}).map(function(e){return e.text;}).join(' ').substring(0,80);
+return'<div class="session-item" onclick="loadSess('+i+')"><div class="s-date">'+d.toLocaleDateString('es-ES')+' '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'</div><div class="s-preview">'+esc(pv)+'...</div><div class="s-stats">'+s.entries.length+' fragmentos · '+s.w+' palabras'+(s.ai?' · ✨ Notas IA':'')+'</div></div>';}).join('');}
 
-function renderEntry(entry) {
-  const div = document.createElement('div');
-  div.className = 't-entry' + (entry.type === 'marker' ? '' : '');
-  if (entry.type === 'marker') {
-    div.style.borderLeftColor = '#f59e0b';
-    div.style.background = 'rgba(245,158,11,.08)';
-  }
-  div.innerHTML = '<div class="t-time">' + entry.time + '</div><div class="t-text">' + escHtml(entry.text) + '</div>';
-  document.getElementById('transcript').appendChild(div);
-}
+function loadSess(i){var ss=JSON.parse(localStorage.getItem('tsc_sess')||'[]');var s=ss[i];if(!s)return;S.entries=s.entries;S.aiTxt=s.ai||'';
+document.getElementById('transcript').innerHTML='';s.entries.forEach(function(e){renderM(e);});updWC();if(S.aiTxt)document.getElementById('aiNotes').innerHTML=fmtN(S.aiTxt);switchTab('record');toast('📂 Sesión cargada');}
+function clearHist(){if(!confirm('¿Borrar historial?'))return;localStorage.removeItem('tsc_sess');loadHist();toast('🗑️ Borrado');}
 
-function showInterim(text) {
-  removeInterim();
-  const div = document.createElement('div');
-  div.className = 't-entry t-interim';
-  div.id = 'interim';
-  div.innerHTML = '<div class="t-text">' + escHtml(text) + '...</div>';
-  document.getElementById('transcript').appendChild(div);
-  scrollToBottom();
-}
-
-function removeInterim() {
-  const el = document.getElementById('interim');
-  if (el) el.remove();
-}
-
-function addMarker() {
-  const elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-  const s = String(elapsed % 60).padStart(2, '0');
-  const entry = { time: m + ':' + s, text: '📌 — Marca —', type: 'marker' };
-  entries.push(entry);
-  renderEntry(entry);
-  scrollToBottom();
-  toast('📌 Marca añadida');
-}
-
-function insertStamp(text) {
-  const elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-  const s = String(elapsed % 60).padStart(2, '0');
-  const entry = { time: m + ':' + s, text: text, type: 'marker' };
-  entries.push(entry);
-  renderEntry(entry);
-  scrollToBottom();
-}
-
-// ── ACTIONS ──
-function copyAll() {
-  const text = entries.map(e => '[' + e.time + '] ' + e.text).join('\n');
-  navigator.clipboard.writeText(text).then(() => toast('📋 Copiado al portapapeles'));
-}
-
-function copyForOMI() {
-  // Clean version without timestamps for pasting into clinical software
-  const text = entries.filter(e => e.type === 'speech').map(e => e.text).join(' ');
-  navigator.clipboard.writeText(text).then(() => toast('🏥 Texto limpio copiado para OMI'));
-}
-
-function downloadTxt() {
-  const now = new Date();
-  const date = now.toISOString().slice(0, 10);
-  const time = now.toTimeString().slice(0, 5).replace(':', '');
-  const text = 'TRANSCRIPCIÓN DE CONSULTA\nFecha: ' + now.toLocaleDateString('es-ES') + ' ' + now.toLocaleTimeString('es-ES') + '\n\n' +
-    entries.map(e => '[' + e.time + '] ' + e.text).join('\n');
-  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'transcripcion_' + date + '_' + time + '.txt';
-  a.click();
-  toast('💾 Descargado');
-}
-
-function clearAll() {
-  if (entries.length && !confirm('¿Borrar toda la transcripción?')) return;
-  entries = [];
-  document.getElementById('transcript').innerHTML = '';
-  startTime = null;
-  document.getElementById('timer').textContent = '00:00';
-  updateWordCount();
-  toast('🗑️ Limpiado');
-}
-
-// ── HELPERS ──
-function scrollToBottom() {
-  const el = document.getElementById('transcript');
-  el.scrollTop = el.scrollHeight;
-}
-
-function updateWordCount() {
-  const words = entries.filter(e => e.type === 'speech').map(e => e.text).join(' ').split(/\s+/).filter(w => w).length;
-  document.getElementById('wordCount').textContent = words + ' palabras';
-}
-
-function escHtml(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// Change language on the fly
-document.getElementById('lang').addEventListener('change', () => {
-  if (isRecording) {
-    stopRec();
-    setTimeout(startRec, 200);
-  }
-});
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
 </script>
 </body>
 </html>
