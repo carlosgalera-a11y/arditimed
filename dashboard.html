@@ -134,7 +134,7 @@ a{color:var(--accent2);text-decoration:none}
 <script>
 function dashLogin(){
   var p=document.getElementById('dashPass').value;
-  if(p==='caridad'){
+  if(p.trim().toLowerCase()==='caridad'){
     document.getElementById('dashGate').style.display='none';
     sessionStorage.setItem('dash_auth','1');
   } else {
