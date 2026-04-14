@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analíticas IA | Cartagenaeste</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#0c1017;--s1:#151c28;--s2:#1c2536;--s3:#243044;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.12);--ac:#8b5cf6;--ac2:#a78bfa;--acg:#10b981;--red:#f43f5e;--amb:#f59e0b;--blu:#3b82f6;--tx:#f0f4f8;--t2:#94a3b8;--t3:#64748b;--font:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh}
+.nav{background:rgba(12,16,23,.92);padding:10px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.nav a{color:var(--ac2);text-decoration:none;font-size:.82rem;font-weight:600}
+.nav h1{font-size:.95rem;font-weight:700;flex:1}
+.wrap{max-width:900px;margin:0 auto;padding:14px 16px 80px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px}
+.card h2{font-size:.9rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+textarea{width:100%;min-height:180px;padding:14px;background:var(--s2);color:var(--tx);border:1px solid var(--bd2);border-radius:10px;font-family:var(--mono);font-size:.82rem;line-height:1.7;resize:vertical}
+textarea:focus{outline:none;border-color:var(--ac)}
+textarea::placeholder{color:var(--t3)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{border:none;border-radius:10px;padding:11px 18px;font-family:var(--font);font-weight:600;font-size:.84rem;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:active{transform:scale(.96)}
+.btn-ai{background:linear-gradient(135deg,var(--ac),#ec4899);color:#fff}
+.btn-ai:hover{opacity:.9}
+.btn-sec{background:var(--s2);color:var(--tx);border:1px solid var(--bd2)}
+.btn-sec:hover{background:var(--s3)}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn-sm{padding:8px 14px;font-size:.78rem;border-radius:8px}
+
+/* Results */
+.result{display:none;margin-top:12px}
+.result.active{display:block}
+.summary-box{padding:16px;background:var(--s2);border:1px solid var(--bd2);border-radius:12px;font-size:.88rem;line-height:1.7;white-space:pre-wrap}
+.summary-box h3{color:var(--ac2);font-size:.85rem;margin:12px 0 6px;display:flex;align-items:center;gap:6px}
+.summary-box h3:first-child{margin-top:0}
+
+/* Table */
+.tbl-wrap{overflow-x:auto;margin:12px 0;border-radius:10px;border:1px solid var(--bd)}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th{background:var(--s3);color:var(--ac2);padding:10px 12px;text-align:left;font-weight:600;white-space:nowrap;position:sticky;top:0}
+td{padding:8px 12px;border-top:1px solid var(--bd);vertical-align:top}
+tr:hover td{background:rgba(139,92,246,.04)}
+.val-high{color:var(--red);font-weight:700}
+.val-low{color:var(--amb);font-weight:700}
+.val-ok{color:var(--acg)}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.7rem;font-weight:600}
+.tag-high{background:rgba(244,63,94,.12);color:var(--red)}
+.tag-low{background:rgba(245,158,11,.12);color:var(--amb)}
+.tag-ok{background:rgba(16,185,129,.1);color:var(--acg)}
+.tag-crit{background:rgba(244,63,94,.25);color:#fda4af;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+.loading{text-align:center;padding:24px;color:var(--t2)}
+.loading .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.tabs{display:flex;gap:4px;background:var(--s2);border-radius:10px;padding:3px;border:1px solid var(--bd);margin-bottom:12px}
+.tab{flex:1;padding:9px;text-align:center;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s;color:var(--t2)}
+.tab:hover{background:var(--s3)}
+.tab.active{background:var(--ac);color:#fff}
+
+.tips{margin-top:12px;padding:12px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.12);border-radius:10px;font-size:.78rem;color:var(--t2);line-height:1.6}
+.tips strong{color:var(--ac2)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--acg);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600;font-size:.83rem;transition:transform .3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.examples{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ex{padding:5px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;font-size:.72rem;cursor:pointer;color:var(--t2);transition:.15s}
+.ex:hover{border-color:var(--ac);color:var(--ac)}
+.shortcut{position:fixed;bottom:16px;right:16px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:8px 14px;font-size:.7rem;color:var(--t3);display:flex;align-items:center;gap:4px}
+.shortcut kbd{background:var(--s3);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:.68rem;color:var(--t2)}
+.ctx-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.ctx-row input,.ctx-row select{background:var(--s2);color:var(--tx);border:1px solid var(--bd2);border-radius:8px;padding:8px 12px;font-family:var(--font);font-size:.82rem;flex:1;min-width:120px}
+.ctx-row input:focus,.ctx-row select:focus{outline:none;border-color:var(--ac)}
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Inicio</a><h1>🔬 Analíticas IA</h1></div>
+<div class="wrap">
+
+<!-- INPUT -->
+<div class="card">
+<h2>📋 Pega aquí la analítica</h2>
+<div class="ctx-row">
+<input type="number" id="edad" placeholder="Edad" min="0" max="120" style="max-width:80px">
+<select id="sexo"><option value="">Sexo</option><option value="hombre">♂ Hombre</option><option value="mujer">♀ Mujer</option></select>
+<input type="text" id="contexto" placeholder="Contexto clínico (ej: DM2, control rutinario...)" style="flex:3">
+</div>
+<textarea id="input" placeholder="Copia y pega aquí los resultados de la analítica tal cual del laboratorio...
+
+Ejemplo:
+Glucosa 156 mg/dL (74-106)
+HbA1c 8.2% (4.0-5.6)
+Creatinina 1.8 mg/dL (0.7-1.3)
+Colesterol total 245 mg/dL (<200)
+..." onkeydown="if(event.ctrlKey&&event.key==='Enter')doAnalyze()"></textarea>
+<div class="examples">
+<div class="ex" onclick="loadEx(0)">Ejemplo: Hemograma</div>
+<div class="ex" onclick="loadEx(1)">Ejemplo: Bioquímica</div>
+<div class="ex" onclick="loadEx(2)">Ejemplo: Perfil hepático</div>
+</div>
+<div class="btns">
+<button class="btn btn-ai" id="btnGo" onclick="doAnalyze()">🔬 Analizar con IA</button>
+<button class="btn btn-sec btn-sm" onclick="clearAll()">🗑️ Limpiar</button>
+</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabsRow" style="display:none">
+<div class="tab active" onclick="showTab('resumen',this)">📊 Resumen</div>
+<div class="tab" onclick="showTab('tabla',this)">📋 Tabla valores</div>
+<div class="tab" onclick="showTab('informe',this)">📝 Informe</div>
+</div>
+
+<!-- RESUMEN -->
+<div class="card result" id="res-resumen">
+<h2>📊 Resumen de la analítica</h2>
+<div class="summary-box" id="summaryContent"></div>
+<div class="btns" style="margin-top:8px">
+<button class="btn btn-sec btn-sm" onclick="copyEl('summaryContent')">📋 Copiar resumen</button>
+</div>
+</div>
+
+<!-- TABLA -->
+<div class="card result" id="res-tabla">
+<h2>📋 Valores detectados</h2>
+<div class="tbl-wrap"><table id="valTable"><thead><tr><th>Parámetro</th><th>Valor</th><th>Ref.</th><th>Estado</th></tr></thead><tbody id="valBody"></tbody></table></div>
+<div class="btns" style="margin-top:8px">
+<button class="btn btn-sec btn-sm" onclick="copyTable()">📋 Copiar tabla</button>
+</div>
+</div>
+
+<!-- INFORME -->
+<div class="card result" id="res-informe">
+<h2>📝 Informe para historia clínica</h2>
+<div class="summary-box" id="informeContent"></div>
+<div class="btns" style="margin-top:8px">
+<button class="btn btn-sec btn-sm" onclick="copyEl('informeContent')">📋 Copiar informe</button>
+<button class="btn btn-sec btn-sm" onclick="copyOMI()">🏥 Copiar para OMI</button>
+</div>
+</div>
+
+<div class="tips">
+<strong>Cómo usarlo:</strong> Copia y pega los resultados tal cual del laboratorio (de OMI, Selene, PDF...). La IA identifica los valores, los clasifica como normales/altos/bajos, y genera un resumen clínico con las alteraciones relevantes y posibles implicaciones.<br><br>
+<strong>⚠️ Nota:</strong> Esta herramienta es de apoyo. Siempre confirma los valores con el informe oficial del laboratorio. La IA puede cometer errores en la interpretación.
+</div>
+</div>
+
+<div class="shortcut"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> = Analizar</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var lastSummary='',lastInforme='',parsedRows=[];
+
+var EXAMPLES=[
+`HEMOGRAMA
+Leucocitos 12.400 /uL (4.500-11.000)
+Neutrófilos 78.2% (40-75)
+Linfocitos 14.1% (20-45)
+Hemoglobina 10.2 g/dL (13.0-17.0)
+Hematocrito 31.5% (40-54)
+VCM 72.3 fL (80-100)
+HCM 23.1 pg (27-33)
+Plaquetas 389.000 /uL (150.000-400.000)
+VSG 48 mm/h (0-20)`,
+
+`BIOQUÍMICA
+Glucosa 186 mg/dL (74-106)
+HbA1c 9.1% (4.0-5.6)
+Creatinina 1.9 mg/dL (0.7-1.3)
+Urea 68 mg/dL (10-50)
+FGe (CKD-EPI) 42 mL/min/1.73m2 (>90)
+Ácido úrico 8.9 mg/dL (3.5-7.2)
+Sodio 138 mEq/L (136-145)
+Potasio 5.6 mEq/L (3.5-5.1)
+Colesterol total 267 mg/dL (<200)
+LDL 178 mg/dL (<130)
+HDL 34 mg/dL (>40)
+Triglicéridos 312 mg/dL (<150)
+PCR 2.8 mg/dL (<0.5)`,
+
+`PERFIL HEPÁTICO
+GOT/AST 89 U/L (5-40)
+GPT/ALT 124 U/L (5-41)
+GGT 187 U/L (8-61)
+Fosfatasa alcalina 145 U/L (40-129)
+Bilirrubina total 2.1 mg/dL (0.1-1.2)
+Bilirrubina directa 1.4 mg/dL (0.0-0.3)
+Albúmina 3.1 g/dL (3.5-5.2)
+Proteínas totales 6.2 g/dL (6.6-8.7)
+INR 1.4 (0.8-1.2)
+Tiempo protrombina 16.8 seg (11-13.5)`
+];
+
+function loadEx(i){document.getElementById('input').value=EXAMPLES[i];}
+
+function showTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.result').forEach(r=>r.classList.remove('active'));
+  document.getElementById('res-'+id).classList.add('active');
+}
+
+function clearAll(){
+  document.getElementById('input').value='';
+  document.getElementById('edad').value='';
+  document.getElementById('sexo').value='';
+  document.getElementById('contexto').value='';
+  document.querySelectorAll('.result').forEach(r=>r.classList.remove('active'));
+  document.getElementById('tabsRow').style.display='none';
+  lastSummary='';lastInforme='';parsedRows=[];
+}
+
+function doAnalyze(){
+  var raw=document.getElementById('input').value.trim();
+  if(!raw){toast('⚠️ Pega la analítica primero');return;}
+  
+  var edad=document.getElementById('edad').value;
+  var sexo=document.getElementById('sexo').value;
+  var ctx=document.getElementById('contexto').value.trim();
+  
+  document.getElementById('btnGo').disabled=true;
+  document.getElementById('tabsRow').style.display='flex';
+  document.querySelectorAll('.result').forEach(r=>r.classList.remove('active'));
+  document.getElementById('res-resumen').classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.tab').classList.add('active');
+  document.getElementById('summaryContent').innerHTML='<div class="loading"><span class="spinner"></span>Analizando analítica con IA...</div>';
+  
+  var paciente='';
+  if(edad)paciente+='Edad: '+edad+' años. ';
+  if(sexo)paciente+='Sexo: '+sexo+'. ';
+  if(ctx)paciente+='Contexto clínico: '+ctx+'. ';
+  
+  var sysPrompt=`Eres un médico internista experto analizando resultados de laboratorio. Se te proporcionan los resultados de una analítica. Tu tarea es:
+
+1. RESUMEN CLÍNICO: Genera un resumen estructurado con estas secciones:
+   ### 🔴 Valores críticos (que requieren acción inmediata)
+   ### 🟡 Valores alterados (fuera de rango pero no críticos)  
+   ### 🟢 Valores normales destacables
+   ### 📋 Interpretación global
+   ### 💊 Recomendaciones
+
+2. TABLA JSON: Después del resumen, en una línea separada escribe exactamente |||TABLA||| seguido de un JSON array donde cada elemento tiene: {"param":"nombre","valor":"valor con unidades","ref":"rango referencia","estado":"alto|bajo|normal|critico_alto|critico_bajo"}
+
+3. INFORME: Después de la tabla, en una línea separada escribe exactamente |||INFORME||| seguido de un texto breve para incluir en la historia clínica del paciente, con formato profesional de informe médico (2-4 frases, sin bullet points, mencionando solo alteraciones relevantes).
+
+IMPORTANTE:
+- Usa terminología médica en español
+- Si hay valores críticos (muy fuera de rango), márcalos como critico_alto o critico_bajo
+- No inventes valores, solo analiza lo que se proporciona
+- Sé conciso pero preciso
+- Incluye posibles causas de las alteraciones`;
+
+  var userMsg='RESULTADOS ANALÍTICA:\n'+raw;
+  if(paciente)userMsg='DATOS PACIENTE: '+paciente+'\n\n'+userMsg;
+  
+  callAI(sysPrompt,userMsg,function(text){
+    processResponse(text);
+  },function(err){
+    document.getElementById('summaryContent').innerHTML='<span style="color:var(--red)">❌ Error: '+escH(err)+'. Intenta de nuevo.</span>';
+    document.getElementById('btnGo').disabled=false;
+  });
+}
+
+function callAI(sys,usr,ok,fail){
+  fetch('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'deepseek/deepseek-chat-v3-0324:free',messages:[{role:'system',content:sys},{role:'user',content:usr}],max_tokens:3000,temperature:0.15})
+  }).then(function(r){
+    if(!r.ok)throw new Error('API '+r.status);
+    return r.json();
+  }).then(function(d){
+    var t=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
+    if(!t)throw new Error('Respuesta vacía');
+    ok(t);
+  }).catch(function(e){
+    // Fallback Pollinations
+    fetch('https://text.pollinations.ai/openai',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'openai',messages:[{role:'system',content:sys},{role:'user',content:usr}],max_tokens:3000,temperature:0.15})
+    }).then(function(r){return r.json();}).then(function(d){
+      var t=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
+      if(!t)throw new Error('Sin respuesta');
+      ok(t);
+    }).catch(function(e2){fail(e.message);});
+  });
+}
+
+function processResponse(text){
+  // Split sections
+  var parts=text.split('|||TABLA|||');
+  var summaryRaw=parts[0].trim();
+  var rest=parts[1]||'';
+  var parts2=rest.split('|||INFORME|||');
+  var tableRaw=parts2[0].trim();
+  var informeRaw=(parts2[1]||'').trim();
+  
+  // SUMMARY
+  lastSummary=summaryRaw;
+  var html=formatMD(summaryRaw);
+  document.getElementById('summaryContent').innerHTML=html;
+  
+  // TABLE
+  parsedRows=[];
+  try{
+    var jsonStr=tableRaw.replace(/```json\s*/g,'').replace(/```/g,'').trim();
+    var match=jsonStr.match(/\[[\s\S]*\]/);
+    if(match)parsedRows=JSON.parse(match[0]);
+  }catch(e){/* parse from text fallback */}
+  
+  renderTable(parsedRows);
+  
+  // INFORME
+  lastInforme=informeRaw.replace(/```/g,'').trim();
+  document.getElementById('informeContent').innerHTML=escH(lastInforme).replace(/\n/g,'<br>');
+  
+  document.getElementById('btnGo').disabled=false;
+  toast('✅ Analítica procesada');
+}
+
+function renderTable(rows){
+  var body=document.getElementById('valBody');
+  if(!rows.length){body.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--t3)">No se pudieron extraer valores en tabla</td></tr>';return;}
+  
+  body.innerHTML=rows.map(function(r){
+    var st=r.estado||'normal';
+    var cls='val-ok',tag='tag-ok',label='Normal';
+    if(st.indexOf('critico')>-1){cls='val-high';tag='tag-crit';label=st.indexOf('bajo')>-1?'⚠️ Crítico bajo':'⚠️ Crítico alto';}
+    else if(st==='alto'){cls='val-high';tag='tag-high';label='↑ Alto';}
+    else if(st==='bajo'){cls='val-low';tag='tag-low';label='↓ Bajo';}
+    
+    return '<tr><td><strong>'+escH(r.param||'')+'</strong></td><td class="'+cls+'">'+escH(r.valor||'')+'</td><td style="color:var(--t3)">'+escH(r.ref||'')+'</td><td><span class="tag '+tag+'">'+label+'</span></td></tr>';
+  }).join('');
+}
+
+function formatMD(md){
+  return escH(md)
+    .replace(/### (🔴[^\n]*)/g,'<h3 style="color:var(--red)">$1</h3>')
+    .replace(/### (🟡[^\n]*)/g,'<h3 style="color:var(--amb)">$1</h3>')
+    .replace(/### (🟢[^\n]*)/g,'<h3 style="color:var(--acg)">$1</h3>')
+    .replace(/### (📋[^\n]*)/g,'<h3 style="color:var(--blu)">$1</h3>')
+    .replace(/### (💊[^\n]*)/g,'<h3 style="color:var(--ac2)">$1</h3>')
+    .replace(/### ([^\n]*)/g,'<h3>$1</h3>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/^- (.+)/gm,'• $1')
+    .replace(/\n/g,'<br>');
+}
+
+function copyEl(id){
+  var el=document.getElementById(id);
+  var text=el.innerText||el.textContent;
+  navigator.clipboard.writeText(text).then(function(){toast('📋 Copiado');});
+}
+
+function copyTable(){
+  if(!parsedRows.length){toast('⚠️ No hay tabla');return;}
+  var t='PARÁMETRO\tVALOR\tREF\tESTADO\n';
+  parsedRows.forEach(function(r){
+    t+=r.param+'\t'+r.valor+'\t'+(r.ref||'')+'\t'+(r.estado||'')+'\n';
+  });
+  navigator.clipboard.writeText(t).then(function(){toast('📋 Tabla copiada');});
+}
+
+function copyOMI(){
+  if(!lastInforme){toast('⚠️ No hay informe');return;}
+  var clean=lastInforme.replace(/\*\*/g,'').replace(/^#+\s+/gm,'').replace(/^[-•]\s+/gm,'');
+  navigator.clipboard.writeText(clean).then(function(){toast('🏥 Copiado para OMI');});
+}
+
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
+</script>
+</body>
+</html>
