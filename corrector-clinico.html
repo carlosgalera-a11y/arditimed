@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corrector Clínico IA | Cartagenaeste</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
+:root{--bg:#0c1017;--s1:#151c28;--s2:#1c2536;--s3:#243044;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.12);--ac:#3b82f6;--ac2:#60a5fa;--acg:#10b981;--red:#f43f5e;--amb:#f59e0b;--pur:#8b5cf6;--tx:#f0f4f8;--t2:#94a3b8;--t3:#64748b;--font:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh}
+.nav{background:rgba(12,16,23,.92);padding:10px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.nav a{color:var(--ac2);text-decoration:none;font-size:.82rem;font-weight:600}
+.nav h1{font-size:.95rem;font-weight:700;flex:1}
+.wrap{max-width:800px;margin:0 auto;padding:14px 16px 80px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px}
+.card h2{font-size:.9rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+textarea{width:100%;min-height:150px;padding:14px;background:var(--s2);color:var(--tx);border:1px solid var(--bd2);border-radius:10px;font-family:var(--font);font-size:.9rem;line-height:1.65;resize:vertical}
+textarea:focus{outline:none;border-color:var(--ac)}
+textarea::placeholder{color:var(--t3)}
+.output{width:100%;min-height:150px;padding:14px;background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:10px;font-size:.9rem;line-height:1.65;white-space:pre-wrap;position:relative}
+.output:empty::before{content:'El texto corregido aparecerá aquí...';color:var(--t3);font-style:italic}
+.output .diff-add{background:rgba(16,185,129,.15);color:#6ee7b7;padding:1px 2px;border-radius:3px}
+.output .diff-del{background:rgba(244,63,94,.12);color:#fda4af;text-decoration:line-through;padding:1px 2px;border-radius:3px;font-size:.85em}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{border:none;border-radius:10px;padding:11px 18px;font-family:var(--font);font-weight:600;font-size:.84rem;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:active{transform:scale(.96)}
+.btn-ai{background:linear-gradient(135deg,var(--ac),var(--pur));color:#fff}
+.btn-ai:hover{opacity:.9}
+.btn-sec{background:var(--s2);color:var(--tx);border:1px solid var(--bd2)}
+.btn-sec:hover{background:var(--s3)}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn-sm{padding:8px 14px;font-size:.78rem;border-radius:8px}
+.mode-row{display:flex;gap:4px;background:var(--s2);border-radius:10px;padding:3px;border:1px solid var(--bd);margin-bottom:12px}
+.mode-opt{flex:1;padding:8px;text-align:center;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:.2s;color:var(--t2)}
+.mode-opt:hover{background:var(--s3)}
+.mode-opt.active{background:var(--ac);color:#fff}
+.tips{margin-top:12px;padding:12px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.12);border-radius:10px;font-size:.78rem;color:var(--t2);line-height:1.6}
+.tips strong{color:var(--ac2)}
+.loading{text-align:center;padding:20px;color:var(--t2)}
+.loading .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stats{display:flex;gap:12px;margin-top:8px;font-size:.72rem;color:var(--t3)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--acg);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600;font-size:.83rem;transition:transform .3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.examples{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ex{padding:5px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;font-size:.72rem;cursor:pointer;color:var(--t2);transition:.15s}
+.ex:hover{border-color:var(--ac);color:var(--ac)}
+.shortcut{position:fixed;bottom:16px;right:16px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:8px 14px;font-size:.7rem;color:var(--t3);display:flex;align-items:center;gap:4px}
+.shortcut kbd{background:var(--s3);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:.68rem;color:var(--t2)}
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Inicio</a><h1>✏️ Corrector Clínico IA</h1></div>
+<div class="wrap">
+
+<!-- MODO -->
+<div class="mode-row">
+<div class="mode-opt active" data-m="corregir" onclick="setMode(this)">✏️ Corregir texto</div>
+<div class="mode-opt" data-m="profesional" onclick="setMode(this)">🏥 Redacción clínica</div>
+<div class="mode-opt" data-m="paciente" onclick="setMode(this)">👤 Para paciente</div>
+</div>
+
+<!-- INPUT -->
+<div class="card">
+<h2>📝 Texto original</h2>
+<textarea id="input" placeholder="Escribe o pega aquí tu texto clínico con errores... (Ctrl+Enter para corregir)" onkeydown="if(event.ctrlKey&&event.key==='Enter')doCorrect()"></textarea>
+<div class="examples">
+<div class="ex" onclick="loadEx(0)">Ejemplo: exploración</div>
+<div class="ex" onclick="loadEx(1)">Ejemplo: anamnesis</div>
+<div class="ex" onclick="loadEx(2)">Ejemplo: juicio clínico</div>
+</div>
+<div class="btns">
+<button class="btn btn-ai" id="btnFix" onclick="doCorrect()">✨ Corregir con IA</button>
+<button class="btn btn-sec btn-sm" onclick="document.getElementById('input').value='';document.getElementById('output').innerHTML=''">🗑️ Limpiar</button>
+</div>
+</div>
+
+<!-- OUTPUT -->
+<div class="card">
+<h2>✅ Texto corregido</h2>
+<div class="output" id="output"></div>
+<div class="stats" id="stats"></div>
+<div class="btns" style="margin-top:8px">
+<button class="btn btn-sec btn-sm" onclick="copyOut()">📋 Copiar corregido</button>
+<button class="btn btn-sec btn-sm" onclick="copyOMI()">🏥 Copiar para OMI</button>
+<button class="btn btn-sec btn-sm" onclick="replaceInput()">🔄 Usar como base</button>
+</div>
+</div>
+
+<!-- TIPS -->
+<div class="tips">
+<strong>Cómo usarlo:</strong> Escribe el informe rápido durante la consulta, sin preocuparte por errores. Luego pulsa <strong>Ctrl+Enter</strong> o el botón de corregir. La IA arregla erratas, puntuación, terminología médica y estructura el texto profesionalmente.<br><br>
+<strong>Modos:</strong> "Corregir texto" solo arregla errores. "Redacción clínica" reformula con terminología médica profesional. "Para paciente" reescribe en lenguaje comprensible.
+</div>
+</div>
+
+<div class="shortcut"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> = Corregir</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var mode='corregir';
+var lastCorrected='';
+
+var EXAMPLES=[
+"Re lahta que es ta recibiendo sesiones con e l fisioterapueta, re lata que se ha caido recientemente.s sin impotencia funcional MMII: NO EDEMA HNIS IGNOS DE TV P HOMNAS NEGTIV SE PALPAN VARIES SIN DOLOR A L APRENSIN L.",
+"pacinte de 65 a que acude x dolor toraccio de 2h de evolucion irradiado a brazo izq, sudoracion profuza, nauseas. antecedentes HTA DM2 dislipemia. tto habitual enalapril metformina atorvastatina",
+"jucio clinco: sospecah de SCACEST anterir. se solicita ECG urgnte y troponinas seriadas. se canaliza via periferica y se administra AAS 300mg clopidogrel 600mg heparina sodica. se avisa a hemodinamca"
+];
+
+function loadEx(i){document.getElementById('input').value=EXAMPLES[i];}
+
+function setMode(el){
+  document.querySelectorAll('.mode-opt').forEach(function(o){o.classList.remove('active');});
+  el.classList.add('active');
+  mode=el.dataset.m;
+}
+
+var PROMPTS={
+corregir:'Eres un corrector de textos médicos en español. Tu ÚNICA tarea es corregir errores ortográficos, gramaticales, de puntuación y de terminología médica. NO cambies el contenido ni añadas información. NO inventes datos. Mantén las abreviaturas médicas estándar (MMII, TVP, HTA, etc). Separa las frases correctamente. Si hay siglas mal escritas, corrígelas (ej: "TV P" → "TVP", "HNIS IGNOS" → "ni signos"). Devuelve SOLO el texto corregido, sin explicaciones.',
+
+profesional:'Eres un redactor clínico experto en español médico. Reescribe el siguiente texto con redacción clínica profesional, como aparecería en un informe médico del Servicio Murciano de Salud. Corrige errores, usa terminología médica precisa, estructura el texto con puntos y frases claras. Mantén TODA la información clínica del original sin añadir ni inventar datos. Devuelve SOLO el texto reformulado.',
+
+paciente:'Eres un médico que explica a un paciente en lenguaje sencillo. Reescribe el siguiente texto clínico de forma comprensible para una persona sin formación médica. Evita tecnicismos, usa frases cortas y claras. NO inventes información, solo reformula lo que hay. Devuelve SOLO el texto reescrito.'
+};
+
+function doCorrect(){
+  var input=document.getElementById('input').value.trim();
+  if(!input){toast('⚠️ Escribe algo primero');return;}
+  
+  var outEl=document.getElementById('output');
+  outEl.innerHTML='<div class="loading"><span class="spinner"></span>Corrigiendo con IA...</div>';
+  document.getElementById('btnFix').disabled=true;
+  document.getElementById('stats').textContent='';
+  
+  var sys=PROMPTS[mode];
+  var usr=input;
+  
+  // Try DeepSeek via OpenRouter
+  fetch('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'deepseek/deepseek-chat-v3-0324:free',
+      messages:[{role:'system',content:sys},{role:'user',content:usr}],
+      max_tokens:1500,
+      temperature:0.1
+    })
+  }).then(function(r){
+    if(!r.ok)throw new Error('API '+r.status);
+    return r.json();
+  }).then(function(d){
+    var text=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
+    if(!text)throw new Error('Empty response');
+    showResult(input,text);
+  }).catch(function(err){
+    // Fallback: Pollinations
+    fetch('https://text.pollinations.ai/openai',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'openai',messages:[{role:'system',content:sys},{role:'user',content:usr}],max_tokens:1500,temperature:0.1})
+    }).then(function(r){return r.json();}).then(function(d){
+      var text=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
+      if(!text)throw new Error('No response');
+      showResult(input,text);
+    }).catch(function(e2){
+      outEl.innerHTML='<span style="color:var(--red)">❌ Error: '+err.message+'. Intenta de nuevo.</span>';
+      document.getElementById('btnFix').disabled=false;
+    });
+  });
+}
+
+function showResult(original,corrected){
+  lastCorrected=corrected;
+  var outEl=document.getElementById('output');
+  
+  // Clean any markdown artifacts
+  corrected=corrected.replace(/^```[\s\S]*?```$/gm,'').replace(/^```\w*\n?/gm,'').replace(/```$/gm,'').trim();
+  lastCorrected=corrected;
+  
+  // Show with basic formatting
+  outEl.innerHTML=escH(corrected).replace(/\n/g,'<br>');
+  
+  // Stats
+  var origWords=original.split(/\s+/).length;
+  var corrWords=corrected.split(/\s+/).length;
+  document.getElementById('stats').textContent='Original: '+origWords+' palabras → Corregido: '+corrWords+' palabras';
+  
+  document.getElementById('btnFix').disabled=false;
+  toast('✅ Texto corregido');
+}
+
+function copyOut(){
+  if(!lastCorrected){toast('⚠️ No hay texto');return;}
+  navigator.clipboard.writeText(lastCorrected).then(function(){toast('📋 Copiado al portapapeles');});
+}
+
+function copyOMI(){
+  if(!lastCorrected){toast('⚠️ No hay texto');return;}
+  // Clean for OMI: no markdown, no extra formatting
+  var clean=lastCorrected.replace(/\*\*/g,'').replace(/^#+\s+/gm,'').replace(/^[-•]\s+/gm,'- ');
+  navigator.clipboard.writeText(clean).then(function(){toast('🏥 Copiado para OMI/Selene');});
+}
+
+function replaceInput(){
+  if(!lastCorrected)return;
+  document.getElementById('input').value=lastCorrected;
+  document.getElementById('output').innerHTML='';
+  lastCorrected='';
+  toast('🔄 Texto reemplazado');
+}
+
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
+</script>
+</body>
+</html>
