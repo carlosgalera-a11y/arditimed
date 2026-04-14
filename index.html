@@ -636,6 +636,112 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
           </div>
         </div>
 
+        <!-- ═══ CONSEJOS VÉRTIGO ═══ -->
+        <div style="margin-bottom:12px;">
+          <div onclick="var p=document.getElementById('recoVertigo');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#1a237e,#283593);border:1px solid #3949ab;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">🌀</span><strong style="font-size:.92rem;color:#fff;">Consejos Vértigo — Reeducación Vestibular</strong></div>
+            <span class="arr2" style="color:#fff;font-size:.85rem;">▶</span>
+          </div>
+          <div id="recoVertigo" style="display:none;padding:16px;background:#fff;border:1px solid #c5cae9;border-radius:0 0 10px 10px;border-top:none;">
+
+            <div style="background:#e8eaf6;border-left:4px solid #3f51b5;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#1a237e;margin-bottom:6px;">ℹ️ ¿Qué son estos ejercicios?</div>
+              <p style="font-size:.83rem;color:#333;line-height:1.6;margin:0;">Los ejercicios de reeducación vestibular ayudan a tu cerebro a compensar el problema de equilibrio. Deben hacerse de forma progresiva, comenzando desde la posición acostada o sentada si tienes mucho mareo.</p>
+            </div>
+
+            <!-- NIVEL 1 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN1');p.style.display=p.style.display==='none'?'block':'none'" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#0d47a1;">👁️ NIVEL 1 — Ejercicios oculares y de cabeza (acostado o sentado)</span>
+                <span style="color:#0d47a1;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN1" style="display:block;padding:12px;background:#f8fbff;border:1px solid #bbdefb;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">1. Mirar arriba y abajo</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Cabeza inmóvil. Primero despacio, luego deprisa. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">2. Mirar de lado a lado</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Cabeza inmóvil. Primero despacio, luego deprisa. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">3. Focalizar dedo</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Sigue con la vista un dedo mientras lo acercas (38 cm) y lo alejas. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">4. Flexión/extensión de cabeza</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Ojos abiertos. Despacio y luego deprisa. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">5. Inclinación lateral de cabeza</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Inclinar la cabeza de un lado al otro. Despacio y deprisa. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 2 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN2');p.style.display=p.style.display==='none'?'block':'none'" style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#1b5e20;">🪑 NIVEL 2 — Movimientos de brazo y cuerpo (sentado)</span>
+                <span style="color:#1b5e20;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN2" style="display:none;padding:12px;background:#f1fdf4;border:1px solid #c8e6c9;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">6. Encogerse de hombros y círculos</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Encoge y haz círculos con los hombros. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">7. Giros de cintura</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Girar la cintura a derecha e izquierda. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">8. Inclinarse a recoger objeto</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Inclinarse a coger un objeto del suelo y volver a incorporarse. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">9. Giros de cabeza</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">2 giros lentos, luego 3 rápidos. Al mejorar, repetir con ojos cerrados. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 3 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN3');p.style.display=p.style.display==='none'?'block':'none'" style="background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#e65100;">🔄 NIVEL 3 — Nivel 2 con ojos cerrados</span>
+                <span style="color:#e65100;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN3" style="display:none;padding:12px;background:#fffbe7;border:1px solid #ffe0b2;border-radius:0 0 8px 8px;border-top:none;">
+                <p style="font-size:.82rem;color:#555;margin:0 0 8px;line-height:1.5;">Cuando el desequilibrio haya mejorado, repite todos los ejercicios del Nivel 2 con <strong>los ojos cerrados</strong>. Realiza los niveles 1 y 2 sentado primero si antes los hacías en la cama.</p>
+                <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:10px;">
+                  <p style="font-size:.78rem;color:#5d4037;margin:0;"><strong>⚠️ Precaución:</strong> Asegúrate de tener apoyo cerca (silla, pared) al hacer ejercicios con ojos cerrados.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 4 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN4');p.style.display=p.style.display==='none'?'block':'none'" style="background:#fce4ec;border:1px solid #f48fb1;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#880e4f;">🧍 NIVEL 4 — Levantándose (repetir nivel 3 de pie)</span>
+                <span style="color:#880e4f;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN4" style="display:none;padding:12px;background:#fdf0f6;border:1px solid #f8bbd0;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">10. Sentado a de pie</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Levantarse con ojos abiertos. Repetir con ojos cerrados. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">11. Sentado-de pie-girar-sentarse</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Levantarse, girar una vez y volver a sentarse. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">12. Caminar alrededor de una silla</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Dar vueltas y luego hacia atrás. Tras 10 repeticiones, intentar con ojos cerrados. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">13. Subir y bajar plataforma</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Primero ojos abiertos; tras 10 rep., ojos cerrados. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 5 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN5');p.style.display=p.style.display==='none'?'block':'none'" style="background:#e8eaf6;border:1px solid #9fa8da;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#1a237e;">🏃 NIVEL 5 — Traslado y actividades en grupo</span>
+                <span style="color:#1a237e;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN5" style="display:none;padding:12px;background:#f5f5ff;border:1px solid #c5cae9;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">14. Pasar pelota de mano en mano</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Asegúrate de que la pelota pase por encima del nivel del ojo. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">15. Pelota bajo la rodilla</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Inclinarse y pasar la pelota de mano en mano por detrás de la rodilla. Repetir con ojos cerrados. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">16. Pelota en grupo (en movimiento)</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Caminar en círculo alrededor de una persona que lanza y recoge la pelota. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">17. Juegos de pelota o bolos</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Cualquier juego que implique parar, tirar o recoger objetos. Excelente para la última fase. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#ffebee;border:2px solid #ef5350;border-radius:8px;padding:12px 14px;margin-top:4px;">
+              <div style="font-weight:700;font-size:.88rem;color:#c62828;margin-bottom:6px;">🚨 Consulta a tu médico si:</div>
+              <ul style="font-size:.79rem;color:#333;line-height:1.7;margin:0;padding-left:18px;">
+                <li>El vértigo es muy intenso o va acompañado de <strong>pérdida de audición brusca</strong></li>
+                <li>Aparece <strong>dolor de cabeza intenso, visión doble o dificultad para hablar</strong></li>
+                <li>Los síntomas <strong>empeoran</strong> tras realizar los ejercicios de forma mantenida</li>
+                <li>No notas mejoría tras <strong>2-3 semanas</strong> de ejercicios regulares</li>
+              </ul>
+            </div>
+
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:10px;">Fuente: Programa de reeducación vestibular SERC · Uso docente · Área II Cartagena</p>
+          </div>
+        </div>
+
       </div>
     </div>
 
