@@ -822,7 +822,7 @@ function _showPageInit(id){
     // Inicializaciones específicas por página
     try{if(id==="pageProfessionals")initProfessionals();}catch(e){}
     try{if(id==="pageScanIA")scanRenderHist();}catch(e){}
-    try{if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}}catch(e){}
+    try{if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);if(sessionStorage.getItem('buscas_auth')){document.getElementById('buscasGate').style.display='none';document.getElementById('buscasContent').style.display='block';}else{document.getElementById('buscasGate').style.display='flex';document.getElementById('buscasContent').style.display='none';setTimeout(function(){var pi=document.getElementById('buscasPass');if(pi)pi.focus();},100);}}}catch(e){}
     // Barra de moderación (opcional, no bloquea)
     try{
         var modUser=firebase.auth().currentUser;
@@ -846,6 +846,19 @@ function logPageAccess(pageId,user){
             timestamp:Date.now()
         });
     }catch(e){console.error("Log access error:",e);}
+}
+function checkBuscasPass(){
+    var p=document.getElementById('buscasPass');
+    if(!p)return;
+    if(p.value.trim().toLowerCase()==='santalucia'){
+        sessionStorage.setItem('buscas_auth','1');
+        document.getElementById('buscasGate').style.display='none';
+        document.getElementById('buscasContent').style.display='block';
+        document.getElementById('buscasError').style.display='none';
+    }else{
+        document.getElementById('buscasError').style.display='block';
+        p.value='';p.focus();
+    }
 }
 
 // ═══ ANONYMOUS USAGE TRACKING (for demo metrics + OWASP A09) ═══
