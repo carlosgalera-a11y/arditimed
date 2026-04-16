@@ -2,89 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Paratus Medical Clone</title>
-    <!-- Modern Output Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Material Symbols for Icons -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Paratus Medical Clone - Docencia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Search Header -->
-        <header class="search-header">
-            <div class="search-box">
-                <span class="material-symbols-outlined search-icon">search</span>
-                <input type="text" placeholder="Search" />
+        
+        <!-- Header -->
+        <header class="top-header" id="topHeader">
+            <div class="header-content" id="headerContent">
+                <div class="search-box">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" placeholder="Search" />
+                </div>
+            </div>
+            <!-- Sub tabs if inside detail -->
+            <div id="detailTabs" class="detail-tabs hidden">
+                <button class="tab active" data-tab="doses">Doses</button>
+                <button class="tab" data-tab="equipment">Equipment</button>
             </div>
         </header>
 
-        <!-- Tabs -->
-        <nav class="tabs-nav">
-            <button class="tab active">Conditions</button>
-            <button class="tab">Procedures</button>
-            <button class="tab">Drugs</button>
+        <!-- Home / Search Tabs -->
+        <nav class="tabs-nav" id="homeTabs">
+            <button class="tab active" data-tab="conditions">Conditions</button>
+            <button class="tab" data-tab="procedures">Procedures</button>
+            <button class="tab" data-tab="drugs">Drugs</button>
         </nav>
 
-        <!-- Main Content List -->
-        <main class="content-list">
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">echocardiogram</span>
-                <span class="list-title">Cardiovascular</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">gastroenterology</span>
-                <span class="list-title">Gastroenterology</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">coronavirus</span>
-                <span class="list-title">Infectious</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">kidney</span>
-                <span class="list-title">Metabolic</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">neurology</span>
-                <span class="list-title">Neurological</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">pregnancy</span>
-                <span class="list-title">OB/GYN</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">pulmonology</span>
-                <span class="list-title">Respiratory</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">skull</span>
-                <span class="list-title">Toxicology</span>
-            </div>
-            <div class="list-item">
-                <span class="material-symbols-outlined list-icon">orthopedics</span>
-                <span class="list-title">Trauma</span>
-            </div>
+        <!-- Main Content Area -->
+        <main class="content-body" id="mainContent">
+            <!-- Dynamic Content goes here -->
         </main>
 
-        <!-- Floating Action Area -->
+        <!-- Floating Action Area (Weight) -->
         <div class="floating-action-area">
-            <div class="weight-button">
-                <strong>Weight:</strong> 80.0 kg <span class="lbs-text">176.4 lbs</span>
+            <div class="weight-button" id="weightBtn">
+                <strong>Weight:</strong> <span id="weightValKg">80.0</span> kg <span class="lbs-text"><span id="weightValLbs">176.4</span> lbs</span>
             </div>
-            <div class="ai-button">
+            <div class="ai-button" onclick="alert('El Asistente A.D.A.M.S. IA está en desarrollo.')">
                 <span class="material-symbols-outlined">data_object</span>
             </div>
         </div>
 
         <!-- Bottom NavigationBar -->
         <footer class="bottom-nav">
-            <button class="nav-btn"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+            <button class="nav-btn" id="navBack"><span class="material-symbols-outlined">arrow_back_ios</span></button>
             <button class="nav-btn"><span class="material-symbols-outlined">star</span></button>
-            <button class="nav-btn active"><span class="material-symbols-outlined">home</span></button>
+            <button class="nav-btn active" id="navHome"><span class="material-symbols-outlined">home</span></button>
             <button class="nav-btn"><span class="material-symbols-outlined">search</span></button>
             <button class="nav-btn"><span class="material-symbols-outlined">menu</span></button>
         </footer>
+
+        <!-- Weight Edit Modal -->
+        <div id="weightModal" class="modal-overlay hidden">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Patient Weight</h2>
+                    <button class="close-btn" id="closeWeightModal"><span class="material-symbols-outlined">close</span></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-sm">Change the global patient weight. All medication doses and equipment sizes will automatically recalculate.</p>
+                    <div class="weight-input-group">
+                        <input type="number" id="weightInput" value="80" step="0.5" min="1" max="250" />
+                        <span>kg</span>
+                    </div>
+                    <button class="primary-btn" id="saveWeightBtn">Actualizar Dosis</button>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script src="./app.js"></script>
