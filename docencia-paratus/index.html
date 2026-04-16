@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Paratus Medical Clone</title>
+    <!-- Modern Output Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Symbols for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Search Header -->
+        <header class="search-header">
+            <div class="search-box">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input type="text" placeholder="Search" />
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <nav class="tabs-nav">
+            <button class="tab active">Conditions</button>
+            <button class="tab">Procedures</button>
+            <button class="tab">Drugs</button>
+        </nav>
+
+        <!-- Main Content List -->
+        <main class="content-list">
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">echocardiogram</span>
+                <span class="list-title">Cardiovascular</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">gastroenterology</span>
+                <span class="list-title">Gastroenterology</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">coronavirus</span>
+                <span class="list-title">Infectious</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">kidney</span>
+                <span class="list-title">Metabolic</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">neurology</span>
+                <span class="list-title">Neurological</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">pregnancy</span>
+                <span class="list-title">OB/GYN</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">pulmonology</span>
+                <span class="list-title">Respiratory</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">skull</span>
+                <span class="list-title">Toxicology</span>
+            </div>
+            <div class="list-item">
+                <span class="material-symbols-outlined list-icon">orthopedics</span>
+                <span class="list-title">Trauma</span>
+            </div>
+        </main>
+
+        <!-- Floating Action Area -->
+        <div class="floating-action-area">
+            <div class="weight-button">
+                <strong>Weight:</strong> 80.0 kg <span class="lbs-text">176.4 lbs</span>
+            </div>
+            <div class="ai-button">
+                <span class="material-symbols-outlined">data_object</span>
+            </div>
+        </div>
+
+        <!-- Bottom NavigationBar -->
+        <footer class="bottom-nav">
+            <button class="nav-btn"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+            <button class="nav-btn"><span class="material-symbols-outlined">star</span></button>
+            <button class="nav-btn active"><span class="material-symbols-outlined">home</span></button>
+            <button class="nav-btn"><span class="material-symbols-outlined">search</span></button>
+            <button class="nav-btn"><span class="material-symbols-outlined">menu</span></button>
+        </footer>
+    </div>
+    
+    <script src="./app.js"></script>
+</body>
+</html>
