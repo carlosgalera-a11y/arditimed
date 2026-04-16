@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Vademécum Clínico · Área II Cartagena</title>
+<meta name="description" content="Vademécum clínico: dosis de urgencias por peso, adultos y pediatría. Área II Cartagena - Hospital Santa Lucía.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/icon-192x192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1c2434;--ink-soft:#344054;--cream:#faf6ee;--cream-dk:#f0e8da;
+  --gold:#b99146;--tera:#c05440;--sage:#6c8460;--muted:#8c8273;--rule:#c8bca8;
+  --adult:#0d47a1;--ped:#2e7d32;--ob:#9d174d;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Poppins',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body.dark{background:#0a0e1a;color:#e8ecf4}
+body.dark{--cream:#0f1629;--cream-dk:#0a0e1a;--ink:#e8ecf4;--ink-soft:#cbd5e1;--muted:#94a3b8;--rule:#1e293b}
+
+/* ─── Topbar with weight ─── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--ink);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.topbar .back{background:rgba(255,255,255,.1);border:none;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:.15s}
+.topbar .back:hover{background:rgba(255,255,255,.2)}
+.topbar h1{font-family:'Lora',serif;font-weight:700;font-size:1.15rem;flex:1;letter-spacing:.01em}
+.topbar h1 em{color:var(--gold);font-style:italic;font-weight:400;margin-left:4px}
+
+/* ─── Weight banner (persistent) ─── */
+.weight-banner{background:linear-gradient(135deg,var(--tera),#a84434);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:58px;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.weight-banner label{font-size:.78rem;font-weight:600;opacity:.95;letter-spacing:.02em}
+.weight-banner input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 10px;border-radius:8px;width:80px;font-weight:700;text-align:center;font-size:.95rem}
+.weight-banner input:focus{outline:none;background:rgba(255,255,255,.25);border-color:#fff}
+.weight-banner input::placeholder{color:rgba(255,255,255,.55)}
+.weight-banner select{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 10px;border-radius:8px;font-weight:600;font-size:.82rem;cursor:pointer}
+.weight-banner select option{background:var(--tera);color:#fff}
+.weight-banner .conv{font-size:.72rem;opacity:.85;font-variant-numeric:tabular-nums}
+.weight-banner .env-pill{margin-left:auto;background:rgba(255,255,255,.15);padding:5px 10px;border-radius:20px;font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+/* ─── Search bar ─── */
+.search-wrap{padding:14px 16px 0;max-width:900px;margin:0 auto}
+.search-box{position:relative;background:#fff;border:1px solid var(--rule);border-radius:12px;padding:12px 16px 12px 42px;display:flex;align-items:center;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+body.dark .search-box{background:#161d33;border-color:#1e2a45}
+.search-box:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(185,145,70,.15)}
+.search-box::before{content:'🔍';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:.95rem;opacity:.55}
+.search-box input{flex:1;border:none;background:transparent;color:var(--ink);font-size:.95rem;font-family:inherit;outline:none}
+body.dark .search-box input{color:#e8ecf4}
+
+/* ─── Tabs ─── */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--rule);max-width:900px;margin:14px auto 0;padding:0 16px}
+.tab-btn{flex:1;background:none;border:none;padding:14px 8px;cursor:pointer;font-family:'Lora',serif;font-weight:600;font-size:1rem;color:var(--muted);letter-spacing:.02em;transition:.15s;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab-btn:hover{color:var(--ink)}
+.tab-btn.active{color:var(--ink);border-bottom-color:var(--gold)}
+
+/* ─── Content ─── */
+.container{max-width:900px;margin:0 auto;padding:16px;padding-bottom:80px}
+.section{display:none}
+.section.active{display:block;animation:fadeIn .3s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── System cards ─── */
+.sys-grid{display:flex;flex-direction:column;gap:8px}
+.sys-card{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:.15s;text-decoration:none;color:var(--ink)}
+body.dark .sys-card{background:#161d33;border-color:#1e2a45;color:#e8ecf4}
+.sys-card:hover{border-color:var(--gold);transform:translateX(2px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.sys-icon{font-size:1.7rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--cream-dk);border-radius:10px;flex-shrink:0}
+body.dark .sys-icon{background:#0f1629}
+.sys-title{font-family:'Lora',serif;font-weight:700;font-size:1.05rem;flex:1}
+.sys-meta{font-size:.72rem;color:var(--muted);font-weight:500}
+.sys-arrow{color:var(--muted);font-size:1rem}
+
+/* ─── Condition list ─── */
+.breadcrumb{display:flex;align-items:center;gap:8px;padding:10px 0;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
+.breadcrumb a{color:var(--tera);text-decoration:none;cursor:pointer;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .sep{color:var(--muted)}
+
+.cond-list{display:flex;flex-direction:column;gap:6px}
+.cond-item{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.15s;text-decoration:none;color:var(--ink)}
+body.dark .cond-item{background:#161d33;border-color:#1e2a45;color:#e8ecf4}
+.cond-item:hover{border-color:var(--gold);background:var(--cream-dk)}
+body.dark .cond-item:hover{background:#1a2136}
+.cond-item .bull{width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
+.cond-title{font-weight:600;font-size:.92rem;flex:1}
+.cond-tag{font-size:.68rem;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:.02em}
+.cond-tag.adult{background:rgba(13,71,161,.12);color:var(--adult)}
+.cond-tag.ped{background:rgba(46,125,50,.12);color:var(--ped)}
+.cond-tag.both{background:rgba(185,145,70,.15);color:var(--gold)}
+body.dark .cond-tag.adult{background:rgba(96,165,250,.2);color:#93c5fd}
+body.dark .cond-tag.ped{background:rgba(134,239,172,.2);color:#86efac}
+
+/* ─── Condition detail ─── */
+.detail-card{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+body.dark .detail-card{background:#161d33;border-color:#1e2a45}
+.detail-title{font-family:'Lora',serif;font-weight:700;font-size:1.6rem;color:var(--ink);margin-bottom:6px;line-height:1.2}
+.detail-title em{color:var(--tera);font-style:italic}
+.detail-sub{font-size:.85rem;color:var(--muted);margin-bottom:16px;font-style:italic}
+.detail-section{margin-bottom:18px}
+.detail-section h3{font-family:'Lora',serif;font-weight:700;font-size:1.1rem;color:var(--ink);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:8px}
+.detail-section h3 .sec-icon{font-size:1.1rem}
+.detail-section p,.detail-section li{font-size:.92rem;line-height:1.6;color:var(--ink-soft)}
+.detail-section ul{padding-left:20px;margin-top:4px}
+.detail-section li{margin-bottom:4px}
+.detail-section strong{color:var(--ink);font-weight:600}
+
+/* ─── Drug cards (computed dose) ─── */
+.drug-card{background:var(--cream-dk);border-left:4px solid var(--gold);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+body.dark .drug-card{background:#0f1629;border-left-color:var(--gold)}
+.drug-name{font-weight:700;font-size:.98rem;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.drug-route{font-size:.7rem;background:rgba(185,145,70,.2);color:var(--gold);padding:2px 8px;border-radius:20px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.drug-dose{font-size:.85rem;color:var(--ink-soft);margin-bottom:6px}
+.drug-dose strong{color:var(--ink);font-weight:600}
+.drug-computed{background:#fff;border:1px dashed var(--tera);padding:8px 12px;border-radius:6px;font-family:'Poppins',monospace;font-variant-numeric:tabular-nums;font-size:.92rem;color:var(--tera);font-weight:600;margin-top:6px}
+body.dark .drug-computed{background:#0a0e1a}
+.drug-computed .big{font-size:1.2rem;font-weight:700;margin:0 4px}
+.drug-note{font-size:.75rem;color:var(--muted);margin-top:6px;font-style:italic}
+
+/* ─── Red flags (alarm) ─── */
+.alarm{background:linear-gradient(135deg,rgba(192,84,64,.08),rgba(192,84,64,.15));border:2px solid var(--tera);border-radius:10px;padding:14px 16px;margin:10px 0}
+.alarm h4{color:var(--tera);font-weight:700;font-size:.95rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.alarm ul{padding-left:20px;margin:0}
+.alarm li{font-size:.88rem;color:var(--ink-soft);margin-bottom:3px}
+
+/* ─── Scale link badge ─── */
+.scale-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.scale-badge{background:rgba(185,145,70,.15);border:1px solid var(--gold);color:var(--gold);padding:5px 12px;border-radius:20px;font-size:.78rem;font-weight:600;text-decoration:none;transition:.15s;cursor:pointer}
+.scale-badge:hover{background:var(--gold);color:#fff}
+
+/* ─── Favorites star ─── */
+.fav-btn{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;opacity:.35;transition:.15s;padding:4px}
+.fav-btn:hover{opacity:1;transform:scale(1.1)}
+.fav-btn.active{opacity:1;color:var(--gold)}
+.detail-card{position:relative}
+
+/* ─── Diamond rule ─── */
+.diamond-rule{display:flex;align-items:center;gap:12px;margin:18px 0}
+.diamond-rule::before,.diamond-rule::after{content:'';flex:1;height:1px;background:var(--rule)}
+.diamond-rule::after{margin-left:0}
+.diamond-rule .d{width:6px;height:6px;background:var(--gold);transform:rotate(45deg)}
+
+/* ─── Empty state ─── */
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty .ico{font-size:3rem;opacity:.3;margin-bottom:12px}
+
+/* ─── Footer ─── */
+.footer{text-align:center;padding:30px 20px;font-size:.72rem;color:var(--muted);font-style:italic;border-top:1px solid var(--rule);margin-top:40px}
+.footer .legal{font-size:.68rem;opacity:.7;margin-top:4px}
+
+/* ─── Back to top ─── */
+.to-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;background:var(--ink);color:#fff;border:none;border-radius:50%;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;visibility:hidden;transition:.25s;z-index:90}
+.to-top.visible{opacity:1;visibility:visible}
+.to-top:hover{transform:translateY(-2px);background:var(--tera)}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+  <button class="back" onclick="vdGoBack()" aria-label="Volver">←</button>
+  <h1>Vademécum <em>Clínico</em></h1>
+</div>
+
+<!-- ═══ WEIGHT BANNER ═══ -->
+<div class="weight-banner">
+  <label for="vdWeight">⚖️ Peso:</label>
+  <input id="vdWeight" type="number" min="0.5" max="250" step="0.5" placeholder="70" oninput="vdUpdateWeight()" aria-label="Peso del paciente en kg">
+  <span style="font-weight:700;font-size:.85rem">kg</span>
+  <span class="conv" id="vdWeightLbs"></span>
+  <select id="vdEnv" onchange="vdChangeEnv()" aria-label="Entorno clínico">
+    <option value="adult">🧑 Adulto</option>
+    <option value="ped">👶 Pediátrico</option>
+  </select>
+  <span class="env-pill" id="vdEnvPill">ADULTO</span>
+</div>
+
+<!-- ═══ SEARCH ═══ -->
+<div class="search-wrap">
+  <div class="search-box">
+    <input type="text" id="vdSearch" placeholder="Buscar condición, fármaco o procedimiento…" oninput="vdSearchFilter()" aria-label="Buscar">
+  </div>
+</div>
+
+<!-- ═══ TABS ═══ -->
+<div class="tabs" role="tablist">
+  <button class="tab-btn active" data-tab="conditions" onclick="vdSwitchTab('conditions')" role="tab">Condiciones</button>
+  <button class="tab-btn" data-tab="procedures" onclick="vdSwitchTab('procedures')" role="tab">Procedimientos</button>
+  <button class="tab-btn" data-tab="drugs" onclick="vdSwitchTab('drugs')" role="tab">Fármacos</button>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div class="container">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb" id="vdBreadcrumb" style="display:none"></div>
+
+  <!-- CONDICIONES — system grid -->
+  <div class="section active" id="sec-conditions">
+    <div id="vdSystemGrid" class="sys-grid"></div>
+    <div id="vdCondList" class="cond-list" style="display:none"></div>
+    <div id="vdCondDetail" style="display:none"></div>
+  </div>
+
+  <!-- PROCEDIMIENTOS -->
+  <div class="section" id="sec-procedures">
+    <div class="cond-list" id="vdProcList"></div>
+    <div id="vdProcDetail" style="display:none"></div>
+  </div>
+
+  <!-- FÁRMACOS -->
+  <div class="section" id="sec-drugs">
+    <div class="cond-list" id="vdDrugList"></div>
+  </div>
+
+  <div class="footer">
+    Vademécum Clínico · Área II Cartagena · H.G.U. Santa Lucía<br>
+    <span class="legal">Herramienta docente. Verificar siempre con fuentes oficiales antes de administrar. Las dosis se calculan a título orientativo — responsabilidad clínica del prescriptor.</span>
+  </div>
+</div>
+
+<button class="to-top" id="vdToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Arriba">↑</button>
+
+<script src="vademecum-data.js?v=20260416a"></script>
+<script>
+// ═══════════════════════════════════════════════════════════
+//  VADEMÉCUM — State + rendering
+// ═══════════════════════════════════════════════════════════
+var VDS = {
+  env: 'adult',
+  weight: null,
+  currentTab: 'conditions',
+  currentSystem: null,
+  currentCondition: null,
+  search: '',
+  favs: JSON.parse(localStorage.getItem('vd_favs') || '[]')
+};
+
+// ─── Dark mode follow ───
+if(localStorage.getItem('theme')==='dark')document.body.classList.add('dark');
+
+// ─── Back navigation ───
+function vdGoBack(){
+  if(VDS.currentCondition){
+    VDS.currentCondition = null;
+    vdRender();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(VDS.currentSystem){
+    VDS.currentSystem = null;
+    vdRender();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+// ─── Weight input ───
+function vdUpdateWeight(){
+  var v = parseFloat(document.getElementById('vdWeight').value);
+  VDS.weight = (v > 0 && v < 300) ? v : null;
+  document.getElementById('vdWeightLbs').textContent = VDS.weight ? '(' + (VDS.weight*2.2046).toFixed(1) + ' lbs)' : '';
+  localStorage.setItem('vd_weight', VDS.weight || '');
+  vdRender();
+}
+
+// Restore weight
+var savedW = localStorage.getItem('vd_weight');
+if(savedW){
+  document.getElementById('vdWeight').value = savedW;
+  VDS.weight = parseFloat(savedW);
+  document.getElementById('vdWeightLbs').textContent = '(' + (VDS.weight*2.2046).toFixed(1) + ' lbs)';
+}
+
+function vdChangeEnv(){
+  VDS.env = document.getElementById('vdEnv').value;
+  document.getElementById('vdEnvPill').textContent = VDS.env === 'adult' ? 'ADULTO' : 'PEDIÁTRICO';
+  localStorage.setItem('vd_env', VDS.env);
+  VDS.currentSystem = null;
+  VDS.currentCondition = null;
+  vdRender();
+}
+
+var savedEnv = localStorage.getItem('vd_env');
+if(savedEnv){
+  VDS.env = savedEnv;
+  document.getElementById('vdEnv').value = savedEnv;
+  document.getElementById('vdEnvPill').textContent = VDS.env === 'adult' ? 'ADULTO' : 'PEDIÁTRICO';
+}
+
+// ─── Tab switching ───
+function vdSwitchTab(tab){
+  VDS.currentTab = tab;
+  VDS.currentSystem = null;
+  VDS.currentCondition = null;
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  document.querySelectorAll('.section').forEach(function(s){
+    s.classList.toggle('active', s.id === 'sec-' + tab);
+  });
+  document.getElementById('vdSearch').value = '';
+  VDS.search = '';
+  vdRender();
+}
+
+// ─── Search ───
+function vdSearchFilter(){
+  VDS.search = document.getElementById('vdSearch').value.toLowerCase().trim();
+  VDS.currentSystem = null;
+  VDS.currentCondition = null;
+  vdRender();
+}
+
+// ─── Helpers ───
+function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
+
+function computeDose(drug, w){
+  if(!w || !drug.perKg) return null;
+  var unit = drug.unit || 'mg';
+  var min = drug.perKg[0];
+  var max = drug.perKg[1] || min;
+  var minDose = min * w;
+  var maxDose = max * w;
+  if(drug.cap){
+    minDose = Math.min(minDose, drug.cap);
+    maxDose = Math.min(maxDose, drug.cap);
+  }
+  // Format
+  function fmt(n){
+    if(n < 1) return n.toFixed(2);
+    if(n < 10) return n.toFixed(1);
+    return Math.round(n).toString();
+  }
+  var result = min === max ? fmt(minDose) : fmt(minDose) + ' – ' + fmt(maxDose);
+  return result + ' ' + unit + (drug.cap && maxDose >= drug.cap ? ' (máx ' + drug.cap + ' ' + unit + ')' : '');
+}
+
+// ─── Render controller ───
+function vdRender(){
+  vdUpdateBreadcrumb();
+  if(VDS.currentTab === 'conditions') vdRenderConditions();
+  else if(VDS.currentTab === 'procedures') vdRenderProcedures();
+  else if(VDS.currentTab === 'drugs') vdRenderDrugs();
+}
+
+function vdUpdateBreadcrumb(){
+  var bc = document.getElementById('vdBreadcrumb');
+  if(!VDS.currentSystem && !VDS.currentCondition){
+    bc.style.display = 'none';
+    return;
+  }
+  bc.style.display = 'flex';
+  var html = '<a onclick="VDS.currentSystem=null;VDS.currentCondition=null;vdRender()">' + (VDS.currentTab==='conditions'?'Condiciones':'Procedimientos') + '</a>';
+  if(VDS.currentSystem){
+    var sys = VD_SYSTEMS.find(function(s){return s.id === VDS.currentSystem});
+    if(sys){
+      html += '<span class="sep">›</span>';
+      if(VDS.currentCondition){
+        html += '<a onclick="VDS.currentCondition=null;vdRender()">' + sys.icon + ' ' + esc(sys.name) + '</a>';
+      } else {
+        html += '<span>' + sys.icon + ' ' + esc(sys.name) + '</span>';
+      }
+    }
+  }
+  if(VDS.currentCondition){
+    var c = vdFindCondition(VDS.currentCondition);
+    if(c){
+      html += '<span class="sep">›</span><span>' + esc(c.name) + '</span>';
+    }
+  }
+  bc.innerHTML = html;
+}
+
+function vdFindCondition(id){
+  for(var i=0;i<VD_CONDITIONS.length;i++){
+    if(VD_CONDITIONS[i].id === id) return VD_CONDITIONS[i];
+  }
+  return null;
+}
+
+// ─── CONDITIONS renderer ───
+function vdRenderConditions(){
+  var grid = document.getElementById('vdSystemGrid');
+  var list = document.getElementById('vdCondList');
+  var detail = document.getElementById('vdCondDetail');
+
+  if(VDS.search){
+    // Search mode: show filtered flat list
+    grid.style.display='none';
+    list.style.display='flex';
+    detail.style.display='none';
+    vdRenderCondList(VD_CONDITIONS.filter(function(c){
+      return (c.env === VDS.env || c.env === 'both') &&
+             (c.name.toLowerCase().includes(VDS.search) ||
+              (c.tags||[]).some(function(t){return t.toLowerCase().includes(VDS.search)}));
+    }));
+    return;
+  }
+
+  if(VDS.currentCondition){
+    grid.style.display='none';
+    list.style.display='none';
+    detail.style.display='block';
+    vdRenderCondDetail(VDS.currentCondition);
+    return;
+  }
+
+  if(VDS.currentSystem){
+    grid.style.display='none';
+    list.style.display='flex';
+    detail.style.display='none';
+    vdRenderCondList(VD_CONDITIONS.filter(function(c){
+      return c.system === VDS.currentSystem && (c.env === VDS.env || c.env === 'both');
+    }));
+    return;
+  }
+
+  // System grid
+  grid.style.display='flex';
+  list.style.display='none';
+  detail.style.display='none';
+
+  grid.innerHTML = VD_SYSTEMS.map(function(s){
+    var count = VD_CONDITIONS.filter(function(c){return c.system === s.id && (c.env === VDS.env || c.env === 'both')}).length;
+    return '<div class="sys-card" onclick="VDS.currentSystem=\'' + s.id + '\';vdRender()" tabindex="0" role="button" onkeydown="if(event.key===\'Enter\'){VDS.currentSystem=\'' + s.id + '\';vdRender()}">' +
+      '<div class="sys-icon">' + s.icon + '</div>' +
+      '<div style="flex:1;"><div class="sys-title">' + esc(s.name) + '</div>' +
+      '<div class="sys-meta">' + count + ' condiciones</div></div>' +
+      '<span class="sys-arrow">›</span></div>';
+  }).join('');
+}
+
+function vdRenderCondList(list){
+  var el = document.getElementById('vdCondList');
+  if(list.length === 0){
+    el.innerHTML = '<div class="empty"><div class="ico">🔍</div>Sin resultados<br><span style="font-size:.85rem">Prueba otro término o entorno</span></div>';
+    return;
+  }
+  el.innerHTML = list.map(function(c){
+    var tagHtml = c.env === 'both' ? '<span class="cond-tag both">A+P</span>' :
+                  c.env === 'adult' ? '<span class="cond-tag adult">ADULTO</span>' :
+                  '<span class="cond-tag ped">PEDIÁTRICO</span>';
+    return '<div class="cond-item" onclick="VDS.currentCondition=\'' + c.id + '\';vdRender()" tabindex="0" role="button" onkeydown="if(event.key===\'Enter\'){VDS.currentCondition=\'' + c.id + '\';vdRender()}">' +
+      '<span class="bull"></span>' +
+      '<span class="cond-title">' + esc(c.name) + '</span>' +
+      tagHtml + '</div>';
+  }).join('');
+}
+
+function vdRenderCondDetail(id){
+  var c = vdFindCondition(id);
+  var el = document.getElementById('vdCondDetail');
+  if(!c){el.innerHTML = '<div class="empty">Condición no encontrada</div>';return;}
+
+  var isFav = VDS.favs.indexOf(c.id) !== -1;
+
+  var html = '<div class="detail-card">' +
+    '<button class="fav-btn' + (isFav?' active':'') + '" onclick="vdToggleFav(\'' + c.id + '\')" aria-label="Marcar como favorito">' + (isFav?'⭐':'☆') + '</button>' +
+    '<h2 class="detail-title">' + esc(c.name) + '</h2>';
+  if(c.subtitle) html += '<p class="detail-sub">' + esc(c.subtitle) + '</p>';
+
+  // Quick summary
+  if(c.summary){
+    html += '<div class="detail-section"><h3><span class="sec-icon">📋</span>Resumen</h3><p>' + esc(c.summary) + '</p></div>';
+  }
+
+  // Signs / diagnosis
+  if(c.diagnosis){
+    html += '<div class="detail-section"><h3><span class="sec-icon">🔍</span>Diagnóstico</h3>';
+    if(Array.isArray(c.diagnosis)) html += '<ul>' + c.diagnosis.map(function(x){return '<li>' + x + '</li>'}).join('') + '</ul>';
+    else html += '<p>' + c.diagnosis + '</p>';
+    html += '</div>';
+  }
+
+  // Treatment
+  if(c.treatment){
+    html += '<div class="detail-section"><h3><span class="sec-icon">💊</span>Tratamiento</h3>';
+    if(Array.isArray(c.treatment)) html += '<ul>' + c.treatment.map(function(x){return '<li>' + x + '</li>'}).join('') + '</ul>';
+    else html += '<p>' + c.treatment + '</p>';
+    html += '</div>';
+  }
+
+  // Drugs with computed doses
+  if(c.drugs && c.drugs.length){
+    html += '<div class="detail-section"><h3><span class="sec-icon">⚕️</span>Fármacos y dosis</h3>';
+    html += c.drugs.map(function(d){
+      var comp = VDS.weight ? computeDose(d, VDS.weight) : null;
+      var h = '<div class="drug-card"><div class="drug-name">' + esc(d.name);
+      if(d.route) h += '<span class="drug-route">' + esc(d.route) + '</span>';
+      h += '</div>';
+      h += '<div class="drug-dose"><strong>Dosis:</strong> ' + esc(d.dose) + '</div>';
+      if(comp){
+        h += '<div class="drug-computed">Para ' + VDS.weight + ' kg: <span class="big">' + comp + '</span></div>';
+      } else if(d.perKg){
+        h += '<div class="drug-note">💡 Introduce el peso arriba para calcular la dosis automáticamente.</div>';
+      }
+      if(d.note) h += '<div class="drug-note">ℹ️ ' + esc(d.note) + '</div>';
+      h += '</div>';
+      return h;
+    }).join('');
+    html += '</div>';
+  }
+
+  // Related scales (linking to app)
+  if(c.scales && c.scales.length){
+    html += '<div class="detail-section"><h3><span class="sec-icon">🧮</span>Escalas relacionadas</h3>';
+    html += '<div class="scale-badges">' + c.scales.map(function(s){
+      return '<a class="scale-badge" href="index.html#escalas-' + esc(s.id) + '" target="_blank">📊 ' + esc(s.name) + '</a>';
+    }).join('') + '</div></div>';
+  }
+
+  // Red flags
+  if(c.redFlags && c.redFlags.length){
+    html += '<div class="alarm"><h4>🚨 Signos de alarma</h4><ul>' +
+      c.redFlags.map(function(x){return '<li>' + esc(x) + '</li>'}).join('') +
+      '</ul></div>';
+  }
+
+  // Notes
+  if(c.notes){
+    html += '<div class="detail-section"><h3><span class="sec-icon">📝</span>Notas</h3><p>' + esc(c.notes) + '</p></div>';
+  }
+
+  // Sources
+  if(c.sources){
+    html += '<div class="detail-section"><h3><span class="sec-icon">📚</span>Fuentes</h3><p style="font-size:.78rem;color:var(--muted);font-style:italic">' + esc(c.sources) + '</p></div>';
+  }
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function vdToggleFav(id){
+  var idx = VDS.favs.indexOf(id);
+  if(idx === -1) VDS.favs.push(id);
+  else VDS.favs.splice(idx, 1);
+  localStorage.setItem('vd_favs', JSON.stringify(VDS.favs));
+  vdRender();
+}
+
+// ─── PROCEDURES renderer ───
+function vdRenderProcedures(){
+  var listEl = document.getElementById('vdProcList');
+  var detEl = document.getElementById('vdProcDetail');
+
+  if(VDS.currentCondition){
+    // Currently treating procedures also with currentCondition var for simplicity
+    var p = VD_PROCEDURES.find(function(x){return x.id === VDS.currentCondition});
+    if(!p){listEl.style.display='flex';detEl.style.display='none';}
+    else {
+      listEl.style.display='none';
+      detEl.style.display='block';
+      var html = '<div class="detail-card"><h2 class="detail-title">' + esc(p.name) + '</h2>';
+      if(p.indication) html += '<div class="detail-section"><h3><span class="sec-icon">🎯</span>Indicación</h3><p>' + esc(p.indication) + '</p></div>';
+      if(p.material) html += '<div class="detail-section"><h3><span class="sec-icon">🧰</span>Material</h3><ul>' + p.material.map(function(x){return '<li>' + esc(x) + '</li>'}).join('') + '</ul></div>';
+      if(p.steps) html += '<div class="detail-section"><h3><span class="sec-icon">📋</span>Pasos</h3><ol style="padding-left:20px">' + p.steps.map(function(x){return '<li style="margin-bottom:6px;font-size:.92rem;line-height:1.6;color:var(--ink-soft)">' + esc(x) + '</li>'}).join('') + '</ol></div>';
+      if(p.complications) html += '<div class="alarm"><h4>⚠️ Complicaciones</h4><ul>' + p.complications.map(function(x){return '<li>' + esc(x) + '</li>'}).join('') + '</ul></div>';
+      if(p.notes) html += '<div class="detail-section"><h3><span class="sec-icon">📝</span>Notas</h3><p>' + esc(p.notes) + '</p></div>';
+      html += '</div>';
+      detEl.innerHTML = html;
+      return;
+    }
+  }
+
+  listEl.style.display='flex';
+  detEl.style.display='none';
+  var filtered = VD_PROCEDURES.filter(function(p){
+    return !VDS.search || p.name.toLowerCase().includes(VDS.search);
+  });
+  if(filtered.length === 0){
+    listEl.innerHTML = '<div class="empty"><div class="ico">🔍</div>Sin resultados</div>';
+    return;
+  }
+  listEl.innerHTML = filtered.map(function(p){
+    return '<div class="cond-item" onclick="VDS.currentCondition=\'' + p.id + '\';vdRender()" tabindex="0" role="button">' +
+      '<span class="bull"></span><span class="cond-title">' + esc(p.name) + '</span></div>';
+  }).join('');
+}
+
+// ─── DRUGS renderer (flat searchable list) ───
+function vdRenderDrugs(){
+  var el = document.getElementById('vdDrugList');
+  // Flatten all drugs from conditions into a unique list
+  var map = {};
+  VD_CONDITIONS.forEach(function(c){
+    (c.drugs||[]).forEach(function(d){
+      if(!map[d.name]) map[d.name] = {name:d.name, uses:[]};
+      if(map[d.name].uses.indexOf(c.name) === -1) map[d.name].uses.push(c.name);
+      map[d.name].drug = d;
+    });
+  });
+  var drugs = Object.values(map);
+  var filtered = drugs.filter(function(d){
+    return !VDS.search || d.name.toLowerCase().includes(VDS.search) ||
+           (d.uses||[]).some(function(u){return u.toLowerCase().includes(VDS.search)});
+  }).sort(function(a,b){return a.name.localeCompare(b.name,'es')});
+
+  if(filtered.length === 0){
+    el.innerHTML = '<div class="empty"><div class="ico">💊</div>Sin resultados</div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(function(d){
+    var comp = VDS.weight ? computeDose(d.drug, VDS.weight) : null;
+    var html = '<div class="cond-item" style="flex-direction:column;align-items:stretch;padding:12px 14px;">';
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">';
+    html += '<span class="bull"></span><span class="cond-title">' + esc(d.name) + '</span>';
+    if(d.drug.route) html += '<span class="drug-route">' + esc(d.drug.route) + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:.82rem;color:var(--ink-soft);padding-left:16px">' + esc(d.drug.dose) + '</div>';
+    if(comp) html += '<div style="font-size:.88rem;color:var(--tera);font-weight:600;padding-left:16px;margin-top:4px;">→ ' + VDS.weight + ' kg: ' + comp + '</div>';
+    html += '<div style="font-size:.72rem;color:var(--muted);padding-left:16px;margin-top:4px;font-style:italic">Usos: ' + d.uses.slice(0,3).join(' · ') + (d.uses.length > 3 ? '…' : '') + '</div>';
+    html += '</div>';
+    return html;
+  }).join('');
+}
+
+// ─── Scroll to top ───
+window.addEventListener('scroll', function(){
+  document.getElementById('vdToTop').classList.toggle('visible', window.pageYOffset > 400);
+});
+
+// ─── Initialize ───
+vdRender();
+</script>
+
+</body>
+</html>
