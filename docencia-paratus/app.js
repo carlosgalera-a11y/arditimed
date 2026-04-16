@@ -43,12 +43,10 @@ const DATA = {
             ]
         },
         "anaphylaxis": {
-            title: "Anaphylaxis",
+            title: "Anafilaxia",
             doses: [
-                { name: "Epinephrine (1:1,000)", desc: "First line", calc: "Math.min(weight * 0.01, 0.5).toFixed(2)", unit: "mg", route: "IM" },
-                { name: "Fluid Bolus", desc: "Normal Saline (Max 1000 mL)", calc: "Math.min(weight * 20, 1000)", unit: "mL", route: "IV Rapid" }
-            ],
-            equipment: []
+                { name: "Epinefrina (1:1.000)", calc: "weight * 0.01", unit: "mg", route: "IM" }
+            ]
         }
     }
 };
