@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v57 - login-fix.html tool + REQUIRED_V=86 + redirect timeout
-const CACHE_NAME = 'area2-v87';
+// Service Worker - Área II Cartagena PWA v58 - popup restaurado + email/password alternativo
+const CACHE_NAME = 'area2-v88';
 
 const PRECACHE = [
   '/Cartagenaeste/',

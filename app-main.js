@@ -1727,57 +1727,150 @@ function showScanLogin(){
 }
 
 function scanGoogleLogin(){
-    console.log("scanGoogleLogin called (redirect-only mode)");
+    console.log("scanGoogleLogin called");
     var provider=new firebase.auth.GoogleAuthProvider();
     provider.addScope('email');
     provider.addScope('profile');
     var errEl=document.getElementById("scanLoginError");
-    // Reset completo del mensaje de error: evita texto residual de intentos previos
     if(errEl){errEl.style.display="none";errEl.innerHTML="";}
 
-    // ─── Guardar estado pendiente antes de redirigir ───
-    try{
-        var pending = sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'';
-        sessionStorage.setItem('pendingPage', pending);
-        if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
-    }catch(e){}
+    var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
 
-    // Mostrar feedback visual (azul informativo, no rojo error)
-    if(errEl){
-        errEl.innerHTML='🔄 Redirigiendo a Google…';
-        errEl.style.color='#2563eb';
-        errEl.style.display='block';
+    function onLoginSuccess(user){
+        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+        loadModeradoresFromFirestore(function(){
+            isAdminLoggedIn=isAdmin();
+            apShowAdminTab(isAdminLoggedIn);
+            updateModBadgeAll();
+            if(isAdminLoggedIn&&!pendingPageAfterLogin){
+                try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
+            }
+        });
+        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
+        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
+        if(pg){logPageAccess(pg,user);showPage(pg);}
+        else if(window._pendingDocencia){
+            window._pendingDocencia=false;
+            try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+            var landing=document.getElementById('pageLanding');
+            if(landing)landing.classList.add('active');
+            setTimeout(function(){
+                var sh=document.getElementById('subHerramientas');if(sh)sh.style.display='none';
+                var sp=document.getElementById('subProtocolos');if(sp)sp.style.display='none';
+                var sd=document.getElementById('subDocencia');
+                if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
+            },500);
+            return;
+        }
+        else{showPage("pageScanIA");scanRenderHist();}
     }
 
-    // Detección: si tras 5 segundos seguimos en la página, el redirect no funcionó
-    var redirectTimer = setTimeout(function(){
-        if(errEl){
-            errEl.style.color='#dc2626';
-            errEl.innerHTML='❌ La redirección a Google no se completó.<br>'+
-                '<a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;font-weight:700;text-decoration:underline;">🔧 Usar herramienta de reparación</a>';
-            errEl.style.display='block';
+    function fallbackToRedirect(){
+        try{
+            sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
+            if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
+            if(errEl){errEl.innerHTML='🔄 Redirigiendo a Google…';errEl.style.color='#2563eb';errEl.style.display='block';}
+            firebase.auth().signInWithRedirect(provider);
+        }catch(redErr){
+            console.error('Redirect login failed:', redErr);
+            if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. <a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;text-decoration:underline;">Reparar login</a>';errEl.style.color='#dc2626';errEl.style.display='block';}
         }
-    }, 5000);
+    }
 
-    // ─── signInWithRedirect como método único ───
+    function handleError(error){
+        console.error("Login error:",error.code,error.message);
+        if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
+            fallbackToRedirect();
+        }else if(error.code==="auth/unauthorized-domain"){
+            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase.";errEl.style.color='#dc2626';errEl.style.display="block";}
+        }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
+                return firebase.auth().signInWithPopup(provider);
+            }).then(function(r){onLoginSuccess(r.user);}).catch(function(){fallbackToRedirect();});
+        }else{
+            if(errEl){errEl.innerHTML="❌ "+error.message+' <a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;text-decoration:underline;">Reparar</a>';errEl.style.color='#dc2626';errEl.style.display="block";}
+        }
+    }
+
+    // Popup primero, redirect como fallback
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     }).then(function(){
-        return firebase.auth().signInWithRedirect(provider);
-    }).catch(function(err){
-        clearTimeout(redirectTimer);
-        console.error('Redirect login failed:', err);
-        if(errEl){
-            errEl.style.color='#dc2626';
-            var fixLink = '<br><a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;font-weight:700;text-decoration:underline;">🔧 Usar herramienta de reparación</a>';
-            if(err.code==='auth/unauthorized-domain'){
-                errEl.innerHTML='❌ Dominio no autorizado en Firebase.' + fixLink;
-            }else{
-                errEl.innerHTML='❌ '+(err.message||err.code||'No se pudo iniciar sesión') + fixLink;
+        return firebase.auth().signInWithPopup(provider);
+    }).then(function(result){
+        console.log("Login OK:",result.user.email);
+        onLoginSuccess(result.user);
+    }).catch(handleError);
+}
+
+/* ═══ Login alternativo: email + contraseña ═══
+   No requiere popups ni redirecciones. Funciona siempre.
+   Los usuarios deben estar pre-registrados en Firebase Auth
+   (el admin puede crearlos desde Firebase Console → Authentication → Usuarios). */
+function emailPasswordLogin(){
+    var email = (document.getElementById('epEmail').value||'').trim().toLowerCase();
+    var pass = document.getElementById('epPassword').value||'';
+    var errEl = document.getElementById('scanLoginError');
+    var btn = document.getElementById('epLoginBtn');
+
+    if(!email||!pass){
+        if(errEl){errEl.innerHTML='Introduce email y contraseña.';errEl.style.color='#dc2626';errEl.style.display='block';}
+        return;
+    }
+    if(btn){btn.disabled=true;btn.textContent='⏳ Entrando…';}
+    if(errEl){errEl.style.display='none';}
+
+    firebase.auth().signInWithEmailAndPassword(email,pass).then(function(result){
+        console.log("Email/Pass login OK:",result.user.email);
+        // Cerrar modal
+        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+        // Cargar permisos
+        loadModeradoresFromFirestore(function(){
+            isAdminLoggedIn=isAdmin();
+            apShowAdminTab(isAdminLoggedIn);
+            updateModBadgeAll();
+            if(isAdminLoggedIn&&!pendingPageAfterLogin){
+                try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
             }
-            errEl.style.display='block';
-        }
+        });
+        // Redirigir
+        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
+        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
+        if(pg){if(typeof logPageAccess==='function')logPageAccess(pg,result.user);showPage(pg);}
+        else if(window._pendingDocencia){
+            window._pendingDocencia=false;
+            try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+            var landing=document.getElementById('pageLanding');
+            if(landing)landing.classList.add('active');
+            setTimeout(function(){
+                var sh=document.getElementById('subHerramientas');if(sh)sh.style.display='none';
+                var sp=document.getElementById('subProtocolos');if(sp)sp.style.display='none';
+                var sd=document.getElementById('subDocencia');
+                if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
+            },500);
+        }else{showPage("pageScanIA");if(typeof scanRenderHist==='function')scanRenderHist();}
+    }).catch(function(err){
+        console.error("Email/Pass login error:",err.code);
+        if(btn){btn.disabled=false;btn.textContent='Entrar';}
+        var msg='❌ ';
+        if(err.code==='auth/user-not-found'||err.code==='auth/invalid-credential') msg+='Email o contraseña incorrectos.';
+        else if(err.code==='auth/wrong-password') msg+='Contraseña incorrecta.';
+        else if(err.code==='auth/too-many-requests') msg+='Demasiados intentos. Espera unos minutos.';
+        else if(err.code==='auth/network-request-failed') msg+='Error de red. Comprueba tu conexión.';
+        else msg+=err.message||err.code;
+        if(errEl){errEl.innerHTML=msg;errEl.style.color='#dc2626';errEl.style.display='block';}
     });
+}
+
+function toggleEmailPasswordForm(){
+    var box=document.getElementById('epBox');
+    var link=document.getElementById('epToggle');
+    if(!box)return;
+    var vis=box.style.display!=='none';
+    box.style.display=vis?'none':'block';
+    if(link)link.textContent=vis?'¿Problemas? Entrar con email y contraseña':'Volver al login con Google';
 }
 
 /* ─── Captura del retorno de redirect flow ───

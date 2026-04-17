@@ -4,7 +4,7 @@
 <script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
-  var REQUIRED_V = 86;
+  var REQUIRED_V = 88;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -2222,12 +2222,21 @@ window.showNotebooksModal=function(){
                 Iniciar sesión con Google
             </button>
             <div id="scanLoginError" style="display:none;color:#dc2626;font-size:.85rem;text-align:center;margin-top:12px;"></div>
-            <div style="text-align:center;margin-top:8px;">
-                <a href="/Cartagenaeste/login-fix.html" style="color:#64748b;font-size:.75rem;text-decoration:underline;">¿No funciona? Reparar login</a>
+
+            <!-- Separador y alternativa email/password -->
+            <div style="text-align:center;margin:12px 0 8px;">
+                <a href="javascript:void(0)" onclick="toggleEmailPasswordForm()" id="epToggle" style="color:#0066cc;font-size:.8rem;text-decoration:underline;cursor:pointer;">¿Problemas? Entrar con email y contraseña</a>
             </div>
-            <div style="margin-top:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+            <div id="epBox" style="display:none;padding:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;margin-bottom:8px;">
+                <input id="epEmail" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@ejemplo.com" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:6px;font-size:.9rem;box-sizing:border-box;margin-bottom:6px;">
+                <input id="epPassword" type="password" autocomplete="current-password" placeholder="Contraseña" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:6px;font-size:.9rem;box-sizing:border-box;margin-bottom:8px;" onkeydown="if(event.key==='Enter')emailPasswordLogin()">
+                <button id="epLoginBtn" onclick="emailPasswordLogin()" style="width:100%;padding:10px;background:#0066cc;color:#fff;border:0;border-radius:6px;font-size:.9rem;font-weight:600;cursor:pointer;">Entrar</button>
+                <p style="font-size:.72rem;color:#64748b;text-align:center;margin-top:6px;">Cuenta creada por el administrador. <a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;text-decoration:underline;">Reparar login</a></p>
+            </div>
+
+            <div style="margin-top:10px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
                 <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.78rem;color:#64748b;line-height:1.45;">
-                    <input type="checkbox" id="disclaimerCheck" onchange="document.getElementById('googleLoginBtn').disabled=!this.checked;document.getElementById('googleLoginBtn').style.opacity=this.checked?'1':'.5'" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
+                    <input type="checkbox" id="disclaimerCheck" onchange="var ok=this.checked;document.getElementById('googleLoginBtn').disabled=!ok;document.getElementById('googleLoginBtn').style.opacity=ok?'1':'.5';" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
                     <span>He leído el aviso RGPD anterior. Acepto que esta plataforma tiene <strong>finalidad exclusivamente docente e informativa</strong> y que no sustituye el juicio clínico profesional ni la historia clínica oficial.</span>
                 </label>
             </div>
