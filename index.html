@@ -4,7 +4,7 @@
 <script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
-  var REQUIRED_V = 88;
+  var REQUIRED_V = 89;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -160,15 +160,17 @@ window.gaTrack=function(event,params){
     }
     var db = firebase.firestore();
 
-    // ═══ APP CHECK — protege las Cloud Functions contra clientes no autorizados ═══
-    // La Site Key es PÚBLICA y va en el HTML (diseño reCAPTCHA v3). La clave secreta
-    // SOLO vive en Firebase Console.
-    try {
-        firebase.appCheck().activate(
-            '6Lc7pbssAAAAABxzImA-zlK1TYaL4kUPSHNSLVis',
-            true /* isTokenAutoRefreshEnabled */
-        );
-    } catch(e) { console.warn('App Check init:', e); }
+    // ═══ APP CHECK — DESACTIVADO ═══
+    // App Check con reCAPTCHA v3 estaba bloqueando el login en navegadores
+    // que no pueden cargar recaptcha (Brave, bloqueadores, redes hospitalarias).
+    // Mientras esté en modo "Supervisión" en Firebase Console, no es necesario.
+    // Para reactivar: descomentar y asegurar que recaptcha.net no está bloqueado.
+    // try {
+    //     firebase.appCheck().activate(
+    //         '6Lc7pbssAAAAABxzImA-zlK1TYaL4kUPSHNSLVis',
+    //         true
+    //     );
+    // } catch(e) { console.warn('App Check init:', e); }
 
     // ═══ CLOUD FUNCTIONS — proxy IA seguro en europe-west1 ═══
     var cloudFns = firebase.app().functions('europe-west1');

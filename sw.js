@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v58 - popup restaurado + email/password alternativo
-const CACHE_NAME = 'area2-v88';
+// Service Worker - Área II Cartagena PWA v59 - App Check desactivado (causa raíz login roto)
+const CACHE_NAME = 'area2-v89';
 
 const PRECACHE = [
   '/Cartagenaeste/',
