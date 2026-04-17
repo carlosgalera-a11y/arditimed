@@ -1720,8 +1720,7 @@ function showScanLogin(){
         var m=document.getElementById("scanLoginModal");
         console.log("Showing modal",m);
         m.style.display="flex";
-        var errReset=document.getElementById("scanLoginError");
-        if(errReset){errReset.style.display="none";errReset.innerHTML="";errReset.style.color="#dc2626";}
+        document.getElementById("scanLoginError").style.display="none";
         resetDisclaimerCheck();
     }catch(e){console.error("showScanLogin error:",e);alert("Error: "+e.message);}
 }
@@ -1732,21 +1731,9 @@ function scanGoogleLogin(){
     provider.addScope('email');
     provider.addScope('profile');
     var errEl=document.getElementById("scanLoginError");
-    // Reset total del mensaje para evitar texto residual de intentos previos
-    if(errEl){errEl.style.display="none";errEl.innerHTML="";errEl.style.color="#dc2626";}
+    if(errEl) errEl.style.display="none";
 
     var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
-    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-    // En iOS PWA standalone los popups están siempre bloqueados y el redirect externo
-    // rompe la sesión de la PWA. Mejor detectar y guiar al usuario.
-    var isIOSStandalone=isIOS&&isStandalone;
-
-    function showInfo(msg){
-        if(errEl){errEl.innerHTML=msg;errEl.style.color="#2563eb";errEl.style.display="block";}
-    }
-    function showErr(msg){
-        if(errEl){errEl.innerHTML=msg;errEl.style.color="#dc2626";errEl.style.display="block";}
-    }
 
     function onLoginSuccess(user){
         try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
@@ -1790,62 +1777,40 @@ function scanGoogleLogin(){
         try{
             sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
             if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
-            showInfo('🔄 Redirigiendo a Google…');
+            if(errEl){errEl.innerHTML='🔄 Redirigiendo a Google…';errEl.style.display='block';}
             firebase.auth().signInWithRedirect(provider);
         }catch(redErr){
             console.error('Redirect login failed:', redErr);
-            showErr('❌ No se pudo iniciar sesión. Intenta desde otro navegador.');
+            if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. Intenta desde otro navegador.';errEl.style.display='block';}
         }
     }
 
     function handleError(error){
         console.error("Login error:",error.code,error.message);
         if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-            // Popup bloqueado → ofrecer DOS alternativas: redirect o email link
-            showInfo('⚠️ Tu navegador bloqueó la ventana de Google.<br>Intentando redirección…<br><a href="javascript:void(0)" onclick="toggleEmailLogin()" style="color:#0066cc;text-decoration:underline;font-weight:600;">O entra con tu email</a>');
-            setTimeout(fallbackToRedirect, 1500);
+            // Popup bloqueado → fallback automático a redirect (funciona siempre)
+            if(errEl){errEl.innerHTML='🔄 Abriendo página de Google…';errEl.style.display='block';}
+            fallbackToRedirect();
         }else if(error.code==="auth/unauthorized-domain"){
-            showErr("❌ Dominio no autorizado en Firebase. Contacta con el administrador.");
+            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.display="block";}
         }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
                 return firebase.auth().signInWithPopup(provider);
             }).then(function(r){onLoginSuccess(r.user);}).catch(function(){fallbackToRedirect();});
         }else{
-            showErr("❌ "+error.message+'<br><a href="javascript:void(0)" onclick="toggleEmailLogin()" style="color:#0066cc;text-decoration:underline;">Entrar con email en lugar de Google</a>');
+            if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
         }
     }
 
-    // En iOS PWA standalone, el popup está siempre bloqueado y el redirect puede fallar:
-    // Safari abre accounts.google.com en una vista externa que no vuelve a la PWA.
-    // Estrategia: usar redirect directamente (más fiable que popup) con aviso al usuario.
-    if(isIOSStandalone){
-        showInfo('🔄 Abriendo Google… Si no vuelve automáticamente, abre la app desde Safari.');
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
-            return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
-        }).then(function(){
-            firebase.auth().signInWithRedirect(provider);
-        }).catch(function(e){
-            console.error('iOS PWA redirect failed:',e);
-            showErr('❌ No se pudo abrir Google. Abre la app desde Safari (no desde el icono de la pantalla de inicio).');
-        });
-        return;
-    }
-
-    // Estrategia desktop/navegador: popup primero (UX mejor), redirect como fallback automático.
-    // Detección proactiva: si tras 6s el popup no ha devuelto nada, sugerir email link.
-    var popupTimeout = setTimeout(function(){
-        showInfo('⏳ ¿No se abre la ventana de Google? Tu navegador puede estar bloqueándola.<br><a href="javascript:void(0)" onclick="toggleEmailLogin()" style="color:#0066cc;text-decoration:underline;font-weight:600;">👉 Entrar con mi email en su lugar</a>');
-    }, 6000);
-
+    // Estrategia: popup primero (UX mejor), redirect como fallback automático.
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     }).then(function(){
         return firebase.auth().signInWithPopup(provider);
     }).then(function(result){
-        clearTimeout(popupTimeout);
         console.log("Login OK:",result.user.email);
         onLoginSuccess(result.user);
-    }).catch(function(err){clearTimeout(popupTimeout);handleError(err);});
+    }).catch(handleError);
 }
 
 /* ─── Captura del retorno de redirect flow ───
@@ -1880,145 +1845,6 @@ function scanGoogleLogin(){
             console.warn('getRedirectResult:', err && err.code);
         });
     }catch(e){ console.warn('redirect init:', e); }
-})();
-
-/* ═══════════════════════════════════════════════════════════════════
-   EMAIL LINK LOGIN (passwordless)
-   Alternativa cuando Google Popup/Redirect falla.
-   El usuario introduce su email → Firebase envía un enlace mágico →
-   al clicarlo en el correo, entra autenticado sin popup ni contraseña.
-   Funciona siempre, incluso en incógnito, Brave, iOS PWA, etc.
-═══════════════════════════════════════════════════════════════════ */
-
-function toggleEmailLogin(){
-    var box = document.getElementById('emailLoginBox');
-    var link = document.getElementById('emailLoginLink');
-    if(!box) return;
-    var visible = box.style.display !== 'none';
-    box.style.display = visible ? 'none' : 'block';
-    if(link) link.textContent = visible ? '¿Problemas con Google? Entrar con mi email' : 'Volver al login con Google';
-    // Precarga del último email usado
-    try{
-        var last = localStorage.getItem('emailLoginLast');
-        var inp = document.getElementById('emailLoginInput');
-        if(last && inp && !inp.value) inp.value = last;
-    }catch(e){}
-}
-
-function sendEmailLoginLink(){
-    var inp = document.getElementById('emailLoginInput');
-    var statusEl = document.getElementById('emailLoginStatus');
-    var btn = document.getElementById('emailLoginBtn');
-    var disclaimer = document.getElementById('disclaimerCheck');
-
-    function setStatus(msg, color){
-        if(statusEl){statusEl.innerHTML=msg;statusEl.style.color=color||'#1e40af';statusEl.style.display='block';}
-    }
-
-    if(!disclaimer || !disclaimer.checked){
-        setStatus('⚠️ Debes aceptar el aviso RGPD primero.', '#dc2626');
-        return;
-    }
-    var email = (inp && inp.value || '').trim().toLowerCase();
-    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-        setStatus('❌ Introduce un email válido.', '#dc2626');
-        return;
-    }
-
-    if(btn){btn.disabled=true;btn.style.opacity='.5';btn.textContent='⏳ Enviando…';}
-
-    var actionCodeSettings = {
-        // Al clicar el enlace del email, Firebase redirige aquí con parámetros en la URL
-        url: window.location.origin + window.location.pathname + '?emailSignIn=1',
-        handleCodeInApp: true
-    };
-
-    // Guardar destino pendiente para restaurarlo tras el click del enlace
-    try{
-        sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
-        if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
-    }catch(e){}
-
-    firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings).then(function(){
-        try{
-            window.localStorage.setItem('emailForSignIn', email);
-            window.localStorage.setItem('emailLoginLast', email);
-        }catch(e){}
-        setStatus('✅ ¡Enlace enviado! Revisa tu correo (y la carpeta spam). El enlace caduca en 1 hora.', '#059669');
-        if(btn){btn.textContent='📧 Enlace enviado';}
-    }).catch(function(err){
-        console.error('sendSignInLinkToEmail error:', err);
-        var msg = '❌ Error: ' + (err.message||err.code||'desconocido');
-        if(err.code === 'auth/operation-not-allowed'){
-            msg = '❌ El login por email no está habilitado. Contacta con el administrador (Firebase → Auth → Sign-in method → Email link).';
-        }else if(err.code === 'auth/invalid-email'){
-            msg = '❌ Email inválido.';
-        }else if(err.code === 'auth/unauthorized-continue-uri'){
-            msg = '❌ Dominio no autorizado en Firebase. El administrador debe añadir ' + window.location.hostname + ' en Auth → Settings → Authorized domains.';
-        }
-        setStatus(msg, '#dc2626');
-        if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent='📧 Enviar enlace de acceso';}
-    });
-}
-
-/* ─── Completar login con email link ───
-   Si la URL actual contiene el enlace mágico (viene de clicar el email),
-   esta IIFE lo detecta y completa el login automáticamente. */
-(function completeEmailLinkLogin(){
-    try{
-        if(typeof firebase==='undefined' || !firebase.auth) return;
-        if(!firebase.auth().isSignInWithEmailLink(window.location.href)) return;
-
-        var email = null;
-        try{ email = window.localStorage.getItem('emailForSignIn'); }catch(e){}
-        // Si se abrió el enlace en otro dispositivo/navegador, pedir email de nuevo
-        if(!email){
-            email = window.prompt('Confirma tu email para completar el acceso:');
-            if(!email) return;
-            email = email.trim().toLowerCase();
-        }
-
-        firebase.auth().signInWithEmailLink(email, window.location.href).then(function(result){
-            console.log('Email link login OK:', result.user.email);
-            try{ window.localStorage.removeItem('emailForSignIn'); }catch(e){}
-
-            // Limpia parámetros de la URL para no reutilizar el enlace
-            try{
-                var cleanUrl = window.location.origin + window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
-            }catch(e){}
-
-            // Restaura estado pendiente
-            var restoredPage = null, restoredDocencia = null;
-            try{
-                restoredPage = sessionStorage.getItem('pendingPage');
-                restoredDocencia = sessionStorage.getItem('pendingDocencia');
-                sessionStorage.removeItem('pendingPage');
-                sessionStorage.removeItem('pendingDocencia');
-            }catch(e){}
-            if(restoredPage) pendingPageAfterLogin = restoredPage;
-            if(restoredDocencia) window._pendingDocencia = true;
-
-            // Cerrar modal si estuviera abierto
-            try{ document.getElementById('scanLoginModal').style.display='none'; }catch(e){}
-
-            // Cargar moderadores y redirigir
-            if(typeof loadModeradoresFromFirestore === 'function'){
-                loadModeradoresFromFirestore(function(){
-                    isAdminLoggedIn = typeof isAdmin==='function' && isAdmin();
-                    if(typeof apShowAdminTab==='function') apShowAdminTab(isAdminLoggedIn);
-                    if(typeof updateModBadgeAll==='function') updateModBadgeAll();
-                });
-            }
-            if(restoredPage && typeof showPage === 'function'){
-                if(typeof logPageAccess === 'function') logPageAccess(restoredPage, result.user);
-                showPage(restoredPage);
-            }
-        }).catch(function(err){
-            console.error('signInWithEmailLink error:', err);
-            alert('❌ No se pudo completar el acceso: ' + (err.message||err.code));
-        });
-    }catch(e){ console.warn('completeEmailLinkLogin:', e); }
 })();
 
 function scanSetType(t,btn){scanType=t;document.querySelectorAll(".scan-mode-btn").forEach(function(b){b.style.borderColor="var(--border)";b.style.background="var(--bg-card)";b.style.color="var(--text)";});if(btn){btn.style.borderColor="#0066cc";btn.style.background="linear-gradient(135deg,#0066cc,#004499)";btn.style.color="#fff";}

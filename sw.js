@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v53 - Email Link login alternativa + detección popup bloqueado
-const CACHE_NAME = 'area2-v83';
+// Service Worker - Área II Cartagena PWA v51 - SW no intercepta dominios de auth/CF/reCAPTCHA; navigate network-first
+const CACHE_NAME = 'area2-v81';
 
 const PRECACHE = [
   '/Cartagenaeste/',
