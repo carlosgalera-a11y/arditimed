@@ -1,5 +1,5 @@
 // Service Worker - Área II Cartagena PWA v61 - restaurar API keys y llamadas directas DeepSeek/OpenRouter
-const CACHE_NAME = 'area2-v91';
+const CACHE_NAME = 'area2-v92';
 
 const PRECACHE = [
   '/Cartagenaeste/',
