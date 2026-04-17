@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v50 - a11y aria-labels en 51 inputs + handler firebase auth/network-request-failed
-const CACHE_NAME = 'area2-v80';
+// Service Worker - Área II Cartagena PWA v51 - SW no intercepta dominios de auth/CF/reCAPTCHA; navigate network-first
+const CACHE_NAME = 'area2-v81';
 
 const PRECACHE = [
   '/Cartagenaeste/',
@@ -45,10 +45,33 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  // ── No interceptar servicios externos de Firebase / Google Auth / Cloud Functions ──
   if (event.request.url.includes('firestore.googleapis.com')) return;
   if (event.request.url.includes('googleapis.com/identitytoolkit')) return;
+  if (event.request.url.includes('cloudfunctions.net')) return;
+  if (event.request.url.includes('accounts.google.com')) return;
+  if (event.request.url.includes('apis.google.com')) return;
+  if (event.request.url.includes('securetoken.googleapis.com')) return;
+  if (event.request.url.includes('firebaseappcheck.googleapis.com')) return;
+  if (event.request.url.includes('recaptcha')) return;
+  if (event.request.url.includes('gstatic.com/recaptcha')) return;
   if (event.request.url.startsWith('chrome-extension://')) return;
 
+  // ── Para peticiones de NAVEGACIÓN (HTML): network-first, fallback a caché ──
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => caches.match('/Cartagenaeste/index.html').then(c => c || new Response('Offline', { status: 503 })))
+    );
+    return;
+  }
+
+  // ── Para assets (JS/CSS/img): network-first, fallback a caché ──
   event.respondWith(
     fetch(event.request).then(response => {
       if (response.ok && (response.type === 'basic' || response.type === 'cors')) {
@@ -59,9 +82,6 @@ self.addEventListener('fetch', event => {
     }).catch(() => {
       return caches.match(event.request).then(cached => {
         if (cached) return cached;
-        if (event.request.mode === 'navigate') {
-          return caches.match('/Cartagenaeste/index.html');
-        }
         return new Response('Offline', { status: 503 });
       });
     })
