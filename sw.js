@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v39 - Paratus bundle completo (3 visores autocontenidos)
-const CACHE_NAME = 'area2-v69';
+// Service Worker - Área II Cartagena PWA v40 - Paratus home cards + UI castellano + i18n dict
+const CACHE_NAME = 'area2-v70';
 
 const PRECACHE = [
   '/Cartagenaeste/',
