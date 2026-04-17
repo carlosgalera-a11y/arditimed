@@ -2,7 +2,7 @@
   "name": "cartagenaeste-functions",
   "description": "Cloud Functions para proxy seguro de IA (DeepSeek, OpenRouter) de Cartagenaeste",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "main": "index.js",
   "dependencies": {

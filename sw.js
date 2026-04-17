@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v45 - sanitize+ratelimit en ScanIA, submenú Herramientas reorganizado
-const CACHE_NAME = 'area2-v75';
+// Service Worker - Área II Cartagena PWA v46 - FRONTEND CONECTADO a Cloud Functions. Keys fuera del cliente.
+const CACHE_NAME = 'area2-v76';
 
 const PRECACHE = [
   '/Cartagenaeste/',
