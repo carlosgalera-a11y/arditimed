@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v38 - network-first + precache sections
-const CACHE_NAME = 'area2-v68';
+// Service Worker - Área II Cartagena PWA v39 - Paratus bundle completo (3 visores autocontenidos)
+const CACHE_NAME = 'area2-v69';
 
 const PRECACHE = [
   '/Cartagenaeste/',
