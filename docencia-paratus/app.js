@@ -1,4 +1,4 @@
-// Paratus · Área II Cartagena — full dataset
+// Urgencias · Ambulancias · Camas · Área II Cartagena
 'use strict';
 let PARATUS=null,currentEnv='adult',currentTab='conditions',currentWeight=70,historyStack=['home'],searchTO=null,_currentDrug=null,_currentDetailTab='doses';
 function txt(o){if(!o)return'';if(typeof o==='string')return o;if(Array.isArray(o))return o.join(', ');if(typeof o==='object')return o.en||o.fr||Object.values(o).find(v=>v)||'';return String(o);}
@@ -7,7 +7,7 @@ function getEnv(){return PARATUS?PARATUS[currentEnv]:null;}
 function catIcon(c){return{Cardiovascular:'❤️',Neurological:'🧠',Respiratory:'🫁',Toxicology:'☠️',Trauma:'🩹',Metabolic:'⚗️',Gastroenterology:'🫃','OB/GYN':'🤰',Infectious:'🦠',Uncategorized:'📋',General:'📋',Airway:'💨','Vascular Access':'💉',Monitoring:'📊',Neonatal:'👶'}[c]||'🏥';}
 
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('mainContent').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60%;gap:16px;color:#9ca3af"><div style="width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#ea3a35;border-radius:50%;animation:spin .8s linear infinite"></div><div style="font-size:.9rem">Cargando Paratus...</div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
+  document.getElementById('mainContent').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60%;gap:16px;color:#9ca3af"><div style="width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#ea3a35;border-radius:50%;animation:spin .8s linear infinite"></div><div style="font-size:.9rem">Cargando base de datos clínica...</div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
   fetch('./paratus_all.json').then(r=>r.json()).then(d=>{PARATUS=d;setupUI();renderHome();}).catch(e=>{document.getElementById('mainContent').innerHTML='<div style="padding:32px;text-align:center;color:#e53e3e">⚠️ Error: '+e.message+'</div>';});
 });
 

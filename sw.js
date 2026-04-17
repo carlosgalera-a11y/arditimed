@@ -1,4 +1,4 @@
-// Service Worker - Área II Cartagena PWA v37 - network-first + precache sections
+// Service Worker - Área II Cartagena PWA v38 - network-first + precache sections
 const CACHE_NAME = 'area2-v68';
 
 const PRECACHE = [
