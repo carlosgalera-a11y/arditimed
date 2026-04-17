@@ -4,7 +4,7 @@
 <script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
-  var REQUIRED_V = 80;
+  var REQUIRED_V = 86;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -2222,6 +2222,9 @@ window.showNotebooksModal=function(){
                 Iniciar sesión con Google
             </button>
             <div id="scanLoginError" style="display:none;color:#dc2626;font-size:.85rem;text-align:center;margin-top:12px;"></div>
+            <div style="text-align:center;margin-top:8px;">
+                <a href="/Cartagenaeste/login-fix.html" style="color:#64748b;font-size:.75rem;text-decoration:underline;">¿No funciona? Reparar login</a>
+            </div>
             <div style="margin-top:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
                 <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.78rem;color:#64748b;line-height:1.45;">
                     <input type="checkbox" id="disclaimerCheck" onchange="document.getElementById('googleLoginBtn').disabled=!this.checked;document.getElementById('googleLoginBtn').style.opacity=this.checked?'1':'.5'" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">

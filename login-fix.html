@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cartagenaeste — Reparar Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{background:#1e293b;border-radius:16px;max-width:480px;width:100%;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+.header{background:linear-gradient(135deg,#0066cc,#004499);padding:24px;text-align:center;color:#fff}
+.header h1{font-size:1.3rem;margin-bottom:4px}
+.header p{opacity:.8;font-size:.85rem}
+.body{padding:20px}
+.step{margin-bottom:16px;padding:12px;border-radius:10px;background:#0f172a;border:1px solid #334155}
+.step-title{font-weight:700;font-size:.9rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.step-status{font-size:.82rem;color:#94a3b8;line-height:1.5}
+.step-status.ok{color:#4ade80}
+.step-status.err{color:#f87171}
+.step-status.warn{color:#fbbf24}
+.step-status.info{color:#60a5fa}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #334155;border-top-color:#60a5fa;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+button{width:100%;padding:14px;border:0;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s;margin-top:8px}
+.btn-blue{background:linear-gradient(135deg,#0066cc,#004499);color:#fff}
+.btn-blue:hover{opacity:.9}
+.btn-blue:disabled{opacity:.4;cursor:not-allowed}
+.btn-green{background:linear-gradient(135deg,#059669,#047857);color:#fff}
+.btn-red{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff}
+.btn-gray{background:#334155;color:#cbd5e1}
+.btn-gray:hover{background:#475569}
+a{color:#60a5fa}
+.log{margin-top:12px;padding:10px;background:#0f172a;border:1px solid #334155;border-radius:8px;font-family:monospace;font-size:.75rem;max-height:200px;overflow-y:auto;color:#94a3b8;white-space:pre-wrap;display:none}
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <h1>🔧 Reparar Login — Cartagenaeste</h1>
+        <p>Diagnóstico y reparación del acceso con Google</p>
+    </div>
+    <div class="body">
+        <!-- Paso 1: Limpiar -->
+        <div class="step" id="s1">
+            <div class="step-title">🧹 Paso 1: Limpiar caché y Service Workers</div>
+            <div class="step-status" id="s1s">Pendiente</div>
+        </div>
+        <!-- Paso 2: Red -->
+        <div class="step" id="s2">
+            <div class="step-title">🌐 Paso 2: Comprobar conexión con Firebase</div>
+            <div class="step-status" id="s2s">Pendiente</div>
+        </div>
+        <!-- Paso 3: Auth -->
+        <div class="step" id="s3">
+            <div class="step-title">🔐 Paso 3: Probar login con Google</div>
+            <div class="step-status" id="s3s">Esperando pasos anteriores…</div>
+        </div>
+
+        <button class="btn-blue" id="btnStart" onclick="startDiag()">▶️ Iniciar diagnóstico y reparación</button>
+        <button class="btn-green" id="btnLogin" onclick="tryLogin()" style="display:none">🔑 Iniciar sesión con Google</button>
+        <button class="btn-gray" id="btnBack" onclick="goBack()" style="display:none">← Volver a Cartagenaeste</button>
+
+        <div class="log" id="logBox"></div>
+        <div style="text-align:center;margin-top:12px">
+            <a href="javascript:void(0)" onclick="document.getElementById('logBox').style.display=document.getElementById('logBox').style.display==='none'?'block':'none'" style="font-size:.78rem">Ver/ocultar log técnico</a>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK directo (sin pasar por SW) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+// Firebase config
+var app = firebase.initializeApp({
+    apiKey:"AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc",
+    authDomain:"docenciacartagenaeste.firebaseapp.com",
+    projectId:"docenciacartagenaeste",
+    storageBucket:"docenciacartagenaeste.firebasestorage.app",
+    messagingSenderId:"1056320755107",
+    appId:"1:1056320755107:web:126637bf63c13bbb297616"
+});
+
+var logBox = document.getElementById('logBox');
+function log(msg){ logBox.style.display='block'; logBox.textContent += new Date().toLocaleTimeString()+' '+msg+'\n'; logBox.scrollTop=logBox.scrollHeight; console.log(msg); }
+function setStatus(id, html, cls){ var el=document.getElementById(id); el.innerHTML=html; el.className='step-status '+(cls||''); }
+
+// ═══ PASO 1: Limpiar ═══
+async function cleanAll(){
+    setStatus('s1s','<span class="spinner"></span> Limpiando…','info');
+    log('--- PASO 1: LIMPIEZA ---');
+    var cleaned = 0;
+
+    // Desregistrar TODOS los service workers
+    try{
+        var regs = await navigator.serviceWorker.getRegistrations();
+        log('Service Workers encontrados: '+regs.length);
+        for(var r of regs){
+            await r.unregister();
+            log('  ✓ Desregistrado: '+(r.active?r.active.scriptURL:'(none)'));
+            cleaned++;
+        }
+    }catch(e){ log('  SW error: '+e.message); }
+
+    // Borrar TODAS las cachés
+    try{
+        var keys = await caches.keys();
+        log('Cachés encontradas: '+keys.length);
+        for(var k of keys){
+            await caches.delete(k);
+            log('  ✓ Borrada: '+k);
+            cleaned++;
+        }
+    }catch(e){ log('  Cache error: '+e.message); }
+
+    // Forzar REQUIRED_V alto para que al volver a la app principal no vuelva a cachear lo viejo
+    try{
+        localStorage.setItem('_sw_v','999');
+        log('  ✓ _sw_v forzado a 999');
+    }catch(e){}
+
+    if(cleaned > 0){
+        setStatus('s1s','✅ Limpieza completada: '+cleaned+' elementos eliminados','ok');
+    }else{
+        setStatus('s1s','✅ Nada que limpiar (ya estaba limpio)','ok');
+    }
+    log('Limpieza completada');
+    return true;
+}
+
+// ═══ PASO 2: Test de red ═══
+async function testNetwork(){
+    setStatus('s2s','<span class="spinner"></span> Probando conexión…','info');
+    log('--- PASO 2: TEST DE RED ---');
+
+    var endpoints = [
+        { name:'Firebase Auth (identitytoolkit)', url:'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc', method:'POST', body:'{}' },
+        { name:'Firebase Token (securetoken)', url:'https://securetoken.googleapis.com/v1/token?key=AIzaSyAvdYi6BVdltgeFH4KLHD_5iFZrSRgoykc', method:'POST', body:'grant_type=refresh_token&refresh_token=x' },
+        { name:'Google Accounts', url:'https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=test&redirect_uri=test&scope=email', method:'HEAD' },
+        { name:'Google APIs (general)', url:'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com', method:'GET' }
+    ];
+
+    var results = [];
+    for(var ep of endpoints){
+        try{
+            var ctrl = new AbortController();
+            var timer = setTimeout(function(){ ctrl.abort(); }, 8000);
+            var opts = { method:ep.method||'GET', signal:ctrl.signal, mode:'no-cors' };
+            if(ep.body && ep.method==='POST'){
+                opts.headers = {'Content-Type':'application/json'};
+                opts.body = ep.body;
+                opts.mode = 'cors';
+            }
+            var resp = await fetch(ep.url, opts);
+            clearTimeout(timer);
+            // Para POST, incluso un 400 significa que llegó al servidor (OK de red)
+            var ok = resp.status < 500 || resp.type === 'opaque';
+            log('  '+(ok?'✓':'✗')+' '+ep.name+': HTTP '+resp.status+' (type: '+resp.type+')');
+            results.push({ name:ep.name, ok:ok, status:resp.status });
+        }catch(e){
+            clearTimeout(timer);
+            log('  ✗ '+ep.name+': '+e.message);
+            results.push({ name:ep.name, ok:false, error:e.message });
+        }
+    }
+
+    var allOk = results.every(function(r){ return r.ok; });
+    var authOk = results[0] && results[0].ok;
+
+    if(allOk){
+        setStatus('s2s','✅ Todos los servicios de Firebase accesibles','ok');
+    }else if(authOk){
+        setStatus('s2s','⚠️ Conexión parcial — algunos servicios bloqueados','warn');
+    }else{
+        var blocked = results.filter(function(r){return !r.ok;}).map(function(r){return r.name;}).join(', ');
+        setStatus('s2s',
+            '❌ <b>Bloqueado:</b> '+blocked+'<br><br>'+
+            '<b>Soluciones:</b><br>'+
+            '• <b>Brave</b>: pulsa 🦁 → desactiva escudos para este sitio<br>'+
+            '• <b>uBlock/AdBlock</b>: desactívalo para este dominio<br>'+
+            '• <b>Chrome</b>: prueba en ventana de incógnito<br>'+
+            '• <b>VPN/Firewall</b>: desconecta y recarga<br>'+
+            '• <b>Red hospitalaria</b>: prueba con datos móviles (4G)',
+            'err');
+    }
+
+    log('Test de red completado: '+(allOk?'TODO OK':'ALGUNOS BLOQUEADOS'));
+    return authOk;
+}
+
+// ═══ PASO 3: Login ═══
+var loginReady = false;
+async function prepareLogin(netOk){
+    if(netOk){
+        setStatus('s3s','✅ Red OK. Pulsa el botón para iniciar sesión.','ok');
+        document.getElementById('btnLogin').style.display='block';
+        loginReady = true;
+    }else{
+        setStatus('s3s','⚠️ Hay problemas de red. Puedes intentar el login de todas formas (a veces funciona).','warn');
+        document.getElementById('btnLogin').style.display='block';
+        loginReady = true;
+    }
+}
+
+async function tryLogin(){
+    if(!loginReady) return;
+    var btn = document.getElementById('btnLogin');
+    btn.disabled = true;
+    btn.textContent = '⏳ Conectando con Google…';
+    setStatus('s3s','<span class="spinner"></span> Abriendo Google…','info');
+    log('--- PASO 3: LOGIN ---');
+
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+
+    // Intentar popup primero (más rápido en desktop)
+    try{
+        log('Intentando signInWithPopup…');
+        var result = await firebase.auth().signInWithPopup(provider);
+        log('✓ Login OK via popup: '+result.user.email);
+        onSuccess(result.user);
+        return;
+    }catch(popupErr){
+        log('✗ Popup falló: '+popupErr.code+' - '+popupErr.message);
+        // Si es popup bloqueado, intentar redirect
+        if(popupErr.code==='auth/popup-blocked'||popupErr.code==='auth/popup-closed-by-browser'||popupErr.code==='auth/cancelled-popup-request'){
+            log('Intentando signInWithRedirect…');
+            setStatus('s3s','<span class="spinner"></span> Popup bloqueado. Redirigiendo a Google…','info');
+            try{
+                sessionStorage.setItem('loginFixPending','1');
+                await firebase.auth().signInWithRedirect(provider);
+                // Si llegamos aquí, el redirect no se ejecutó (raro)
+            }catch(redErr){
+                log('✗ Redirect falló: '+redErr.code+' - '+redErr.message);
+            }
+        }else if(popupErr.code==='auth/network-request-failed'){
+            setStatus('s3s',
+                '❌ <b>Error de red.</b> Firebase no puede conectar.<br><br>'+
+                'Tu navegador o red está bloqueando <code>googleapis.com</code>.<br><br>'+
+                '<b>Solución más rápida:</b><br>'+
+                '1. Abre Chrome (no Brave)<br>'+
+                '2. Ve a <a href="https://carlosgalera-a11y.github.io/Cartagenaeste/">carlosgalera-a11y.github.io/Cartagenaeste</a><br>'+
+                '3. Inicia sesión desde ahí',
+                'err');
+            log('Network request failed - navegador/red bloqueando Firebase');
+        }else{
+            setStatus('s3s','❌ Error: '+popupErr.message,'err');
+        }
+        btn.disabled = false;
+        btn.textContent = '🔑 Reintentar login con Google';
+    }
+}
+
+function onSuccess(user){
+    log('LOGIN EXITOSO: '+user.email+' (UID: '+user.uid+')');
+    setStatus('s3s',
+        '✅ <b>¡Login correcto!</b><br>'+
+        '👤 '+user.displayName+' ('+user.email+')<br><br>'+
+        'La sesión está activa. Ahora puedes volver a Cartagenaeste.',
+        'ok');
+
+    var btn = document.getElementById('btnLogin');
+    btn.style.display = 'none';
+    document.getElementById('btnBack').style.display = 'block';
+    document.getElementById('btnStart').style.display = 'none';
+
+    // Auto-redirigir en 3 segundos
+    setTimeout(function(){
+        goBack();
+    }, 3000);
+}
+
+function goBack(){
+    window.location.href = '/Cartagenaeste/';
+}
+
+// ═══ FLUJO PRINCIPAL ═══
+async function startDiag(){
+    var btn = document.getElementById('btnStart');
+    btn.disabled = true;
+    btn.textContent = '⏳ Ejecutando…';
+
+    await cleanAll();
+    var netOk = await testNetwork();
+    await prepareLogin(netOk);
+
+    btn.style.display = 'none';
+}
+
+// ═══ CAPTURAR RETORNO DE REDIRECT ═══
+(async function(){
+    try{
+        var result = await firebase.auth().getRedirectResult();
+        if(result && result.user && sessionStorage.getItem('loginFixPending')){
+            sessionStorage.removeItem('loginFixPending');
+            log('Login redirect OK: '+result.user.email);
+            onSuccess(result.user);
+        }
+    }catch(e){
+        if(sessionStorage.getItem('loginFixPending')){
+            sessionStorage.removeItem('loginFixPending');
+            log('Redirect result error: '+e.message);
+            setStatus('s3s','❌ El redirect falló: '+e.message+'. Intenta de nuevo.','err');
+        }
+    }
+})();
+</script>
+</body>
+</html>

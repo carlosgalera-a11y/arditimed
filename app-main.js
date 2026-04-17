@@ -1749,22 +1749,31 @@ function scanGoogleLogin(){
         errEl.style.display='block';
     }
 
+    // Detección: si tras 5 segundos seguimos en la página, el redirect no funcionó
+    var redirectTimer = setTimeout(function(){
+        if(errEl){
+            errEl.style.color='#dc2626';
+            errEl.innerHTML='❌ La redirección a Google no se completó.<br>'+
+                '<a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;font-weight:700;text-decoration:underline;">🔧 Usar herramienta de reparación</a>';
+            errEl.style.display='block';
+        }
+    }, 5000);
+
     // ─── signInWithRedirect como método único ───
-    // Más estable que popup en: iOS PWA, Brave con escudos, navegadores en incógnito,
-    // extensiones anti-tracking, Safari. El usuario ve accounts.google.com y vuelve
-    // automáticamente. getRedirectResult() (abajo) captura el retorno.
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     }).then(function(){
         return firebase.auth().signInWithRedirect(provider);
     }).catch(function(err){
+        clearTimeout(redirectTimer);
         console.error('Redirect login failed:', err);
         if(errEl){
             errEl.style.color='#dc2626';
+            var fixLink = '<br><a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;font-weight:700;text-decoration:underline;">🔧 Usar herramienta de reparación</a>';
             if(err.code==='auth/unauthorized-domain'){
-                errEl.innerHTML='❌ Dominio no autorizado en Firebase. Contacta con el administrador.';
+                errEl.innerHTML='❌ Dominio no autorizado en Firebase.' + fixLink;
             }else{
-                errEl.innerHTML='❌ '+(err.message||err.code||'No se pudo iniciar sesión');
+                errEl.innerHTML='❌ '+(err.message||err.code||'No se pudo iniciar sesión') + fixLink;
             }
             errEl.style.display='block';
         }

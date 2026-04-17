@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v56 - signInWithRedirect como método único (sin popup)
-const CACHE_NAME = 'area2-v86';
+// Service Worker - Área II Cartagena PWA v57 - login-fix.html tool + REQUIRED_V=86 + redirect timeout
+const CACHE_NAME = 'area2-v87';
 
 const PRECACHE = [
   '/Cartagenaeste/',
@@ -56,6 +56,8 @@ self.addEventListener('fetch', event => {
   if (event.request.url.includes('recaptcha')) return;
   if (event.request.url.includes('gstatic.com/recaptcha')) return;
   if (event.request.url.startsWith('chrome-extension://')) return;
+  // No interceptar la herramienta de reparación (debe cargar siempre de red)
+  if (event.request.url.includes('login-fix.html')) return;
 
   // ── Para peticiones de NAVEGACIÓN (HTML): network-first, fallback a caché ──
   if (event.request.mode === 'navigate') {
