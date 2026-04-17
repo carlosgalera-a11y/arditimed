@@ -2221,10 +2221,22 @@ window.showNotebooksModal=function(){
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Iniciar sesión con Google
             </button>
-            <div id="scanLoginError" style="display:none;color:#dc2626;font-size:.85rem;text-align:center;margin-top:12px;">❌ Error al iniciar sesión</div>
+            <div id="scanLoginError" style="display:none;color:#dc2626;font-size:.85rem;text-align:center;margin-top:12px;"></div>
+
+            <!-- Alternativa: Email Link (passwordless) cuando Google falla -->
+            <div id="emailLoginToggle" style="text-align:center;margin-top:10px;">
+                <a href="javascript:void(0)" onclick="toggleEmailLogin()" id="emailLoginLink" style="color:#0066cc;font-size:.8rem;text-decoration:underline;cursor:pointer;">¿Problemas con Google? Entrar con mi email</a>
+            </div>
+            <div id="emailLoginBox" style="display:none;margin-top:10px;padding:12px;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;">
+                <p style="margin:0 0 8px;font-size:.8rem;color:#1e40af;">Te enviaremos un enlace de acceso a tu correo. Sin contraseña. Válido 1 hora.</p>
+                <input id="emailLoginInput" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@ejemplo.com" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:6px;font-size:.9rem;box-sizing:border-box;margin-bottom:8px;">
+                <button id="emailLoginBtn" disabled onclick="sendEmailLoginLink()" style="width:100%;padding:10px;background:#0066cc;color:#fff;border:0;border-radius:6px;font-size:.9rem;font-weight:600;cursor:pointer;opacity:.5;">📧 Enviar enlace de acceso</button>
+                <div id="emailLoginStatus" style="display:none;font-size:.8rem;text-align:center;margin-top:8px;"></div>
+            </div>
+
             <div style="margin-top:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
                 <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.78rem;color:#64748b;line-height:1.45;">
-                    <input type="checkbox" id="disclaimerCheck" onchange="document.getElementById('googleLoginBtn').disabled=!this.checked;document.getElementById('googleLoginBtn').style.opacity=this.checked?'1':'.5'" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
+                    <input type="checkbox" id="disclaimerCheck" onchange="var ok=this.checked;document.getElementById('googleLoginBtn').disabled=!ok;document.getElementById('googleLoginBtn').style.opacity=ok?'1':'.5';var ebtn=document.getElementById('emailLoginBtn');if(ebtn){ebtn.disabled=!ok;ebtn.style.opacity=ok?'1':'.5';}" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
                     <span>He leído el aviso RGPD anterior. Acepto que esta plataforma tiene <strong>finalidad exclusivamente docente e informativa</strong> y que no sustituye el juicio clínico profesional ni la historia clínica oficial.</span>
                 </label>
             </div>
@@ -2694,7 +2706,8 @@ function showLoginModal(sectionName){
     // Sin sesion — mostrar modal de Google login
     try{
         document.getElementById("scanLoginModal").style.display="flex";
-        document.getElementById("scanLoginError").style.display="none";
+        var errReset=document.getElementById("scanLoginError");
+        if(errReset){errReset.style.display="none";errReset.innerHTML="";errReset.style.color="#dc2626";}
         resetDisclaimerCheck();
     }catch(e){console.error(e);}
 }
