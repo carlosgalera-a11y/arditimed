@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v46 - FRONTEND CONECTADO a Cloud Functions. Keys fuera del cliente.
-const CACHE_NAME = 'area2-v76';
+// Service Worker - Área II Cartagena PWA v47 - CSP permite Cloud Functions + App Check + reCAPTCHA
+const CACHE_NAME = 'area2-v77';
 
 const PRECACHE = [
   '/Cartagenaeste/',
