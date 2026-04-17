@@ -464,13 +464,26 @@ async function compressImage(file){
   });
 }
 
+/* ─── Seguridad: sanitización de inputs ─── */
+function sanitizeAI(s){
+  if(typeof s!=='string')return'';
+  s=s.substring(0,4000);
+  s=s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'');
+  [/ignore\s+(all\s+)?previous\s+instructions?/gi,/you\s+are\s+now\s+(?:a|an|the)/gi,/\[INST\]|\[\/INST\]|<\|im_start\|>|<\|im_end\|>/g,/\bDAN\b|\bjailbreak\b/gi].forEach(function(p){s=s.replace(p,'[filtrado]');});
+  return s.trim();
+}
+/* ─── Seguridad: rate limiting (8 req/min) ─── */
+var _rlTs=[];
+function rateLimitCheck(){var now=Date.now();_rlTs=_rlTs.filter(function(t){return now-t<60000;});if(_rlTs.length>=8)throw new Error('⏱️ Límite alcanzado. Espera un momento.');_rlTs.push(now);}
+
 async function iaGenerar(){
+  try { rateLimitCheck(); } catch(e) { alert(e.message); return; }
   var tipo = document.getElementById('iaType').value;
   if(!tipo){alert('Selecciona el tipo de informe');return;}
-  if(tipo==='otro') tipo = document.getElementById('iaOtro').value.trim() || 'Informe clinico';
+  if(tipo==='otro') tipo = sanitizeAI(document.getElementById('iaOtro').value.trim()) || 'Informe clinico';
 
-  var instrucciones = document.getElementById('iaInstrucciones').value.trim();
-  var dr = drInput.value.trim();
+  var instrucciones = sanitizeAI(document.getElementById('iaInstrucciones').value.trim());
+  var dr = sanitizeAI(drInput.value.trim());
 
   var btn = document.getElementById('iaBtnGen');
   btn.disabled=true; btn.textContent='Generando...';

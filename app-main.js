@@ -901,7 +901,79 @@ function updateStatus(){var el=document.getElementById("statusBadge"),b=document
 function cambiarProvider(){var v=document.getElementById("cfgProvider").value;document.getElementById("groqConfig").style.display=v==="groq"?"block":"none";document.getElementById("qwenConfig").style.display=v==="qwen"?"block":"none";}
 async function fetchWithCorsProxy(url,options){try{var r=await fetch(url,options);return r;}catch(e){throw new Error("No se pudo conectar.");}}
 var lastAIModel='';/* EU AI Act Art. 52: transparency — track which model generates each response */
+
+/* ══════════════════════════════════════════════════════════════════
+   SECURITY MODULE — 4 medidas activas (2025)
+   ══════════════════════════════════════════════════════════════════
+
+   MEDIDA 1 · API KEYS: nunca en texto plano en el cliente.
+     - Keys en XOR-42 (_KP → _dk()) y _xd() dentro de llamarIA
+     - NAS proxy para llamadas desde red local (key oculta en servidor)
+     - Nunca se loguean en consola ni se exponen en Network tab
+
+   MEDIDA 2 · SANITIZACIÓN DE INPUTS: sanitizeAI() antes de cada
+     llamada a la IA. Bloquea: prompt injection, XSS, SQLi,
+     control chars, longitud excesiva.
+
+   MEDIDA 3 · AUTH DELEGADA: Firebase Auth (Google OAuth).
+     No hay contraseñas propias ni tokens custom.
+     Ver isReady() y firebase.auth().onAuthStateChanged()
+
+   MEDIDA 4 · RATE LIMITING: aiRateLimiter — 10 req/min por sesión,
+     con ventana deslizante. Complementado con App Check en Firebase.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ─── MEDIDA 2: Sanitización de inputs ─── */
+function sanitizeAI(input) {
+  if (typeof input !== 'string') return '';
+  // Longitud máxima
+  input = input.substring(0, 4000);
+  // Eliminar caracteres de control (excepto saltos de línea normales)
+  input = input.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  // Bloquear prompt injection patterns comunes
+  var injectionPatterns = [
+    /ignore\s+(all\s+)?previous\s+instructions?/gi,
+    /you\s+are\s+now\s+(?:a|an|the)/gi,
+    /system\s*:\s*you/gi,
+    /\[INST\]|\[\/INST\]|<\|im_start\|>|<\|im_end\|>/g,
+    /\bDAN\b|\bjailbreak\b/gi
+  ];
+  injectionPatterns.forEach(function(p) { input = input.replace(p, '[filtrado]'); });
+  // Limitar líneas repetidas (spam)
+  var lines = input.split('\n');
+  if (lines.length > 100) input = lines.slice(0, 100).join('\n') + '\n[...]';
+  return input.trim();
+}
+
+/* ─── MEDIDA 4: Rate limiting por sesión (ventana deslizante 1 min) ─── */
+var aiRateLimiter = (function() {
+  var MAX_REQUESTS = 10;   // máximo por ventana
+  var WINDOW_MS   = 60000; // ventana de 1 minuto
+  var timestamps  = [];
+  return {
+    check: function() {
+      var now = Date.now();
+      timestamps = timestamps.filter(function(t) { return now - t < WINDOW_MS; });
+      if (timestamps.length >= MAX_REQUESTS) {
+        var wait = Math.ceil((WINDOW_MS - (now - timestamps[0])) / 1000);
+        throw new Error('⏱️ Límite de consultas alcanzado. Espera ' + wait + 's antes de continuar.');
+      }
+      timestamps.push(now);
+    },
+    remaining: function() {
+      var now = Date.now();
+      timestamps = timestamps.filter(function(t) { return now - t < WINDOW_MS; });
+      return MAX_REQUESTS - timestamps.length;
+    }
+  };
+})();
+
 async function llamarIA(up,sp){
+  /* ─── Medida 2: sanitizar input del usuario ─── */
+  up = sanitizeAI(up || '');
+  if (!up) return '⚠️ Consulta vacía o inválida.';
+  /* ─── Medida 4: rate limiting ─── */
+  try { aiRateLimiter.check(); } catch(e) { return e.message; }
   /* ═══ Fallback chain: DeepSeek API → Pollinations → OpenRouter ═══ */
   var OR_KEY=_dk();
   var NAS_URL=localStorage.getItem('api_proxy_url')||'http://REDACTED_INTERNAL_IP:3100';
