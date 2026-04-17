@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v47 - CSP permite Cloud Functions + App Check + reCAPTCHA
-const CACHE_NAME = 'area2-v77';
+// Service Worker - Área II Cartagena PWA v48 - Login Google popup+redirect fallback automático
+const CACHE_NAME = 'area2-v78';
 
 const PRECACHE = [
   '/Cartagenaeste/',

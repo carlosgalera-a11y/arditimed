@@ -1768,27 +1768,42 @@ function scanGoogleLogin(){
         else{showPage("pageScanIA");scanRenderHist();}
     }
 
+    /* ─── Fallback automático popup → redirect ───
+       Cuando el navegador bloquea popups (común en incógnito, Safari iOS,
+       y extensiones anti-tracking) pasamos a redirect flow. El usuario
+       navega a accounts.google.com y vuelve automáticamente con la sesión
+       iniciada. getRedirectResult() en el init captura ese retorno. */
+    function fallbackToRedirect(){
+        try{
+            sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
+            if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
+            if(errEl){errEl.innerHTML='🔄 Redirigiendo a Google…';errEl.style.display='block';}
+            firebase.auth().signInWithRedirect(provider);
+        }catch(redErr){
+            console.error('Redirect login failed:', redErr);
+            if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. Intenta desde otro navegador.';errEl.style.display='block';}
+        }
+    }
+
     function handleError(error){
         console.error("Login error:",error.code,error.message);
         if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-            // Popup bloqueado: mostrar instrucción clara (no usar redirect - rompe GitHub Pages)
-            if(errEl){errEl.innerHTML="⚠️ El navegador bloqueó la ventana de Google.<br><strong>Pulsa de nuevo el botón</strong> o desactiva el bloqueador de popups para este sitio.";errEl.style.display="block";}
+            // Popup bloqueado → fallback automático a redirect (funciona siempre)
+            if(errEl){errEl.innerHTML='🔄 Abriendo página de Google…';errEl.style.display='block';}
+            fallbackToRedirect();
         }else if(error.code==="auth/unauthorized-domain"){
             if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.display="block";}
         }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
                 return firebase.auth().signInWithPopup(provider);
-            }).then(function(r){onLoginSuccess(r.user);}).catch(function(e2){
-                if(errEl){errEl.innerHTML="❌ Desactiva el bloqueador de anuncios e inténtalo de nuevo.";errEl.style.display="block";}
-            });
+            }).then(function(r){onLoginSuccess(r.user);}).catch(function(){fallbackToRedirect();});
         }else{
             if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
         }
     }
 
-    // Usar siempre signInWithPopup — es compatible con iOS cuando se llama
-    // directamente desde un evento click del usuario (sin capas async intermedias)
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(function(){
+    // Estrategia: popup primero (UX mejor), redirect como fallback automático.
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     }).then(function(){
         return firebase.auth().signInWithPopup(provider);
@@ -1797,6 +1812,40 @@ function scanGoogleLogin(){
         onLoginSuccess(result.user);
     }).catch(handleError);
 }
+
+/* ─── Captura del retorno de redirect flow ───
+   Al recargar la página después de signInWithRedirect, este handler recoge
+   el resultado y completa el flujo de login automáticamente. Se ejecuta
+   silenciosamente si no hay resultado pendiente. */
+(function(){
+    try{
+        firebase.auth().getRedirectResult().then(function(result){
+            if(!result||!result.user) return;
+            console.log('Login redirect OK:', result.user.email);
+            var restoredPage = sessionStorage.getItem('pendingPage');
+            var restoredDocencia = sessionStorage.getItem('pendingDocencia');
+            sessionStorage.removeItem('pendingPage');
+            sessionStorage.removeItem('pendingDocencia');
+            if(restoredPage) pendingPageAfterLogin = restoredPage;
+            if(restoredDocencia) window._pendingDocencia = true;
+            // Emular la misma secuencia que el success de popup
+            try{document.getElementById('scanLoginModal').style.display='none';}catch(e){}
+            if(typeof loadModeradoresFromFirestore==='function'){
+                loadModeradoresFromFirestore(function(){
+                    isAdminLoggedIn = typeof isAdmin==='function' && isAdmin();
+                    if(typeof apShowAdminTab==='function') apShowAdminTab(isAdminLoggedIn);
+                    if(typeof updateModBadgeAll==='function') updateModBadgeAll();
+                });
+            }
+            if(restoredPage && typeof showPage==='function'){
+                if(typeof logPageAccess==='function') logPageAccess(restoredPage, result.user);
+                showPage(restoredPage);
+            }
+        }).catch(function(err){
+            console.warn('getRedirectResult:', err && err.code);
+        });
+    }catch(e){ console.warn('redirect init:', e); }
+})();
 
 function scanSetType(t,btn){scanType=t;document.querySelectorAll(".scan-mode-btn").forEach(function(b){b.style.borderColor="var(--border)";b.style.background="var(--bg-card)";b.style.color="var(--text)";});if(btn){btn.style.borderColor="#0066cc";btn.style.background="linear-gradient(135deg,#0066cc,#004499)";btn.style.color="#fff";}
 // ── ECG: redirige a cards-lab.org/ecg-gpt (CarDS Lab @ Yale) vía iframe con fallback ──
