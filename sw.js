@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v51 - SW no intercepta dominios de auth/CF/reCAPTCHA; navigate network-first
-const CACHE_NAME = 'area2-v81';
+// Service Worker - Área II Cartagena PWA v56 - signInWithRedirect como método único (sin popup)
+const CACHE_NAME = 'area2-v86';
 
 const PRECACHE = [
   '/Cartagenaeste/',

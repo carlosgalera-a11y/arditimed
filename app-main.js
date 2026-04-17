@@ -1720,97 +1720,55 @@ function showScanLogin(){
         var m=document.getElementById("scanLoginModal");
         console.log("Showing modal",m);
         m.style.display="flex";
-        document.getElementById("scanLoginError").style.display="none";
+        var errReset=document.getElementById("scanLoginError");
+        if(errReset){errReset.style.display="none";errReset.innerHTML="";errReset.style.color="#dc2626";}
         resetDisclaimerCheck();
     }catch(e){console.error("showScanLogin error:",e);alert("Error: "+e.message);}
 }
 
 function scanGoogleLogin(){
-    console.log("scanGoogleLogin called");
+    console.log("scanGoogleLogin called (redirect-only mode)");
     var provider=new firebase.auth.GoogleAuthProvider();
     provider.addScope('email');
     provider.addScope('profile');
     var errEl=document.getElementById("scanLoginError");
-    if(errEl) errEl.style.display="none";
+    // Reset completo del mensaje de error: evita texto residual de intentos previos
+    if(errEl){errEl.style.display="none";errEl.innerHTML="";}
 
-    var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
+    // ─── Guardar estado pendiente antes de redirigir ───
+    try{
+        var pending = sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'';
+        sessionStorage.setItem('pendingPage', pending);
+        if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
+    }catch(e){}
 
-    function onLoginSuccess(user){
-        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
-        loadModeradoresFromFirestore(function(){
-            isAdminLoggedIn=isAdmin();
-            apShowAdminTab(isAdminLoggedIn);
-            updateModBadgeAll();
-            if(isAdminLoggedIn&&!pendingPageAfterLogin){
-                try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
-            }
-        });
-        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
-        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
-        if(pg){logPageAccess(pg,user);showPage(pg);}
-        else if(window._pendingDocencia){
-            window._pendingDocencia=false;
-            // Close the login modal
-            try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
-            // Make sure we're on landing
-            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-            var landing=document.getElementById('pageLanding');
-            if(landing)landing.classList.add('active');
-            // Open subDocencia
-            setTimeout(function(){
-                var sh=document.getElementById('subHerramientas');if(sh)sh.style.display='none';
-                var sp=document.getElementById('subProtocolos');if(sp)sp.style.display='none';
-                var sd=document.getElementById('subDocencia');
-                if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
-            },500);
-            return;
-        }
-        else{showPage("pageScanIA");scanRenderHist();}
+    // Mostrar feedback visual (azul informativo, no rojo error)
+    if(errEl){
+        errEl.innerHTML='🔄 Redirigiendo a Google…';
+        errEl.style.color='#2563eb';
+        errEl.style.display='block';
     }
 
-    /* ─── Fallback automático popup → redirect ───
-       Cuando el navegador bloquea popups (común en incógnito, Safari iOS,
-       y extensiones anti-tracking) pasamos a redirect flow. El usuario
-       navega a accounts.google.com y vuelve automáticamente con la sesión
-       iniciada. getRedirectResult() en el init captura ese retorno. */
-    function fallbackToRedirect(){
-        try{
-            sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
-            if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
-            if(errEl){errEl.innerHTML='🔄 Redirigiendo a Google…';errEl.style.display='block';}
-            firebase.auth().signInWithRedirect(provider);
-        }catch(redErr){
-            console.error('Redirect login failed:', redErr);
-            if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. Intenta desde otro navegador.';errEl.style.display='block';}
-        }
-    }
-
-    function handleError(error){
-        console.error("Login error:",error.code,error.message);
-        if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-            // Popup bloqueado → fallback automático a redirect (funciona siempre)
-            if(errEl){errEl.innerHTML='🔄 Abriendo página de Google…';errEl.style.display='block';}
-            fallbackToRedirect();
-        }else if(error.code==="auth/unauthorized-domain"){
-            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.display="block";}
-        }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
-            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
-                return firebase.auth().signInWithPopup(provider);
-            }).then(function(r){onLoginSuccess(r.user);}).catch(function(){fallbackToRedirect();});
-        }else{
-            if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
-        }
-    }
-
-    // Estrategia: popup primero (UX mejor), redirect como fallback automático.
+    // ─── signInWithRedirect como método único ───
+    // Más estable que popup en: iOS PWA, Brave con escudos, navegadores en incógnito,
+    // extensiones anti-tracking, Safari. El usuario ve accounts.google.com y vuelve
+    // automáticamente. getRedirectResult() (abajo) captura el retorno.
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     }).then(function(){
-        return firebase.auth().signInWithPopup(provider);
-    }).then(function(result){
-        console.log("Login OK:",result.user.email);
-        onLoginSuccess(result.user);
-    }).catch(handleError);
+        return firebase.auth().signInWithRedirect(provider);
+    }).catch(function(err){
+        console.error('Redirect login failed:', err);
+        if(errEl){
+            errEl.style.color='#dc2626';
+            if(err.code==='auth/unauthorized-domain'){
+                errEl.innerHTML='❌ Dominio no autorizado en Firebase. Contacta con el administrador.';
+            }else{
+                errEl.innerHTML='❌ '+(err.message||err.code||'No se pudo iniciar sesión');
+            }
+            errEl.style.display='block';
+        }
+    });
 }
 
 /* ─── Captura del retorno de redirect flow ───
@@ -1828,18 +1786,37 @@ function scanGoogleLogin(){
             sessionStorage.removeItem('pendingDocencia');
             if(restoredPage) pendingPageAfterLogin = restoredPage;
             if(restoredDocencia) window._pendingDocencia = true;
-            // Emular la misma secuencia que el success de popup
+            // Cerrar modal de login
             try{document.getElementById('scanLoginModal').style.display='none';}catch(e){}
+            // Cargar moderadores y admin panel
             if(typeof loadModeradoresFromFirestore==='function'){
                 loadModeradoresFromFirestore(function(){
                     isAdminLoggedIn = typeof isAdmin==='function' && isAdmin();
                     if(typeof apShowAdminTab==='function') apShowAdminTab(isAdminLoggedIn);
                     if(typeof updateModBadgeAll==='function') updateModBadgeAll();
+                    if(isAdminLoggedIn&&!pendingPageAfterLogin&&!window._pendingDocencia){
+                        try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
+                    }
                 });
             }
+            // Redirigir al destino pendiente
             if(restoredPage && typeof showPage==='function'){
                 if(typeof logPageAccess==='function') logPageAccess(restoredPage, result.user);
                 showPage(restoredPage);
+            }else if(window._pendingDocencia){
+                window._pendingDocencia=false;
+                document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+                var landing=document.getElementById('pageLanding');
+                if(landing)landing.classList.add('active');
+                setTimeout(function(){
+                    var sh=document.getElementById('subHerramientas');if(sh)sh.style.display='none';
+                    var sp=document.getElementById('subProtocolos');if(sp)sp.style.display='none';
+                    var sd=document.getElementById('subDocencia');
+                    if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
+                },500);
+            }else if(typeof showPage==='function'){
+                showPage("pageScanIA");
+                if(typeof scanRenderHist==='function') scanRenderHist();
             }
         }).catch(function(err){
             console.warn('getRedirectResult:', err && err.code);
