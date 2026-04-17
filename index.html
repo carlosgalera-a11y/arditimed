@@ -1469,6 +1469,12 @@ window.showNotebooksModal=function(){
                             <div style="font-size:.75rem;color:var(--text-muted);">6.7 KB</div>
                         </div>
                     </a>
+                <!-- Guía de Visado -->
+                    <div onclick="switchProtocolTab('preguntas-proto',document.querySelectorAll('.tab-protocols')[1]);document.getElementById('apProtoSelect').value='visado';" style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #b45309;border-left:4px solid #b45309;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(180,83,9,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">📋</div>
+                        <div style="font-weight:600;color:#b45309;margin-bottom:2px;font-size:.9rem;">💊 Guía de Visado SMS</div>
+                        <div style="font-size:.75rem;color:var(--text-muted);">Prescripción · Pregunta a la IA</div>
+                    </div>
                 </div>
             </div>
             
@@ -1522,7 +1528,7 @@ window.showNotebooksModal=function(){
                 <div style="background:linear-gradient(135deg,var(--bg-dark),#243347);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;">
                     <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:2.5rem;opacity:.12;">🧠</div>
                     <h4 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:6px;">🤖 Pregunta sobre los Protocolos</h4>
-                    <p style="font-size:.86rem;opacity:.8;font-weight:300;">La IA tiene acceso al contenido completo de los 10 protocolos de Atención Primaria.</p>
+                    <p style="font-size:.86rem;opacity:.8;font-weight:300;">La IA tiene acceso al contenido completo de los 10 protocolos de AP y la Guía de Visado del SMS.</p>
                 </div>
                 
                 <!-- Selector de protocolo -->
@@ -1540,6 +1546,7 @@ window.showNotebooksModal=function(){
                         <option value="8">8 · Problemas Digestivos</option>
                         <option value="9">9 · Problemas Digestivos (cont.)</option>
                         <option value="10">10 · Respiratorio y Cardiovascular</option>
+                        <option value="visado" style="font-weight:600;color:#b45309;">📋 Guía de Visado (Prescripción SMS)</option>
                     </select>
                 </div>
                 
@@ -1554,6 +1561,7 @@ window.showNotebooksModal=function(){
                     <button onclick="apQuickAsk('Resume los puntos clave de este protocolo')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">📋 Resumen clave</button>
                     <button onclick="apQuickAsk('¿Cuáles son los criterios de derivación urgente?')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">🚨 Criterios derivación</button>
                     <button onclick="apQuickAsk('¿Qué tratamiento farmacológico recomienda?')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">💊 Tratamiento</button>
+                    <button onclick="apQuickAsk('¿Qué medicamentos necesitan visado y de qué tipo (DH/CPD)?')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='#b45309';this.style.color='#b45309'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">📋 Visados</button>
                     <button onclick="apQuickAsk('Haz un esquema de diagnóstico diferencial')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">🔍 Dx diferencial</button>
                 </div>
                 
@@ -1587,6 +1595,7 @@ window.showNotebooksModal=function(){
                         <option value="8">8 · Problemas Digestivos</option>
                         <option value="9">9 · Problemas Digestivos (cont.)</option>
                         <option value="10">10 · Respiratorio y Cardiovascular</option>
+                        <option value="visado" style="font-weight:600;color:#b45309;">📋 Guía de Visado (Prescripción SMS)</option>
                     </select>
                 </div>
 
