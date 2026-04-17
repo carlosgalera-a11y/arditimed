@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v59 - App Check desactivado (causa raíz login roto)
-const CACHE_NAME = 'area2-v89';
+// Service Worker - Área II Cartagena PWA v60 - fix megaAppendMsg HTML escapado en mensajes sistema
+const CACHE_NAME = 'area2-v90';
 
 const PRECACHE = [
   '/Cartagenaeste/',

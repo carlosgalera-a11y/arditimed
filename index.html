@@ -4,7 +4,7 @@
 <script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
-  var REQUIRED_V = 89;
+  var REQUIRED_V = 90;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -3788,12 +3788,18 @@ function megaAppendMsg(role, text) {
     div.style.cssText = "margin-bottom:12px;display:flex;" +
         (isUser ? "justify-content:flex-end" : "justify-content:flex-start");
     var bubble = document.createElement("div");
-    var formatted = text
-        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-        .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
-        .replace(/^#{1,3} (.+)$/gm,"<strong>$1</strong>")
-        .replace(/^[-*] (.+)$/gm,"&bull; $1")
-        .replace(/\n/g,"<br>");
+    var formatted;
+    if(isSystem){
+        // System messages come from our code (trusted) — allow HTML
+        formatted = text.replace(/\n/g,"<br>");
+    }else{
+        formatted = text
+            .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+            .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+            .replace(/^#{1,3} (.+)$/gm,"<strong>$1</strong>")
+            .replace(/^[-*] (.+)$/gm,"&bull; $1")
+            .replace(/\n/g,"<br>");
+    }
     bubble.innerHTML = formatted;
     bubble.style.cssText = "max-width:88%;padding:10px 14px;border-radius:12px;" +
         "font-size:.85rem;line-height:1.6;" +
