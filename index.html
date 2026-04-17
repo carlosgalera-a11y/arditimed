@@ -3246,9 +3246,14 @@ function infDescargar(formato){
 </div>
 
 
+<!-- Puter.js deshabilitado (v48+): usábamos su img2txt como fallback de ScanIA,
+     pero abre un wss://api.puter.com/socket.io permanente que satura la consola
+     con errores CSP. Ahora ScanIA usa Cloud Function 'scanIA' como primaria.
+     Si quieres reactivar: descomenta y añade wss://api.puter.com a connect-src.
 <script src="https://js.puter.com/v2/"></script>
+-->
 <script src="api-config.js?v=20260406a"></script>
-<script src="app-main.js?v=20260408c"></script>
+<script src="app-main.js?v=20260408d"></script>
 <script src="escalas-clinicas.js?v=20260408b"></script>
 <script src="turnos-guardia.js?v=20260402a"></script>
 <script src="triaje-ia.js?v=20260406a"></script>

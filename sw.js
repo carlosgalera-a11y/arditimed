@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v48 - Login Google popup+redirect fallback automático
-const CACHE_NAME = 'area2-v78';
+// Service Worker - Área II Cartagena PWA v49 - Puter.js deshabilitado (socket.io spam); Cloud Functions primario
+const CACHE_NAME = 'area2-v79';
 
 const PRECACHE = [
   '/Cartagenaeste/',
