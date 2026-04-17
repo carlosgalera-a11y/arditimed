@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v55 - Mensaje error Brave Shields detallado
-const CACHE_NAME = 'area2-v85';
+// Service Worker - Área II Cartagena PWA v54 - Email Link habilitado en Firebase - force cache refresh
+const CACHE_NAME = 'area2-v84';
 
 const PRECACHE = [
   '/Cartagenaeste/',

@@ -1955,12 +1955,6 @@ function sendEmailLoginLink(){
             msg = '❌ Email inválido.';
         }else if(err.code === 'auth/unauthorized-continue-uri'){
             msg = '❌ Dominio no autorizado en Firebase. El administrador debe añadir ' + window.location.hostname + ' en Auth → Settings → Authorized domains.';
-        }else if(err.code === 'auth/network-request-failed'){
-            msg = '❌ <b>Error de red.</b> Causas probables:<br>'+
-                  '1. <b>Brave Shields / bloqueador de anuncios</b>: desactiva los escudos (icono 🦁 en la barra) para este sitio y recarga.<br>'+
-                  '2. <b>VPN / Firewall</b>: puede estar bloqueando <code>googleapis.com</code>.<br>'+
-                  '3. <b>Sin conexión</b>: comprueba tu wifi/4G.<br>'+
-                  '<a href="javascript:void(0)" onclick="sendEmailLoginLink()" style="color:#0066cc;text-decoration:underline;font-weight:600;">🔄 Reintentar</a>';
         }
         setStatus(msg, '#dc2626');
         if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent='📧 Enviar enlace de acceso';}
