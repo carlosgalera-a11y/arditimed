@@ -6,33 +6,30 @@
 <title>Urgencias · Ambulancias · Camas — Área II Cartagena</title>
 <meta name="description" content="Referencia clínica educativa: condiciones, procedimientos y fármacos para Urgencias. Adulto, Pediátrico y Neonatal.">
 <style>
-/* ─── TEMA CLARO MEDTECH ─────────────────────────────────── */
+/* ═════════════════════════════════════════════════════════
+   PARATUS · Área II Cartagena
+   Disposición tipo Vademécum (mobile-first, columna única)
+   ═════════════════════════════════════════════════════════ */
 :root{
-  --bg:#f5f7fa;
-  --panel:#ffffff;
-  --panel-2:#f0f3f7;
-  --ink:#1a202c;
-  --ink-soft:#4a5568;
-  --muted:#718096;
-  --border:#e2e8f0;
-  --border-strong:#cbd5e0;
-  --hl:#ebf4ff;
+  --ink:#1c2434; --ink-soft:#344054;
+  --cream:#faf6ee; --cream-dk:#f0e8da;
+  --gold:#b99146; --tera:#c05440; --sage:#6c8460;
+  --muted:#8c8273; --rule:#c8bca8;
 
-  /* Environment accents (changed at runtime via body class) */
-  --env:#e53935;           /* adult red default */
-  --env-soft:#fdecea;
-  --env-ink:#b71c1c;
+  /* Environment accent (cambia por body.env-*) */
+  --env:#c05440;        /* rojo tera por defecto (adulto) */
+  --env-soft:rgba(192,84,64,.12);
 
   /* Type colors (chips) */
-  --drug:#1976d2;          /* blue */
-  --drug-bg:#e3f2fd;
-  --procedure:#2e7d32;     /* green */
-  --procedure-bg:#e8f5e9;
-  --condition:#6a1b9a;     /* purple */
-  --condition-bg:#f3e5f5;
+  --drug:#0d47a1;
+  --drug-bg:rgba(13,71,161,.1);
+  --procedure:#2e7d32;
+  --procedure-bg:rgba(46,125,50,.1);
+  --condition:#6a1b9a;
+  --condition-bg:rgba(106,27,154,.1);
 
-  /* Category colors */
-  --cat-cardiovascular:#e53935;
+  /* Category palette */
+  --cat-cardiovascular:#c0392b;
   --cat-neurological:#6a1b9a;
   --cat-respiratory:#00838f;
   --cat-breathing:#0277bd;
@@ -47,267 +44,294 @@
   --cat-essentials:#37474f;
   --cat-basics:#546e7a;
   --cat-rare:#4527a0;
-
-  --radius:10px;
-  --radius-lg:14px;
-  --shadow-sm:0 1px 2px rgba(16,24,40,.05);
-  --shadow:0 1px 3px rgba(16,24,40,.08), 0 1px 2px rgba(16,24,40,.04);
-  --shadow-md:0 4px 6px -1px rgba(16,24,40,.08), 0 2px 4px -2px rgba(16,24,40,.06);
-  --shadow-lg:0 10px 15px -3px rgba(16,24,40,.08), 0 4px 6px -4px rgba(16,24,40,.05);
 }
+body.env-adult{--env:#0d47a1; --env-soft:rgba(13,71,161,.12);}
+body.env-pediatric{--env:#2e7d32; --env-soft:rgba(46,125,50,.12);}
+body.env-neonatal{--env:#9d174d; --env-soft:rgba(157,23,77,.12);}
 
-/* Environment-specific theming when inside an env */
-body.env-adult{--env:#e53935;--env-soft:#fdecea;--env-ink:#b71c1c;}
-body.env-pediatric{--env:#1e88e5;--env-soft:#e3f2fd;--env-ink:#0d47a1;}
-body.env-neonatal{--env:#9c27b0;--env-soft:#f3e5f5;--env-ink:#6a1b9a;}
-
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
-  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
-  -webkit-font-smoothing:antialiased}
-a{color:var(--env);text-decoration:none}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Poppins',system-ui,sans-serif;background:var(--cream);
+  color:var(--ink);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:var(--tera);text-decoration:none}
 a:hover{text-decoration:underline}
 
-/* ─── HEADER ─────────────────────────────────────────────── */
-header{background:var(--panel);border-bottom:1px solid var(--border);
-  padding:14px 20px;position:sticky;top:0;z-index:20;box-shadow:var(--shadow-sm)}
-header h1{margin:0 0 4px;font-size:18px;font-weight:700;color:var(--ink);
-  letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
-header .sub{color:var(--muted);font-size:12.5px;font-weight:500}
-header .back-link{display:inline-block;margin-top:6px;color:var(--muted);
-  font-size:12.5px;font-weight:500}
-header .back-link:hover{color:var(--env)}
-.tabs{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;align-items:center}
-.tab{padding:7px 14px;border:1px solid var(--border);border-radius:999px;
-  background:var(--panel);cursor:pointer;font:inherit;font-size:13px;
-  font-weight:600;color:var(--ink-soft);transition:all .15s}
-.tab:hover{border-color:var(--border-strong);background:var(--panel-2)}
-.tab[aria-selected="true"]{background:var(--env);color:#fff;
-  border-color:var(--env);box-shadow:var(--shadow)}
+/* ─── TOPBAR sticky ───────────────────────────────────── */
+header{background:var(--ink);color:#fff;padding:10px 16px;position:sticky;top:0;
+  z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.08);display:flex;align-items:center;
+  gap:12px;flex-wrap:wrap}
+header h1{font-family:'Lora',serif;font-weight:700;font-size:1.15rem;
+  letter-spacing:.01em;color:#fff;margin:0;flex:1;display:flex;align-items:center;gap:6px}
+header h1 em{color:var(--gold);font-style:italic;font-weight:400;margin-left:4px}
+header .sub{display:none !important}
+header .back-link{display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.1);border:none;color:#fff;width:38px;height:38px;
+  border-radius:10px;cursor:pointer;font-size:1.1rem;text-decoration:none;
+  transition:.15s;flex-shrink:0;margin:0}
+header .back-link:hover{background:rgba(255,255,255,.2);text-decoration:none}
+/* env tabs now live in the banner — hide original #envtabs when env selected */
+#envtabs{display:none}
 
-.back-to-home{display:inline-flex;align-items:center;gap:6px;background:var(--panel);
-  border:1px solid var(--border);color:var(--ink-soft);padding:7px 12px;
-  border-radius:999px;cursor:pointer;font:inherit;font-size:12.5px;
-  font-weight:600;margin-right:4px;transition:all .15s}
-.back-to-home:hover{border-color:var(--env);color:var(--env);background:var(--env-soft)}
-
-/* ─── LAYOUT ─────────────────────────────────────────────── */
-.layout{display:grid;grid-template-columns:340px 1fr;gap:0;
-  min-height:calc(100vh - 160px)}
-@media (max-width:860px){.layout{grid-template-columns:1fr}}
-
-aside{background:var(--panel);border-right:1px solid var(--border);padding:14px;
-  overflow:auto;max-height:calc(100vh - 160px)}
-.kind-tabs{display:flex;gap:4px;margin-bottom:10px;padding:3px;
-  background:var(--panel-2);border-radius:var(--radius);border:1px solid var(--border)}
-.kind-tabs button{flex:1;padding:7px 6px;border:none;background:transparent;
-  color:var(--ink-soft);border-radius:7px;cursor:pointer;font:inherit;
-  font-size:13px;font-weight:600;transition:all .12s;display:flex;
-  align-items:center;justify-content:center;gap:5px}
-.kind-tabs button:hover{background:rgba(0,0,0,.04);color:var(--ink)}
-.kind-tabs button[aria-selected="true"]{background:var(--panel);color:var(--env);
-  box-shadow:var(--shadow-sm)}
-
-input.search,select.cat,input.weight{width:100%;padding:9px 12px;
-  border:1px solid var(--border);border-radius:var(--radius);font:inherit;
-  font-size:14px;margin-bottom:10px;background:var(--panel);color:var(--ink);
-  transition:border-color .12s,box-shadow .12s}
-input.search:focus,select.cat:focus,input.weight:focus{outline:none;
-  border-color:var(--env);box-shadow:0 0 0 3px var(--env-soft)}
-input::placeholder{color:var(--muted)}
-
-.list{margin:0;padding:0;list-style:none}
-.list .cat-header{font-weight:700;font-size:11px;text-transform:uppercase;
-  letter-spacing:.08em;padding:14px 10px 6px;color:var(--cat,#546e7a);
-  border-left:3px solid var(--cat,#cbd5e0);margin-left:2px;background:transparent}
-.list li button{width:100%;text-align:left;padding:9px 10px 9px 14px;border:none;
-  background:transparent;color:var(--ink);border-radius:8px;cursor:pointer;
-  font:inherit;font-size:13.5px;line-height:1.4;transition:all .12s;
-  display:block;border-left:3px solid transparent;margin-left:2px}
-.list li button:hover,.list li button:focus{background:var(--env-soft);
-  outline:none;border-left-color:var(--env)}
-.list li button[aria-current="true"]{background:var(--env-soft);
-  border-left-color:var(--env);color:var(--env-ink);font-weight:600}
-.list .sub{font-size:11.5px;color:var(--muted);display:block;margin-top:2px}
-
-/* ─── MAIN ───────────────────────────────────────────────── */
-main{padding:24px 28px;overflow:auto;max-height:calc(100vh - 160px);
-  background:var(--bg)}
-main h2{margin:0 0 4px;font-size:24px;font-weight:700;color:var(--ink);
-  letter-spacing:-.015em}
-main .crumb{color:var(--muted);font-size:13px;margin-bottom:18px;font-weight:500}
-.card{background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:14px;
-  box-shadow:var(--shadow-sm)}
-.disclaimer{background:#fff8e1;border:1px solid #ffe082;color:#5d4037;
-  border-radius:var(--radius);padding:10px 14px;font-size:12.5px;
-  margin-bottom:18px;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
-.disclaimer::before{content:"⚠";font-size:16px;flex-shrink:0}
-
-/* Pills / metadata */
-.pill{display:inline-flex;align-items:center;gap:4px;background:var(--panel-2);
-  color:var(--ink-soft);padding:3px 10px;border-radius:999px;font-size:11.5px;
-  font-weight:600;margin-right:6px;border:1px solid var(--border)}
-.pill.cat{background:var(--cat-bg,var(--panel-2));color:var(--cat,var(--ink-soft));
-  border-color:var(--cat-border,var(--border))}
-
-/* Indication tabs inside a condition/procedure */
-.ind-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 16px}
-.ind-tabs button{padding:7px 13px;border:1px solid var(--border);
-  background:var(--panel);color:var(--ink-soft);border-radius:8px;cursor:pointer;
-  font:inherit;font-size:13px;font-weight:600;transition:all .12s}
-.ind-tabs button:hover{border-color:var(--env);color:var(--env)}
-.ind-tabs button[aria-selected="true"]{background:var(--env);color:#fff;
-  border-color:var(--env);box-shadow:var(--shadow-sm)}
-
-/* ─── STEPS (timeline) ───────────────────────────────────── */
-.step{position:relative;padding:14px 16px 14px 60px;margin:12px 0;
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--radius);box-shadow:var(--shadow-sm);
-  transition:box-shadow .15s}
-.step:hover{box-shadow:var(--shadow)}
-.step .step-num{position:absolute;left:14px;top:14px;width:32px;height:32px;
-  background:var(--env);color:#fff;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-weight:700;
-  font-size:14px;box-shadow:var(--shadow);font-variant-numeric:tabular-nums}
-.step h4{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--ink)}
-.step .meta{color:var(--muted);font-size:12.5px;margin-bottom:8px;
-  font-weight:500;display:flex;flex-wrap:wrap;gap:4px 10px}
-.step .meta-tag{display:inline-flex;align-items:center;gap:4px;
-  background:var(--panel-2);padding:2px 8px;border-radius:6px;font-size:11.5px}
-.step .para{margin:6px 0;line-height:1.55;font-size:13.5px}
-.step .para.note{background:#e3f2fd;border-left:3px solid var(--drug);
-  padding:8px 12px;border-radius:6px;color:#0d47a1;margin:8px 0}
-.step .para.admin{background:#f3e5f5;border-left:3px solid var(--condition);
-  padding:8px 12px;border-radius:6px;color:#4a148c;margin:8px 0}
-.step .para.warn{background:#fff3e0;border-left:3px solid #ef6c00;
-  padding:8px 12px;border-radius:6px;color:#bf360c;margin:8px 0;font-weight:500}
-
-/* Dose table */
-.doses{margin-top:10px;overflow:auto;border-radius:var(--radius);
-  border:1px solid var(--border)}
-.doses table{border-collapse:collapse;width:100%;font-size:13px;
-  background:var(--panel)}
-.doses th{background:var(--panel-2);color:var(--ink-soft);text-align:left;
-  padding:8px 12px;font-weight:600;font-size:12px;text-transform:uppercase;
-  letter-spacing:.04em;border-bottom:1px solid var(--border)}
-.doses td{padding:10px 12px;border-bottom:1px solid var(--border);
-  color:var(--ink);vertical-align:top}
-.doses tr:last-child td{border-bottom:none}
-.doses tr.match{background:var(--env-soft);box-shadow:inset 3px 0 0 var(--env)}
-.doses tr.match td{font-weight:600;color:var(--env-ink)}
-
-/* Inline chips (drug/procedure references inside content) */
-.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
-  border-radius:999px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0;
-  text-decoration:none;transition:all .12s;border:1px solid transparent;
-  white-space:nowrap}
-.chip.drug{background:var(--drug-bg);color:var(--drug);border-color:#90caf9}
-.chip.procedure{background:var(--procedure-bg);color:var(--procedure);
-  border-color:#a5d6a7}
-.chip.condition{background:var(--condition-bg);color:var(--condition);
-  border-color:#ce93d8}
-.chip:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}
-.chip-icon{font-size:13px;line-height:1}
-
-/* Sections in rendered tabs */
-.sec{margin:14px 0 10px}
-.sec>h3{margin:0 0 8px;font-size:15px;font-weight:700;color:var(--ink);
-  letter-spacing:-.01em}
-.sec>h3::before{content:"";display:inline-block;width:3px;height:14px;
-  background:var(--env);margin-right:8px;vertical-align:middle;border-radius:2px}
-.para{margin:6px 0;line-height:1.6}
-ul.bl{margin:6px 0 6px 0;padding:0 0 0 20px}
-ul.bl li{margin:3px 0;line-height:1.55}
-
-/* Sticky weight */
-.weight-widget{position:sticky;top:12px;float:right;z-index:15;
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--radius);padding:8px 12px;
-  display:inline-flex;align-items:center;gap:8px;font-size:13px;
-  box-shadow:var(--shadow);margin-left:12px}
-.weight-widget label{font-weight:600;color:var(--ink-soft);font-size:12px}
-.weight-widget input{width:78px;padding:6px 10px;border:1px solid var(--border);
-  border-radius:6px;font:inherit;font-size:14px;font-weight:600;
-  color:var(--ink);text-align:center;background:var(--panel)}
-.weight-widget input:focus{outline:none;border-color:var(--env);
-  box-shadow:0 0 0 3px var(--env-soft)}
-.weight-widget .unit{color:var(--muted);font-weight:500;font-size:12px}
-
-.topbar{display:flex;justify-content:space-between;align-items:flex-start;
-  flex-wrap:wrap;gap:12px;margin-bottom:4px}
-.back-link{display:inline-block;margin:0;color:var(--muted);
-  text-decoration:none;font-size:12.5px;font-weight:500}
-.back-link:hover{color:var(--env)}
-
-footer{padding:14px 20px;color:var(--muted);font-size:12px;text-align:center;
-  border-top:1px solid var(--border);background:var(--panel)}
-footer a{color:var(--muted)}
-.empty{color:var(--muted);padding:24px;text-align:center;font-size:13.5px;
-  font-style:italic}
-
-/* ─── HOME SCREEN (keep cards but on light bg) ───────────── */
-#home-screen{padding:40px 24px;max-width:560px;margin:0 auto}
-#home-screen h1.home-title{font-size:24px;font-weight:700;color:var(--ink);
-  margin:0 0 6px;text-align:center;letter-spacing:-.015em}
-#home-screen .home-sub{color:var(--muted);font-size:14px;text-align:center;
-  margin-bottom:28px;font-weight:500}
+/* ─── HOME SCREEN (kept as entry point) ───────────────── */
+#home-screen{padding:28px 20px 48px;max-width:560px;margin:0 auto}
+#home-screen h1.home-title{font-family:'Lora',serif;font-size:1.8rem;font-weight:700;
+  color:var(--ink);margin:0 0 4px;text-align:center;letter-spacing:-.005em}
+#home-screen h1.home-title em{color:var(--gold);font-style:italic;font-weight:400}
+#home-screen .home-sub{color:var(--muted);font-size:.88rem;text-align:center;
+  margin-bottom:22px;font-weight:500}
 #home-screen .home-disclaimer{background:#fff8e1;border:1px solid #ffe082;
-  color:#5d4037;border-radius:var(--radius);padding:12px 16px;font-size:12.5px;
-  margin:0 0 24px;line-height:1.55}
+  color:#5d4037;border-radius:10px;padding:12px 16px;font-size:.82rem;
+  margin:0 0 22px;line-height:1.55}
 #home-screen .home-disclaimer strong{color:#3e2723}
-#home-screen .cards{display:flex;flex-direction:column;gap:16px}
+#home-screen .cards{display:flex;flex-direction:column;gap:14px}
 #home-screen .env-card{display:flex;align-items:center;justify-content:space-between;
-  border:none;cursor:pointer;padding:22px 24px;border-radius:22px;color:#fff;
-  font:inherit;font-size:26px;font-weight:700;text-align:left;
-  box-shadow:var(--shadow-lg);transition:all .15s ease;overflow:hidden;
-  position:relative;letter-spacing:-.01em}
-#home-screen .env-card:hover{transform:translateY(-3px);
-  box-shadow:0 14px 30px -6px rgba(16,24,40,.25)}
-#home-screen .env-card:active{transform:translateY(-1px)}
-#home-screen .env-card .icon-wrap{background:#fff;border-radius:18px;
-  width:82px;height:82px;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;margin-left:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
-#home-screen .env-card .icon-wrap svg{width:46px;height:46px}
+  border:none;cursor:pointer;padding:20px 22px;border-radius:18px;color:#fff;
+  font:inherit;font-family:'Lora',serif;font-size:1.5rem;font-weight:700;
+  text-align:left;box-shadow:0 6px 18px rgba(0,0,0,.12);transition:.15s ease;
+  overflow:hidden;position:relative;letter-spacing:-.005em}
+#home-screen .env-card:hover{transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(0,0,0,.16)}
+#home-screen .env-card .icon-wrap{background:#fff;border-radius:16px;width:72px;
+  height:72px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  margin-left:12px}
+#home-screen .env-card .icon-wrap svg{width:42px;height:42px}
 #home-screen .env-card.adult{background:linear-gradient(135deg,#ef5350 0%,#e53935 60%,#c62828 100%)}
 #home-screen .env-card.adult .icon-wrap svg{stroke:#e53935}
 #home-screen .env-card.pediatric{background:linear-gradient(135deg,#42a5f5 0%,#1e88e5 60%,#1565c0 100%)}
 #home-screen .env-card.pediatric .icon-wrap svg{stroke:#1e88e5}
 #home-screen .env-card.neonatal{background:linear-gradient(135deg,#ab47bc 0%,#9c27b0 60%,#7b1fa2 100%)}
 #home-screen .env-card.neonatal .icon-wrap svg{stroke:#9c27b0}
-@media (max-width:520px){
-  #home-screen .env-card{font-size:22px;padding:18px 20px}
-  #home-screen .env-card .icon-wrap{width:66px;height:66px}
-  #home-screen .env-card .icon-wrap svg{width:38px;height:38px}
-}
-/* Toggle */
+
 body.view-home .layout{display:none}
-body.view-home #envtabs{display:none}
-body.view-home header .sub{display:none}
-body.view-home header .back-link{display:none}
+body.view-home .weight-banner{display:none}
+body.view-home .search-wrap{display:none}
+body.view-home .kind-tabs-wrap{display:none}
 body.view-env #home-screen{display:none}
 
-/* References details */
-details{background:var(--panel-2);border-radius:8px;padding:0;margin-top:10px;
-  border:1px solid var(--border)}
-details summary{cursor:pointer;padding:8px 12px;font-weight:600;font-size:12.5px;
-  color:var(--ink-soft);user-select:none}
-details summary:hover{color:var(--env)}
-details[open] summary{border-bottom:1px solid var(--border)}
-details .para{padding:10px 12px;margin:0;font-size:13px;color:var(--ink-soft)}
+/* ─── WEIGHT BANNER sticky debajo del topbar ─────────── */
+.weight-banner{background:linear-gradient(135deg,var(--tera),#a84434);color:#fff;
+  padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  position:sticky;top:58px;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.weight-banner label{font-size:.78rem;font-weight:600;opacity:.95;letter-spacing:.02em}
+.weight-banner input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  color:#fff;padding:6px 10px;border-radius:8px;width:80px;font-weight:700;
+  text-align:center;font-size:.95rem;font-family:inherit}
+.weight-banner input:focus{outline:none;background:rgba(255,255,255,.25);border-color:#fff}
+.weight-banner input::placeholder{color:rgba(255,255,255,.55)}
+.weight-banner .unit{font-weight:700;font-size:.85rem}
+.weight-banner .conv{font-size:.72rem;opacity:.85;font-variant-numeric:tabular-nums}
+.weight-banner .env-pill{margin-left:auto;background:rgba(255,255,255,.15);
+  padding:5px 10px;border-radius:20px;font-size:.72rem;font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.weight-banner .env-switch{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600;
+  cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:.15s}
+.weight-banner .env-switch:hover{background:rgba(255,255,255,.25)}
 
-/* Scrollbars */
-aside::-webkit-scrollbar,main::-webkit-scrollbar{width:10px;height:10px}
-aside::-webkit-scrollbar-thumb,main::-webkit-scrollbar-thumb{
-  background:var(--border-strong);border-radius:5px}
-aside::-webkit-scrollbar-track,main::-webkit-scrollbar-track{background:transparent}
+/* ─── SEARCH BOX ────────────────────────────────────── */
+.search-wrap{padding:14px 16px 0;max-width:900px;margin:0 auto}
+.search-box{position:relative;background:#fff;border:1px solid var(--rule);
+  border-radius:12px;padding:12px 16px 12px 42px;display:flex;align-items:center;
+  transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.search-box:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(185,145,70,.15)}
+.search-box::before{content:'🔍';position:absolute;left:14px;top:50%;
+  transform:translateY(-50%);font-size:.95rem;opacity:.55}
+.search-box input{flex:1;border:none;background:transparent;color:var(--ink);
+  font-size:.95rem;font-family:inherit;outline:none;width:100%}
+
+/* ─── KIND TABS (Condiciones/Procedimientos/Fármacos) ─── */
+.kind-tabs-wrap{max-width:900px;margin:14px auto 0;padding:0 16px}
+.kind-tabs{display:flex;gap:0;border-bottom:2px solid var(--rule)}
+.kind-tabs button{flex:1;background:none;border:none;padding:14px 8px;cursor:pointer;
+  font-family:'Lora',serif;font-weight:600;font-size:1rem;color:var(--muted);
+  letter-spacing:.02em;transition:.15s;border-bottom:3px solid transparent;margin-bottom:-2px}
+.kind-tabs button:hover{color:var(--ink)}
+.kind-tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold)}
+
+/* ─── Category filter chip row ───────────────────────── */
+.cat-filter-wrap{max-width:900px;margin:12px auto 0;padding:0 16px;
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.cat-filter-wrap::-webkit-scrollbar{display:none}
+.cat-filter-wrap button{flex-shrink:0;background:#fff;border:1px solid var(--rule);
+  border-radius:20px;padding:6px 12px;font-size:.78rem;font-weight:600;
+  color:var(--ink-soft);cursor:pointer;transition:.15s;white-space:nowrap;
+  font-family:inherit}
+.cat-filter-wrap button:hover{border-color:var(--gold);color:var(--ink)}
+.cat-filter-wrap button[aria-selected="true"]{background:var(--cat,var(--gold));
+  color:#fff;border-color:var(--cat,var(--gold))}
+
+/* ─── CONTAINER (single column) ──────────────────────── */
+.layout{max-width:900px;margin:0 auto;padding:16px;padding-bottom:80px;display:block}
+aside{background:transparent;border:none;padding:0;overflow:visible;max-height:none;
+  margin-bottom:16px}
+main{padding:0;overflow:visible;max-height:none;background:transparent}
+
+/* ─── Breadcrumb ─────────────────────────────────────── */
+.breadcrumb{display:flex;align-items:center;gap:8px;padding:8px 0 12px;
+  font-size:.85rem;color:var(--muted);flex-wrap:wrap}
+.breadcrumb a{color:var(--tera);cursor:pointer;font-weight:600}
+.breadcrumb .sep{color:var(--muted)}
+
+/* ─── List of items (condiciones/procedimientos/fármacos) ─ */
+.list{display:flex;flex-direction:column;gap:4px;list-style:none;padding:0;margin:0}
+.cat-header{font-family:'Lora',serif;font-weight:700;font-size:.78rem;
+  text-transform:uppercase;letter-spacing:.08em;padding:14px 10px 6px 12px;
+  color:var(--cat,var(--muted));border-left:3px solid var(--cat,var(--rule));
+  margin:8px 0 4px;display:flex;align-items:center;gap:6px}
+.list li{display:block}
+.list li button{width:100%;text-align:left;background:#fff;border:1px solid var(--rule);
+  border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;
+  gap:12px;transition:.15s;color:var(--ink);font:inherit;font-size:.92rem;font-weight:600}
+.list li button:hover,.list li button:focus{border-color:var(--gold);
+  background:var(--cream-dk);outline:none;transform:translateX(2px);
+  box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.list li button::before{content:"";width:6px;height:6px;background:var(--gold);
+  border-radius:50%;flex-shrink:0;display:inline-block}
+.list li button[aria-current="true"]{background:var(--cream-dk);
+  border-color:var(--tera);color:var(--tera)}
+.list .sub{font-size:.72rem;color:var(--muted);display:block;margin-top:2px;font-weight:500}
+
+/* ─── Detail card ─────────────────────────────────────── */
+.card{background:#fff;border:1px solid var(--rule);border-radius:14px;
+  padding:20px 22px;margin-bottom:16px;position:relative}
+main > .card > h2, .card h2{font-family:'Lora',serif;font-weight:700;
+  font-size:1.5rem;color:var(--ink);margin:0 0 6px;line-height:1.2;letter-spacing:-.005em}
+main > .card > h2 em{color:var(--tera);font-style:italic}
+.card .crumb{display:none}
+.topbar{display:none} /* legacy topbar inside main, hidden */
+main .crumb{color:var(--muted);font-size:.85rem;margin-bottom:12px;font-weight:500;font-style:italic}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;gap:4px;background:var(--cream-dk);
+  color:var(--ink-soft);padding:3px 10px;border-radius:999px;font-size:.72rem;
+  font-weight:600;margin-right:6px;border:1px solid var(--rule);
+  font-family:inherit;letter-spacing:.02em}
+.pill.cat{background:var(--cat-bg,var(--cream-dk));color:var(--cat,var(--ink-soft));
+  border-color:var(--cat-border,var(--rule))}
+
+/* Indication tabs inside a condition */
+.ind-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+.ind-tabs button{padding:6px 12px;border:1px solid var(--rule);background:#fff;
+  color:var(--ink-soft);border-radius:20px;cursor:pointer;font:inherit;
+  font-size:.82rem;font-weight:600;transition:.12s}
+.ind-tabs button:hover{border-color:var(--gold);color:var(--ink)}
+.ind-tabs button[aria-selected="true"]{background:var(--gold);color:#fff;
+  border-color:var(--gold)}
+
+/* Sections inside an indication tab */
+.sec{margin:16px 0 10px}
+.sec>h3{font-family:'Lora',serif;font-weight:700;font-size:1.05rem;color:var(--ink);
+  margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:8px}
+.sec>h3::before{content:"";display:inline-block;width:3px;height:14px;
+  background:var(--gold);border-radius:2px}
+.para{margin:6px 0;font-size:.92rem;line-height:1.6;color:var(--ink-soft)}
+ul.bl{padding-left:20px;margin:6px 0}
+ul.bl li{font-size:.92rem;line-height:1.55;color:var(--ink-soft);margin:3px 0}
+
+/* ─── STEP (timeline numerada) ───────────────────────── */
+.step{position:relative;padding:14px 16px 14px 60px;margin:12px 0;
+  background:var(--cream-dk);border-left:4px solid var(--gold);border-radius:10px}
+.step .step-num{position:absolute;left:14px;top:14px;width:32px;height:32px;
+  background:var(--gold);color:#fff;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:700;font-size:.92rem;font-variant-numeric:tabular-nums;
+  box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.step h4{font-family:'Lora',serif;font-weight:700;font-size:1rem;color:var(--ink);
+  margin:0 0 6px}
+.step .meta{color:var(--muted);font-size:.78rem;margin-bottom:8px;font-weight:500;
+  display:flex;flex-wrap:wrap;gap:4px 8px}
+.step .meta-tag{display:inline-flex;align-items:center;gap:4px;background:#fff;
+  padding:2px 8px;border-radius:6px;font-size:.72rem;border:1px solid var(--rule)}
+.step .para{font-size:.88rem}
+.step .para.note{background:rgba(13,71,161,.08);border-left:3px solid var(--drug);
+  padding:8px 12px;border-radius:6px;color:#0d47a1;margin:8px 0;font-size:.85rem}
+.step .para.admin{background:rgba(106,27,154,.08);border-left:3px solid var(--condition);
+  padding:8px 12px;border-radius:6px;color:#4a148c;margin:8px 0;font-size:.85rem}
+.step .para.warn{background:rgba(192,84,64,.1);border-left:3px solid var(--tera);
+  padding:10px 12px;border-radius:6px;color:#8b2e1f;margin:8px 0;font-weight:500;font-size:.88rem}
+
+/* ─── DOSE TABLE ─────────────────────────────────────── */
+.doses{margin-top:10px;overflow-x:auto;border-radius:10px;border:1px solid var(--rule);
+  background:#fff}
+.doses table{border-collapse:collapse;width:100%;font-size:.82rem;
+  font-variant-numeric:tabular-nums}
+.doses th{background:var(--cream-dk);color:var(--ink-soft);text-align:left;
+  padding:8px 12px;font-weight:700;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.04em;border-bottom:1px solid var(--rule);font-family:'Lora',serif}
+.doses td{padding:10px 12px;border-bottom:1px solid var(--rule);color:var(--ink-soft);
+  vertical-align:top}
+.doses tr:last-child td{border-bottom:none}
+.doses tr.match{background:rgba(192,84,64,.08);box-shadow:inset 3px 0 0 var(--tera)}
+.doses tr.match td{color:var(--tera);font-weight:700}
+
+/* ─── Inline chips (drug/procedure references) ───────── */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+  border-radius:999px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0;
+  border:1px solid transparent;white-space:nowrap;transition:.12s;font-family:inherit}
+.chip.drug{background:var(--drug-bg);color:var(--drug);border-color:rgba(13,71,161,.3)}
+.chip.procedure{background:var(--procedure-bg);color:var(--procedure);border-color:rgba(46,125,50,.3)}
+.chip.condition{background:var(--condition-bg);color:var(--condition);border-color:rgba(106,27,154,.3)}
+.chip:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.chip-icon{font-size:.92rem;line-height:1}
+
+/* Disclaimer */
+.disclaimer{background:#fff8e1;border:1px solid #ffe082;color:#5d4037;
+  border-radius:10px;padding:10px 14px;font-size:.82rem;margin-bottom:16px;
+  line-height:1.55;display:flex;gap:8px;align-items:flex-start}
+.disclaimer::before{content:"⚠";font-size:1.05rem;flex-shrink:0}
+
+/* Weight widget LEGACY (inside main) — oculto, ahora usamos banner */
+.weight-widget{display:none}
+
+/* Details/references */
+details{background:var(--cream-dk);border-radius:8px;padding:0;margin-top:10px;
+  border:1px solid var(--rule)}
+details summary{cursor:pointer;padding:8px 12px;font-weight:600;font-size:.78rem;
+  color:var(--ink-soft);user-select:none;font-family:inherit}
+details summary:hover{color:var(--tera)}
+details[open] summary{border-bottom:1px solid var(--rule)}
+details .para{padding:10px 12px;margin:0;font-size:.82rem}
+
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:.9rem;
+  font-style:italic}
+
+/* Footer */
+footer{text-align:center;padding:24px 16px;font-size:.72rem;color:var(--muted);
+  font-style:italic;border-top:1px solid var(--rule);margin-top:40px;
+  background:transparent;font-family:inherit}
+footer a{color:var(--muted)}
+
+/* Back-to-home button (kept but restyled) */
+.back-to-home{display:none}
+
+/* Responsive */
+@media (max-width:600px){
+  header h1{font-size:1rem}
+  .weight-banner{gap:8px;padding:10px 12px}
+  .weight-banner .env-pill{font-size:.65rem;padding:4px 8px}
+  .weight-banner input{width:70px;padding:5px 8px}
+  .layout{padding:12px}
+  .card{padding:16px 14px}
+  main > .card > h2, .card h2{font-size:1.3rem}
+  .kind-tabs button{font-size:.9rem;padding:12px 4px}
+  .step{padding:12px 14px 12px 54px}
+  .step .step-num{left:12px;width:28px;height:28px;font-size:.82rem}
+  #home-screen{padding:24px 16px 40px}
+  #home-screen h1.home-title{font-size:1.5rem}
+  #home-screen .env-card{font-size:1.25rem;padding:18px 20px}
+  #home-screen .env-card .icon-wrap{width:60px;height:60px}
+  #home-screen .env-card .icon-wrap svg{width:36px;height:36px}
+}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="view-home">
 <header>
-  <h1>🚑 Urgencias · Ambulancias · Camas</h1>
-  <div class="sub">Dosis · Adulto · Pediátrico · Neonatal &nbsp;·&nbsp; 208 indicaciones · 989 pasos de dosificación · 348 pestañas de contenido</div>
-  <a class="back-link" href="../index.html">← Volver a Cartagenaeste</a>
+  <a class="back-link" href="../index.html" aria-label="Volver a Cartagenaeste">←</a>
+  <h1>Urgencias <em>Ambulancias · Camas</em></h1>
   <div class="tabs" id="envtabs" role="tablist" aria-label="Entorno"></div>
 </header>
 <section id="home-screen" aria-label="Selector de entorno">
@@ -354,8 +378,36 @@ aside::-webkit-scrollbar-track,main::-webkit-scrollbar-track{background:transpar
     </button>
   </div>
 </section>
-<div class="layout">
-  <aside id="aside" aria-label="Navegación"></aside>
+<!-- Weight banner (sticky debajo del topbar) -->
+<div class="weight-banner" role="region" aria-label="Peso y entorno">
+  <label for="weight-banner-input">⚖️ Peso:</label>
+  <input id="weight-banner-input" type="number" min="0.5" max="250" step="0.5" placeholder="70" aria-label="Peso del paciente en kg" />
+  <span class="unit">kg</span>
+  <span class="conv" id="weight-banner-conv"></span>
+  <span class="env-pill" id="env-pill">
+    <span id="env-pill-label">ADULTO</span>
+    <button class="env-switch" id="env-switch" type="button" aria-label="Cambiar entorno">Cambiar</button>
+  </span>
+</div>
+
+<!-- Search (sticky? no, scrolls with content) -->
+<div class="search-wrap">
+  <div class="search-box">
+    <input type="search" id="global-search" placeholder="Buscar condición, procedimiento o fármaco…" aria-label="Buscar" />
+  </div>
+</div>
+
+<!-- Kind tabs (Condiciones / Procedimientos / Fármacos) -->
+<div class="kind-tabs-wrap">
+  <div class="kind-tabs" id="kind-tabs" role="tablist" aria-label="Tipo"></div>
+</div>
+
+<!-- Category filter chips -->
+<div class="cat-filter-wrap" id="cat-filter" role="tablist" aria-label="Categoría"></div>
+
+<!-- Main single-column container -->
+<div class="layout" id="layout">
+  <aside id="aside" aria-label="Lista"></aside>
   <main id="main" tabindex="-1"></main>
 </div>
 <footer>
@@ -451,33 +503,71 @@ function filteredItems(){
   });
 }
 function renderHeader(){
+  // Env pill label in banner
+  const lbl = document.getElementById('env-pill-label');
+  if (lbl) lbl.textContent = (ENV_LABEL[state.env] || 'Adulto').toUpperCase();
+  // Env switch button behavior (cycles to home)
+  const sw = document.getElementById('env-switch');
+  if (sw && !sw._bound){
+    sw.addEventListener('click', ()=>{ state.env=null; state.selected=null; render(); });
+    sw._bound = true;
+  }
+  // Keep legacy #envtabs empty (hidden by CSS)
   const bar = document.getElementById('envtabs');
-  bar.innerHTML = '';
-  // Back-to-home button
-  const back = el('button', {class:'back-to-home', 'aria-label':'Volver al selector', onclick:()=>{ state.env=null; state.selected=null; render(); }}, '← Inicio');
-  bar.appendChild(back);
-  ['adult','pediatric','neonatal'].forEach(env => {
-    bar.appendChild(el('button', {class:'tab', role:'tab', 'aria-selected':env===state.env?'true':'false',
-      onclick: () => { state.env=env; state.selected=null; render(); }}, ENV_LABEL[env]));
-  });
+  if (bar) bar.innerHTML = '';
+  // Weight banner wiring
+  const wi = document.getElementById('weight-banner-input');
+  if (wi && !wi._bound){
+    wi.value = state.weight;
+    wi.addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      state.weight = (v>0 && v<300) ? v : state.weight;
+      const conv = document.getElementById('weight-banner-conv');
+      if (conv) conv.textContent = state.weight ? '(' + (state.weight*2.2046).toFixed(1) + ' lbs)' : '';
+      renderMain();
+    });
+    wi._bound = true;
+    const conv = document.getElementById('weight-banner-conv');
+    if (conv) conv.textContent = '(' + (state.weight*2.2046).toFixed(1) + ' lbs)';
+  }
+  // Global search wiring
+  const gs = document.getElementById('global-search');
+  if (gs && !gs._bound){
+    gs.addEventListener('input', e => {
+      state.search = e.target.value || '';
+      renderList();
+    });
+    gs._bound = true;
+  }
+  if (gs) gs.value = state.search || '';
 }
 function renderSidebar(){
+  // Kind tabs in the external wrap
+  const kindBar = document.getElementById('kind-tabs');
+  if (kindBar){
+    kindBar.innerHTML = '';
+    ['conditions','procedures','drugs'].forEach(k => {
+      kindBar.appendChild(el('button', {role:'tab','aria-selected':k===state.kind?'true':'false',
+        onclick: ()=>{ state.kind=k; state.category=''; state.selected=null; render(); }}, KIND_LABEL[k]));
+    });
+  }
+  // Category chips
+  const catBar = document.getElementById('cat-filter');
+  if (catBar){
+    catBar.innerHTML = '';
+    const allBtn = el('button', {role:'tab', 'aria-selected': !state.category?'true':'false',
+      onclick:()=>{ state.category=''; renderList(); renderSidebar(); }}, 'Todas');
+    catBar.appendChild(allBtn);
+    for (const c of categoriesOf()){
+      const btn = el('button', {role:'tab','aria-selected': c===state.category?'true':'false',
+        style: catCssVars(c),
+        onclick:()=>{ state.category = (state.category===c?'':c); renderList(); renderSidebar(); }}, window.T(c,'category'));
+      catBar.appendChild(btn);
+    }
+  }
+  // List
   const aside = document.getElementById('aside');
   aside.innerHTML = '';
-  const kindBar = el('div', {class:'kind-tabs', role:'tablist', 'aria-label':'Tipo'});
-  ['conditions','procedures','drugs'].forEach(k => {
-    kindBar.appendChild(el('button', {role:'tab','aria-selected':k===state.kind?'true':'false',
-      onclick: ()=>{ state.kind=k; state.category=''; state.selected=null; render(); }}, KIND_LABEL[k]));
-  });
-  aside.appendChild(kindBar);
-  const search = el('input', {class:'search', type:'search', placeholder:'Buscar…', 'aria-label':'Buscar', value: state.search});
-  search.addEventListener('input', e => { state.search = e.target.value; renderList(); });
-  aside.appendChild(search);
-  const sel = el('select', {class:'cat', 'aria-label':'Categoría'});
-  sel.appendChild(el('option', {value:''}, 'Todas las categorías'));
-  for (const c of categoriesOf()) sel.appendChild(el('option', Object.assign({value:c}, c===state.category?{selected:true}:{}), window.T(c,'category')));
-  sel.addEventListener('change', e => { state.category = e.target.value; renderList(); });
-  aside.appendChild(sel);
   aside.appendChild(el('div', {id:'list'}));
   renderList();
 }
@@ -507,22 +597,22 @@ function renderList(){
 }
 function renderMain(){
   const main = document.getElementById('main'); main.innerHTML = '';
-  const wbox = el('div', {class:'weight-widget'}, [
-    el('label', {for:'weight'}, 'Peso'),
-    (function(){ const i=el('input', {id:'weight', class:'weight', type:'number', min:0, step:0.1, value:state.weight});
-      i.addEventListener('input', e=>{ state.weight = parseFloat(e.target.value)||0; renderMain(); }); return i; })(),
-    el('span', {class:'unit'}, 'kg')
-  ]);
-  main.appendChild(el('div', {class:'topbar'}, [
-    el('div', {style:'flex:1;min-width:0'}, [
-      el('h2', {text: KIND_LABEL[state.kind] + ' · ' + ENV_LABEL[state.env]}),
-      el('div', {class:'crumb', text: state.category ? window.T(state.category,'category') : 'Todas las categorías'})
-    ]),
-    wbox
-  ]));
+  // No weight widget here — lives in the sticky banner
+  // Only show crumb breadcrumb when an item is selected; otherwise the selection list is the main view
+  if (state.selected){
+    main.appendChild(el('div', {class:'breadcrumb'}, [
+      el('a', {onclick:()=>{ state.selected=null; render(); window.scrollTo({top:0,behavior:'smooth'}); }},
+        KIND_LABEL[state.kind] + ' · ' + ENV_LABEL[state.env]),
+      el('span', {class:'sep'}, '›'),
+      el('span', {text: state.category ? window.T(state.category,'category') : 'Todas las categorías'})
+    ]));
+  }
   main.appendChild(el('div', {class:'disclaimer', role:'note'},
-    'Material educativo extraído de Paratus Medical. Interfaz traducida al castellano; contenido clínico interno en inglés. No sustituye el juicio clínico — verifica siempre dosis, unidades y contraindicaciones.'));
-  if (!state.selected) { main.appendChild(el('div', {class:'card empty'}, 'Selecciona un elemento de la lista.')); return; }
+    'Material educativo extraído de Paratus Medical. Interfaz en castellano; contenido clínico interno en inglés. No sustituye el juicio clínico — verifica siempre dosis, unidades y contraindicaciones.'));
+  if (!state.selected) {
+    // When no selection, main stays simple — the list (aside) is above and scrolls with content
+    return;
+  }
   const item = bucket().find(it => it.id === state.selected.id);
   if (!item) { main.appendChild(el('div', {class:'card empty'}, 'No encontrado')); return; }
   if (state.kind === 'drugs') renderDrug(main, item); else renderProcCond(main, item);
@@ -541,7 +631,7 @@ function renderProcCond(main, item){
   const ind = item.indications[state.selectedTab] || item.indications[0];
   card.appendChild(el('div', {}, [
     el('span', {class:'pill cat', style: ind.category?catCssVars(ind.category):'', text: ind.category ? window.T(ind.category,'category') : 'Sin categoría'}),
-    el('span', {class:'pill', text: '#' + ind.id})
+    null
   ]));
   const tabsBar = el('div', {class:'ind-tabs', role:'tablist','aria-label':'Pestañas', style:'margin-top:14px'});
   const contentWrap = el('div');
@@ -628,8 +718,8 @@ function renderDrug(main, drug){
   const ind = drug.indications[state.selectedTab] || drug.indications[0];
   card.appendChild(el('div', {}, [
     el('span', {class:'pill cat', style: ind.category?catCssVars(ind.category):'', text: ind.category ? window.T(ind.category,'category') : 'Sin categoría'}),
-    el('span', {class:'pill', text: 'Indicación #' + ind.id}),
-    el('span', {class:'pill', text: 'Tipo peso: ' + (ind.weight_type||'—')})
+    null,
+    null
   ]));
   ind.steps.forEach((s, i) => card.appendChild(renderStep(s, i)));
   main.appendChild(card);
@@ -702,8 +792,11 @@ function initHomeCards(){
       state.category = '';
       state.search = '';
       render();
+      window.scrollTo({top:0,behavior:'smooth'});
     });
   });
+  // Scroll-to-top when going back home
+  window.addEventListener('hashchange', ()=>{ if(!state.env) window.scrollTo({top:0}); });
 }
 document.addEventListener('DOMContentLoaded', ()=>{ initHomeCards(); render(); });
 </script>

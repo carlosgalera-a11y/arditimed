@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v41 - Paratus restyle (tema claro medtech + chips + timeline + peso sticky)
-const CACHE_NAME = 'area2-v71';
+// Service Worker - Área II Cartagena PWA v42 - Paratus disposición tipo Vademécum (mobile-first)
+const CACHE_NAME = 'area2-v72';
 
 const PRECACHE = [
   '/Cartagenaeste/',
