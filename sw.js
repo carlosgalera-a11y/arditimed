@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v53 - Email Link login alternativa + detección popup bloqueado
-const CACHE_NAME = 'area2-v83';
+// Service Worker - Área II Cartagena PWA v54 - Email Link habilitado en Firebase - force cache refresh
+const CACHE_NAME = 'area2-v84';
 
 const PRECACHE = [
   '/Cartagenaeste/',
