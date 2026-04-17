@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v49 - Puter.js deshabilitado (socket.io spam); Cloud Functions primario
-const CACHE_NAME = 'area2-v79';
+// Service Worker - Área II Cartagena PWA v50 - a11y aria-labels en 51 inputs + handler firebase auth/network-request-failed
+const CACHE_NAME = 'area2-v80';
 
 const PRECACHE = [
   '/Cartagenaeste/',

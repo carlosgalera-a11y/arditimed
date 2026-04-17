@@ -3144,3 +3144,102 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Nota: la init de enfermería se hace en _showPageInit('pageEnfermeria')
        porque esa página se lazy-loadea y su DOM no existe aún aquí. */
 });
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARCHE A11Y: aria-labels en inputs sin <label>
+   Arregla los 28 issues 'No label associated with a form field' que
+   detecta Chrome DevTools. Se aplica al cargar y ante inserciones
+   dinámicas de DOM (MutationObserver). No toca HTML.
+   ═══════════════════════════════════════════════════════════════════ */
+(function ariaLabelsPatch(){
+    var labels = {
+        nbNewName:'Nombre del cuaderno',
+        nbNewUrl:'URL del NotebookLM',
+        nbNewDesc:'Descripción breve del cuaderno (opcional)',
+        sugTipo:'Tipo de sugerencia',
+        sugTexto:'Texto de la sugerencia',
+        tradLangFrom:'Idioma de origen (profesional)',
+        tradLangTo:'Idioma de destino (paciente)',
+        tradTextInput:'Texto a traducir',
+        deeplKeyInput:'Clave API de DeepL',
+        preguntaInput:'Pregunta clínica',
+        noteInput:'Notas clínicas personales',
+        gpCama:'Cama o ubicación del paciente',
+        gpId:'Identificador anónimo del paciente',
+        gpEdad:'Edad y sexo del paciente',
+        gpPrioridad:'Prioridad clínica del paciente',
+        gpMotivo:'Motivo de ingreso o consulta',
+        gpNotas:'Notas y pendientes de guardia',
+        apProtoSelect:'Protocolo de Atención Primaria como contexto',
+        apPreguntaInput:'Pregunta sobre el protocolo seleccionado',
+        apStudioProtoSelect:'Protocolo de contexto para Studio AP',
+        apStudioInput:'Pregunta para Studio AP',
+        apNewProtoName:'Nombre del nuevo protocolo',
+        apNewProtoContent:'Contenido del nuevo protocolo',
+        apProtoFile:'Archivo de texto del protocolo (.txt)',
+        buscasPass:'Contraseña de acceso al directorio de buscas',
+        telSearch:'Buscar servicio, especialidad o nombre',
+        trIALang:'Idioma del triaje con IA',
+        trIAInput:'Síntoma o consulta para el triaje',
+        trIntensidad:'Intensidad del dolor (escala 0-10)',
+        'fh-nb-file-input':'Archivos para el cuaderno (PDF, TXT, CSV, MD, JSON)',
+        'fh-nb-input':'Pregunta sobre los documentos cargados',
+        'fh-blog-content':'Contenido a publicar en el blog',
+        'fh-blog-file-input':'Imágenes o archivos adjuntos del blog',
+        'fh-blog-post-status':'Estado de publicación',
+        'fh-blog-post-cat':'Categoría de la publicación',
+        subirSeccion:'Sección de destino del contenido',
+        inputArchivoSubir:'Archivo PDF a subir',
+        inputUrlSubir:'URL del recurso a añadir',
+        subirTitulo:'Título del documento',
+        subirDescripcion:'Descripción o contexto del documento (opcional)',
+        modEmail:'Email de Google del moderador',
+        modNombre:'Nombre visible del moderador',
+        loginUsername:'Correo electrónico de acceso',
+        loginPassword:'Contraseña de acceso',
+        fileInput:'Archivo a subir',
+        fileCategory:'Categoría del archivo',
+        catName:'Nombre de la nueva categoría',
+        catEmoji:'Emoji de la categoría',
+        buscadorInput:'Buscar en protocolos, teléfonos y PDFs',
+        secretKeyInput:'Groq API Key por defecto',
+        /* Campos propios de Cartagenaeste que también carecen de label: */
+        scanCtx:'Contexto clínico de la imagen a analizar',
+        scanLoginError:'Mensaje de error de inicio de sesión'
+    };
+    var apply = function(){
+        Object.keys(labels).forEach(function(id){
+            var el = document.getElementById(id);
+            if(el && !el.getAttribute('aria-label')){
+                el.setAttribute('aria-label', labels[id]);
+            }
+        });
+    };
+    if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', apply);
+    } else {
+        apply();
+    }
+    /* Re-aplica cuando se inserta contenido dinámico (lazy-load de páginas,
+       modales que se crean bajo demanda, etc.). Coste despreciable. */
+    try{
+        new MutationObserver(apply).observe(document.body, { childList:true, subtree:true });
+    }catch(e){ /* body aún no montado, se reintenta en DOMContentLoaded */ }
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARCHE FIREBASE AUTH: captura silenciosa de auth/network-request-failed
+   Este error sale cuando Chrome está en incógnito con cookies third-party
+   bloqueadas (configuración por defecto). No es un bug de nuestra app,
+   es un mensaje esperado del SDK de Firebase al intentar completar OAuth
+   contra google.com sin poder leer cookies. Sin este handler, el error
+   aparece como 'Uncaught (in promise)' y contamina la consola.
+   ═══════════════════════════════════════════════════════════════════ */
+window.addEventListener('unhandledrejection', function(e){
+    var r = e.reason;
+    var msg = String((r && r.message) || r || '');
+    if(r && (r.code === 'auth/network-request-failed' || /auth\/network-request-failed/.test(msg))){
+        console.warn('[Firebase Auth] Sin red o cookies bloqueadas. Reintenta más tarde o sal del modo incógnito.');
+        e.preventDefault();
+    }
+});
