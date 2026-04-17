@@ -1,0 +1,211 @@
+=== pediatric REFERENCES ===
+
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Broselow J, Luten R. Broselow™ Pediatric Emergency Tape. Armstrong Medical Industries.2019
+- () · Advanced Trauma Life Support (ATLS): Student Course Manual, 10ᵉ édition. American College of Surgeons, Committee on Trauma.2018
+- () · Textbook of Pediatric Emergency Procedures, 2ᵉ édition. Lippincott Williams & Wilkins.2008
+- () · Bachur R, Shaw K. Fleisher & Ludwig’s Textbook of Pediatric Emergency Medicine. Wolters Kluwer (Lippincott Williams & Wilkins).2016
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Walls R, Hockberger R, Gaushe-Hill M. Rosen’s Emergency Medicine: Concepts and Clinical Practice – 2‑Volume Set. Elsevier (Elsevier Health Sciences).2023
+- () · Advanced Trauma Life Support (ATLS): Student Course Manual, 10ᵉ édition. American College of Surgeons, Committee on Trauma.2018
+- () · TREKK – Translating Emergency Knowledge for Kids. Children’s Hospital Research Institute of Manitoba (CHRIM).
+- () · Kliegman R, St. Geme III J. Nelson Textbook of Pediatrics (21st Edition). Elsevier / Elsevier Health Sciences.2020
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Topjian A, Raymond T, Atkins D, et al. Part 4: Pediatric Basic and Advanced Life Support: 2020 American Heart Association Guidelines for Cardiopulmonary Resuscitation and Emergency Cardiovascular Care. Circulation.2020-10-20;142(16_suppl_2) doi:10.1161/cir.0000000000000901
+- () · Van de Voorde P, Turner N, Djakow J, et al. European Resuscitation Council Guidelines 2021: Paediatric Life Support. Resuscitation.;161:327-387 doi:10.1016/j.resuscitation.2021.02.015
+- () · Shenoi R, Timm N, , et al. Drugs Used to Treat Pediatric Emergencies. 2020-1-1;145(1) doi:10.1542/peds.2019-3450
+- () · Kusumoto F, Schoenfeld M, Barrett C, et al. 2018 ACC/AHA/HRS Guideline on the Evaluation and Management of Patients With Bradycardia and Cardiac Conduction Delay: A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines and the Heart Rhythm Society. Circulation.2019-8-20;140(8) doi:10.1161/cir.0000000000000628
+- () · Marino B, Tabbutt S, MacLaren G, et al. Cardiopulmonary Resuscitation in Infants and Children With Cardiac Disease. Circulation.2018-5-29;137(22) doi:10.1161/cir.0000000000000524
+- () · Moffett B, Salvin J, Kim J. Pediatric Cardiac Intensive Care Society 2014 Consensus Statement. Pediatric Critical Care Medicine.;17:S49-S58 doi:10.1097/pcc.0000000000000620
+- () · Brugada J, Blom N, Sarquella-Brugada G, et al. Pharmacological and non-pharmacological therapy for arrhythmias in the pediatric population: EHRA and AEPC-Arrhythmia Working Group joint consensus statement. 2013-9;15(9):1337-1382 doi:10.1093/europace/eut082
+- () · ACMT Position Statement: Duration of Intravenous Acetylcysteine Therapy Following Acetaminophen Overdose. J. Med. Toxicol..2017-3;13(1):126-127 doi:10.1007/s13181-016-0542-z
+- () · Guide Canadien des antidotes en toxicologie d'urgence. 2019
+- () · Maurer M, Magerl M, Betschel S, et al. The international WAO/EAACI guideline for the management of hereditary angioedema—The 2021 revision and update. Allergy.2022-7;77(7):1961-1990 doi:10.1111/all.15214
+- () · Frank M, Zuraw B, Banerji A, et al. Management of Children With Hereditary Angioedema Due to C1 Inhibitor Deficiency. 2016-11-1;138(5) doi:10.1542/peds.2016-0575
+- () · Norris M, Ashoor Z, Craig T. Management of pediatric hereditary angioedema types 1 and 2: A search for international consensus. allergy asthma proc.2022-9-1;43(5):388-396 doi:10.2500/aap.2022.43.220052
+- () · Yong P, Coulter T, El-Shanawany T, et al. A National Survey of Hereditary Angioedema and Acquired C1 Inhibitor Deficiency in the United Kingdom. The Journal of Allergy and Clinical Immunology: In Practice.2023-8;11(8):2476-2483 doi:10.1016/j.jaip.2023.04.035
+- () · McKenzie T, McKenzie B. AMAX4-Every second counts. 2023
+- () · Cardona V, Ansotegui I, Ebisawa M, et al. World Allergy Organization Anaphylaxis Guidance 2020. World Allergy Organization Journal.2020-10;13(10):100472 doi:10.1016/j.waojou.2020.100472
+- () · Emergency treatment of anaphylaxis in infants and children. doi:10.1093/pch/16.1.35
+- () · Li X, Ma Q, Yin J, et al. A Clinical Practice Guideline for the Emergency Management of Anaphylaxis (2020). Front. Pharmacol..;13 doi:10.3389/fphar.2022.845689
+- () · Soar J, Pumphrey R, Cant A, et al. Emergency treatment of anaphylactic reactions—Guidelines for healthcare providers. Resuscitation.2008-5;77(2):157-169 doi:10.1016/j.resuscitation.2008.02.001
+- () · Halbrich M, Mack D, Carr S, et al. CSACI position statement: epinephrine auto-injectors and children < 15 kg. All Asth Clin Immun.2015-12;11(1) doi:10.1186/s13223-015-0086-9
+- () · McKenzie T, McKenzie B. AMAX4-Every second counts. 2023
+- () · Wolfsdorf J, Glaser N, Agus M, et al. ISPAD Clinical Practice Consensus Guidelines 2018: Diabetic ketoacidosis and the hyperglycemic hyperosmolar state. Pediatr Diabetes.;19:155-177 doi:10.1111/pedi.12701
+- () · Wherrett D, Ho J, Huot C, et al. Type 1 Diabetes in Children and Adolescents. Canadian Journal of Diabetes.;42:S234-S246 doi:10.1016/j.jcjd.2017.10.036
+- () · Nallasamy K, Jayashree M, Singhi S, et al. Low-Dose vs Standard-Dose Insulin in Pediatric Diabetic Ketoacidosis. JAMA Pediatr.2014-11-1;168(11):999 doi:10.1001/jamapediatrics.2014.1211
+- () · Kuppermann N, Ghetti S, Schunk J, et al. Clinical Trial of Fluid Infusion Rates for Pediatric Diabetic Ketoacidosis. N Engl J Med.2018-6-14;378(24):2275-2287 doi:10.1056/nejmoa1716816
+- () · Kennedy R, Luhmann J. Pharmacological Management of Pain and Anxiety During Emergency Procedures in Children. Paediatric Drugs.;3(5):337-354 doi:10.2165/00128072-200103050-00003
+- () · Kim H, Leonard J, Corwell B, et al. Safety and efficacy of pharmacologic agents used for rapid tranquilization of emergency department patients with acute agitation or excited delirium. Expert Opinion on Drug Safety.2021-2-1;20(2):123-138 doi:10.1080/14740338.2021.1865911
+- () · Zun L. Evidence-Based Review Of Pharmacotherapy For Acute Agitation. Part 2: Safety. The Journal of Emergency Medicine.2018-4;54(4):522-532 doi:10.1016/j.jemermed.2017.11.031
+- () · Trottier E, Chan K, Allain D, et al. Managing an acute asthma exacerbation in children. 2021-11-11;26(7):438-438 doi:10.1093/pch/pxab058
+- () · Crulli B, Mortamet G, Nardi N, et al. Prise en charge de l’asthme aigu grave chez l’enfant : un défi thérapeutique. Méd. Intensive Réa..;28(1):43-51 doi:10.3166/rea-2018-0063
+- () · Pardue Jones B, Fleming G, Otillio J, et al. Pediatric acute asthma exacerbations: Evaluation and management from emergency department to intensive care unit. Journal of Asthma.2016-7-2;53(6):607-617 doi:10.3109/02770903.2015.1067323
+- () · Meert K, McCaulley L, Sarnaik A. Mechanism of lactic acidosis in children with acute severe asthma. Pediatric Critical Care Medicine.;13(1):28-31 doi:10.1097/pcc.0b013e3182196aa2
+- () · Schutte D, Zwitserloot A, Houmes R, et al. Sevoflurane therapy for life-threatening asthma in children. British Journal of Anaesthesia.2013-12;111(6):967-970 doi:10.1093/bja/aet257
+- () · Palacios A, Mencía S, Llorente A, et al. Sevoflurane Therapy for Severe Refractory Bronchospasm in Children. 2016;17(8):e380-e384 doi:10.1097/pcc.0000000000000852
+- () · McKenzie T, McKenzie B. AMAX4-Every second counts. 2023
+- () · Ferriero D, Fullerton H, Bernard T, et al. Management of Stroke in Neonates and Children: A Scientific Statement From the American Heart Association/American Stroke Association. Stroke.2019-3;50(3) doi:10.1161/str.0000000000000183
+- () · Powers W, Rabinstein A, Ackerson T, et al. Guidelines for the Early Management of Patients With Acute Ischemic Stroke: 2019 Update to the 2018 Guidelines for the Early Management of Acute Ischemic Stroke: A Guideline for Healthcare Professionals From the American Heart Association/American Stroke Association. Stroke.2019-12;50(12) doi:10.1161/str.0000000000000211
+- () · Kochar A, Hildebrandt K, Silverstein R, et al. Approaches to neuroprotection in pediatric neurocritical care. World J Crit Care Med.;12(3):116-129 doi:10.5492/wjccm.v12.i3.116
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Topjian A, Raymond T, Atkins D, et al. Part 4: Pediatric Basic and Advanced Life Support: 2020 American Heart Association Guidelines for Cardiopulmonary Resuscitation and Emergency Cardiovascular Care. Circulation.2020-10-20;142(16_suppl_2) doi:10.1161/cir.0000000000000901
+- () · Van de Voorde P, Turner N, Djakow J, et al. European Resuscitation Council Guidelines 2021: Paediatric Life Support. Resuscitation.;161:327-387 doi:10.1016/j.resuscitation.2021.02.015
+- () · Kusumoto F, Schoenfeld M, Barrett C, et al. 2018 ACC/AHA/HRS Guideline on the Evaluation and Management of Patients With Bradycardia and Cardiac Conduction Delay: A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines and the Heart Rhythm Society. Circulation.2019-8-20;140(8) doi:10.1161/cir.0000000000000628
+- () · Milési C, Baudin F, Durand P, et al. Clinical practice guidelines: management of severe bronchiolitis in infants under 12 months old admitted to a pediatric critical care unit. Intensive Care Med.2023-1;49(1):5-25 doi:10.1007/s00134-022-06918-4
+- () · Friedman J, Rieder M, Walton J, et al. Bronchiolitis: Recommendations for diagnosis, monitoring and management of children one to 24 months of age. 2014-11-3;19(9):485-491 doi:10.1093/pch/19.9.485
+- () · Greenberg S, Ziai W, Cordonnier C, et al. 2022 Guideline for the Management of Patients With Spontaneous Intracerebral Hemorrhage: A Guideline From the American Heart Association/American Stroke Association. Stroke.2022-7;53(7) doi:10.1161/str.0000000000000407
+- () · Frontera J, Lewin III J, Rabinstein A, et al. Guideline for Reversal of Antithrombotics in Intracranial Hemorrhage. Neurocrit Care.2016-2;24(1):6-46 doi:10.1007/s12028-015-0222-x
+- () · Russell R, Bauer D, Goobie S, et al. Plasma and Platelet Transfusion Strategies in Critically Ill Children Following Severe Trauma, Traumatic Brain Injury, and/or Intracranial Hemorrhage: From the Transfusion and Anemia EXpertise Initiative–Control/Avoidance of Bleeding. 2022;23(Supplement 1 1S):e14-e24 doi:10.1097/pcc.0000000000002855
+- () · Ciochon U, Bindslev J, Hoei-Hansen C, et al. Causes and Risk Factors of Pediatric Spontaneous Intracranial Hemorrhage—A Systematic Review. Diagnostics.2022-6;12(6):1459 doi:10.3390/diagnostics12061459
+- () · Gumer L, Del Vecchio M, Aronoff S. Strokes in Children. Pediatric Emergency Care.;30(9):660-664 doi:10.1097/pec.0000000000000218
+- () · Boulouis G, Stricker S, Benichi S, et al. Etiology of intracerebral hemorrhage in children: cohort study, systematic review, and meta-analysis. ;27(3):357-363 doi:10.3171/2020.7.peds20447
+- () · Elliott M, Ronksley P, Clase C, et al. Management of patients with acute hyperkalemia. Canadian Medical Association Journal.2010-10-19;182(15):1631-1635 doi:10.1503/cmaj.100461
+- () · Weisberg L. Management of severe hyperkalemia. Critical Care Medicine.;36(12):3246-3251 doi:10.1097/ccm.0b013e31818f222b
+- () · Mahoney B, Smith W, Lo D, et al. Emergency interventions for hyperkalaemia. 2016-9;2016(9) doi:10.1002/14651858.cd003235.pub2
+- () · Masilamani K, van der Voort J. The management of acute hyperkalaemia in neonates and children. Arch Dis Child.2012-4;97(4):376-380 doi:10.1136/archdischild-2011-300623
+- () · Narvey M, Marks S. Le dépistage et la prise en charge des nouveau-nés à risque d’hypoglycémie. 2019-12-9;24(8):545-554 doi:10.1093/pch/pxz135
+- () · Sweet C, Grayson S, Polak M. Management Strategies for Neonatal Hypoglycemia. ;18(3):199-208 doi:10.5863/1551-6776-18.3.199
+- () · Abraham M, Karges B, Dovc K, et al. ISPAD
+            Clinical Practice Consensus Guidelines 2022: Assessment and management of hypoglycemia in children and adolescents with diabetes. Pediatric Diabetes.2022-12;23(8):1322-1340 doi:10.1111/pedi.13443
+- () · Perkins Z, Wittenberg M, Nevin D, et al. The relationship between head injury severity and hemodynamic response to tracheal intubation. 2013;74(4):1074-1080 doi:10.1097/ta.0b013e3182827305
+- () · Curran M, Robinson D, Keating G. Intravenous Nicardipine. Drugs.;66(13):1755-1782 doi:10.2165/00003495-200666130-00010
+- () · Robinson N. In patients with head injury undergoing rapid sequence intubation, does pretreatment with intravenous lignocaine/lidocaine lead to an improved neurological outcome? A review of the literature. ;18(6):453-457 doi:10.1136/emj.18.6.453
+- () · Kim W, Kwak M, Ko B, et al. Factors Associated with the Occurrence of Cardiac Arrest after Emergency Tracheal Intubation in the Emergency Department. PLoS ONE.2014-11-17;9(11):e112779 doi:10.1371/journal.pone.0112779
+- () · Kareemi H, Pratte M, English S, et al. Initial Diagnosis and Management of Acutely Elevated Intracranial Pressure. J Intensive Care Med.2023-7;38(7):643-650 doi:10.1177/08850666231156589
+- () · Ortiz-Alvarez O. Acute management of croup in the emergency department. 2017-6-1;22(3):166-169 doi:10.1093/pch/pxx019
+- () · Russell K, Liang Y, O'Gorman K, et al. Glucocorticoids for croup. doi:10.1002/14651858.cd001955.pub3
+- () · Grover E, Nazzal Y, Hirsch L. Treatment of Convulsive Status Epilepticus. Curr Treat Options Neurol.2016-3;18(3) doi:10.1007/s11940-016-0394-5
+- () · McKenzie K, Hahn C, Friedman J. Emergency management of the paediatric patient with convulsive status epilepticus. 2021-2-1;26(1):50-57 doi:10.1093/pch/pxaa127
+- () · Glauser T, Shinnar S, Gloss D, et al. Evidence-Based Guideline: Treatment of Convulsive Status Epilepticus in Children and Adults: Report of the Guideline Committee of the American Epilepsy Society. Epilepsy Curr.2016-1;16(1):48-61 doi:10.5698/1535-7597-16.1.48
+- () · Vasquez A, Farias-Moeller R, Tatum W. Pediatric refractory and super-refractory status epilepticus. Seizure.;68:62-71 doi:10.1016/j.seizure.2018.05.012
+- () · Alolayan Y, McKinley K, Bhatia R, et al. Review and Updates on the Treatment of Refractory and Super Refractory Status Epilepticus. JCM.2021-7;10(14):3028 doi:10.3390/jcm10143028
+- () · Escudero C, Carr R, Sanatani S. The Medical Management of Pediatric Arrhythmias. Curr Treat Options Cardio Med.2012-10;14(5):455-472 doi:10.1007/s11936-012-0194-5
+- () · Moffett B, Salvin J, Kim J. Pediatric Cardiac Intensive Care Society 2014 Consensus Statement. Pediatric Critical Care Medicine.;17:S49-S58 doi:10.1097/pcc.0000000000000620
+- () · Brugada J, Blom N, Sarquella-Brugada G, et al. Pharmacological and non-pharmacological therapy for arrhythmias in the pediatric population: EHRA and AEPC-Arrhythmia Working Group joint consensus statement. 2013-9;15(9):1337-1382 doi:10.1093/europace/eut082
+- () · Chang P, Silka M, Moromisato D, et al. Amiodarone Versus Procainamide for the Acute Treatment of Recurrent Supraventricular Tachycardia in Pediatric Patients. Circ: Arrhythmia and Electrophysiology.2010-4;3(2):134-140 doi:10.1161/circep.109.901629
+- () · Guerrier K, Shamszad P, Czosek R, et al. Variation in Antiarrhythmic Management of Infants Hospitalized with Supraventricular Tachycardia: A Multi-Institutional Analysis. Pediatr Cardiol.2016-6;37(5):946-952 doi:10.1007/s00246-016-1375-x
+- () · Escudero C, Carr R, Sanatani S. The Medical Management of Pediatric Arrhythmias. Curr Treat Options Cardio Med.2012-10;14(5):455-472 doi:10.1007/s11936-012-0194-5
+- () · Moffett B, Salvin J, Kim J. Pediatric Cardiac Intensive Care Society 2014 Consensus Statement. Pediatric Critical Care Medicine.;17:S49-S58 doi:10.1097/pcc.0000000000000620
+- () · Brugada J, Blom N, Sarquella-Brugada G, et al. Pharmacological and non-pharmacological therapy for arrhythmias in the pediatric population: EHRA and AEPC-Arrhythmia Working Group joint consensus statement. 2013-9;15(9):1337-1382 doi:10.1093/europace/eut082
+- () · Muser D, Santangeli P, Liang J. Management of ventricular tachycardia storm in patients with structural heart disease. WJC.2017;9(6):521 doi:10.4330/wjc.v9.i6.521
+- () · Zaman J, Agarwal S. Management of ventricular tachycardia storm. Heart.2021-10;107(20):1671-1677 doi:10.1136/heartjnl-2019-316192
+- () · Thomas S, Behr E. Pharmacological treatment of acquired QT prolongation and torsades de pointes. Brit J Clinical Pharma.2016-3;81(3):420-427 doi:10.1111/bcp.12726
+- () · Gosselin S, Hoegberg L, Hoffman R, et al. Evidence-based recommendations on the use of intravenous lipid emulsion therapy in poisoning. Clinical Toxicology.2016-11-25;54(10):899-923 doi:10.1080/15563650.2016.1214275
+- () · French D, Smollin C, Ruan W, et al. Partition constant and volume of distribution as predictors of clinical efficacy of lipid rescue for toxicological emergencies. Clinical Toxicology.2011-11;49(9):801-809 doi:10.3109/15563650.2011.617308
+- () · Hoegberg L, Bania T, Lavergne V, et al. Systematic review of the effect of intravenous lipid emulsion therapy for local anesthetic toxicity. Clinical Toxicology.2016-3-15;54(3):167-193 doi:10.3109/15563650.2015.1121270
+- () · Hayes B, Gosselin S, Calello D, et al. Systematic review of clinical adverse events reported after acute intravenous lipid emulsion administration. Clinical Toxicology.2016-5-27;54(5):365-404 doi:10.3109/15563650.2016.1151528
+- () · Lavonas E, Akpunonu P, Arens A, et al. 2023 American Heart Association Focused Update on the Management of Patients With Cardiac Arrest or Life-Threatening Toxicity Due to Poisoning: An Update to the American Heart Association Guidelines for Cardiopulmonary Resuscitation and Emergency Cardiovascular Care. Circulation.2023-10-17;148(16) doi:10.1161/cir.0000000000001161
+- () · Guide Canadien des antidotes en toxicologie d'urgence. 2019
+- () · Moffett B, Salvin J, Kim J. Pediatric Cardiac Intensive Care Society 2014 Consensus Statement. Pediatric Critical Care Medicine.;17:S49-S58 doi:10.1097/pcc.0000000000000620
+- () · Escudero C, Carr R, Sanatani S. The Medical Management of Pediatric Arrhythmias. Curr Treat Options Cardio Med.2012-10;14(5):455-472 doi:10.1007/s11936-012-0194-5
+- () · Brugada J, Blom N, Sarquella-Brugada G, et al. Pharmacological and non-pharmacological therapy for arrhythmias in the pediatric population: EHRA and AEPC-Arrhythmia Working Group joint consensus statement. 2013-9;15(9):1337-1382 doi:10.1093/europace/eut082
+- () · Moran J, Gallagher J, Peake S, et al. Parenteral magnesium sulfate versus amiodarone in the therapy of atrial tachyarrhythmias. Critical Care Medicine.;23(11):1816-1824 doi:10.1097/00003246-199511000-00005
+- () · Tzivoni D, Banai S, Schuger C, et al. Treatment of torsade de pointes with magnesium sulfate.. Circulation.1988-2;77(2):392-397 doi:10.1161/01.cir.77.2.392
+- () · Lavonas E, Akpunonu P, Arens A, et al. 2023 American Heart Association Focused Update on the Management of Patients With Cardiac Arrest or Life-Threatening Toxicity Due to Poisoning: An Update to the American Heart Association Guidelines for Cardiopulmonary Resuscitation and Emergency Cardiovascular Care. Circulation.2023-10-17;148(16) doi:10.1161/cir.0000000000001161
+- () · Guide Canadien des antidotes en toxicologie d'urgence. 2019
+- () · Advanced Trauma Life Support (ATLS): Student Course Manual, 10ᵉ édition. American College of Surgeons, Committee on Trauma.2018
+- () · Kochanek P, Tasker R, Carney N, et al. Guidelines for the Management of Pediatric Severe Traumatic Brain Injury, Third Edition: Update of the Brain Trauma Foundation Guidelines. 2019;20(3S):S1-S82 doi:10.1097/pcc.0000000000001735
+- () · Ben Abdeljelil A, Freire G, Yanchar N, et al. Pediatric Moderate and Severe Traumatic Brain Injury: A Systematic Review of Clinical Practice Guideline Recommendations. Journal of Neurotrauma.2023-11-1;40(21-22):2270-2281 doi:10.1089/neu.2023.0149
+- () · Krmpotic K, Rieder M, Rosen D. Recommendations for procedural sedation in infants, children, and adolescents. 2021-3-16;26(2):128-128 doi:10.1093/pch/pxaa139
+- () · Bhatt M, Johnson D, Chan J, et al. Risk Factors for Adverse Events in Emergency Department Procedural Sedation for Children. JAMA Pediatr.2017-10-1;171(10):957 doi:10.1001/jamapediatrics.2017.2135
+- () · Smith H, Besunder J, Betters K, et al. 2022 Society of Critical Care Medicine Clinical Practice Guidelines on Prevention and Management of Pain, Agitation, Neuromuscular Blockade, and Delirium in Critically Ill Pediatric Patients With Consideration of the ICU Environment and Early Mobility. 2022;23(2):e74-e110 doi:10.1097/pcc.0000000000002873
+- () · Hartman M, McCrory D, Schulman S. Efficacy of sedation regimens to facilitate mechanical ventilation in the pediatric intensive care unit: A systematic review. Pediatric Critical Care Medicine.;10(2):246-255 doi:10.1097/pcc.0b013e31819a3bb9
+- () · Smith H, Besunder J, Betters K, et al. 2022 Society of Critical Care Medicine Clinical Practice Guidelines on Prevention and Management of Pain, Agitation, Neuromuscular Blockade, and Delirium in Critically Ill Pediatric Patients With Consideration of the ICU Environment and Early Mobility. 2022;23(2):e74-e110 doi:10.1097/pcc.0000000000002873
+- () · Hartman M, McCrory D, Schulman S. Efficacy of sedation regimens to facilitate mechanical ventilation in the pediatric intensive care unit: A systematic review. Pediatric Critical Care Medicine.;10(2):246-255 doi:10.1097/pcc.0b013e31819a3bb9
+- () · Trottier E, Doré-Bergeron M, Chauvin-Kimoff L, et al. La gestion de la douleur et de l’anxiété chez les enfants lors de brèves interventions diagnostiques et thérapeutiques. 2019-12-9;24(8):522-535 doi:10.1093/pch/pxz027
+- () · Fein J, Zempsky W, Cravero J, et al. Relief of Pain and Anxiety in Pediatric Patients in Emergency Medical Systems. 2012-11-1;130(5):e1391-e1405 doi:10.1542/peds.2012-2536
+- () · Taketomo C. Taketomo CK: Pediatric & Neonatal Dosage Handbook,. 2021
+- () · Shenoi R, Timm N, , et al. Drugs Used to Treat Pediatric Emergencies. 2020-1-1;145(1) doi:10.1542/peds.2019-3450
+- () · Escudero C, Carr R, Sanatani S. The Medical Management of Pediatric Arrhythmias. Curr Treat Options Cardio Med.2012-10;14(5):455-472 doi:10.1007/s11936-012-0194-5
+- () · Moffett B, Salvin J, Kim J. Pediatric Cardiac Intensive Care Society 2014 Consensus Statement. Pediatric Critical Care Medicine.;17:S49-S58 doi:10.1097/pcc.0000000000000620
+- () · Munoz R, Da Cruz E, Vetterly C, et al. Handbook of pediatric cardiovascular drugs. 2014 Jun 26
+- () · Flynn J, Kaelber D, Baker-Smith C, et al. Clinical Practice Guideline for Screening and Management of High Blood Pressure in Children and Adolescents. 2017-9-1;140(3) doi:10.1542/peds.2017-1904
+- () · Shenoi R, Timm N, , et al. Drugs Used to Treat Pediatric Emergencies. 2020-1-1;145(1) doi:10.1542/peds.2019-3450
+- () · Taketomo C. Taketomo CK: Pediatric & Neonatal Dosage Handbook,. 2021
+- () · McKenzie C. Antibiotic dosing in critical illness. Journal of Antimicrobial Chemotherapy.2011-4-1;66(Supplement 2):ii25-ii31 doi:10.1093/jac/dkq516
+- () · Marsh K, Ahmed N, Decano A, et al. Safety of intravenous push administration of beta-lactams within a healthcare system. 2020-4-27;77(9):701-708 doi:10.1093/ajhp/zxaa044
+- () · Spencer S, Ipema H, Hartke P, et al. Intravenous Push Administration of Antibiotics: Literature and           Considerations. Hosp Pharm.2018-6;53(3):157-169 doi:10.1177/0018578718760257
+- () · American Academy of Pediatrics. Committee on Infectious Diseases.. Red Book : Report of the Committee on Infectious Diseases. 2018
+- () · Gilbert D. The Sanford Guide to Antimicrobial Therapy 2023. 2023:339
+- () · Taketomo C. Taketomo CK: Pediatric & Neonatal Dosage Handbook,. 2021
+- () · American Academy of Pediatrics. Committee on Infectious Diseases.. Red Book : Report of the Committee on Infectious Diseases. 2018
+- () · Gilbert D. The Sanford Guide to Antimicrobial Therapy 2023. 2023:339
+- () · Taketomo C. Taketomo CK: Pediatric & Neonatal Dosage Handbook,. 2021
+- () · McNab S. Intravenous maintenance fluid therapy in children. J Paediatrics Child Health.2016-2;52(2):137-140 doi:10.1111/jpc.13076
+- () · Feld L, Neuspiel D, Foster B, et al. Clinical Practice Guideline: Maintenance Intravenous Fluids in Children. 2018-12-1;142(6) doi:10.1542/peds.2018-3083
+- () · Foster B, Tom D, Hill V. Hypotonic versus Isotonic Fluids in Hospitalized Children: A Systematic Review and Meta-Analysis. The Journal of Pediatrics.2014-7;165(1):163-169.e2 doi:10.1016/j.jpeds.2014.01.040
+- () · Gist K, Selewski D, Brinton J, et al. Assessment of the Independent and Synergistic Effects of Fluid Overload and Acute Kidney Injury on Outcomes of Critically Ill Children*. 2020;21(2):170-177 doi:10.1097/pcc.0000000000002107
+- () · Lehr A, Rached-d’Astous S, Barrowman N, et al. Balanced Versus Unbalanced Fluid in Critically Ill Children: Systematic Review and Meta-Analysis*. 2022;23(3):181-191 doi:10.1097/pcc.0000000000002890
+- () · Self W, Semler M, Wanderer J, et al. Balanced Crystalloids versus Saline in Noncritically Ill Adults. N Engl J Med.2018-3;378(9):819-828 doi:10.1056/nejmoa1711586
+- () · Taketomo C. Taketomo CK: Pediatric & Neonatal Dosage Handbook,. 2021
+- () · Zeng L, Choonara I, Zhang L, et al. Effectiveness of prothrombin complex concentrate (PCC) in neonates and infants with bleeding or risk of bleeding: a systematic review and meta-analysis. Eur J Pediatr.2017-5;176(5):581-589 doi:10.1007/s00431-017-2877-0
+- () · Tomaselli G, Mahaffey K, Cuker A, et al. 2020 ACC Expert Consensus Decision Pathway on Management of Bleeding in Patients on Oral Anticoagulants. Journal of the American College of Cardiology.2020-8;76(5):594-622 doi:10.1016/j.jacc.2020.04.053
+- () · Greenberg S, Ziai W, Cordonnier C, et al. 2022 Guideline for the Management of Patients With Spontaneous Intracerebral Hemorrhage: A Guideline From the American Heart Association/American Stroke Association. Stroke.2022-7;53(7) doi:10.1161/str.0000000000000407
+- () · Frontera J, Lewin III J, Rabinstein A, et al. Guideline for Reversal of Antithrombotics in Intracranial Hemorrhage. Neurocrit Care.2016-2;24(1):6-46 doi:10.1007/s12028-015-0222-x
+- () · Munoz R, Da Cruz E, Vetterly C, et al. Handbook of pediatric cardiovascular drugs. 2014 Jun 26
+- () · Taketomo C. Taketomo CK: Pediatric & Neonatal Dosage Handbook,. 2021
+- () · Russell R, Esparaz J, Beckwith M, et al. Pediatric Traumatic Hemorrhagic Shock Consensus Conference Recommendations. J Trauma Acute Care Surg. doi:10.1097/ta.0000000000003805
+- () · Valentine S, Bembea M, Muszynski J, et al. Consensus Recommendations for RBC Transfusion Practice in Critically Ill Children From the Pediatric Critical Care Transfusion and Anemia Expertise Initiative. 2018;19(9):884-898 doi:10.1097/pcc.0000000000001613
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Broselow J, Luten R. Broselow™ Pediatric Emergency Tape. Armstrong Medical Industries.2019
+- () · Advanced Trauma Life Support (ATLS): Student Course Manual, 10ᵉ édition. American College of Surgeons, Committee on Trauma.2018
+- () · Textbook of Pediatric Emergency Procedures, 2ᵉ édition. Lippincott Williams & Wilkins.2008
+- () · Bachur R, Shaw K. Fleisher & Ludwig’s Textbook of Pediatric Emergency Medicine. Wolters Kluwer (Lippincott Williams & Wilkins).2016
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Broselow J, Luten R. Broselow™ Pediatric Emergency Tape. Armstrong Medical Industries.2019
+- () · Advanced Trauma Life Support (ATLS): Student Course Manual, 10ᵉ édition. American College of Surgeons, Committee on Trauma.2018
+- () · Textbook of Pediatric Emergency Procedures, 2ᵉ édition. Lippincott Williams & Wilkins.2008
+- () · Bachur R, Shaw K. Fleisher & Ludwig’s Textbook of Pediatric Emergency Medicine. Wolters Kluwer (Lippincott Williams & Wilkins).2016
+- () · Roberts J. Roberts and Hedges’ Clinical Procedures in Emergency Medicine and Acute Care, 7ᵉ édition. Elsevier (Elsevier Health Sciences).2018
+- () · Reichman E. Reichman’s Emergency Medicine Procedures, 3rd Edition. McGraw‑Hill Education / Medical.2018
+- () · Intraosseous Accesss : Landmarking Deep Dive.
+- () · Key Concepts of Intraosseous Vascular Access using the Arrow EZ-IO System. Teleflex.
+- () · UpToDate. Wolters Kluwer Health, Inc..2025
+- () · The Science and Fundamentals of Intraosseous Vacular Access. Teleflex.
+- () · Roberts J. Roberts and Hedges’ Clinical Procedures in Emergency Medicine and Acute Care, 7ᵉ édition. Elsevier (Elsevier Health Sciences).2018
+- () · Reichman E. Reichman’s Emergency Medicine Procedures, 3rd Edition. McGraw‑Hill Education / Medical.2018
+- () · Intraosseous Accesss : Landmarking Deep Dive.
+- () · Key Concepts of Intraosseous Vascular Access using the Arrow EZ-IO System. Teleflex.
+- () · UpToDate. Wolters Kluwer Health, Inc..2025
+- () · The Science and Fundamentals of Intraosseous Vacular Access. Teleflex.
+- () · Roberts J. Roberts and Hedges’ Clinical Procedures in Emergency Medicine and Acute Care, 7ᵉ édition. Elsevier (Elsevier Health Sciences).2018
+- () · Reichman E. Reichman’s Emergency Medicine Procedures, 3rd Edition. McGraw‑Hill Education / Medical.2018
+- () · Intraosseous Accesss : Landmarking Deep Dive.
+- () · Key Concepts of Intraosseous Vascular Access using the Arrow EZ-IO System. Teleflex.
+- () · UpToDate. Wolters Kluwer Health, Inc..2025
+- () · The Science and Fundamentals of Intraosseous Vacular Access. Teleflex.
+- () · Roberts J. Roberts and Hedges’ Clinical Procedures in Emergency Medicine and Acute Care, 7ᵉ édition. Elsevier (Elsevier Health Sciences).2018
+- () · Reichman E. Reichman’s Emergency Medicine Procedures, 3rd Edition. McGraw‑Hill Education / Medical.2018
+- () · Intraosseous Accesss : Landmarking Deep Dive.
+- () · Key Concepts of Intraosseous Vascular Access using the Arrow EZ-IO System. Teleflex.
+- () · UpToDate. Wolters Kluwer Health, Inc..2025
+- () · The Science and Fundamentals of Intraosseous Vacular Access. Teleflex.
+- () · King Airway Step-by-step Demonstration. 2021
+- () · King Airway Device: Instructions for Use. 2014
+- () · Extraglottic devices for emergency airway management in adults. 2022
+- () · Roberts J, Hedges J. Chapter 3 : Basic Airway Management and Decision Making. 2018
+- () · King LT Supraglottic Airway. 2016
+- () · King LT Airway Demonstration. 2018
+- () · King LTS-D Datasheet. 2018
+- () · Basic Life Support (BLS). American Heart Association (AHA).2020
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Oropharyngeal Airway.
+- () · Basic Life Support (BLS). AHA.2020
+- () · Atanelov Z, Aina T, Smith T, et al. StatPearls - Nasopharyngeal Airway. 30 January 2024
+- () · Roberts K. The nasopharyngeal airway: dispelling myths and establishing the facts. Emergency Medicine Journal.2005-6-1;22(6):394-396 doi:10.1136/emj.2004.021402
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020
+- () · Nasopharyngeal airway.
+- () · Basic Life Support. American Heart Association.2020
+- () · Basic Life Support. American Heart Association.2020
+- () · Basic Life Support (BLS). American Heart Association (AHA).2020
+- () · Basic Life Support (BLS). American Heart Association (AHA).2020
+- () · How to Handwash?. 2009
+- () · Roberts J. Roberts and Hedges’ Clinical Procedures in Emergency Medicine and Acute Care, 7ᵉ édition. Elsevier (Elsevier Health Sciences).2018
+- () · Ernstmeyer K, Christman E. Nursing Skills. Eau Claire (Wisconsin), Chippewa Valley Technical College.2023:240-241
+- () · Health Services A. Donning and Doffing Sterile Gloves When a Sterile Gown is Not Worn. 2025
+- () · Passi Y, Sathyamoorthy M, Lerman J, et al. Comparison of the laryngoscopy views with the size 1 Miller and Macintosh laryngoscope blades lifting the epiglottis or the base of the tongue in infants and children <2 yr of age. British Journal of Anaesthesia.2014-11;113(5):869-874 doi:10.1093/bja/aeu228
+- () · iGel User Guide.
+- () · Textbook of Neonatal Resuscitation 8th Edition (NRP). 2021 doi:10.1542/9781610025256
+- () · Advanced Trauma Life Support (ATLS): Student Course Manual, 10ᵉ édition. American College of Surgeons, Committee on Trauma.2018
+- () · Pediatric Advanced Life Support Provider Manual. American Heart Association (AHA).2020

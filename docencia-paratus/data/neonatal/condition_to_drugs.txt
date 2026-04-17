@@ -1,0 +1,64 @@
+=== neonatal INDICATION -> DRUGS ===
+
+• Anemia
+    - packed Red Blood Cells
+• Cardiac arrest
+    - Epinephrine
+• Coagulopathy
+    - Cryoprecipitate
+    - Fresh Frozen Plasma
+• Duct dependent congenital heart disease
+    - Alprostadil (Prostaglandin E1)
+• Fluid bolus
+    - NaCl 0.9%
+• Hemorrhagic shock
+    - Calcium (Gluconate)
+• Hyperkalemia or Hemorrhage
+    - Calcium (Chloride)
+• Hyperkalemia with acidosis
+    - Sodium bicarbonate
+• Hyperkaliemia
+    - Calcium (Gluconate)
+• Hypoglycemia
+    - D10%
+• Intubation - Induction Agent​
+    - Fentanyl
+    - Ketamine
+• Intubation- Bradycardia
+    - Atropine
+• Intubation- Neuromuscular Blocker
+    - Rocuronium
+    - Succinylcholine
+• Maintenance fluids
+    - D10% infusion
+• Prophylaxis for vitamin K deficiency bleeding
+    - Vitamin K
+• Pulmonary hypertension with acidosis
+    - Sodium bicarbonate
+• Pulseless VT/VF
+    - Amiodarone
+    - Lidocaine IV
+• Pulseless VT/VF associated with torsade de pointes
+    - Magnesium (Sulfate)
+• Respiratory distress syndrome of the newborn
+    - Beractant
+    - Bovine lipid extract surfactant
+    - Poractant alpha
+• Severe infection including meningitis
+    - Cloxacillin
+• Shock
+    - Dopamine
+    - Epinephrine
+    - Norepinephrine
+• Supraventricular Tachycardia (SVT)
+    - Adenosine
+• Thrombocytopenia
+    - Platelets
+• Urgent reversal of rocuronium
+    - Sugammadex
+• Usual Dosage
+    - Gentamicin
+    - Tobramycin
+• Usual dosage
+    - Ampicillin
+    - Cefotaxime

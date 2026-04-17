@@ -1,0 +1,71 @@
+=== neonatal DRUG -> INDICATIONS ===
+
+• Adenosine
+    - Supraventricular Tachycardia (SVT)
+• Alprostadil (Prostaglandin E1)
+    - Duct dependent congenital heart disease
+• Amiodarone
+    - Pulseless VT/VF
+• Ampicillin
+    - Usual dosage
+• Atropine
+    - Intubation- Bradycardia
+• Beractant
+    - Respiratory distress syndrome of the newborn
+• Bovine lipid extract surfactant
+    - Respiratory distress syndrome of the newborn
+• Calcium (Chloride)
+    - Hyperkalemia or Hemorrhage
+• Calcium (Gluconate)
+    - Hemorrhagic shock
+    - Hyperkaliemia
+• Cefotaxime
+    - Usual dosage
+• Cloxacillin
+    - Severe infection including meningitis
+• Cryoprecipitate
+    - Coagulopathy
+• D10%
+    - Hypoglycemia
+• D10% infusion
+    - Maintenance fluids
+• Dopamine
+    - Shock
+• Epinephrine
+    - Cardiac arrest
+    - Shock
+• Fentanyl
+    - Intubation - Induction Agent​
+• Fresh Frozen Plasma
+    - Coagulopathy
+• Gentamicin
+    - Usual Dosage
+• Ketamine
+    - Intubation - Induction Agent​
+• Lidocaine IV
+    - Pulseless VT/VF
+• Magnesium (Sulfate)
+    - Pulseless VT/VF associated with torsade de pointes
+• NaCl 0.9%
+    - Fluid bolus
+• Norepinephrine
+    - Shock
+• Platelets
+    - Thrombocytopenia
+• Poractant alpha
+    - Respiratory distress syndrome of the newborn
+• Rocuronium
+    - Intubation- Neuromuscular Blocker
+• Sodium bicarbonate
+    - Hyperkalemia with acidosis
+    - Pulmonary hypertension with acidosis
+• Succinylcholine
+    - Intubation- Neuromuscular Blocker
+• Sugammadex
+    - Urgent reversal of rocuronium
+• Tobramycin
+    - Usual Dosage
+• Vitamin K
+    - Prophylaxis for vitamin K deficiency bleeding
+• packed Red Blood Cells
+    - Anemia

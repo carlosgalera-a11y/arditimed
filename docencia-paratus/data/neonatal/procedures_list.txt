@@ -1,0 +1,13 @@
+[112] Intubation
+[347] Intraosseous access
+[349] iGel® insertion
+[351] Oropharyngeal Airway (OPA) insertion
+[370] Hand hygiene (hydroalcoholic gel)
+[372] Don Sterile Gown
+[374] Don Sterile Gloves
+[376] Direct laryngoscopy
+[383] Emergency umbilical venous catheter insertion
+[384] Chest compressions
+[385] Positive pressure ventilation
+[393] Neonatal ventilation device check
+[394] Thoracostomy

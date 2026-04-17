@@ -1,0 +1,52 @@
+[120] Resuscitation
+[148] Pulmonary embolism
+[149] Status epilepticus
+[150] Acetaminophen intoxication
+[151] Acute aortic syndrome (aortic dissection)
+[152] Acute COPD exacerbation
+[153] Acute coronary syndrome (ACS) - Myocardial infarction (MI)
+[155] Anticoagulation reversal
+[156] Acute hypertensive pulmonary edema
+[157] Acute ischemic stroke
+[158] Acute severe asthma
+[159] Anaphylaxis
+[160] Angioedema
+[161] Atrial fibrillation and flutter
+[162] Beta blocker (BB) and/or calcium channel blocker (CCB) intoxication
+[163] Bradyarrhythmia
+[164] Cardiogenic shock
+[166] Cyanide intoxication
+[169] Decompensated hypothyroidism (myxedema coma)
+[170] Diabetic ketoacidosis (DKA) and hyperosmolar hyperglycemic syndrome (HHS)
+[171] Digoxin intoxication (and other cardiac glycosides)
+[173] Eclampsia/Severe preeclampsia
+[174] Hemorrhagic shock
+[175] Hyperkalemia
+[177] Hypoglycemia
+[178] Local anesthetic systemic toxicity
+[179] Methemoglobinemia
+[180] Opioid intoxication
+[181] Organophosphate intoxication
+[194] Albumin for paracentesis (ascites drainage)
+[195] Paroxysmal supraventricular tachycardia (PSVT)
+[196] Postpartum hemorrhage
+[198] Salicylate intoxication (ASA - aspirin)
+[199] Sepsis / septic shock
+[200] Severe agitation
+[201] Severe alcohol withdrawal
+[202] Sodium channel blocker intoxication
+[206] Spontaneous bacterial peritonitis (SBP)
+[207] Spontaneous intracerebral hemorrhage (ICH)
+[209] Targeted hypertension control
+[210] Thyroid storm (decompensated hyperthyroidism)
+[211] Torsade de pointes
+[212] Toxic alcohol intoxication (methanol, ethylene glycol)
+[213] Trauma
+[214] Upper gastrointestinal bleeding (UGIB)
+[215] Ventricular tachycardia (VT)
+[386] Antiarrhythmics
+[387] Antibiotics
+[388] Antihypertensives
+[389] Local anesthesia
+[390] Sedation and Analgesia
+[391] Vasopressors and inotropes

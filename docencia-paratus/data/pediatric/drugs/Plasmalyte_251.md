@@ -1,0 +1,52 @@
+# Plasmalyte (Bolus)
+- Drug ID: 251
+- Type: drug
+- Entorno: pediatric
+
+## Indicación: Shock
+- Categoría: Uncategorized
+- Weight type: 1
+
+  - STEP: Non-cardiogenic shock  [IV over 10 minutes]  Administer by volume/time pump or pressure infusion bag
+      administration: • If metabolic acidosis, hyperchloremia or hyperkalemia, favor a balanced solution such as Lactate Ringer's or Plasmalyte. Hyperlactatemia is not a contraindication for the use of Lactate Ringer's; 30 mL/Kg might possibly raise the lactate level by around 0.5 mmol/L.
+• For patients with intracranial hypertension, hypercalcemia or metabolic alkalosis, favor NaCl 0.9%. Plasmalyte (Na 140 mmol/L) can also be used in intracranial hypertension.
+• Reassess the patient between each bolus and initiate vasopressors early if repeated fluid boluses are required
+      particularity: Nil
+      doses:
+        •  [weight_min=0, weight=0, min=0, max=1000]
+      references: - Weiss SL, Peters MJ, Alhazzani W, Agus MSD, Flori HR, Inwald DP, Nadel S, Schlapbach LJ, Tasker RC, Argent AC, Brierley J, Carcillo J, Carrol ED, Carroll CL, Cheifetz IM, Choong K, Cies JJ, Cruz AT, De Luca D, Deep A, Faust SN, De Oliveira CF, Hall MW, Ishimine P, Javouhey E, Joosten KFM, Joshi P, Karam O, Kneyber MCJ, Lemson J, MacLaren G, Mehta NM, Møller MH, Newth CJL, Nguyen TC, Nishisaki A, Nunnally ME, Parker MM, Paul RM, Randolph AG, Ranjit S, Romer LH, Scott HF, Tume LN, Verger JT, Wil…
+  - STEP: Cardiogenic shock  [IV over 10 minutes]  Administer by volume/time pump or pressure infusion bag
+      administration: • If metabolic acidosis, hyperchloremia or hyperkalemia, favor a balanced solution such as Lactate Ringer's or Plasmalyte. Hyperlactatemia is not a contraindication for the use of Lactate Ringer's; 30 mL/Kg might possibly raise the lactate level by around 0.5 mmol/L. 
+• For patients with intracranial hypertension, hypercalcemia or metabolic alkalosis, favor NaCl 0.9%. Plasmalyte (Na 140 mmol/L) can also be used in intracranial hypertension.
+• Reassess the patient between each bolus and initiate vasopressors early if repeated fluid boluses are required
+      particularity: Nil
+      doses:
+        •  [weight_min=0, weight=0, min=0, max=250]
+        •  [weight_min=0, weight=0, min=0, max=500]
+      references: - Weiss SL, Peters MJ, Alhazzani W, Agus MSD, Flori HR, Inwald DP, Nadel S, Schlapbach LJ, Tasker RC, Argent AC, Brierley J, Carcillo J, Carrol ED, Carroll CL, Cheifetz IM, Choong K, Cies JJ, Cruz AT, De Luca D, Deep A, Faust SN, De Oliveira CF, Hall MW, Ishimine P, Javouhey E, Joosten KFM, Joshi P, Karam O, Kneyber MCJ, Lemson J, MacLaren G, Mehta NM, Møller MH, Newth CJL, Nguyen TC, Nishisaki A, Nunnally ME, Parker MM, Paul RM, Randolph AG, Ranjit S, Romer LH, Scott HF, Tume LN, Verger JT, Wil…
+
+## Indicación: Diabetic Ketoacidosis
+- Categoría: Uncategorized
+- Weight type: 1
+
+  - STEP:   Administer by volume/time pump or pressure infusion bag
+      administration: • For dehydrated children with diabetic ketoacidosis (not in shock), administer a reduced bolus administered over a longer period of time to reduce the risk of cerebral oedema.
+• If metabolic acidosis, hyperchloremia or hyperkalemia, favor a balanced solution such as Lactate Ringer's or Plasmalyte. Hyperlactatemia is not a contraindication for the use of Lactate Ringer's; 30 mL/Kg might possibly raise the lactate level by around 0.5 mmol/L. 
+• For patients with intracranial hypertension, hypercalcemia or metabolic alkalosis, favor NaCl 0.9%. Plasmalyte (Na 140 mmol/L) can also be used in intracranial hypertension.
+• Reassess the patient between each bolus and initiate vasopressors early if repeated fluid boluses are required
+      particularity: Nil
+      doses:
+        •  [weight_min=0, weight=0, min=0, max=500]
+      references: - Self WH, Evans CS, Jenkins CA, Brown RM, Casey JD, Collins SP, Coston TD, Felbinger M, Flemmons LN, Hellervik SM, Lindsell CJ, Liu D, McCoin NS, Niswender KD, Slovis CM, Stollings JL, Wang L, Rice TW, Semler MW; Pragmatic Critical Care Research Group. Clinical Effects of Balanced Crystalloids vs Saline in Adults With Diabetic Ketoacidosis: A Subgroup Analysis of Cluster Randomized Clinical Trials. JAMA Netw Open. 2020 Nov 2;3(11):e2024596. - Kuppermann N, Ghetti S, Schunk JE, Stoner MJ, Rewers…
+
+## Indicación: Trauma
+- Categoría: Uncategorized
+- Weight type: 1
+
+  - STEP:   [IV over 10 minutes]  Administer by volume/time pump or pressure infusion bag
+      administration: • If metabolic acidosis, hyperchloremia or hyperkalemia, favor a balanced solution such as Lactate Ringer's or Plasmalyte. Hyperlactatemia is not a contraindication for the use of Lactate Ringer's; 30 mL/Kg might possibly raise the lactate level by around 0.5 mmol/L. 
+• For patients with intracranial hypertension, hypercalcemia or metabolic alkalosis, favor NaCl 0.9%. Plasmalyte (Na 140 mmol/L) can also be used in intracranial hypertension.
+      particularity: • Plasmalyte is Y-site compatible with blood.
+      doses:
+        •  [weight_min=0, weight=0, min=0, max=500]
+      references: - Polites SF, Nygaard RM, Reddy PN, Zielinski MD, Richardson CJ, Elsbernd TA, Petrun BM, Weinberg SL, Murphy S, Potter DD, Klinkner DB, Moir CR. Multicenter study of crystalloid boluses and transfusion in pediatric trauma-When to go to blood? J Trauma Acute Care Surg. 2018 Jul;85(1):108-112. - Polites SF, Moody S, Williams RF, Kayton ML, Alberto EC, Burd RS, Schroeppel TJ, Baerg JE, Munoz A, Rothstein WB, Boomer LA, Campion EM, Robinson C, Nygaard RM, Richardson CJ, Garcia DI, Streck CJ, Gaffley…

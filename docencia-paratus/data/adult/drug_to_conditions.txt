@@ -1,0 +1,413 @@
+=== adult DRUG -> INDICATIONS ===
+
+• Acetylcysteine
+    - Acetaminophen intoxication, Quebec poison control protocol
+• Activated charcoal (aqueous)
+    - Toxicology
+• Acyclovir
+    - Encephalitis, HSV or VZV infection
+• Adenosine
+    - Paroxysmal supraventricular tachycardia
+• Albumin 25%
+    - Paracentesis; acording to quantity drained in Liters
+    - Spontaneous bacterial peritonitis
+• Alteplase
+    - Acute ischemic stroke
+    - Cardiac arrest
+    - Massive pulmonary embolism
+    - Occlusion myocardial infarction
+    - Submassive pulmonary embolism
+• Amiodarone
+    - Pulseless VF/VT
+    - VT with pulse or AFib (bolus)
+    - VT with pulse or AFib (drip)
+• Amoxicillin / clavulanic acid IV
+    - Severe infection
+    - Usual dosage
+• Ampicillin
+    - Meningitis
+    - Usual dosage
+• Anti-digitalis antibodies (digoxin specific)
+    - Cardiac arrest imminent
+    - Intoxication in chronic use
+    - Stable patient, digoxin level 6 hours post ingestion available
+    - Unstable patient, digoxin level 6 hours post ingestion available
+    - Unstable patient, digoxin level unavailable
+• Ascorbic acid
+    - Vitamin C deficiency (scurvy)
+• Atropine
+    - Bradycardia
+    - Organophosphate poisoning
+• Azithromycin IV
+    - Pneumonia
+• Bupivacaine 0.5% subcutaneous
+    - Local anesthesia
+• C1 esterase inhibitor
+    - Hereditary angioedema (treatment)
+• Calcium (Chloride)
+    - Calcium channel blocker poisoning (bolus)
+    - Calcium channel blocker poisoning (drip)
+    - Cardiac arrest
+    - Hyperkalemia
+    - Hypocalcemia, severe
+    - Massive hemorrhage
+• Calcium (Gluconate)
+    - Calcium channel blocker poisoning (bolus)
+    - Calcium channel blocker poisoning (infusion)
+    - Cardiac Arrest
+    - Hyperkalemia
+    - Hypocalcemia, severe
+    - Massive hemorrhage
+• Cefazolin
+    - Usual dosage
+• Cefepime
+    - Severe infection
+• Cefotaxime
+    - Severe infection
+• Ceftazidime
+    - Severe infection
+• Ceftriaxone
+    - Severe infection
+• Cetirizine PO
+    - Pruritus secondary to anaphylaxis
+• Ciprofloxacin
+    - Severe infection
+• Clevidipine
+    - Targeted BP control
+• Clindamycin IV
+    - Severe infection
+• D10%
+    - Adjuvant to IV insulin in hyperkalemia
+    - Adjuvant to high dose IV insulin in toxicology
+    - Hypoglycemia
+• D50%
+    - Adjuvant to IV insulin in hyperkalemia
+    - Adjuvant to high dose IV insulin in toxicology
+    - Hypoglycemia
+• Dalteparin
+    - Venous thromboembolism, treatment
+• Dantrolene
+    - Malignant hyperthermia
+• Deferoxamin
+    - Iron intoxication
+• Desmopressin
+    - Bleeding associated with Hemophilia A or von Willebrand disease
+    - Bleeding associated with uremia
+• Dexamethasone IV
+    - COVID + with hypoxemia
+    - Cerebral edema
+    - Laryngeal edema
+• Dexamethasone PO
+    - Anaphylaxis
+• Dexmedetomidine
+    - Post-intubation sedation
+• Diazepam
+    - Severe alcohol withdrawal
+• Digoxin
+    - Atrial fibrillation
+• Diltiazem
+    - AFib/Flutter/PSVT (bolus)
+    - AFib/Flutter/PSVT (drip)
+• Diphenhydramine
+    - Pruritus secondary to anaphylaxis
+• Dobutamine
+    - Cardiogenic shock
+• Dopamine
+    - Shock/unstable bradycardia
+• Enalaprilat
+    - Targeted BP control
+• Enoxaparin
+    - Non-occlusion acute myocardial infarction and atrial fibrillation
+    - Occlusion acute myocardial infarction < 75 years old
+    - Occlusion acute myocardial infarction ≥ 75 years old
+    - Venous thromboembolism, treatment
+• Epinephrine
+    - Anaphylaxis
+    - Bradycardia
+    - Cardiac arrest
+    - Nebulization
+    - Push-dose pressor
+    - Refractory acute severe asthma
+    - Shock
+• Ertapenem
+    - Severe infection
+• Esmolol
+    - Refractory VF/VT
+    - Targeted control for BP and/or HR
+• Estrogen
+    - Acute uterine bleeding
+• Ethanol IV
+    - Toxic alcohol intoxication
+• Ethanol PO
+    - Toxic alcohol intoxication
+• Etomidate
+    - Intubation - induction agent
+    - Procedural sedation
+• Famotidine
+    - Anaphylaxis
+• Fentanyl
+    - Analgesia
+    - Post-intubation analgesia
+    - Premedication in RSI
+• Flumazenil
+    - Iatrogenic benzodiazepine intoxication
+• Folic acid
+    - Adjuvant in methanol intoxication
+• Fomepizole
+    - Toxic alcohol intoxication
+• Fresh Frozen Plasma
+    - Angioedema, bradykinin-mediated
+    - Vitamin K antagonist (VKA) reversal in patients with acute major bleeding
+• Furosemide
+    - Bolus (120 to 200 mg)
+    - Bolus (20 to 100 mg)
+    - Infusion
+• Gentamicin
+    - Daily dosing
+• Glucagon
+    - Anaphylaxis in patient using beta-blocker
+    - Beta-blocker toxicity
+    - Hypoglycemia (subcutaneous or IM)
+• Glycopyrrolate
+    - Reduction of secretions
+• Haloperidol
+    - Cannabinoid hyperemesis syndrome
+    - Severe agitation
+• Heparin
+    - Acute coronary syndrome and atrial fibrillation
+    - Venous thromboembolism, treatment
+• Hydralazine
+    - Targeted BP control
+• Hydrocortisone
+    - Adrenal crisis
+    - Decompensated hypothyroidism (myxedema coma)
+    - Septic shock
+    - Thyroid storm
+• Hydromorphone
+    - Analgesia
+    - Post-intubation analgesia
+• Hydroxocobalamin
+    - Cyanide poisoning
+• Hypertonic saline 23.4%
+    - Intracranial hypertension
+• Hypertonic saline 3%
+    - Heart failure
+    - Intracranial hypertension
+    - Severe hyponatremia
+    - Sodium channel blocker toxicity
+• Icatibant
+    - Hereditary angioedema
+• Idarucizumab
+    - Life-threatening bleeding with use of Dabigatran
+• Insulin regular
+    - CCB and BB intoxication (bolus)
+    - CCB and BB intoxication (drip)
+    - Diabetic ketoacidosis and hyperglycemic hyperosmolar syndrome
+    - Hyperkalemia
+• Ipratropium
+    - Bronchospasm
+• Isoproterenol
+    - Bradyarrhythmia
+    - Medical chronotropy in torsade de pointes
+• Ketamine
+    - Analgesia (bolus as short infusion)
+    - Analgesia (infusion)
+    - Intubation - induction agent
+    - Post-intubation sedation
+    - Procedural sedation
+    - Refractory status epilepticus, post-intubation
+    - Severe agitation (IM)
+• Labetalol
+    - Targeted BP control (bolus)
+    - Targeted BP control (infusion)
+• Lacosamide
+    - Status epilepticus
+• Leucovorin IV
+    - Methanol intoxication
+• Levetiracetam
+    - Status epilepticus
+• Levocarnitine
+    - Valproic acid intoxication
+• Levofloxacin
+    - Severe infection
+• Levothyroxine
+    - Decompensated hypothyroidism (myxedema coma)
+• Lidocaine 1% subcutaneous
+    - Local anesthesia
+• Lidocaine 2% subcutaneous
+    - Local anesthesia
+• Lidocaine IV
+    - Pulseless VT/VF
+    - VT with pulse
+• Liothyronine PO
+    - Decompensated hypothyroidism (myxedema coma)
+• Lipid emulsion 20%
+    - Local anesthetic systemic toxicity
+• Lorazepam
+    - Status epilepticus
+• Magnesium (Sulfate)
+    - Acute severe asthma
+    - Eclampsia
+    - Hypomagnesemia, non-symptomatic
+    - Hypomagnesemia, severe and symptomatic
+    - Refractory torsade de pointes (drip)
+    - Torsade de pointes (stable)
+    - Torsade de pointes (unstable)
+• Maintenance fluids
+    - Burns
+• Mannitol 20%
+    - Intracranial hypertension
+• Meropenem
+    - Meningitis
+    - Usual dosage
+• Methimazole PO
+    - Thyroid storm
+• Methylene blue
+    - Anaphylaxis
+    - Methemoglobinemia
+    - Refractory vasoplegic shock
+• Methylprednisolone
+    - Acute severe asthma / acute COPD exacerbation
+    - Anaphylaxis
+    - Pulse dose in auto-immune conditions
+• Metoprolol
+    - Afib/Flutter/PSVT
+• Metronidazole IV
+    - Usual dosage
+• Midazolam
+    - Post-intubation sedation
+    - Procedural anxiolysis
+    - Refractory status epilepticus, post-intubation
+    - Severe agitation (IM)
+    - Severe agitation and sympathomimetic toxidrome (IV)
+    - Status epilepticus
+• Milrinone
+    - Cardiogenic shock
+    - Pulmonary hypertension (nebulization)
+• Morphine IV
+    - Analgesia
+• Moxifloxacin
+    - Usual dosage
+• Naloxone
+    - Opioid poisoning (IM)
+    - Opioid poisoning (IV bolus)
+    - Opioid poisoning (drip)
+• Nicardipine
+    - Targeted BP control
+• Nitroglycerin
+    - Hypertensive acute pulmonary edema
+    - Ischemic chest pain
+    - Sublingual for angina or pulmonary edema
+• Nitroprusside
+    - Targeted BP control
+• Norepinephrine
+    - Shock
+• Octreotide
+    - Esophageal variceal bleed
+    - Sulfonylurea intoxication
+• Oxytocin
+    - Post-partum hemorrhage
+• Pantoprazole
+    - Upper GI bleeding (bolus - infusion)
+    - Upper GI bleeding (bolus strategy)
+• Phenobarbital
+    - Alcohol withdrawal, high dose
+    - Alcohol withdrawal, low dose
+    - Status epilepticus
+• Phentolamine
+    - Extravasation of vasoconstrictor agents
+    - Targeted BP control
+• Phenylephrine
+    - Priapism
+    - Push-dose pressor
+    - Shock
+• Phenytoin
+    - Status Epilepticus
+• Phosphate
+    - Hypophosphatemia
+• Physostigmine
+    - Anticholinergic delirium
+• Piperacillin / tazobactam
+    - Severe infection
+    - Usual dosing
+• Potassium chloride
+    - Hypokalemia
+• Potassium iodide and iodine 5% PO
+    - Thyroid storm
+• Pralidoxime
+    - Organophosphate intoxication
+• Procainamide
+    - Atrial Fibrillation
+    - Ventricular tachycardia with pulse
+• Propofol
+    - Intubation - induction agent​
+    - Post-intubation sedation (mcg/kg/min)
+    - Post-intubation sedation (mg/kg/h)
+    - Procedural sedation
+    - Refractory status epilepticus, post-intubation
+• Propranolol
+    - Recurring ventricular tachycardia
+    - Thyroid storm
+• Propylthiouracil PO
+    - Thyroid storm
+• Protamine
+    - Bleeding with enoxaparine
+    - Bleeding with tinzaparin, dalteparin, nadroparin
+    - Bleeding with unfractionated heparin
+• Prothrombin complex concentrate (4-factor)
+    - DOAC (Xa inhibitor) reversal in patients with acute major bleeding
+    - Vitamin K antagonist (VKA) reversal in patients with acute major bleeding
+• Pyridoxine
+    - Ethylene glycol intoxication
+    - Isoniazide intoxication
+• Rocuronium
+    - Neuromuscular blocker
+• Salbutamol
+    - Acute severe asthma (continuous nebulization)
+    - Bronchospasm
+    - Hyperkalemia
+    - Refractory acute severe asthma (IV infusion)
+• Sarilumab
+    - COVID + with hypoxemia
+• Sodium bicarbonate
+    - Hyperkaliemia
+    - Sodium channel blocker toxicity
+    - Urinary alkalization
+• Sodium thiosulfate
+    - Cyanide intoxication
+• Succinylcholine
+    - Neuromuscular blocker
+• Sugammadex
+    - Urgent reversal of rocuronium
+• Tenecteplase
+    - Acute ischemic stroke
+    - Massive or submassive pulmonary embolism
+    - Occlusion myocardial infarction
+• Thiamine
+    - Ethylene glycol intoxication
+    - Prophylaxis for Wernicke's encephalopathy
+    - Treatment for Wernicke's Encephalopathy
+• Tinzaparin
+    - Venous thromboembolism, treatment
+• Tobramycin
+    - Once daily dosing
+• Tocilizumab
+    - COVID + with hypoxemia
+• Tranexamic acid
+    - Angioedema, bradykinin-mediated
+    - Hemorrhage (miscellaneous)
+    - Hemorrhage associated with trauma (bolus - infusion)
+    - Hemorrhage associated with trauma (bolus 2 g)
+    - Nebulization for hemoptysis
+    - Post-partum hemorrhage
+• Trimethoprim / sulfamethoxazole IV
+    - Pneumocystis pneumonia
+• Valproic acid
+    - Status epilepticus
+• Vancomycin
+    - Loading dose, severe infection
+• Vasopressin
+    - Fixed dose in septic shock
+    - Titratable dose in shock
+• Vitamin K
+    - Hemorrhage, patient on vitamin K antagonist

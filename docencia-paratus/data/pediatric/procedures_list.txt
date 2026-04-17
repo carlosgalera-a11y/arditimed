@@ -1,0 +1,13 @@
+[119] Intubation
+[346] Intraosseous access
+[348] King LTSD™ insertion
+[350] Oropharyngeal Airway (OPA) insertion
+[352] Nasopharyngeal Airway (NPA) insertion
+[354] CPR - Cardiopulmonary Resuscitation (BLS)
+[355] Basic Airway Opening Maneuvers
+[369] Hand hygiene (hydroalcoholic gel)
+[371] Don Sterile Gown
+[373] Don Sterile Gloves
+[375] Direct laryngoscopy
+[392] iGel® insertion
+[395] Thoracostomy

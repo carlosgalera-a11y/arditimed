@@ -1,0 +1,38 @@
+[118] Equipment
+[125] Vital signs
+[126] Resuscitation
+[140] Acetaminophen intoxication
+[142] Angioedema
+[143] Anaphylaxis
+[220] Diabetic ketoacidosis (DKA)
+[221] Severe agitation
+[222] Acute severe asthma
+[223] Acute ischemic stroke
+[224] Bradyarrhythmia
+[225] Bronchiolitis (Infant)
+[226] Spontaneous intracerebral hemorrhage (ICH)
+[227] Hyperkalemia
+[228] Hypoglycemia
+[229] Neuroprotective intubation
+[230] Laryngitis
+[231] Sepsis / Septic shock
+[232] Status epilepticus
+[233] Supraventricular tachycardia (SVT)
+[234] Ventricular tachycardia with pulse (VTach)
+[235] Local anesthetic systemic toxicity (LAST)
+[236] Torsade de pointes
+[237] Toxicology
+[238] Trauma
+[239] Procedural analgosedation
+[240] Analgosedation - Invasive ventilation
+[241] Analgosedation - Non-invasive ventilation
+[242] Local anesthesia
+[243] Antiarrhythmics
+[244] Antihypertensives
+[245] Antimicrobials IV
+[246] Antimicrobials PO
+[247] IV fluids
+[248] Frequent drugs (PO)
+[249] Anticoagulation reversal (major bleed)
+[250] Vasopressors and inotropes
+[251] Hemorrhagic shock

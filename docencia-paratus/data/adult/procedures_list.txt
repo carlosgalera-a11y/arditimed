@@ -1,0 +1,45 @@
+[122] Intraosseous access
+[144] King LTSD™ insertion
+[218] Vital Signs Assessment
+[219] Blood sugar measurement
+[252] iGel® insertion
+[255] Oropharyngeal Airway (OPA) insertion
+[256] Nasopharyngeal Airway (NPA) insertion
+[257] Tourniquet
+[258] CPR - Cardiopulmonary Resuscitation
+[261] Heimlich Maneuver
+[263] Cardiac Monitoring (3-lead EKG)
+[265] EKG Procedure
+[266] Basic Airway Opening Maneuvers
+[267] Bag-Valve-Mask (BVM) Ventilation
+[268] Defibrillation
+[269] Lateral safety position
+[271] Oxygen (O₂) administration
+[272] Non-invasive Ventilation (BiPAP - CPAP)
+[275] Pelvic Binder
+[276] Nasogastric Tube Insertion (NG tube)
+[278] Vagal maneuvers
+[281] Intravenous (IV) Catheter Insertion
+[284] Urinary catheterization
+[286] Hand hygiene (hydroalcoholic gel)
+[287] Don Sterile Gown
+[288] Don Sterile Gloves
+[289] EpiPen™ Administration
+[291] Emergency Cricothyroidotomy
+[293] Central venous access (Landmark Approach)
+[294] Resuscitative hysterotomy (perimortem C-section)
+[298] Laryngoscopy
+[301] Thoracostomy
+[303] Epistaxis
+[319] Cardioversion
+[320] Transcutaneous Pacing
+[321] Pericardiocentesis
+[327] Rhinopharyngolaryngoscopy (RPL)
+[336] Central venous access removal
+[339] Central venous access (Ultrasound Approach)
+[340] Hemodialysis catheter (Landmark Approach)
+[341] Hemodialysis catheter (Ultrasound Approach)
+[342] Introducer Cordis™ (Landmark approach)
+[343] Introducer Cordis™ (Ultrasound Approach)
+[345] Pericardial drain
+[3] Intubation
