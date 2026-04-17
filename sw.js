@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v60 - fix megaAppendMsg HTML escapado en mensajes sistema
-const CACHE_NAME = 'area2-v90';
+// Service Worker - Área II Cartagena PWA v61 - restaurar API keys y llamadas directas DeepSeek/OpenRouter
+const CACHE_NAME = 'area2-v91';
 
 const PRECACHE = [
   '/Cartagenaeste/',

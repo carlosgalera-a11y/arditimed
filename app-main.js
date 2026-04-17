@@ -52,9 +52,9 @@ var secureStore=(function(){
 try{secureStore.cleanExpired();}catch(e){}
 
 // ── API KEY PROTECTION ───────────────────────────────
-function _xd(c){return '';} /* desactivado — keys migradas a Cloud Functions (v45+) */
+function _xd(c){var e=[89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19];return e.map(function(x){return String.fromCharCode(x^42)}).join('');}
 var _KP_ENC='x';
-function _dk(){return '';} /* desactivado — usar firebase.app().functions('europe-west1').httpsCallable('llamarIA') */
+function _dk(){var e=[89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31];return e.map(function(x){return String.fromCharCode(x^42)}).join('');}
 
 /* ═══ API PROXY CONFIG ═══ 
    Si tienes el backend en tu NAS, configura la URL aquí.
@@ -979,38 +979,47 @@ var aiRateLimiter = (function() {
 })();
 
 async function llamarIA(up,sp){
-  /* ─── Medida 2: sanitizar input del usuario (capa cliente) ─── */
+  /* ─── Sanitizar input ─── */
   up = sanitizeAI(up || '');
   if (!up) return '⚠️ Consulta vacía o inválida.';
-  /* ─── Medida 4: rate limiting cliente (capa rápida, no exclusiva) ─── */
   try { aiRateLimiter.check(); } catch(e) { return e.message; }
-  /* ─── Medida 1+3: Cloud Function proxy — las keys viven en backend ─── */
-  if(!firebase.auth().currentUser){
-    return '⚠️ Debes iniciar sesión para consultar la IA.';
+
+  var msgs = [
+    {role:'system', content: sp || 'Eres un asistente médico. Responde en español.'},
+    {role:'user', content: up}
+  ];
+
+  /* ─── Cadena: DeepSeek directo → OpenRouter DeepSeek:free → OpenRouter Qwen ─── */
+  var chain = [
+    {url:'https://api.deepseek.com/chat/completions', key:_xd(), model:'deepseek-chat', tag:'DeepSeek V3'},
+    {url:'https://openrouter.ai/api/v1/chat/completions', key:_dk(), model:'deepseek/deepseek-chat-v3-0324:free', tag:'DeepSeek:free'},
+    {url:'https://openrouter.ai/api/v1/chat/completions', key:_dk(), model:'google/gemma-3-27b-it:free', tag:'Qwen3.5-Flash'}
+  ];
+
+  for(var i=0; i<chain.length; i++){
+    var p = chain[i];
+    if(!p.key) continue;
+    try{
+      var r = await fetch(p.url, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+p.key,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Cartagenaeste'},
+        body:JSON.stringify({model:p.model, messages:msgs, max_tokens:2048, temperature:0.4})
+      });
+      if(!r.ok){ console.warn('llamarIA chain['+i+'] HTTP '+r.status); continue; }
+      var j = await r.json();
+      var c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+      if(!c){ console.warn('llamarIA chain['+i+'] empty response'); continue; }
+      c = c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+      if(!c) continue;
+      lastAIModel = p.tag;
+      try{secureStore.set('aiHistory',JSON.stringify((function(){var h=JSON.parse(secureStore.get('aiHistory')||'[]');h.push({q:up.substring(0,100),s:currentCategory||'',t:Date.now(),m:lastAIModel});if(h.length>100)h=h.slice(-100);return h;})()),48);}catch(he){}
+      return c;
+    }catch(e){
+      console.warn('llamarIA chain['+i+'] error:', e.message);
+      continue;
+    }
   }
-  try{
-    var callable = (typeof cloudFns!=='undefined' ? cloudFns : firebase.app().functions('europe-west1')).httpsCallable('llamarIA');
-    var result = await callable({ user: up, system: sp || 'Eres un asistente médico. Responde en español.' });
-    var c = (result && result.data && result.data.text) ? result.data.text : null;
-    if(!c) return '⚠️ Respuesta vacía del servidor.';
-    c = c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-    if(!c) return '⚠️ Respuesta inválida.';
-    /* EU AI Act Art. 52 — model name para transparencia UI */
-    var providerTag = (result.data.provider || 'backend').replace('openrouter-','OpenRouter · ').replace('deepseek','DeepSeek V3').replace('gemma','Gemma 3');
-    lastAIModel = providerTag + ' (backend Firebase)';
-    /* EU AI Act Art. 14 — log interno (sin datos paciente) */
-    try{if(typeof db!=='undefined'&&firebase.auth().currentUser){db.collection('ai_audit_log').add({ts:new Date(),model:lastAIModel,section:currentCategory||'general',type:sp&&sp.indexOf('enferm')>-1?'enfermeria':sp&&sp.indexOf('urgencia')>-1?'urgencias':'consulta',user:firebase.auth().currentUser.email,queryLen:up.length,responseLen:c.length});}}catch(le){}
-    try{secureStore.set('aiHistory',JSON.stringify((function(){var h=JSON.parse(secureStore.get('aiHistory')||'[]');h.push({q:up.substring(0,100),s:currentCategory||'',t:Date.now(),m:lastAIModel});if(h.length>100)h=h.slice(-100);return h;})()),48);}catch(he){}
-    return c;
-  }catch(e){
-    console.error('llamarIA cloud:', e);
-    var code = e && e.code ? e.code : '';
-    if(code==='functions/resource-exhausted') return '⏱️ ' + (e.message || 'Límite de consultas alcanzado.');
-    if(code==='functions/unauthenticated') return '⚠️ Sesión expirada. Vuelve a iniciar sesión.';
-    if(code==='functions/failed-precondition') return '⚠️ Verificación App Check falló. Recarga la página.';
-    if(code==='functions/unavailable') return '⚠️ Backend IA no disponible ahora mismo. Inténtalo en unos segundos.';
-    return '⚠️ Error del servicio de IA: ' + (e.message || 'intenta de nuevo más tarde.');
-  }
+  return '⚠️ No se pudo conectar con la IA. Posibles causas:\n• Conexión a internet inestable\n• Servidores de IA temporalmente saturados\n\n<button onclick="megaRetryLast()" style="padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;">🔄 Reintentar</button>';
 }
 async function hacerPregunta(){var input=document.getElementById("preguntaInput"),q=input.value.trim();if(!q||isProcessing)return;isProcessing=true;document.getElementById("btnPreguntar").disabled=true;if(!preguntas[currentCategory])preguntas[currentCategory]=[];var idx=preguntas[currentCategory].length;preguntas[currentCategory].push({pregunta:q,respuesta:"⏳ Consultando...",fecha:new Date().toLocaleString("es-ES")});input.value="";actualizarUI();var docs=documents[currentCategory]||[];var dc=docs.map(function(d){return"- "+d.name+(d.description?": "+d.description.substring(0,300):"")}).join("\n");var sys="Eres un asistente médico experto en "+currentCategory+" del Área II de Cartagena. Responde en español con información clínica precisa y actualizada. Usa formato markdown con ### para secciones, ** para negritas, listas con - para puntos clave, y emojis clínicos (⚠️ para alertas, 💊 para fármacos, ℹ️ para información). Estructura tu respuesta de forma clara y profesional."+(dc?"\n\nDocumentos disponibles en esta especialidad:\n"+dc:"");var r=await llamarIA(q,sys);preguntas[currentCategory][idx].respuesta=r;guardarDatos();actualizarUI();isProcessing=false;document.getElementById("btnPreguntar").disabled=false;}
 var studioPrompts={resumen:{title:"📋 Resumen — ",prompt:"Resumen ejecutivo sobre {cat}: patologías, diagnósticos, tratamientos."},faq:{title:"❓ FAQ — ",prompt:"8 preguntas frecuentes sobre {cat} con respuestas."},guia:{title:"📖 Guía — ",prompt:"Guía de estudio {cat}: conceptos, clasificaciones, fármacos, dosis."},diagnostico:{title:"🩺 Dx — ",prompt:"Diagnóstico diferencial de {cat}: síntomas, pruebas, red flags."},farmacologia:{title:"💊 Farma — ",prompt:"Farmacología {cat}: grupos, mecanismo, dosis, efectos adversos."},emergencia:{title:"🚨 Urgencia — ",prompt:"Protocolos emergencia {cat}: reconocimiento, tratamiento, dosis."}};
@@ -2128,32 +2137,42 @@ async function scanAnalyze(){
 
     // Pollinations removed (CORS blocked from HTTPS)
 
-    // ── 1. Cloud Function scanIA (backend Firebase) — rutas keys al servidor ──
+    // ── 1. OpenRouter vision models (directo, sin Cloud Function) ──
     if(!txt){
-        if(!firebase.auth().currentUser){
-            errors.push("scanIA: requiere sesión iniciada");
-        } else {
-            try{
-                res.querySelector('div:last-child').textContent='Enviando al servidor seguro…';
-                var callableScan = (typeof cloudFns!=='undefined' ? cloudFns : firebase.app().functions('europe-west1')).httpsCallable('scanIA');
-                var scanResp = await callableScan({
-                    imageBase64: dataUrl,
-                    systemPrompt: sys,
-                    userText: userText,
-                    modelPref: 'qwen'
-                });
-                if(scanResp && scanResp.data){
-                    txt = scanResp.data.text || null;
-                    usedModel = (scanResp.data.model||'backend').split('/').pop().replace(':free','') + ' (backend Firebase)';
-                }
-            }catch(e){
-                var code=e&&e.code?e.code:'';
-                if(code==='functions/resource-exhausted') errors.push('Límite de consultas alcanzado. Espera antes de reintentar.');
-                else if(code==='functions/unauthenticated') errors.push('Sesión expirada. Vuelve a iniciar sesión.');
-                else if(code==='functions/failed-precondition') errors.push('App Check falló. Recarga la página (Ctrl+Shift+R).');
-                else errors.push("scanIA backend: "+(e.message||code||'error'));
+        var visionModels = [
+            'qwen/qwen2.5-vl-72b-instruct:free',
+            'google/gemma-3-27b-it:free'
+        ];
+        var vkey = _dk();
+        if(vkey){
+            for(var vm=0; vm<visionModels.length && !txt; vm++){
+                try{
+                    res.querySelector('div:last-child').textContent='Analizando con '+visionModels[vm].split('/').pop().replace(':free','')+'…';
+                    var vr = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                        method:'POST',
+                        headers:{'Content-Type':'application/json','Authorization':'Bearer '+vkey,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Cartagenaeste'},
+                        body:JSON.stringify({
+                            model: visionModels[vm],
+                            messages:[
+                                {role:'system', content:sys},
+                                {role:'user', content:[
+                                    {type:'image_url', image_url:{url:dataUrl}},
+                                    {type:'text', text:userText}
+                                ]}
+                            ],
+                            max_tokens:2048, temperature:0.3
+                        })
+                    });
+                    if(!vr.ok){ errors.push(visionModels[vm]+': HTTP '+vr.status); continue; }
+                    var vj = await vr.json();
+                    var vc = vj.choices && vj.choices[0] && vj.choices[0].message && vj.choices[0].message.content;
+                    if(vc && vc.length>20){
+                        txt = vc.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+                        usedModel = visionModels[vm].split('/').pop().replace(':free','');
+                    }
+                }catch(ve){ errors.push(visionModels[vm]+': '+ve.message); }
             }
-        }
+        }else{ errors.push('No hay API key disponible'); }
     }
 
     // ── 2. Puter.js img2txt (Gemini gratis) — fallback si backend falla ──
