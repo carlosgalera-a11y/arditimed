@@ -5,40 +5,302 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Urgencias · Ambulancias · Camas — Área II Cartagena</title>
 <meta name="description" content="Referencia clínica educativa: condiciones, procedimientos y fármacos para Urgencias. Adulto, Pediátrico y Neonatal.">
-<style>:root{--bg:#0f1115;--panel:#151922;--panel-2:#1c2130;--ink:#e5e5e0;--muted:#9aa0a8;--accent:#f6b44a;--accent-2:#9ec6ff;--border:#2a2f3a;--hl:#262b37;--pill:#2b3142}*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",sans-serif}a{color:var(--accent)}header{background:var(--panel);border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:10}header h1{margin:0 0 6px;font-size:18px;color:var(--accent)}header .sub{color:var(--muted);font-size:13px}.tabs{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.tab{padding:6px 12px;border:1px solid var(--border);border-radius:999px;background:var(--panel-2);cursor:pointer;font:inherit;color:var(--ink)}.tab[aria-selected="true"]{background:var(--accent);color:#1a1a1a;border-color:var(--accent);font-weight:600}.layout{display:grid;grid-template-columns:320px 1fr;gap:0;min-height:calc(100vh - 150px)}@media (max-width:800px){.layout{grid-template-columns:1fr}}aside{background:var(--panel);border-right:1px solid var(--border);padding:12px;overflow:auto;max-height:calc(100vh - 150px)}.kind-tabs{display:flex;gap:4px;margin-bottom:8px}.kind-tabs button{flex:1;padding:6px;border:1px solid var(--border);background:var(--panel-2);color:var(--ink);border-radius:6px;cursor:pointer;font:inherit}.kind-tabs button[aria-selected="true"]{background:var(--accent-2);color:#0b1220;border-color:var(--accent-2);font-weight:600}input.search,select.cat,input.weight{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font:inherit;margin-bottom:8px;background:var(--panel-2);color:var(--ink)}input::placeholder{color:var(--muted)}.list{margin:0;padding:0;list-style:none}.list li button{width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;color:var(--ink);border-radius:6px;cursor:pointer;font:inherit}.list li button:hover,.list li button:focus{background:var(--hl);outline:none}.list li button[aria-current="true"]{background:var(--accent);color:#1a1a1a;font-weight:600}.list .cat-header{font-weight:600;color:var(--accent);font-size:12px;text-transform:uppercase;padding:10px 10px 4px;letter-spacing:.04em}.list .sub{font-size:12px;color:var(--muted);display:block}.list li button[aria-current="true"] .sub{color:#663}main{padding:20px 26px;overflow:auto;max-height:calc(100vh - 150px)}main h2{margin:0 0 6px;font-size:22px;color:var(--accent)}main .crumb{color:var(--muted);font-size:13px;margin-bottom:16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px}.pill{display:inline-block;background:var(--pill);color:var(--ink);padding:2px 8px;border-radius:999px;font-size:12px;margin-right:6px}.ind-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}.ind-tabs button{padding:6px 10px;border:1px solid var(--border);background:var(--panel-2);color:var(--ink);border-radius:6px;cursor:pointer;font:inherit}.ind-tabs button[aria-selected="true"]{background:var(--accent);color:#1a1a1a;border-color:var(--accent);font-weight:600}.step{border-left:3px solid var(--accent);padding:6px 10px;margin:8px 0;background:#1a1f2b;border-radius:4px}.step h4{margin:0 0 4px;font-size:15px;color:var(--accent)}.step .meta{color:var(--muted);font-size:12px;margin-bottom:4px}.step .doses table{border-collapse:collapse;width:100%;margin-top:6px;font-size:13px}.step .doses th,.step .doses td{border:1px solid var(--border);padding:4px 8px;text-align:left}.step .doses th{background:var(--panel-2);color:var(--accent)}.step .doses tr.match{background:rgba(246,180,74,0.12)}.sec{margin:10px 0 10px}.sec>h3{margin:0 0 4px;font-size:16px;color:var(--accent-2)}.para{margin:4px 0;white-space:pre-wrap}ul.bl{margin:4px 0 4px 22px;padding:0}.drug-ref{display:inline-block;padding:2px 8px;background:rgba(158,198,255,.15);border:1px solid rgba(158,198,255,.4);color:var(--accent-2);border-radius:6px;margin:2px 4px 2px 0;font-size:13px}.disclaimer{background:rgba(246,180,74,.08);border:1px solid rgba(246,180,74,.4);color:#fce3b0;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px}.topbar{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}.weight-box{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}.weight-box input{width:90px}.back-link{display:inline-block;margin:8px 0;color:var(--accent);text-decoration:none;font-size:13px}.back-link:hover{text-decoration:underline}footer{padding:12px 20px;color:var(--muted);font-size:12px;text-align:center;border-top:1px solid var(--border);background:var(--panel)}.empty{color:var(--muted);padding:20px;text-align:center}
-/* === Home cards (pantalla inicial tipo selector de entorno) === */
-#home-screen{padding:28px 20px;max-width:640px;margin:0 auto}
-#home-screen h1.home-title{font-size:22px;color:var(--accent);margin:0 0 6px;text-align:center}
-#home-screen .home-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:26px}
-#home-screen .home-disclaimer{background:rgba(246,180,74,.08);border:1px solid rgba(246,180,74,.4);color:#fce3b0;border-radius:10px;padding:10px 14px;font-size:12.5px;margin:0 0 20px;line-height:1.5}
-#home-screen .cards{display:flex;flex-direction:column;gap:18px;margin-top:8px}
-#home-screen .env-card{display:flex;align-items:center;justify-content:space-between;border:none;cursor:pointer;padding:22px 24px;border-radius:22px;color:#fff;font:inherit;font-size:26px;font-weight:700;text-align:left;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:transform .12s ease,box-shadow .12s ease;overflow:hidden;position:relative}
-#home-screen .env-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.32)}
-#home-screen .env-card:active{transform:translateY(0);box-shadow:0 4px 12px rgba(0,0,0,.25)}
-#home-screen .env-card .label{letter-spacing:.3px}
-#home-screen .env-card .icon-wrap{background:#fff;border-radius:16px;width:82px;height:82px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:14px}
-#home-screen .env-card .icon-wrap svg{width:48px;height:48px}
-#home-screen .env-card.adult{background:linear-gradient(135deg,#ef5350 0%,#e53935 55%,#d32f2f 100%)}
+<style>
+/* ─── TEMA CLARO MEDTECH ─────────────────────────────────── */
+:root{
+  --bg:#f5f7fa;
+  --panel:#ffffff;
+  --panel-2:#f0f3f7;
+  --ink:#1a202c;
+  --ink-soft:#4a5568;
+  --muted:#718096;
+  --border:#e2e8f0;
+  --border-strong:#cbd5e0;
+  --hl:#ebf4ff;
+
+  /* Environment accents (changed at runtime via body class) */
+  --env:#e53935;           /* adult red default */
+  --env-soft:#fdecea;
+  --env-ink:#b71c1c;
+
+  /* Type colors (chips) */
+  --drug:#1976d2;          /* blue */
+  --drug-bg:#e3f2fd;
+  --procedure:#2e7d32;     /* green */
+  --procedure-bg:#e8f5e9;
+  --condition:#6a1b9a;     /* purple */
+  --condition-bg:#f3e5f5;
+
+  /* Category colors */
+  --cat-cardiovascular:#e53935;
+  --cat-neurological:#6a1b9a;
+  --cat-respiratory:#00838f;
+  --cat-breathing:#0277bd;
+  --cat-airway:#00695c;
+  --cat-toxicology:#558b2f;
+  --cat-trauma:#d84315;
+  --cat-metabolic:#ef6c00;
+  --cat-gastro:#795548;
+  --cat-infectious:#c62828;
+  --cat-obgyn:#ad1457;
+  --cat-circulation:#1565c0;
+  --cat-essentials:#37474f;
+  --cat-basics:#546e7a;
+  --cat-rare:#4527a0;
+
+  --radius:10px;
+  --radius-lg:14px;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05);
+  --shadow:0 1px 3px rgba(16,24,40,.08), 0 1px 2px rgba(16,24,40,.04);
+  --shadow-md:0 4px 6px -1px rgba(16,24,40,.08), 0 2px 4px -2px rgba(16,24,40,.06);
+  --shadow-lg:0 10px 15px -3px rgba(16,24,40,.08), 0 4px 6px -4px rgba(16,24,40,.05);
+}
+
+/* Environment-specific theming when inside an env */
+body.env-adult{--env:#e53935;--env-soft:#fdecea;--env-ink:#b71c1c;}
+body.env-pediatric{--env:#1e88e5;--env-soft:#e3f2fd;--env-ink:#0d47a1;}
+body.env-neonatal{--env:#9c27b0;--env-soft:#f3e5f5;--env-ink:#6a1b9a;}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  -webkit-font-smoothing:antialiased}
+a{color:var(--env);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── HEADER ─────────────────────────────────────────────── */
+header{background:var(--panel);border-bottom:1px solid var(--border);
+  padding:14px 20px;position:sticky;top:0;z-index:20;box-shadow:var(--shadow-sm)}
+header h1{margin:0 0 4px;font-size:18px;font-weight:700;color:var(--ink);
+  letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+header .sub{color:var(--muted);font-size:12.5px;font-weight:500}
+header .back-link{display:inline-block;margin-top:6px;color:var(--muted);
+  font-size:12.5px;font-weight:500}
+header .back-link:hover{color:var(--env)}
+.tabs{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.tab{padding:7px 14px;border:1px solid var(--border);border-radius:999px;
+  background:var(--panel);cursor:pointer;font:inherit;font-size:13px;
+  font-weight:600;color:var(--ink-soft);transition:all .15s}
+.tab:hover{border-color:var(--border-strong);background:var(--panel-2)}
+.tab[aria-selected="true"]{background:var(--env);color:#fff;
+  border-color:var(--env);box-shadow:var(--shadow)}
+
+.back-to-home{display:inline-flex;align-items:center;gap:6px;background:var(--panel);
+  border:1px solid var(--border);color:var(--ink-soft);padding:7px 12px;
+  border-radius:999px;cursor:pointer;font:inherit;font-size:12.5px;
+  font-weight:600;margin-right:4px;transition:all .15s}
+.back-to-home:hover{border-color:var(--env);color:var(--env);background:var(--env-soft)}
+
+/* ─── LAYOUT ─────────────────────────────────────────────── */
+.layout{display:grid;grid-template-columns:340px 1fr;gap:0;
+  min-height:calc(100vh - 160px)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+
+aside{background:var(--panel);border-right:1px solid var(--border);padding:14px;
+  overflow:auto;max-height:calc(100vh - 160px)}
+.kind-tabs{display:flex;gap:4px;margin-bottom:10px;padding:3px;
+  background:var(--panel-2);border-radius:var(--radius);border:1px solid var(--border)}
+.kind-tabs button{flex:1;padding:7px 6px;border:none;background:transparent;
+  color:var(--ink-soft);border-radius:7px;cursor:pointer;font:inherit;
+  font-size:13px;font-weight:600;transition:all .12s;display:flex;
+  align-items:center;justify-content:center;gap:5px}
+.kind-tabs button:hover{background:rgba(0,0,0,.04);color:var(--ink)}
+.kind-tabs button[aria-selected="true"]{background:var(--panel);color:var(--env);
+  box-shadow:var(--shadow-sm)}
+
+input.search,select.cat,input.weight{width:100%;padding:9px 12px;
+  border:1px solid var(--border);border-radius:var(--radius);font:inherit;
+  font-size:14px;margin-bottom:10px;background:var(--panel);color:var(--ink);
+  transition:border-color .12s,box-shadow .12s}
+input.search:focus,select.cat:focus,input.weight:focus{outline:none;
+  border-color:var(--env);box-shadow:0 0 0 3px var(--env-soft)}
+input::placeholder{color:var(--muted)}
+
+.list{margin:0;padding:0;list-style:none}
+.list .cat-header{font-weight:700;font-size:11px;text-transform:uppercase;
+  letter-spacing:.08em;padding:14px 10px 6px;color:var(--cat,#546e7a);
+  border-left:3px solid var(--cat,#cbd5e0);margin-left:2px;background:transparent}
+.list li button{width:100%;text-align:left;padding:9px 10px 9px 14px;border:none;
+  background:transparent;color:var(--ink);border-radius:8px;cursor:pointer;
+  font:inherit;font-size:13.5px;line-height:1.4;transition:all .12s;
+  display:block;border-left:3px solid transparent;margin-left:2px}
+.list li button:hover,.list li button:focus{background:var(--env-soft);
+  outline:none;border-left-color:var(--env)}
+.list li button[aria-current="true"]{background:var(--env-soft);
+  border-left-color:var(--env);color:var(--env-ink);font-weight:600}
+.list .sub{font-size:11.5px;color:var(--muted);display:block;margin-top:2px}
+
+/* ─── MAIN ───────────────────────────────────────────────── */
+main{padding:24px 28px;overflow:auto;max-height:calc(100vh - 160px);
+  background:var(--bg)}
+main h2{margin:0 0 4px;font-size:24px;font-weight:700;color:var(--ink);
+  letter-spacing:-.015em}
+main .crumb{color:var(--muted);font-size:13px;margin-bottom:18px;font-weight:500}
+.card{background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:14px;
+  box-shadow:var(--shadow-sm)}
+.disclaimer{background:#fff8e1;border:1px solid #ffe082;color:#5d4037;
+  border-radius:var(--radius);padding:10px 14px;font-size:12.5px;
+  margin-bottom:18px;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.disclaimer::before{content:"⚠";font-size:16px;flex-shrink:0}
+
+/* Pills / metadata */
+.pill{display:inline-flex;align-items:center;gap:4px;background:var(--panel-2);
+  color:var(--ink-soft);padding:3px 10px;border-radius:999px;font-size:11.5px;
+  font-weight:600;margin-right:6px;border:1px solid var(--border)}
+.pill.cat{background:var(--cat-bg,var(--panel-2));color:var(--cat,var(--ink-soft));
+  border-color:var(--cat-border,var(--border))}
+
+/* Indication tabs inside a condition/procedure */
+.ind-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 16px}
+.ind-tabs button{padding:7px 13px;border:1px solid var(--border);
+  background:var(--panel);color:var(--ink-soft);border-radius:8px;cursor:pointer;
+  font:inherit;font-size:13px;font-weight:600;transition:all .12s}
+.ind-tabs button:hover{border-color:var(--env);color:var(--env)}
+.ind-tabs button[aria-selected="true"]{background:var(--env);color:#fff;
+  border-color:var(--env);box-shadow:var(--shadow-sm)}
+
+/* ─── STEPS (timeline) ───────────────────────────────────── */
+.step{position:relative;padding:14px 16px 14px 60px;margin:12px 0;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow-sm);
+  transition:box-shadow .15s}
+.step:hover{box-shadow:var(--shadow)}
+.step .step-num{position:absolute;left:14px;top:14px;width:32px;height:32px;
+  background:var(--env);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+  font-size:14px;box-shadow:var(--shadow);font-variant-numeric:tabular-nums}
+.step h4{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--ink)}
+.step .meta{color:var(--muted);font-size:12.5px;margin-bottom:8px;
+  font-weight:500;display:flex;flex-wrap:wrap;gap:4px 10px}
+.step .meta-tag{display:inline-flex;align-items:center;gap:4px;
+  background:var(--panel-2);padding:2px 8px;border-radius:6px;font-size:11.5px}
+.step .para{margin:6px 0;line-height:1.55;font-size:13.5px}
+.step .para.note{background:#e3f2fd;border-left:3px solid var(--drug);
+  padding:8px 12px;border-radius:6px;color:#0d47a1;margin:8px 0}
+.step .para.admin{background:#f3e5f5;border-left:3px solid var(--condition);
+  padding:8px 12px;border-radius:6px;color:#4a148c;margin:8px 0}
+.step .para.warn{background:#fff3e0;border-left:3px solid #ef6c00;
+  padding:8px 12px;border-radius:6px;color:#bf360c;margin:8px 0;font-weight:500}
+
+/* Dose table */
+.doses{margin-top:10px;overflow:auto;border-radius:var(--radius);
+  border:1px solid var(--border)}
+.doses table{border-collapse:collapse;width:100%;font-size:13px;
+  background:var(--panel)}
+.doses th{background:var(--panel-2);color:var(--ink-soft);text-align:left;
+  padding:8px 12px;font-weight:600;font-size:12px;text-transform:uppercase;
+  letter-spacing:.04em;border-bottom:1px solid var(--border)}
+.doses td{padding:10px 12px;border-bottom:1px solid var(--border);
+  color:var(--ink);vertical-align:top}
+.doses tr:last-child td{border-bottom:none}
+.doses tr.match{background:var(--env-soft);box-shadow:inset 3px 0 0 var(--env)}
+.doses tr.match td{font-weight:600;color:var(--env-ink)}
+
+/* Inline chips (drug/procedure references inside content) */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+  border-radius:999px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0;
+  text-decoration:none;transition:all .12s;border:1px solid transparent;
+  white-space:nowrap}
+.chip.drug{background:var(--drug-bg);color:var(--drug);border-color:#90caf9}
+.chip.procedure{background:var(--procedure-bg);color:var(--procedure);
+  border-color:#a5d6a7}
+.chip.condition{background:var(--condition-bg);color:var(--condition);
+  border-color:#ce93d8}
+.chip:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.chip-icon{font-size:13px;line-height:1}
+
+/* Sections in rendered tabs */
+.sec{margin:14px 0 10px}
+.sec>h3{margin:0 0 8px;font-size:15px;font-weight:700;color:var(--ink);
+  letter-spacing:-.01em}
+.sec>h3::before{content:"";display:inline-block;width:3px;height:14px;
+  background:var(--env);margin-right:8px;vertical-align:middle;border-radius:2px}
+.para{margin:6px 0;line-height:1.6}
+ul.bl{margin:6px 0 6px 0;padding:0 0 0 20px}
+ul.bl li{margin:3px 0;line-height:1.55}
+
+/* Sticky weight */
+.weight-widget{position:sticky;top:12px;float:right;z-index:15;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius);padding:8px 12px;
+  display:inline-flex;align-items:center;gap:8px;font-size:13px;
+  box-shadow:var(--shadow);margin-left:12px}
+.weight-widget label{font-weight:600;color:var(--ink-soft);font-size:12px}
+.weight-widget input{width:78px;padding:6px 10px;border:1px solid var(--border);
+  border-radius:6px;font:inherit;font-size:14px;font-weight:600;
+  color:var(--ink);text-align:center;background:var(--panel)}
+.weight-widget input:focus{outline:none;border-color:var(--env);
+  box-shadow:0 0 0 3px var(--env-soft)}
+.weight-widget .unit{color:var(--muted);font-weight:500;font-size:12px}
+
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;
+  flex-wrap:wrap;gap:12px;margin-bottom:4px}
+.back-link{display:inline-block;margin:0;color:var(--muted);
+  text-decoration:none;font-size:12.5px;font-weight:500}
+.back-link:hover{color:var(--env)}
+
+footer{padding:14px 20px;color:var(--muted);font-size:12px;text-align:center;
+  border-top:1px solid var(--border);background:var(--panel)}
+footer a{color:var(--muted)}
+.empty{color:var(--muted);padding:24px;text-align:center;font-size:13.5px;
+  font-style:italic}
+
+/* ─── HOME SCREEN (keep cards but on light bg) ───────────── */
+#home-screen{padding:40px 24px;max-width:560px;margin:0 auto}
+#home-screen h1.home-title{font-size:24px;font-weight:700;color:var(--ink);
+  margin:0 0 6px;text-align:center;letter-spacing:-.015em}
+#home-screen .home-sub{color:var(--muted);font-size:14px;text-align:center;
+  margin-bottom:28px;font-weight:500}
+#home-screen .home-disclaimer{background:#fff8e1;border:1px solid #ffe082;
+  color:#5d4037;border-radius:var(--radius);padding:12px 16px;font-size:12.5px;
+  margin:0 0 24px;line-height:1.55}
+#home-screen .home-disclaimer strong{color:#3e2723}
+#home-screen .cards{display:flex;flex-direction:column;gap:16px}
+#home-screen .env-card{display:flex;align-items:center;justify-content:space-between;
+  border:none;cursor:pointer;padding:22px 24px;border-radius:22px;color:#fff;
+  font:inherit;font-size:26px;font-weight:700;text-align:left;
+  box-shadow:var(--shadow-lg);transition:all .15s ease;overflow:hidden;
+  position:relative;letter-spacing:-.01em}
+#home-screen .env-card:hover{transform:translateY(-3px);
+  box-shadow:0 14px 30px -6px rgba(16,24,40,.25)}
+#home-screen .env-card:active{transform:translateY(-1px)}
+#home-screen .env-card .icon-wrap{background:#fff;border-radius:18px;
+  width:82px;height:82px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-left:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
+#home-screen .env-card .icon-wrap svg{width:46px;height:46px}
+#home-screen .env-card.adult{background:linear-gradient(135deg,#ef5350 0%,#e53935 60%,#c62828 100%)}
 #home-screen .env-card.adult .icon-wrap svg{stroke:#e53935}
-#home-screen .env-card.pediatric{background:linear-gradient(135deg,#42a5f5 0%,#2196f3 55%,#1e88e5 100%)}
+#home-screen .env-card.pediatric{background:linear-gradient(135deg,#42a5f5 0%,#1e88e5 60%,#1565c0 100%)}
 #home-screen .env-card.pediatric .icon-wrap svg{stroke:#1e88e5}
-#home-screen .env-card.neonatal{background:linear-gradient(135deg,#ba68c8 0%,#9c27b0 55%,#7b1fa2 100%)}
+#home-screen .env-card.neonatal{background:linear-gradient(135deg,#ab47bc 0%,#9c27b0 60%,#7b1fa2 100%)}
 #home-screen .env-card.neonatal .icon-wrap svg{stroke:#9c27b0}
-@media (max-width:480px){
+@media (max-width:520px){
   #home-screen .env-card{font-size:22px;padding:18px 20px}
   #home-screen .env-card .icon-wrap{width:66px;height:66px}
   #home-screen .env-card .icon-wrap svg{width:38px;height:38px}
 }
-/* === Toggle layout vs home === */
+/* Toggle */
 body.view-home .layout{display:none}
 body.view-home #envtabs{display:none}
 body.view-home header .sub{display:none}
 body.view-home header .back-link{display:none}
 body.view-env #home-screen{display:none}
-/* === Botón volver a home === */
-.back-to-home{display:inline-flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--border);color:var(--ink);padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;margin-right:10px}
-.back-to-home:hover{background:var(--hl)}
 
+/* References details */
+details{background:var(--panel-2);border-radius:8px;padding:0;margin-top:10px;
+  border:1px solid var(--border)}
+details summary{cursor:pointer;padding:8px 12px;font-weight:600;font-size:12.5px;
+  color:var(--ink-soft);user-select:none}
+details summary:hover{color:var(--env)}
+details[open] summary{border-bottom:1px solid var(--border)}
+details .para{padding:10px 12px;margin:0;font-size:13px;color:var(--ink-soft)}
+
+/* Scrollbars */
+aside::-webkit-scrollbar,main::-webkit-scrollbar{width:10px;height:10px}
+aside::-webkit-scrollbar-thumb,main::-webkit-scrollbar-thumb{
+  background:var(--border-strong);border-radius:5px}
+aside::-webkit-scrollbar-track,main::-webkit-scrollbar-track{background:transparent}
 </style>
 </head>
 <body class="view-home">
@@ -134,6 +396,28 @@ window.T = function(name, kind){
   const json = pako.ungzip(bytes, {to:'string'});
   window.__DATA = JSON.parse(json);
 })();
+const CAT_COLOR = {
+  'Cardiovascular': ['#e53935','#ffebee','#ffcdd2'],
+  'Neurological': ['#6a1b9a','#f3e5f5','#e1bee7'],
+  'Respiratory': ['#00838f','#e0f7fa','#b2ebf2'],
+  'Breathing': ['#0277bd','#e1f5fe','#b3e5fc'],
+  'Airway & Ventilation': ['#00695c','#e0f2f1','#b2dfdb'],
+  'Toxicology': ['#558b2f','#f1f8e9','#dcedc8'],
+  'Trauma': ['#d84315','#fbe9e7','#ffccbc'],
+  'Metabolic': ['#ef6c00','#fff3e0','#ffe0b2'],
+  'Gastroenterology': ['#795548','#efebe9','#d7ccc8'],
+  'Infectious': ['#c62828','#ffebee','#ffcdd2'],
+  'OB/GYN': ['#ad1457','#fce4ec','#f8bbd0'],
+  'Circulation & Access': ['#1565c0','#e3f2fd','#bbdefb'],
+  'Essentials': ['#37474f','#eceff1','#cfd8dc'],
+  'Basics': ['#546e7a','#eceff1','#cfd8dc'],
+  'Rare & Extreme': ['#4527a0','#ede7f6','#d1c4e9']
+};
+function catCssVars(cat){
+  const c = CAT_COLOR[cat];
+  if (!c) return '';
+  return '--cat:'+c[0]+';--cat-bg:'+c[1]+';--cat-border:'+c[2];
+}
 const ENV_LABEL = { adult:'Adulto', pediatric:'Pediátrico', neonatal:'Neonatal' };
 const KIND_LABEL = { conditions:'Condiciones', procedures:'Procedimientos', drugs:'Fármacos' };
 const state = { env:null, kind:'conditions', search:'', category:'', selected:null, selectedTab:0, weight:70 };
@@ -208,7 +492,7 @@ function renderList(){
   }
   const ul = el('ul', {class:'list'});
   for (const cat of Object.keys(groups).sort()) {
-    ul.appendChild(el('li', {class:'cat-header'}, window.T(cat,'category')));
+    ul.appendChild(el('li', {class:'cat-header', style: catCssVars(cat)}, window.T(cat,'category')));
     for (const it of groups[cat]) {
       const btn = el('button', {
         'aria-current': (state.selected && state.selected.id===it.id && state.selected.kind===state.kind)?'true':'false',
@@ -223,18 +507,21 @@ function renderList(){
 }
 function renderMain(){
   const main = document.getElementById('main'); main.innerHTML = '';
-  const wbox = el('div', {class:'weight-box'}, [
-    el('label', {for:'weight'}, 'Peso (kg):'),
+  const wbox = el('div', {class:'weight-widget'}, [
+    el('label', {for:'weight'}, 'Peso'),
     (function(){ const i=el('input', {id:'weight', class:'weight', type:'number', min:0, step:0.1, value:state.weight});
-      i.addEventListener('input', e=>{ state.weight = parseFloat(e.target.value)||0; renderMain(); }); return i; })()
+      i.addEventListener('input', e=>{ state.weight = parseFloat(e.target.value)||0; renderMain(); }); return i; })(),
+    el('span', {class:'unit'}, 'kg')
   ]);
   main.appendChild(el('div', {class:'topbar'}, [
-    el('div', {}, [ el('h2', {text: KIND_LABEL[state.kind] + ' · ' + ENV_LABEL[state.env]}),
-                     el('div', {class:'crumb', text: state.category ? window.T(state.category,'category') : 'Todas las categorías'}) ]),
+    el('div', {style:'flex:1;min-width:0'}, [
+      el('h2', {text: KIND_LABEL[state.kind] + ' · ' + ENV_LABEL[state.env]}),
+      el('div', {class:'crumb', text: state.category ? window.T(state.category,'category') : 'Todas las categorías'})
+    ]),
     wbox
   ]));
   main.appendChild(el('div', {class:'disclaimer', role:'note'},
-    'Material de referencia educativa. Contenido extraído de Paratus Medical. No sustituye el juicio clínico. Verifica siempre dosis y contraindicaciones.'));
+    'Material educativo extraído de Paratus Medical. Interfaz traducida al castellano; contenido clínico interno en inglés. No sustituye el juicio clínico — verifica siempre dosis, unidades y contraindicaciones.'));
   if (!state.selected) { main.appendChild(el('div', {class:'card empty'}, 'Selecciona un elemento de la lista.')); return; }
   const item = bucket().find(it => it.id === state.selected.id);
   if (!item) { main.appendChild(el('div', {class:'card empty'}, 'No encontrado')); return; }
@@ -253,7 +540,7 @@ function renderProcCond(main, item){
   }
   const ind = item.indications[state.selectedTab] || item.indications[0];
   card.appendChild(el('div', {}, [
-    el('span', {class:'pill', text: ind.category ? window.T(ind.category,'category') : 'Sin categoría'}),
+    el('span', {class:'pill cat', style: ind.category?catCssVars(ind.category):'', text: ind.category ? window.T(ind.category,'category') : 'Sin categoría'}),
     el('span', {class:'pill', text: '#' + ind.id})
   ]));
   const tabsBar = el('div', {class:'ind-tabs', role:'tablist','aria-label':'Pestañas', style:'margin-top:14px'});
@@ -292,12 +579,37 @@ function renderNodes(nodes){
 function renderNode(n){
   if (!n) return document.createTextNode('');
   switch (n.kind) {
-    case 'section': { const s=el('div',{class:'sec'}); if(n.title) s.appendChild(el('h3',{text:n.title})); if(n.children) for(const c of n.children) s.appendChild(renderNode(c)); return s; }
-    case 'block': { const b=el('div',{class:'card'}); if(n.title) b.appendChild(el('h3',{text:n.title,style:'margin-top:0;color:var(--accent)'})); if(n.children) for(const c of n.children) b.appendChild(renderNode(c)); return b; }
-    case 'para': return el('p',{class:'para',text:n.text||''});
+    case 'section': {
+      // Skip truly empty sections (no title AND no meaningful children)
+      const kids = (n.children||[]).filter(c=>c);
+      const hasContent = kids.some(c => {
+        if (!c) return false;
+        if (c.kind==='para' && (c.text||'').trim()) return true;
+        if (c.kind==='list' && (c.items||[]).length) return true;
+        if (c.kind==='block') return true;
+        if (c.kind==='drug' || c.kind==='procedure') return true;
+        if (c.kind==='section') return (c.children||[]).length>0 || (c.title||'').trim();
+        if (c.kind==='ref' && (c.text||'').trim()) return true;
+        return false;
+      });
+      if (!n.title && !hasContent) return document.createDocumentFragment();
+      const s=el('div',{class:'sec'});
+      if(n.title) s.appendChild(el('h3',{text:n.title}));
+      for(const c of kids) s.appendChild(renderNode(c));
+      return s;
+    }
+    case 'block': {
+      const kids = (n.children||[]).filter(c=>c);
+      if (!n.title && !kids.length) return document.createDocumentFragment();
+      const b=el('div',{class:'card'});
+      if(n.title) b.appendChild(el('h3',{text:n.title,style:'margin-top:0;color:var(--env);font-size:15px'}));
+      for(const c of kids) b.appendChild(renderNode(c));
+      return b;
+    }
+    case 'para': if (!(n.text||'').trim()) return document.createDocumentFragment(); return el('p',{class:'para',text:n.text});
     case 'list': { const u=el('ul',{class:'bl'}); for(const it of (n.items||[])) u.appendChild(el('li',{text:it})); return u; }
-    case 'drug': { const s=el('span',{class:'drug-ref'}); s.textContent='💊 '+window.T(n.drug||'','drug')+(n.element?' ('+n.element+')':'')+(n.indication?' — '+window.T(n.indication)+'':''); return s; }
-    case 'procedure': { const s=el('span',{class:'drug-ref'}); s.textContent='🔧 '+window.T(n.procedure||'','procedure')+(n.indication?' — '+window.T(n.indication)+'':''); return s; }
+    case 'drug': { const s=el('span',{class:'chip drug'}); s.appendChild(el('span',{class:'chip-icon',text:'💊'})); const t=window.T(n.drug||'','drug')+(n.element?' ('+n.element+')':'')+(n.indication?' — '+window.T(n.indication):''); s.appendChild(el('span',{text:t})); return s; }
+    case 'procedure': { const s=el('span',{class:'chip procedure'}); s.appendChild(el('span',{class:'chip-icon',text:'🔧'})); const t=window.T(n.procedure||'','procedure')+(n.indication?' — '+window.T(n.indication):''); s.appendChild(el('span',{text:t})); return s; }
     case 'ref': return el('p',{class:'para',text:'[Ref] '+(n.text||'')});
     default: return el('div',{text:JSON.stringify(n)});
   }
@@ -315,41 +627,49 @@ function renderDrug(main, drug){
   }
   const ind = drug.indications[state.selectedTab] || drug.indications[0];
   card.appendChild(el('div', {}, [
-    el('span', {class:'pill', text: ind.category ? window.T(ind.category,'category') : 'Sin categoría'}),
+    el('span', {class:'pill cat', style: ind.category?catCssVars(ind.category):'', text: ind.category ? window.T(ind.category,'category') : 'Sin categoría'}),
     el('span', {class:'pill', text: 'Indicación #' + ind.id}),
     el('span', {class:'pill', text: 'Tipo peso: ' + (ind.weight_type||'—')})
   ]));
-  for (const s of ind.steps) card.appendChild(renderStep(s, ind.weight_type));
+  ind.steps.forEach((s, i) => card.appendChild(renderStep(s, i)));
   main.appendChild(card);
 }
-function renderStep(s){
+function renderStep(s, idx){
   const w = state.weight;
   const wrap = el('div', {class:'step'});
+  if (typeof idx === 'number') wrap.appendChild(el('div', {class:'step-num', text: String(idx+1)}));
   wrap.appendChild(el('h4', {text: s.name || 'Paso'}));
-  const meta = [];
-  if (s.route) meta.push(s.route);
-  if (s.preparation) meta.push(s.preparation);
-  if (s.concentration) meta.push('Conc. ' + s.concentration + ' ' + (s.concentration_unit||''));
-  if (meta.length) wrap.appendChild(el('div', {class:'meta', text: meta.join(' · ')}));
-  if (s.concentration_note) wrap.appendChild(el('p', {class:'para', text:'ℹ️ '+s.concentration_note}));
-  if (s.administration) wrap.appendChild(el('p', {class:'para', text:'📋 '+s.administration}));
-  if (s.particularity) wrap.appendChild(el('p', {class:'para', text:'⚠️ '+s.particularity}));
+  const metaWrap = el('div', {class:'meta'});
+  let hasMeta = false;
+  function metaTag(txt){ metaWrap.appendChild(el('span',{class:'meta-tag', text:txt})); hasMeta = true; }
+  if (s.route) metaTag('💉 '+s.route);
+  if (s.preparation) metaTag('🧪 '+s.preparation);
+  if (s.concentration) metaTag('📊 Conc. ' + s.concentration + ' ' + (s.concentration_unit||''));
+  if (hasMeta) wrap.appendChild(metaWrap);
+  if (s.concentration_note) wrap.appendChild(el('p', {class:'para note', text:'ℹ️ '+s.concentration_note}));
+  if (s.administration) wrap.appendChild(el('p', {class:'para admin', text:'📋 '+s.administration}));
+  if (s.particularity) wrap.appendChild(el('p', {class:'para warn', text:'⚠️ '+s.particularity}));
   if (s.doses && s.doses.length) {
     const box = el('div', {class:'doses'});
     const table = el('table');
-    table.appendChild(el('tr', {}, [
-      el('th', {text:'Dosis'}), el('th', {text:'Rango peso'}), el('th', {text:'Volumen dilución'}), el('th', {text:'Débito'})
+    const thead = el('thead');
+    thead.appendChild(el('tr', {}, [
+      el('th', {text:'Dosis'}), el('th', {text:'Rango de peso'}),
+      el('th', {text:'Volumen'}), el('th', {text:'Ritmo'})
     ]));
+    table.appendChild(thead);
+    const tbody = el('tbody');
     for (const d of s.doses) {
       const match = (d.weight_min == null || w >= d.weight_min) && (!d.max || w <= d.max);
-      const tr = el('tr', match ? {class:'match'} : {}, [
+      const tr = el('tr', match ? {class:'match', title:'Coincide con el peso actual'} : {}, [
         el('td', {text: d.text || ''}),
         el('td', {text: [d.weight_min!=null?'≥'+d.weight_min:'', d.max?'≤'+d.max:''].filter(Boolean).join(' ') || '—'}),
         el('td', {text: d.dilution_volume || '—'}),
         el('td', {text: d.debit || '—'})
       ]);
-      table.appendChild(tr);
+      tbody.appendChild(tr);
     }
+    table.appendChild(tbody);
     box.appendChild(table); wrap.appendChild(box);
   }
   if (s.reference) {
@@ -361,6 +681,8 @@ function renderStep(s){
   return wrap;
 }
 function render(){
+  // Clear env classes first
+  document.body.classList.remove('env-adult','env-pediatric','env-neonatal');
   if (!state.env){
     document.body.classList.add('view-home');
     document.body.classList.remove('view-env');
@@ -368,6 +690,7 @@ function render(){
   }
   document.body.classList.remove('view-home');
   document.body.classList.add('view-env');
+  document.body.classList.add('env-' + state.env);
   renderHeader(); renderSidebar(); renderMain();
 }
 function initHomeCards(){
