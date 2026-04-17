@@ -822,6 +822,16 @@ function _showPageInit(id){
     // Inicializaciones específicas por página
     try{if(id==="pageProfessionals")initProfessionals();}catch(e){}
     try{if(id==="pageScanIA")scanRenderHist();}catch(e){}
+    try{if(id==="pageEnfermeria"){
+        /* La página se carga de forma lazy (data-src) y su <script> con DOMContentLoaded
+           nunca dispara sobre elementos que aparecen después. Inicializamos aquí. */
+        if(typeof enfRenderPreguntas==='function')enfRenderPreguntas();
+        var enfInput=document.getElementById('enfPreguntaInput');
+        if(enfInput&&!enfInput._enfBound){
+            enfInput.addEventListener('keypress',function(e){if(e.key==='Enter'&&typeof enfHacerPregunta==='function')enfHacerPregunta();});
+            enfInput._enfBound=true;
+        }
+    }}catch(e){console.error("Enfermería init error:",e);}
     try{if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);if(sessionStorage.getItem('buscas_auth')){document.getElementById('buscasGate').style.display='none';document.getElementById('buscasContent').style.display='block';}else{document.getElementById('buscasGate').style.display='flex';document.getElementById('buscasContent').style.display='none';setTimeout(function(){var pi=document.getElementById('buscasPass');if(pi)pi.focus();},100);}}}catch(e){}
     // Barra de moderación (opcional, no bloquea)
     try{
@@ -1854,6 +1864,9 @@ if(t==='ecg'){
   var dz2=document.getElementById('scanDropZone');if(dz2)dz2.style.display='';
   var ctxW2=document.getElementById('scanCtx');if(ctxW2&&ctxW2.parentNode&&ctxW2.parentNode.style)ctxW2.parentNode.style.display='';
   var go2=document.getElementById('scanBtnGo');if(go2)go2.style.display='';
+  /* Limpia el iframe de ECG si estábamos en ese modo */
+  var prevRes=document.getElementById('scanResult');
+  if(prevRes&&prevRes.querySelector('#ecgWrap'))prevRes.innerHTML='';
 }
 var m=SCAN_MODELS[t];if(m){var html="<strong>"+m.model+"</strong><br><span style='font-size:.8rem;color:var(--text-muted);'>📊 "+m.dataset+"</span>";if(m.repo)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>📦 "+m.repo+"</span>";if(m.precision)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>🎯 "+m.precision+"</span>";if(m.formato)html+="<br><span style='font-size:.78rem;color:var(--text-muted);'>⚙️ "+m.formato+"</span>";if(m.nota)html+="<br><span style='font-size:.78rem;color:"+(m.nota.indexOf("⚠️")>-1?"#d97706":"#64748b")+";font-style:italic;'>"+m.nota+"</span>";if(m.links){html+="<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;'>";if(m.links.physionet)html+="<a href='"+m.links.physionet+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#e0f2fe;color:#0369a1;border-radius:4px;text-decoration:none;font-weight:600;'>📥 PhysioNet</a>";if(m.links.github)html+="<a href='"+m.links.github+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#f0fdf4;color:#15803d;border-radius:4px;text-decoration:none;font-weight:600;'>💻 GitHub</a>";if(m.links.paper)html+="<a href='"+m.links.paper+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;text-decoration:none;font-weight:600;'>📄 Paper</a>";html+="</div>";}html+="<br><span style='font-size:.78rem;color:#0066cc;'>Análisis por Llama 4 Scout (OpenRouter)</span>";document.getElementById("scanModelRef").innerHTML=html;}}
 function scanHandleFile(e){var f=e.target.files[0];if(f)scanProcessFile(f);}
@@ -2015,6 +2028,10 @@ async function scanAnalyze(){
         sessionStorage.setItem('scan_disclaimer_accepted','1');/* Solo preguntar 1 vez por sesión */
     }
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
+    /* ─── Medida 2: sanitizar contexto clínico antes de enviarlo al modelo de visión ─── */
+    ctx=sanitizeAI(ctx);
+    /* ─── Medida 4: rate limiting también aquí ─── */
+    try{aiRateLimiter.check();}catch(e){res.innerHTML='<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);padding:14px 16px;color:#856404;">'+e.message+'</div>';return;}
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
     res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA de visión...</div></div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
@@ -3113,7 +3130,6 @@ async function enfBuscarFarmacoDir(nombre){
 
 document.addEventListener('DOMContentLoaded', function() {
     urgStudioRender();
-    enfRenderPreguntas();
-    var enfInput=document.getElementById('enfPreguntaInput');
-    if(enfInput)enfInput.addEventListener('keypress',function(e){if(e.key==='Enter')enfHacerPregunta();});
+    /* Nota: la init de enfermería se hace en _showPageInit('pageEnfermeria')
+       porque esa página se lazy-loadea y su DOM no existe aún aquí. */
 });

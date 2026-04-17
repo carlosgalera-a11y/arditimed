@@ -1,5 +1,5 @@
-// Service Worker - Área II Cartagena PWA v44 - ECG: iframe a Cards-Lab (Yale) con fallback
-const CACHE_NAME = 'area2-v74';
+// Service Worker - Área II Cartagena PWA v45 - sanitize+ratelimit en ScanIA, submenú Herramientas reorganizado
+const CACHE_NAME = 'area2-v75';
 
 const PRECACHE = [
   '/Cartagenaeste/',
