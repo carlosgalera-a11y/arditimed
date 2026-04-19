@@ -1735,8 +1735,12 @@ function showScanLogin(){
     }catch(e){console.error("showScanLogin error:",e);alert("Error: "+e.message);}
 }
 
+var _loginInProgress = false;
 function scanGoogleLogin(){
     console.log("scanGoogleLogin called");
+    if(_loginInProgress){console.warn('Login ya en curso');return;}
+    _loginInProgress = true;
+
     var provider=new firebase.auth.GoogleAuthProvider();
     provider.addScope('email');
     provider.addScope('profile');
@@ -1744,8 +1748,10 @@ function scanGoogleLogin(){
     if(errEl){errEl.style.display="none";errEl.innerHTML="";}
 
     var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
+    var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || isStandalone || (('ontouchstart' in window) && window.innerWidth < 768);
 
     function onLoginSuccess(user){
+        _loginInProgress = false;
         try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
         loadModeradoresFromFirestore(function(){
             isAdminLoggedIn=isAdmin();
@@ -1775,41 +1781,54 @@ function scanGoogleLogin(){
         else{showPage("pageScanIA");scanRenderHist();}
     }
 
-    function fallbackToRedirect(){
+    function doRedirect(){
         try{
             sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
             if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
-            if(errEl){errEl.innerHTML='🔄 Redirigiendo a Google…';errEl.style.color='#2563eb';errEl.style.display='block';}
+            if(errEl){errEl.innerHTML='🔄 Abriendo página de Google…';errEl.style.color='#2563eb';errEl.style.display='block';}
             firebase.auth().signInWithRedirect(provider);
         }catch(redErr){
+            _loginInProgress = false;
             console.error('Redirect login failed:', redErr);
-            if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. <a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;text-decoration:underline;">Reparar login</a>';errEl.style.color='#dc2626';errEl.style.display='block';}
+            if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. Intenta desde otro navegador.';errEl.style.color='#dc2626';errEl.style.display='block';}
         }
     }
 
     function handleError(error){
         console.error("Login error:",error.code,error.message);
         if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-            fallbackToRedirect();
+            doRedirect();
         }else if(error.code==="auth/unauthorized-domain"){
+            _loginInProgress = false;
             if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase.";errEl.style.color='#dc2626';errEl.style.display="block";}
+        }else if(error.code==="auth/network-request-failed"){
+            _loginInProgress = false;
+            if(errEl){errEl.innerHTML="❌ Error de red. Comprueba tu conexión e inténtalo de nuevo.";errEl.style.color='#dc2626';errEl.style.display="block";}
         }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
                 return firebase.auth().signInWithPopup(provider);
-            }).then(function(r){onLoginSuccess(r.user);}).catch(function(){fallbackToRedirect();});
+            }).then(function(r){onLoginSuccess(r.user);}).catch(function(){doRedirect();});
         }else{
-            if(errEl){errEl.innerHTML="❌ "+error.message+' <a href="/Cartagenaeste/login-fix.html" style="color:#0066cc;text-decoration:underline;">Reparar</a>';errEl.style.color='#dc2626';errEl.style.display="block";}
+            _loginInProgress = false;
+            if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.color='#dc2626';errEl.style.display="block";}
         }
     }
 
-    // Popup primero, redirect como fallback
+    /* Móvil → redirect directo (popups no funcionan en Safari iOS).
+       Desktop → popup primero, redirect si bloqueado. */
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     }).then(function(){
-        return firebase.auth().signInWithPopup(provider);
+        if(isMobile){
+            doRedirect();
+        } else {
+            return firebase.auth().signInWithPopup(provider);
+        }
     }).then(function(result){
-        console.log("Login OK:",result.user.email);
-        onLoginSuccess(result.user);
+        if(result && result.user){
+            console.log("Login OK:",result.user.email);
+            onLoginSuccess(result.user);
+        }
     }).catch(handleError);
 }
 
