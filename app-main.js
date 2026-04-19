@@ -1825,21 +1825,20 @@ function scanGoogleLogin(){
         }
     }
 
-    /* Móvil → redirect directo (popups no funcionan en Safari iOS).
-       Desktop → popup primero, redirect si bloqueado. */
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
-        return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
-    }).then(function(){
-        if(isMobile){
-            doRedirect();
-        } else {
-            return firebase.auth().signInWithPopup(provider);
-        }
-    }).then(function(result){
-        if(result && result.user){
-            console.log("Login OK:",result.user.email);
-            onLoginSuccess(result.user);
-        }
+    /* ═══ Estrategia simplificada ═══
+       signInWithPopup llamado DIRECTAMENTE desde el click del usuario,
+       sin envolver en .then() de setPersistence. Esto es clave para iOS:
+       Safari/Chrome iPhone solo permiten popups que se abren sincrónicamente
+       desde un user gesture. Si lo envuelves en un Promise.then(), el
+       navegador lo trata como "no iniciado por el usuario" y lo bloquea.
+
+       Si el popup falla (bloqueado/cerrado) → fallback a redirect.
+       La persistencia LOCAL se configura por separado, no encadenada. */
+    try{firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
+
+    firebase.auth().signInWithPopup(provider).then(function(result){
+        console.log("Login OK:",result.user.email);
+        onLoginSuccess(result.user);
     }).catch(handleError);
 }
 
