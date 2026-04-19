@@ -2559,6 +2559,30 @@ firebase.auth().onAuthStateChanged(function(u){if(u){try{db.collection("config")
 // Cuando admin inicia sesión, si no hay key en Firestore, pedir que la introduzca
 firebase.auth().onAuthStateChanged(function(user){
     if(user){
+        /* ─── Cerrar modal de login si está abierto (clave para redirect flow en móvil) ─── */
+        _loginInProgress = false;
+        var loginModal = document.getElementById('scanLoginModal');
+        if(loginModal && loginModal.style.display !== 'none'){
+            loginModal.style.display = 'none';
+            /* Restaurar página pendiente guardada antes del redirect */
+            var pendingPg = sessionStorage.getItem('pendingPage');
+            var pendingDoc = sessionStorage.getItem('pendingDocencia');
+            sessionStorage.removeItem('pendingPage');
+            sessionStorage.removeItem('pendingDocencia');
+            if(pendingPg && typeof showPage === 'function'){
+                if(typeof logPageAccess === 'function') logPageAccess(pendingPg, user);
+                showPage(pendingPg);
+            } else if(pendingDoc && typeof showPage === 'function'){
+                document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+                var landing = document.getElementById('pageLanding');
+                if(landing) landing.classList.add('active');
+                setTimeout(function(){
+                    var sd = document.getElementById('subDocencia');
+                    if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
+                },500);
+            }
+        }
+
         // Actualizar botones de login con nombre del usuario
         var nombre = user.displayName ? user.displayName.split(" ")[0] : "Usuario";
         document.querySelectorAll('[id^="loginBtn"]').forEach(function(btn){
