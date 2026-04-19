@@ -180,6 +180,13 @@ window.gaTrack=function(event,params){
       if(user){
         // Store active uid for key prefix
         localStorage.setItem('_active_uid', user.uid);
+        /* ─── Cerrar modal de login INMEDIATAMENTE si hay redirect pendiente ───
+           Este listener se ejecuta ANTES que el de app-main.js. Al cerrar el
+           modal aquí, el usuario no ve ni un flash del modal post-redirect. */
+        var _rdp = localStorage.getItem('_auth_redirect_pending');
+        if(_rdp){
+            try{document.getElementById('scanLoginModal').style.display='none';}catch(e){}
+        }
         // Reload notebooks from Firestore
         db.collection('mis_notebooks').doc(user.uid).get().then(function(doc){
           if(doc.exists && doc.data().notebooks){

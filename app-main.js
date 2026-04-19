@@ -769,15 +769,13 @@ function showPage(id, skipAuth){
         var user=firebase.auth().currentUser;
         if(!user){
             /* ─── Fix race condition post-redirect (móvil) ───
-               Tras signInWithRedirect, la página se recarga pero currentUser
-               es null durante ~500ms hasta que Firebase procesa el token.
-               Si hay un redirect pendiente (sessionStorage.pendingPage), NO
-               abrimos el modal — esperamos a que onAuthStateChanged lo resuelva.
-               Si no hay redirect pendiente, abrimos modal normalmente. */
-            var hasPendingRedirect = sessionStorage.getItem('pendingPage') || sessionStorage.getItem('pendingDocencia');
-            if(hasPendingRedirect){
-                console.log('[showPage] Redirect pendiente detectado, esperando a onAuthStateChanged…');
-                return; /* onAuthStateChanged cerrará modal y navegará */
+               localStorage._auth_redirect_pending se pone ANTES del redirect
+               y se lee DESPUÉS de la recarga. A diferencia de sessionStorage,
+               localStorage SIEMPRE sobrevive al redirect en todos los navegadores. */
+            var redirectPending = localStorage.getItem('_auth_redirect_pending');
+            if(redirectPending){
+                console.log('[showPage] Redirect pendiente (localStorage), esperando onAuthStateChanged…');
+                return;
             }
             pendingPageAfterLogin=id;
             showLoginModal(PAGE_NAMES[id]||id);
@@ -1794,11 +1792,13 @@ function scanGoogleLogin(){
 
     function doRedirect(){
         try{
+            localStorage.setItem('_auth_redirect_pending', pendingPageAfterLogin || 'pageScanIA');
             sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
             if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
             if(errEl){errEl.innerHTML='🔄 Abriendo página de Google…';errEl.style.color='#2563eb';errEl.style.display='block';}
             firebase.auth().signInWithRedirect(provider);
         }catch(redErr){
+            localStorage.removeItem('_auth_redirect_pending');
             _loginInProgress = false;
             console.error('Redirect login failed:', redErr);
             if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. Intenta desde otro navegador.';errEl.style.color='#dc2626';errEl.style.display='block';}
@@ -2576,9 +2576,14 @@ firebase.auth().onAuthStateChanged(function(user){
            Cerramos modal si está abierto Y navegamos a la página pendiente. */
         _loginInProgress = false;
         var loginModal = document.getElementById('scanLoginModal');
-        var pendingPg = sessionStorage.getItem('pendingPage') || pendingPageAfterLogin;
+        /* localStorage._auth_redirect_pending sobrevive al redirect en TODOS
+           los navegadores (incluido Chrome iPhone). sessionStorage no siempre. */
+        var redirectTarget = localStorage.getItem('_auth_redirect_pending');
+        var pendingPg = redirectTarget || sessionStorage.getItem('pendingPage') || pendingPageAfterLogin;
         var pendingDoc = sessionStorage.getItem('pendingDocencia');
-        var hadPending = !!(pendingPg || pendingDoc);
+        var hadPending = !!(redirectTarget || pendingPg || pendingDoc);
+        /* Limpiar TODOS los flags */
+        localStorage.removeItem('_auth_redirect_pending');
         sessionStorage.removeItem('pendingPage');
         sessionStorage.removeItem('pendingDocencia');
         pendingPageAfterLogin = null;
