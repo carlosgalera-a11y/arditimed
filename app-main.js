@@ -753,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ═══ PAGE NAVIGATION ═══
 var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
-function showPage(id, skipAuth){
+function showPage(id){
     // Páginas que requieren login (NO incluye pagePatients ni pageTriaje)
     var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
     var PAGE_NAMES={
@@ -765,18 +765,9 @@ function showPage(id, skipAuth){
         "pageEnfermeria":"Enfermería",
         "pageScanIA":"Herramientas"
     };
-    if(!skipAuth && PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
+    if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
         if(!user){
-            /* ─── Fix race condition post-redirect (móvil) ───
-               localStorage._auth_redirect_pending se pone ANTES del redirect
-               y se lee DESPUÉS de la recarga. A diferencia de sessionStorage,
-               localStorage SIEMPRE sobrevive al redirect en todos los navegadores. */
-            var redirectPending = localStorage.getItem('_auth_redirect_pending');
-            if(redirectPending){
-                console.log('[showPage] Redirect pendiente (localStorage), esperando onAuthStateChanged…');
-                return;
-            }
             pendingPageAfterLogin=id;
             showLoginModal(PAGE_NAMES[id]||id);
             return;
@@ -1733,7 +1724,7 @@ function showScanLogin(){
         var user=firebase.auth().currentUser;
         if(user){
             console.log("User already logged in:",user.email);
-            showPage("pageScanIA",true);scanRenderHist();return;
+            showPage("pageScanIA");scanRenderHist();return;
         }
         var m=document.getElementById("scanLoginModal");
         console.log("Showing modal",m);
@@ -1744,23 +1735,15 @@ function showScanLogin(){
     }catch(e){console.error("showScanLogin error:",e);alert("Error: "+e.message);}
 }
 
-var _loginInProgress = false;
 function scanGoogleLogin(){
     console.log("scanGoogleLogin called");
-    if(_loginInProgress){console.warn('Login ya en curso');return;}
-    _loginInProgress = true;
-
     var provider=new firebase.auth.GoogleAuthProvider();
     provider.addScope('email');
     provider.addScope('profile');
     var errEl=document.getElementById("scanLoginError");
     if(errEl){errEl.style.display="none";errEl.innerHTML="";}
 
-    var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
-    var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || isStandalone || (('ontouchstart' in window) && window.innerWidth < 768);
-
     function onLoginSuccess(user){
-        _loginInProgress = false;
         try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
         loadModeradoresFromFirestore(function(){
             isAdminLoggedIn=isAdmin();
@@ -1770,9 +1753,9 @@ function scanGoogleLogin(){
                 try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
             }
         });
-        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
-        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
-        if(pg){logPageAccess(pg,user);showPage(pg,true);}
+        var pg=pendingPageAfterLogin;
+        pendingPageAfterLogin=null;
+        if(pg){logPageAccess(pg,user);showPage(pg);}
         else if(window._pendingDocencia){
             window._pendingDocencia=false;
             try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
@@ -1787,67 +1770,25 @@ function scanGoogleLogin(){
             },500);
             return;
         }
-        else{showPage("pageScanIA",true);scanRenderHist();}
-    }
-
-    function doRedirect(){
-        try{
-            localStorage.setItem('_auth_redirect_pending', pendingPageAfterLogin || 'pageScanIA');
-            sessionStorage.setItem('pendingPage', sessionStorage.getItem('pendingPage')||pendingPageAfterLogin||'');
-            if(window._pendingDocencia) sessionStorage.setItem('pendingDocencia','1');
-            if(errEl){errEl.innerHTML='🔄 Abriendo página de Google…';errEl.style.color='#2563eb';errEl.style.display='block';}
-            firebase.auth().signInWithRedirect(provider);
-        }catch(redErr){
-            localStorage.removeItem('_auth_redirect_pending');
-            _loginInProgress = false;
-            console.error('Redirect login failed:', redErr);
-            if(errEl){errEl.innerHTML='❌ No se pudo iniciar sesión. Intenta desde otro navegador.';errEl.style.color='#dc2626';errEl.style.display='block';}
-        }
+        else{showPage("pageScanIA");scanRenderHist();}
     }
 
     function handleError(error){
         console.error("Login error:",error.code,error.message);
         if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-            doRedirect();
+            if(errEl){errEl.innerHTML='⚠️ El navegador bloqueó la ventana de Google.<br><strong>Pulsa de nuevo el botón</strong> o desactiva el bloqueador de popups para este sitio.';errEl.style.color='#dc2626';errEl.style.display='block';}
         }else if(error.code==="auth/unauthorized-domain"){
-            _loginInProgress = false;
-            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase.";errEl.style.color='#dc2626';errEl.style.display="block";}
+            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.color='#dc2626';errEl.style.display="block";}
         }else if(error.code==="auth/network-request-failed"){
-            _loginInProgress = false;
             if(errEl){errEl.innerHTML="❌ Error de red. Comprueba tu conexión e inténtalo de nuevo.";errEl.style.color='#dc2626';errEl.style.display="block";}
-        }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
-            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
-                return firebase.auth().signInWithPopup(provider);
-            }).then(function(r){onLoginSuccess(r.user);}).catch(function(){doRedirect();});
         }else{
-            _loginInProgress = false;
             if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.color='#dc2626';errEl.style.display="block";}
         }
     }
 
-    /* ═══ Estrategia según contexto ═══
-       1. PWA standalone (añadido a pantalla inicio) → NO funciona ni popup
-          ni redirect porque iOS abre un WebView sin barra de navegación.
-          Solución: abrir la URL de auth en el navegador externo del sistema.
-       2. Navegador normal (móvil o desktop) → signInWithPopup síncrono
-          desde el user gesture. Si bloqueado → fallback a redirect.
-    */
-    try{firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
-
-    if(isStandalone){
-        /* PWA standalone: no se puede hacer popup ni redirect dentro del WebView.
-           Abrimos la app en el navegador del sistema con window.open, que en iOS
-           lanza Safari/Chrome fuera del WebView. El usuario hace login ahí, y
-           al volver a la PWA, onAuthStateChanged lo detecta porque la persistencia
-           es LOCAL (compartida entre WebView y navegador en el mismo dominio). */
-        if(errEl){errEl.innerHTML='🔄 Abriendo navegador para iniciar sesión…<br><small>Tras iniciar sesión, vuelve a esta app.</small>';errEl.style.color='#2563eb';errEl.style.display='block';}
-        localStorage.setItem('_auth_redirect_pending', pendingPageAfterLogin || 'pageScanIA');
-        /* Abrir en navegador externo — en iOS esto sale del WebView */
-        window.open(window.location.href, '_blank');
-        _loginInProgress = false;
-        return;
-    }
-
+    // Login con popup — la forma más simple y compatible.
+    // En iOS PWA standalone puede no funcionar; en ese caso se muestra
+    // mensaje pidiendo al usuario abrir en Safari.
     firebase.auth().signInWithPopup(provider).then(function(result){
         console.log("Login OK:",result.user.email);
         onLoginSuccess(result.user);
@@ -1887,7 +1828,7 @@ function emailPasswordLogin(){
         // Redirigir
         var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
         sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
-        if(pg){if(typeof logPageAccess==='function')logPageAccess(pg,result.user);showPage(pg,true);}
+        if(pg){if(typeof logPageAccess==='function')logPageAccess(pg,result.user);showPage(pg);}
         else if(window._pendingDocencia){
             window._pendingDocencia=false;
             try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
@@ -1900,7 +1841,7 @@ function emailPasswordLogin(){
                 var sd=document.getElementById('subDocencia');
                 if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
             },500);
-        }else{showPage("pageScanIA",true);if(typeof scanRenderHist==='function')scanRenderHist();}
+        }else{showPage("pageScanIA");if(typeof scanRenderHist==='function')scanRenderHist();}
     }).catch(function(err){
         console.error("Email/Pass login error:",err.code);
         if(btn){btn.disabled=false;btn.textContent='Entrar';}
@@ -1954,7 +1895,7 @@ function toggleEmailPasswordForm(){
             // Redirigir al destino pendiente
             if(restoredPage && typeof showPage==='function'){
                 if(typeof logPageAccess==='function') logPageAccess(restoredPage, result.user);
-                showPage(restoredPage,true);
+                showPage(restoredPage);
             }else if(window._pendingDocencia){
                 window._pendingDocencia=false;
                 document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
@@ -2581,40 +2522,8 @@ firebase.auth().onAuthStateChanged(function(u){if(u){try{db.collection("config")
 // Cuando admin inicia sesión, si no hay key en Firestore, pedir que la introduzca
 firebase.auth().onAuthStateChanged(function(user){
     if(user){
-        /* ─── Completar login post-redirect (clave para móvil) ───
-           Tras signInWithRedirect, la página se recarga. onAuthStateChanged
-           es el ÚNICO listener garantizado que detecta el usuario ya presente.
-           Cerramos modal si está abierto Y navegamos a la página pendiente. */
-        _loginInProgress = false;
-        var loginModal = document.getElementById('scanLoginModal');
-        /* localStorage._auth_redirect_pending sobrevive al redirect en TODOS
-           los navegadores (incluido Chrome iPhone). sessionStorage no siempre. */
-        var redirectTarget = localStorage.getItem('_auth_redirect_pending');
-        var pendingPg = redirectTarget || sessionStorage.getItem('pendingPage') || pendingPageAfterLogin;
-        var pendingDoc = sessionStorage.getItem('pendingDocencia');
-        var hadPending = !!(redirectTarget || pendingPg || pendingDoc);
-        /* Limpiar TODOS los flags */
-        localStorage.removeItem('_auth_redirect_pending');
-        sessionStorage.removeItem('pendingPage');
-        sessionStorage.removeItem('pendingDocencia');
-        pendingPageAfterLogin = null;
-
-        /* Cerrar modal si estaba visible */
-        if(loginModal) loginModal.style.display = 'none';
-
-        /* Navegar a la página pendiente (skipAuth=true para no re-comprobar login) */
-        if(hadPending && pendingPg && typeof showPage === 'function'){
-            if(typeof logPageAccess === 'function') logPageAccess(pendingPg, user);
-            showPage(pendingPg, true);
-        } else if(pendingDoc){
-            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-            var landing = document.getElementById('pageLanding');
-            if(landing) landing.classList.add('active');
-            setTimeout(function(){
-                var sd = document.getElementById('subDocencia');
-                if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
-            },500);
-        }
+        // Cerrar modal de login si está visible
+        try{document.getElementById('scanLoginModal').style.display='none';}catch(e){}
 
         // Actualizar botones de login con nombre del usuario
         var nombre = user.displayName ? user.displayName.split(" ")[0] : "Usuario";
