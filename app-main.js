@@ -753,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ═══ PAGE NAVIGATION ═══
 var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
-function showPage(id){
+function showPage(id, skipAuth){
     // Páginas que requieren login (NO incluye pagePatients ni pageTriaje)
     var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
     var PAGE_NAMES={
@@ -765,7 +765,7 @@ function showPage(id){
         "pageEnfermeria":"Enfermería",
         "pageScanIA":"Herramientas"
     };
-    if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
+    if(!skipAuth && PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
         if(!user){
             /* ─── Fix race condition post-redirect (móvil) ───
@@ -1735,7 +1735,7 @@ function showScanLogin(){
         var user=firebase.auth().currentUser;
         if(user){
             console.log("User already logged in:",user.email);
-            showPage("pageScanIA");scanRenderHist();return;
+            showPage("pageScanIA",true);scanRenderHist();return;
         }
         var m=document.getElementById("scanLoginModal");
         console.log("Showing modal",m);
@@ -1774,7 +1774,7 @@ function scanGoogleLogin(){
         });
         var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
         sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
-        if(pg){logPageAccess(pg,user);showPage(pg);}
+        if(pg){logPageAccess(pg,user);showPage(pg,true);}
         else if(window._pendingDocencia){
             window._pendingDocencia=false;
             try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
@@ -1789,7 +1789,7 @@ function scanGoogleLogin(){
             },500);
             return;
         }
-        else{showPage("pageScanIA");scanRenderHist();}
+        else{showPage("pageScanIA",true);scanRenderHist();}
     }
 
     function doRedirect(){
@@ -1876,7 +1876,7 @@ function emailPasswordLogin(){
         // Redirigir
         var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
         sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
-        if(pg){if(typeof logPageAccess==='function')logPageAccess(pg,result.user);showPage(pg);}
+        if(pg){if(typeof logPageAccess==='function')logPageAccess(pg,result.user);showPage(pg,true);}
         else if(window._pendingDocencia){
             window._pendingDocencia=false;
             try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
@@ -1889,7 +1889,7 @@ function emailPasswordLogin(){
                 var sd=document.getElementById('subDocencia');
                 if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
             },500);
-        }else{showPage("pageScanIA");if(typeof scanRenderHist==='function')scanRenderHist();}
+        }else{showPage("pageScanIA",true);if(typeof scanRenderHist==='function')scanRenderHist();}
     }).catch(function(err){
         console.error("Email/Pass login error:",err.code);
         if(btn){btn.disabled=false;btn.textContent='Entrar';}
@@ -1943,7 +1943,7 @@ function toggleEmailPasswordForm(){
             // Redirigir al destino pendiente
             if(restoredPage && typeof showPage==='function'){
                 if(typeof logPageAccess==='function') logPageAccess(restoredPage, result.user);
-                showPage(restoredPage);
+                showPage(restoredPage,true);
             }else if(window._pendingDocencia){
                 window._pendingDocencia=false;
                 document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
@@ -2586,10 +2586,10 @@ firebase.auth().onAuthStateChanged(function(user){
         /* Cerrar modal si estaba visible */
         if(loginModal) loginModal.style.display = 'none';
 
-        /* Navegar a la página pendiente */
+        /* Navegar a la página pendiente (skipAuth=true para no re-comprobar login) */
         if(hadPending && pendingPg && typeof showPage === 'function'){
             if(typeof logPageAccess === 'function') logPageAccess(pendingPg, user);
-            showPage(pendingPg);
+            showPage(pendingPg, true);
         } else if(pendingDoc){
             document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
             var landing = document.getElementById('pageLanding');
