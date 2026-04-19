@@ -1786,13 +1786,22 @@ function scanGoogleLogin(){
         }
     }
 
-    // Login con popup — la forma más simple y compatible.
-    // En iOS PWA standalone puede no funcionar; en ese caso se muestra
-    // mensaje pidiendo al usuario abrir en Safari.
-    firebase.auth().signInWithPopup(provider).then(function(result){
-        console.log("Login OK:",result.user.email);
-        onLoginSuccess(result.user);
-    }).catch(handleError);
+    // Login con Google.
+    // iOS Chrome abre signInWithPopup en un WebView donde no se puede
+    // escribir en los inputs de Google. Solución: en iOS usar redirect.
+    // En desktop usar popup (funciona perfecto, confirmado).
+    var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+    if(isIOS){
+        // En iOS: redirect flow. Al volver, onAuthStateChanged cierra el modal.
+        firebase.auth().signInWithRedirect(provider);
+    } else {
+        // En desktop/Android: popup
+        firebase.auth().signInWithPopup(provider).then(function(result){
+            console.log("Login OK:",result.user.email);
+            onLoginSuccess(result.user);
+        }).catch(handleError);
+    }
 }
 
 /* ═══ Login alternativo: email + contraseña ═══
