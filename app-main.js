@@ -768,6 +768,17 @@ function showPage(id){
     if(PAGES_REQUIRE_LOGIN.indexOf(id)!==-1){
         var user=firebase.auth().currentUser;
         if(!user){
+            /* ─── Fix race condition post-redirect (móvil) ───
+               Tras signInWithRedirect, la página se recarga pero currentUser
+               es null durante ~500ms hasta que Firebase procesa el token.
+               Si hay un redirect pendiente (sessionStorage.pendingPage), NO
+               abrimos el modal — esperamos a que onAuthStateChanged lo resuelva.
+               Si no hay redirect pendiente, abrimos modal normalmente. */
+            var hasPendingRedirect = sessionStorage.getItem('pendingPage') || sessionStorage.getItem('pendingDocencia');
+            if(hasPendingRedirect){
+                console.log('[showPage] Redirect pendiente detectado, esperando a onAuthStateChanged…');
+                return; /* onAuthStateChanged cerrará modal y navegará */
+            }
             pendingPageAfterLogin=id;
             showLoginModal(PAGE_NAMES[id]||id);
             return;
@@ -2559,28 +2570,34 @@ firebase.auth().onAuthStateChanged(function(u){if(u){try{db.collection("config")
 // Cuando admin inicia sesión, si no hay key en Firestore, pedir que la introduzca
 firebase.auth().onAuthStateChanged(function(user){
     if(user){
-        /* ─── Cerrar modal de login si está abierto (clave para redirect flow en móvil) ─── */
+        /* ─── Completar login post-redirect (clave para móvil) ───
+           Tras signInWithRedirect, la página se recarga. onAuthStateChanged
+           es el ÚNICO listener garantizado que detecta el usuario ya presente.
+           Cerramos modal si está abierto Y navegamos a la página pendiente. */
         _loginInProgress = false;
         var loginModal = document.getElementById('scanLoginModal');
-        if(loginModal && loginModal.style.display !== 'none'){
-            loginModal.style.display = 'none';
-            /* Restaurar página pendiente guardada antes del redirect */
-            var pendingPg = sessionStorage.getItem('pendingPage');
-            var pendingDoc = sessionStorage.getItem('pendingDocencia');
-            sessionStorage.removeItem('pendingPage');
-            sessionStorage.removeItem('pendingDocencia');
-            if(pendingPg && typeof showPage === 'function'){
-                if(typeof logPageAccess === 'function') logPageAccess(pendingPg, user);
-                showPage(pendingPg);
-            } else if(pendingDoc && typeof showPage === 'function'){
-                document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-                var landing = document.getElementById('pageLanding');
-                if(landing) landing.classList.add('active');
-                setTimeout(function(){
-                    var sd = document.getElementById('subDocencia');
-                    if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
-                },500);
-            }
+        var pendingPg = sessionStorage.getItem('pendingPage') || pendingPageAfterLogin;
+        var pendingDoc = sessionStorage.getItem('pendingDocencia');
+        var hadPending = !!(pendingPg || pendingDoc);
+        sessionStorage.removeItem('pendingPage');
+        sessionStorage.removeItem('pendingDocencia');
+        pendingPageAfterLogin = null;
+
+        /* Cerrar modal si estaba visible */
+        if(loginModal) loginModal.style.display = 'none';
+
+        /* Navegar a la página pendiente */
+        if(hadPending && pendingPg && typeof showPage === 'function'){
+            if(typeof logPageAccess === 'function') logPageAccess(pendingPg, user);
+            showPage(pendingPg);
+        } else if(pendingDoc){
+            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+            var landing = document.getElementById('pageLanding');
+            if(landing) landing.classList.add('active');
+            setTimeout(function(){
+                var sd = document.getElementById('subDocencia');
+                if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
+            },500);
         }
 
         // Actualizar botones de login con nombre del usuario
