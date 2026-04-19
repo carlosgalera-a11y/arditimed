@@ -1825,16 +1825,28 @@ function scanGoogleLogin(){
         }
     }
 
-    /* ═══ Estrategia simplificada ═══
-       signInWithPopup llamado DIRECTAMENTE desde el click del usuario,
-       sin envolver en .then() de setPersistence. Esto es clave para iOS:
-       Safari/Chrome iPhone solo permiten popups que se abren sincrónicamente
-       desde un user gesture. Si lo envuelves en un Promise.then(), el
-       navegador lo trata como "no iniciado por el usuario" y lo bloquea.
-
-       Si el popup falla (bloqueado/cerrado) → fallback a redirect.
-       La persistencia LOCAL se configura por separado, no encadenada. */
+    /* ═══ Estrategia según contexto ═══
+       1. PWA standalone (añadido a pantalla inicio) → NO funciona ni popup
+          ni redirect porque iOS abre un WebView sin barra de navegación.
+          Solución: abrir la URL de auth en el navegador externo del sistema.
+       2. Navegador normal (móvil o desktop) → signInWithPopup síncrono
+          desde el user gesture. Si bloqueado → fallback a redirect.
+    */
     try{firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
+
+    if(isStandalone){
+        /* PWA standalone: no se puede hacer popup ni redirect dentro del WebView.
+           Abrimos la app en el navegador del sistema con window.open, que en iOS
+           lanza Safari/Chrome fuera del WebView. El usuario hace login ahí, y
+           al volver a la PWA, onAuthStateChanged lo detecta porque la persistencia
+           es LOCAL (compartida entre WebView y navegador en el mismo dominio). */
+        if(errEl){errEl.innerHTML='🔄 Abriendo navegador para iniciar sesión…<br><small>Tras iniciar sesión, vuelve a esta app.</small>';errEl.style.color='#2563eb';errEl.style.display='block';}
+        localStorage.setItem('_auth_redirect_pending', pendingPageAfterLogin || 'pageScanIA');
+        /* Abrir en navegador externo — en iOS esto sale del WebView */
+        window.open(window.location.href, '_blank');
+        _loginInProgress = false;
+        return;
+    }
 
     firebase.auth().signInWithPopup(provider).then(function(result){
         console.log("Login OK:",result.user.email);
