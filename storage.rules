@@ -2,38 +2,55 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // === PROPUESTAS — usuarios autenticados pueden subir a su carpeta ===
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isAdmin() {
+      return signedIn() && (
+        request.auth.token.admin == true
+        || request.auth.token.role == 'superadmin'
+        || request.auth.token.role == 'admin'
+        || request.auth.token.email == 'carlosgalera2roman@gmail.com'
+      );
+    }
+
+    // ── Scan uploads por usuario ─────────────────────────────────────
+    // /scan_uploads/{uid}/{filename}: máx 5 MB, solo imagen o PDF.
+    match /scan_uploads/{uid}/{fileName} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid)
+        && request.resource.size < 5 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf'
+        );
+      allow update: if isOwner(uid)
+        && request.resource.size < 5 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf'
+        );
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // ── Propuestas: máx 50 MB, tipos documento ───────────────────────
     match /propuestas/{fileName} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null
-                    && request.resource.size < 50 * 1024 * 1024  // Max 50 MB
-                    && (request.resource.contentType.matches('application/pdf')
-                        || request.resource.contentType.matches('application/msword')
-                        || request.resource.contentType.matches('application/vnd.openxmlformats.*')
-                        || request.resource.contentType.matches('application/vnd.ms-.*'));
-      allow delete: if request.auth != null 
-                    && (request.auth.token.email == "ramongalera22@gmail.com"
-                    || request.auth.token.email == "carlosgalera2roman@gmail.com"
-                    || request.auth.token.email == "esther.montoro@gmail.com");
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.size < 50 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('application/pdf')
+          || request.resource.contentType.matches('application/msword')
+          || request.resource.contentType.matches('application/vnd.openxmlformats.*')
+          || request.resource.contentType.matches('application/vnd.ms-.*')
+        );
+      allow update: if false;
+      allow delete: if isAdmin();
     }
 
-    // === SCAN UPLOADS — authenticated users can upload to their folder ===
-    match /scan_uploads/{userId}/{fileName} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null
-                    && request.auth.uid == userId
-                    && request.resource.size < 10 * 1024 * 1024
-                    && request.resource.contentType.matches('image/.*');
-      allow delete: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // === ARCHIVOS ADMIN — solo admin ===
+    // ── Cualquier otro path: solo admin ──────────────────────────────
     match /{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null 
-                   && (request.auth.token.email == "ramongalera22@gmail.com"
-                    || request.auth.token.email == "carlosgalera2roman@gmail.com"
-                    || request.auth.token.email == "esther.montoro@gmail.com");
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
   }
 }
