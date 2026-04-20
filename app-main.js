@@ -1795,7 +1795,7 @@ function scanGoogleLogin(){
 
     // Usar siempre signInWithPopup — es compatible con iOS cuando se llama
     // directamente desde un evento click del usuario (sin capas async intermedias)
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(function(){
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
         return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     }).then(function(){
         return firebase.auth().signInWithPopup(provider);
