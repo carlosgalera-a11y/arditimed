@@ -1,0 +1,50 @@
+name: Deploy Functions
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  deploy-functions:
+    name: Deploy Cloud Functions
+    runs-on: ubuntu-latest
+    if: github.repository == 'carlosgalera-a11y/Cartagenaeste'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: functions/package-lock.json
+      - name: Install functions deps
+        run: npm --prefix functions ci
+      - name: Build functions
+        run: npm --prefix functions run build
+      - name: Unit tests
+        run: npm --prefix functions test
+      - name: Firebase deploy --only functions
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: docenciacartagenaeste
+          entryPoint: ./
+          target: functions
+
+  sync-area2:
+    name: Sync a repo del dominio custom
+    needs: deploy-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.AREA2_PAT }}
+      - name: Push a area2cartagena
+        run: |
+          git remote add area2 https://x-access-token:${{ secrets.AREA2_PAT }}@github.com/carlosgalera-a11y/area2cartagena.git
+          TODAY=$(date +%F)
+          git push area2 "HEAD:refs/heads/pre-sync-backup-${TODAY}-$(git rev-parse --short HEAD)" || true
+          git push area2 HEAD:main --force-with-lease

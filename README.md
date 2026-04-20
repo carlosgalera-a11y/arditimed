@@ -1,8 +1,91 @@
-# 🏥 Área II Cartagena — App Médica Docente
+# 🏥 Cartagenaeste — App médica docente del Área II
+
+[![CI](https://img.shields.io/github/actions/workflow/status/carlosgalera-a11y/Cartagenaeste/ci.yml?branch=main&label=CI&logo=github)](https://github.com/carlosgalera-a11y/Cartagenaeste/actions)
+[![License: Proprietary](https://img.shields.io/badge/license-Propietaria-red.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
+[![IP Registrada](https://img.shields.io/badge/IP-Reg.%2000765--03096622-informational.svg)](IP_ATTESTATION.md)
+[![Hosting](https://img.shields.io/badge/hosting-GitHub%20Pages-181717?logo=github)](https://area2cartagena.es/)
+[![Backend](https://img.shields.io/badge/backend-Firebase%20EU-orange?logo=firebase)](https://firebase.google.com/)
+[![Status](https://img.shields.io/badge/status-En%20uso%20cl%C3%ADnico-success)](https://area2cartagena.es/status.html)
+
+**Plataforma formativa y organizador personal de guardia** para profesionales sanitarios. En uso clínico activo en el Servicio de Urgencias del **H.G.U. Santa Lucía** (Área II Cartagena, SMS).
+
+🔗 **[Demo en vivo](https://area2cartagena.es/)** · 📊 **[Estado del servicio](https://area2cartagena.es/status.html)** · 📋 **[Privacidad](https://area2cartagena.es/privacidad.html)** · 📜 **[Licencia](LICENSE)** · 🛡️ **[Security](SECURITY.md)**
+
+> ⚠️ **Herramienta DOCENTE.** No diagnóstica. No sustituye el juicio clínico profesional.
+
+---
+
+## Stack técnico
+
+| Capa | Tecnología |
+|---|---|
+| Frontend | HTML/CSS/JS vanilla · PWA · Service Worker v74 |
+| Backend | Firebase Cloud Functions (TypeScript, Node 22, **europe-west1**) |
+| Datos | Firestore + Cloud Storage (región EU) |
+| Auth | Firebase Authentication (Google + Email/Password) |
+| IA | Cloud Function propia (`askAi`) con routing por tipo clínico/educational/vision · DeepSeek + OpenRouter (Gemini, Mistral, Qwen) |
+| Monitoring | Sentry (opt-in) + Cloud Logging + GA4 |
+| Hosting | GitHub Pages + CNAME a `area2cartagena.es` |
+| CI/CD | GitHub Actions (typecheck, tests, secret-scan con gitleaks) |
+
+## Ejecutar localmente
+
+```bash
+git clone https://github.com/carlosgalera-a11y/Cartagenaeste.git
+cd Cartagenaeste/functions
+npm install
+npm test                    # unit tests
+npm run test:coverage       # con cobertura
+
+# Emuladores Firebase (Firestore + Functions + Auth):
+cd ..
+firebase emulators:start
+```
+
+## Deploy
+
+```bash
+# Cloud Functions (Carlos):
+firebase functions:secrets:set DEEPSEEK_API_KEY
+firebase functions:secrets:set OPENROUTER_API_KEY
+firebase deploy --only functions
+
+# Firestore rules + indexes:
+firebase deploy --only firestore
+
+# Frontend:
+git push origin main                               # Cartagenaeste (fallback URL)
+git push area2 main:main --force-with-lease      # area2cartagena (dominio custom)
+```
+
+> ⚠️ **No usar** `firebase deploy --only hosting` — el hosting es GitHub Pages. Ver [CLAUDE.md](CLAUDE.md) regla #9.
+
+## Documentación
+
+| Doc | Propósito |
+|---|---|
+| [`CLAUDE.md`](CLAUDE.md) | Contexto y reglas innegociables del proyecto |
+| [`LICENSE`](LICENSE) | Licencia propietaria + Art. 51 LPI |
+| [`IP_ATTESTATION.md`](IP_ATTESTATION.md) | Registro de IP + declaración formal |
+| [`CHANGELOG.md`](CHANGELOG.md) | Historial de releases |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Cómo colaborar (previa autorización) |
+| [`SECURITY.md`](SECURITY.md) | Reporte responsable de vulnerabilidades |
+| [`docs/runbook.md`](docs/runbook.md) | Operación: deploy, secretos, rollback |
+| [`docs/security-audit-2026-04-21.md`](docs/security-audit-2026-04-21.md) | Auditoría de seguridad |
+
+## Autoría y contacto
+
+- **Autor único y propietario IP**: Carlos Galera Román
+- Registro Propiedad Intelectual: **Reg. 00765-03096622** (Art. 51 LPI)
+- Contacto: **carlosgalera2roman@gmail.com**
+  - Licencias: asunto `[LICENCIA]`
+  - Seguridad: asunto `[SECURITY]` — ver [SECURITY.md](SECURITY.md)
+  - Partnerships: asunto `[PARTNER]`
+
+---
 
 **App médica docente para profesionales sanitarios del Área II de Cartagena** (Servicio Murciano de Salud). Herramienta de apoyo a la docencia en el Centro de Salud Cartagena Este y centros de salud del área sanitaria.
-
-🔗 **[Acceder a la App](https://carlosgalera-a11y.github.io/Cartagenaeste/notebook-local.html)** · 📱 **[Descargar para Android](https://carlosgalera-a11y.github.io/Cartagenaeste/descargar.html)** · 📋 **[Política de Privacidad](https://carlosgalera-a11y.github.io/Cartagenaeste/privacidad.html)**
 
 ---
 
