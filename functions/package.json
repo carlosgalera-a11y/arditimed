@@ -4,7 +4,7 @@
   "description": "Cloud Functions para Cartagenaeste — askAi unificada en europe-west1",
   "main": "lib/index.js",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "scripts": {
     "build": "tsc",
