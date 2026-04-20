@@ -28,6 +28,7 @@
 6. App Check enforce activo en Firestore + Functions + Storage.
 7. Plan antes de código. Una rama por sesión. PR por feature. Carlos revisa rules y secretos.
 8. Nunca hacer force push a main. Nunca borrar commits de otros.
+9. Hosting es GitHub Pages. No usar `firebase deploy --only hosting`. Las cabeceras de seguridad van como `<meta>` tags en HTML, no en `firebase.json`. El frontend se despliega con `git push` a main.
 
 ## Posicionamiento
 Plataforma FORMATIVA y organizador personal de guardia. NO diagnóstica. Datos seudonimizados con fines docentes. Sin co-branding institucional hasta firma.
@@ -50,7 +51,8 @@ INSTITUTION_BRANDING=none. No activar UMU ni farma sin aprobación explícita Ca
 - firebase emulators:start
 - npm run test --prefix functions
 - firebase deploy --only functions:askAi
-- firebase deploy --only hosting,firestore
+- firebase deploy --only firestore
+- git push origin main  # deploy frontend (GitHub Pages)
 
 ## Lo que NO debe hacer Claude Code
 - No reescribir la estética actual (vanilla JS funciona).
