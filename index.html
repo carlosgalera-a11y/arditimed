@@ -4,7 +4,7 @@
 <script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
-  var REQUIRED_V = 70;
+  var REQUIRED_V = 74;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -2448,7 +2448,7 @@ window.showNotebooksModal=function(){
 // ⚠️ DEPRECATED: _KP será eliminado en futuras versiones.
 // Migrar todas las llamadas a API_CONFIG (api-config.js).
 // Las keys deben ir en el proxy del NAS, no en el cliente.
-var _KP=["c2stb3ItdjEtOWNjYWQ1YTcwM","TcyM2I3ZDQwMjY3ZmZlOGYwOT","Q5YWU5OTg4YjdmYWEwM2QzMGI","wZWMwNTM3YWM0YTE5ZGIxMQ=="];
+var _KP=[]; /* DEPRECATED: clave OpenRouter retirada - usar window.askAi */
 function _dk(){try{return atob(_KP.join(""));}catch(e){return "";}}
 // ═══ PATIENTS DATA ═══
 var patientSections=[
@@ -2965,12 +2965,12 @@ async function infGenerar(){
   if(provider==='qwen'){
     key=localStorage.getItem('qwenApiKey');
     model=localStorage.getItem('qwenModel')||'qwen-turbo';
-    apiUrl='https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions';
+    apiUrl='about:disabled-qwen';
   }else{
     // ⚠️ NAS proxy first, then OpenRouter free (no key needed for :free models)
     key=_dk()||'';
     model='deepseek/deepseek-chat-v3-0324:free';
-    apiUrl='https://openrouter.ai/api/v1/chat/completions';
+    apiUrl='about:disabled-openrouter';
   }
 
   var instrucciones=document.getElementById('infInstrucciones').value.trim();
@@ -3058,7 +3058,7 @@ async function infGenerar(){
       document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">\u23f3</div>Analizando im\u00e1genes con GPT-4o Vision...</div>';
       try{
         var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},30000);
-        var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
+        var rP=await fetch('about:disabled-pollinations',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
         if(rP.ok){var dP=await rP.json();infTxt=(dP.choices&&dP.choices[0])?dP.choices[0].message.content:'';if(infTxt){infShowResult(infTxt);return;}}
       }catch(e){console.log('[Informe] Pollinations vision:',e.message);}
 
@@ -3072,7 +3072,7 @@ async function infGenerar(){
               try{document.getElementById('infResultContent').querySelector('div:last-child').textContent='Probando '+vModels[vi].split('/')[1].split(':')[0]+'...';}catch(e){}
               var orH={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informe Area II Cartagena'};
               if(orKey && vModels[vi].indexOf(':free')===-1)orH['Authorization']='Bearer '+orKey;
-              var rV=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
+              var rV=await fetch('about:disabled-openrouter',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
               var dV=await rV.json();
               if(rV.ok&&dV.choices&&dV.choices[0]&&dV.choices[0].message){infTxt=dV.choices[0].message.content||'';if(infTxt){infShowResult(infTxt);return;}}
               else{console.log('[Informe] '+vModels[vi]+': HTTP '+rV.status+' '+(dV.error&&dV.error.message||''));}
@@ -3121,7 +3121,7 @@ async function infGenerar(){
     .catch(function(e){
       console.log('[Informe] OpenRouter failed:',e.message,'. Trying Pollinations...');
       // 3) Fallback: Pollinations (free, no key)
-      fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:sysPrompt},{role:'user',content:texto||'Genera el informe clinico'}],max_tokens:4096})})
+      fetch('about:disabled-pollinations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:sysPrompt},{role:'user',content:texto||'Genera el informe clinico'}],max_tokens:4096})})
       .then(function(r2){if(!r2.ok)throw new Error('Pollinations '+r2.status);return r2.json();})
       .then(function(d2){infShowResult(d2.choices[0].message.content);})
       .catch(function(e2){infShowError(e.message+' / Pollinations: '+e2.message);});
@@ -3415,7 +3415,7 @@ var k=document.getElementById('secretKeyInput').value.trim();
 if(!k||!k.startsWith('gsk_')){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Key inválida</span>';return;}
 document.getElementById('secretKeyStatus').innerHTML='<span style="color:#d97706">⏳ Probando...</span>';
 try{
-var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'},body:JSON.stringify({model:'qwen/qwen3-32b',messages:[{role:'user',content:'Di: OK'}],max_tokens:10})});
+var r=await fetch('about:disabled-openrouter',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'},body:JSON.stringify({model:'qwen/qwen3-32b',messages:[{role:'user',content:'Di: OK'}],max_tokens:10})});
 if(r.ok)document.getElementById('secretKeyStatus').innerHTML='<span style="color:#059669">✅ ¡Conexión exitosa!</span>';
 else document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ Error '+r.status+'</span>';
 }catch(e){document.getElementById('secretKeyStatus').innerHTML='<span style="color:#dc2626">❌ '+e.message+'</span>';}
@@ -3583,7 +3583,7 @@ var MEGA_DS_KEY = "";/* REMOVED: paid key moved to NAS proxy */
 function megaCallDeepSeek(sp, msgs, btn) {
     if (!MEGA_DS_KEY) { megaCallPollinations(sp, msgs, btn, true); return; }
     if (btn) btn.textContent = "Consultando DeepSeek...";
-    fetch("https://api.deepseek.com/chat/completions", {
+    fetch("about:disabled-deepseek", {
         method: "POST",
         headers: {"Content-Type":"application/json","Authorization":"Bearer "+MEGA_DS_KEY},
         body: JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:sp}].concat(msgs),max_tokens:1200,temperature:0.3})
@@ -3637,7 +3637,7 @@ function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
         headers["Authorization"] = "Bearer " + MEGA_OR_KEY;
     }
 
-    fetch("https://openrouter.ai/api/v1/chat/completions", {
+    fetch("about:disabled-openrouter", {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
@@ -3684,7 +3684,7 @@ function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
 function megaCallPollinations(sp, msgs, btn, tryORonFail) {
     if (btn) btn.textContent = "Pensando...";
     var allMsgs = [{role:"system", content:sp}].concat(msgs);
-    fetch("https://text.pollinations.ai/openai", {
+    fetch("about:disabled-pollinations", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -3951,7 +3951,7 @@ window.ckGenerate=function(fromChat){
 
 // AI call chain: Pollinations → DeepSeek direct → OpenRouter
 function ckCallAI(msgs,cb){
-    fetch("https://text.pollinations.ai/openai",{
+    fetch("about:disabled-pollinations",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"openai-large",messages:[{role:"system",content:CK_SYS}].concat(msgs),seed:Math.floor(Math.random()*9999),private:true})
     }).then(function(r){if(!r.ok)throw new Error("P"+r.status);return r.json()})
@@ -3959,7 +3959,7 @@ function ckCallAI(msgs,cb){
     .catch(function(){
         var dk=typeof MEGA_DS_KEY!=="undefined"?MEGA_DS_KEY:"";
         if(dk){
-            fetch("https://api.deepseek.com/chat/completions",{
+            fetch("about:disabled-deepseek",{
                 method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+dk},
                 body:JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:4000,temperature:0.3})
             }).then(function(r){if(!r.ok)throw new Error("DS"+r.status);return r.json()})
@@ -3975,7 +3975,7 @@ function ckCallOR(msgs,idx,cb){
     var h={"Content-Type":"application/json","HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"Checklist Clinico Area II"};
     var k=typeof MEGA_OR_KEY!=="undefined"?MEGA_OR_KEY:"";
     if(k)h["Authorization"]="Bearer "+k;
-    fetch("https://openrouter.ai/api/v1/chat/completions",{
+    fetch("about:disabled-openrouter",{
         method:"POST",headers:h,
         body:JSON.stringify({model:m,messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:4000,temperature:0.3})
     }).then(function(r){if(r.status===429||r.status===503||r.status===502||r.status===402)throw new Error("retry");if(!r.ok)throw new Error("OR"+r.status);return r.json()})
