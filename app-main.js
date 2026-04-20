@@ -1793,15 +1793,20 @@ function scanGoogleLogin(){
         }
     }
 
-    // signInWithPopup DEBE ser síncrono con el click del usuario.
-    // Si lo envuelves en .then() (como setPersistence().then(popup)),
-    // Safari iOS lo bloquea como "no iniciado por el usuario".
-    // Solución: setPersistence fire-and-forget, popup directo.
+    // iOS: signInWithPopup abre un WKWebView donde los inputs no responden.
+    // Usamos signInWithRedirect que abre Google en el navegador real.
+    // Al volver, onAuthStateChanged (línea ~2535) cierra el modal.
+    // Desktop/Android: popup directo (funciona perfecto).
     try{firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
-    firebase.auth().signInWithPopup(provider).then(function(result){
-        console.log("Login OK:",result.user.email);
-        onLoginSuccess(result.user);
-    }).catch(handleError);
+    var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    if(isIOS){
+        firebase.auth().signInWithRedirect(provider);
+    } else {
+        firebase.auth().signInWithPopup(provider).then(function(result){
+            console.log("Login OK:",result.user.email);
+            onLoginSuccess(result.user);
+        }).catch(handleError);
+    }
 }
 
 /* ═══ Login alternativo: email + contraseña ═══
