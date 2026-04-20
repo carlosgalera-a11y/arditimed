@@ -1,5 +1,5 @@
 // Service Worker - Área II Cartagena PWA v43 - Camas y Ambulancias (Vademécum + Paratus fusionados) · tile Docencia actualizado
-const CACHE_NAME = 'area2-v73';
+const CACHE_NAME = 'area2-v74';
 
 const PRECACHE = [
   '/Cartagenaeste/',
