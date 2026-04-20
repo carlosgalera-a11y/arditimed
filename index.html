@@ -4,7 +4,7 @@
 <script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
-  var REQUIRED_V = 91;
+  var REQUIRED_V = 70;
   var cur = parseInt(localStorage.getItem('_sw_v') || '0');
   if(cur < REQUIRED_V){
     localStorage.setItem('_sw_v', String(REQUIRED_V));
@@ -72,7 +72,7 @@ window.gaTrack=function(event,params){
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://*.googleapis.com https://*.cloudfunctions.net https://cdn.jsdelivr.net https://api.qrserver.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; connect-src 'self' https: http://REDACTED_INTERNAL_IP:3100 https://europe-west1-docenciacartagenaeste.cloudfunctions.net https://*.cloudfunctions.net; font-src 'self' https://fonts.gstatic.com; frame-src https://drive.google.com https://*.firebaseapp.com https://www.google.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://*.googleapis.com https://cdn.jsdelivr.net https://js.puter.com https://api.qrserver.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; connect-src 'self' https: http://REDACTED_INTERNAL_IP:3100; font-src 'self' https://fonts.gstatic.com; frame-src https://drive.google.com https://*.firebaseapp.com;">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
@@ -144,7 +144,6 @@ window.gaTrack=function(event,params){
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
     <script>
     // Firebase MUST init before ANY other script uses firebase.auth() or db
     if (!firebase.apps.length) {
@@ -158,9 +157,6 @@ window.gaTrack=function(event,params){
         });
     }
     var db = firebase.firestore();
-
-    // ═══ CLOUD FUNCTIONS — proxy IA seguro en europe-west1 ═══
-    var cloudFns = firebase.app().functions('europe-west1');
 
     // ═══ PER-USER SESSION MANAGER ═══
     firebase.auth().onAuthStateChanged(function(user){
@@ -258,7 +254,7 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 <!-- ═══════ LANDING PAGE ═══════ -->
 <div class="page active" id="pageLanding">
     <div class="landing">
-        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button id="loginBtnLanding" onclick="if(firebase.auth().currentUser){if(confirm('¿Cerrar sesión?'))logoutAdmin();}else{showLoginModal();}" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-mi-guardia" onclick="openGuardiaNotas()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0d9488,#0f766e);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);">📋 Mi Guardia</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button><button class="btn-sugerencia" onclick="abrirSugerencias()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(245,158,11,.4);">💡 Sugerencias</button></div></nav>
+        <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="document.getElementById('instruccionesModal').style.display='flex'" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">📖 Instrucciones</button><button id="loginBtnLanding" onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button><button class="btn-mi-guardia" onclick="openGuardiaNotas()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0d9488,#0f766e);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);">📋 Mi Guardia</button><button class="btn-subir-contenido" onclick="abrirModalSubir('')" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#0066cc,#0052a3);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(0,102,204,.4);">📤 Proponer contenido</button><button class="btn-panel-mod" onclick="abrirPanelModeracion()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(124,58,237,.4);">🛡️ Moderación<span class="mod-badge-count" style="background:#ef4444;color:#fff;border-radius:50%;padding:1px 6px;font-size:.7rem;margin-left:4px;"></span></button><button class="btn-sugerencia" onclick="abrirSugerencias()" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;font-family:var(--font-body);box-shadow:0 2px 8px rgba(245,158,11,.4);">💡 Sugerencias</button></div></nav>
         <div class="hero">
             <div class="hero-bg"></div>
             <div class="hero-overlay"></div>
@@ -327,19 +323,17 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
                 <div id="subHerramientas" style="display:none;position:relative;z-index:10;max-width:520px;width:100%;margin-top:10px;background:rgba(0,0,0,.3);border-radius:12px;padding:10px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);">
                     <div style="display:flex;flex-direction:column;gap:6px;">
-                        <div style="font-size:.68rem;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;padding:4px 6px 2px;">Inteligencia artificial</div>
-                        <a href="javascript:void(0)" onclick="showPage('pageScanIA')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🔬 Análisis de Imagen (Derma · Rx · ECG · Eco)</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageScanIA')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🔬 Análisis de Imagen con IA</a>
                         <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('notebooks')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.12);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;border:1px solid rgba(255,255,255,.15);" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">🤖 MegaCuaderno Clínico IA</a>
                         <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('calc')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🧮 Calculadoras Médicas</a>
+                        <a href="plantillas-informes.html?v=1775483919" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📄 Plantillas de Informes</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageTraductor')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌍 Traductor de Consulta</a>
+                        <a href="transcripcion.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(34,197,94,.2)'" onmouseout="this.style.background='rgba(34,197,94,.12)'">🎙️ Transcripción en Directo</a>
                         <a href="corrector-clinico.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(59,130,246,.2)'" onmouseout="this.style.background='rgba(59,130,246,.12)'">✏️ Corrector Clínico IA</a>
                         <a href="analiticas.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(139,92,246,.2)'" onmouseout="this.style.background='rgba(139,92,246,.12)'">🔬 Analíticas IA</a>
-                        <a href="transcripcion.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(34,197,94,.2)'" onmouseout="this.style.background='rgba(34,197,94,.12)'">🎙️ Transcripción en Directo</a>
-
-                        <div style="font-size:.68rem;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;padding:10px 6px 2px;">Consulta</div>
-                        <a href="javascript:void(0)" onclick="showPage('pageTraductor')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌍 Traductor de Consulta</a>
-                        <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('plantillas')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Plantillas para Pacientes</a>
-                        <a href="plantillas-informes.html?v=1775483919" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📄 Plantillas de Informes</a>
                         <a href="generador-qr.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📱 Generador QR Paciente</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageTelefonos')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📞 Teléfonos y Buscas</a>
+                        <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('plantillas')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Plantillas de Pacientes</a>
                         <a href="mapa.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🗺️ Mapa Sanitario</a>
                         <a href="dashboard.html" target="_blank" class="btn-panel-mod" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📊 Dashboard</a>
                     </div>
@@ -1456,12 +1450,6 @@ window.showNotebooksModal=function(){
                             <div style="font-size:.75rem;color:var(--text-muted);">6.7 KB</div>
                         </div>
                     </a>
-                <!-- Guía de Visado -->
-                    <div onclick="switchProtocolTab('preguntas-proto',document.querySelectorAll('.tab-protocols')[1]);document.getElementById('apProtoSelect').value='visado';" style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #b45309;border-left:4px solid #b45309;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(180,83,9,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">📋</div>
-                        <div style="font-weight:600;color:#b45309;margin-bottom:2px;font-size:.9rem;">💊 Guía de Visado SMS</div>
-                        <div style="font-size:.75rem;color:var(--text-muted);">Prescripción · Pregunta a la IA</div>
-                    </div>
                 </div>
             </div>
             
@@ -1515,7 +1503,7 @@ window.showNotebooksModal=function(){
                 <div style="background:linear-gradient(135deg,var(--bg-dark),#243347);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;">
                     <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:2.5rem;opacity:.12;">🧠</div>
                     <h4 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:6px;">🤖 Pregunta sobre los Protocolos</h4>
-                    <p style="font-size:.86rem;opacity:.8;font-weight:300;">La IA tiene acceso al contenido completo de los 10 protocolos de AP y la Guía de Visado del SMS.</p>
+                    <p style="font-size:.86rem;opacity:.8;font-weight:300;">La IA tiene acceso al contenido completo de los 10 protocolos de Atención Primaria.</p>
                 </div>
                 
                 <!-- Selector de protocolo -->
@@ -1533,7 +1521,6 @@ window.showNotebooksModal=function(){
                         <option value="8">8 · Problemas Digestivos</option>
                         <option value="9">9 · Problemas Digestivos (cont.)</option>
                         <option value="10">10 · Respiratorio y Cardiovascular</option>
-                        <option value="visado" style="font-weight:600;color:#b45309;">📋 Guía de Visado (Prescripción SMS)</option>
                     </select>
                 </div>
                 
@@ -1548,7 +1535,6 @@ window.showNotebooksModal=function(){
                     <button onclick="apQuickAsk('Resume los puntos clave de este protocolo')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">📋 Resumen clave</button>
                     <button onclick="apQuickAsk('¿Cuáles son los criterios de derivación urgente?')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">🚨 Criterios derivación</button>
                     <button onclick="apQuickAsk('¿Qué tratamiento farmacológico recomienda?')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">💊 Tratamiento</button>
-                    <button onclick="apQuickAsk('¿Qué medicamentos necesitan visado y de qué tipo (DH/CPD)?')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='#b45309';this.style.color='#b45309'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">📋 Visados</button>
                     <button onclick="apQuickAsk('Haz un esquema de diagnóstico diferencial')" style="padding:6px 14px;background:var(--bg-main);border:1px solid var(--border);border-radius:20px;font-size:.82rem;cursor:pointer;color:var(--text-light);font-family:var(--font-body);transition:.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">🔍 Dx diferencial</button>
                 </div>
                 
@@ -1582,7 +1568,6 @@ window.showNotebooksModal=function(){
                         <option value="8">8 · Problemas Digestivos</option>
                         <option value="9">9 · Problemas Digestivos (cont.)</option>
                         <option value="10">10 · Respiratorio y Cardiovascular</option>
-                        <option value="visado" style="font-weight:600;color:#b45309;">📋 Guía de Visado (Prescripción SMS)</option>
                     </select>
                 </div>
 
@@ -2219,29 +2204,10 @@ window.showNotebooksModal=function(){
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Iniciar sesión con Google
             </button>
-            <div id="scanLoginError" style="display:none;color:#dc2626;font-size:.85rem;text-align:center;margin-top:12px;"></div>
-
-            <!-- Separador y alternativa email/password -->
-            <div style="text-align:center;margin:12px 0 8px;">
-                <a href="javascript:void(0)" onclick="toggleEmailPasswordForm()" id="epToggle" style="color:#0066cc;font-size:.8rem;text-decoration:underline;cursor:pointer;">¿Problemas? Entrar con email y contraseña</a>
-            </div>
-            <div id="epBox" style="display:none;padding:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;margin-bottom:8px;">
-                <input id="epEmail" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@ejemplo.com" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:6px;font-size:16px;box-sizing:border-box;margin-bottom:6px;">
-                <input id="epPassword" type="password" autocomplete="current-password" placeholder="Contraseña (mín. 6 caracteres)" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:6px;font-size:16px;box-sizing:border-box;margin-bottom:8px;" onkeydown="if(event.key==='Enter')emailPasswordLogin()">
-                <button id="epLoginBtn" onclick="emailPasswordLogin()" style="width:100%;padding:10px;background:#0066cc;color:#fff;border:0;border-radius:6px;font-size:.9rem;font-weight:600;cursor:pointer;">Entrar</button>
-                <p style="font-size:.72rem;color:#64748b;text-align:center;margin-top:6px;">Primera vez = se crea tu cuenta automáticamente</p>
-            </div>
-            <script>
-            // En iOS, mostrar email/password por defecto (popup de Google no deja escribir)
-            if(/iPhone|iPad|iPod/.test(navigator.userAgent)){
-                try{document.getElementById('epBox').style.display='block';
-                document.getElementById('epToggle').textContent='También puedes usar Google ↑';}catch(e){}
-            }
-            </script>
-
-            <div style="margin-top:10px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+            <div id="scanLoginError" style="display:none;color:#dc2626;font-size:.85rem;text-align:center;margin-top:12px;">❌ Error al iniciar sesión</div>
+            <div style="margin-top:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
                 <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.78rem;color:#64748b;line-height:1.45;">
-                    <input type="checkbox" id="disclaimerCheck" onchange="var ok=this.checked;document.getElementById('googleLoginBtn').disabled=!ok;document.getElementById('googleLoginBtn').style.opacity=ok?'1':'.5';" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
+                    <input type="checkbox" id="disclaimerCheck" onchange="document.getElementById('googleLoginBtn').disabled=!this.checked;document.getElementById('googleLoginBtn').style.opacity=this.checked?'1':'.5'" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
                     <span>He leído el aviso RGPD anterior. Acepto que esta plataforma tiene <strong>finalidad exclusivamente docente e informativa</strong> y que no sustituye el juicio clínico profesional ni la historia clínica oficial.</span>
                 </label>
             </div>
@@ -3263,14 +3229,9 @@ function infDescargar(formato){
 </div>
 
 
-<!-- Puter.js deshabilitado (v48+): usábamos su img2txt como fallback de ScanIA,
-     pero abre un wss://api.puter.com/socket.io permanente que satura la consola
-     con errores CSP. Ahora ScanIA usa Cloud Function 'scanIA' como primaria.
-     Si quieres reactivar: descomenta y añade wss://api.puter.com a connect-src.
 <script src="https://js.puter.com/v2/"></script>
--->
 <script src="api-config.js?v=20260406a"></script>
-<script src="app-main.js?v=20260408d"></script>
+<script src="app-main.js?v=20260408c"></script>
 <script src="escalas-clinicas.js?v=20260408b"></script>
 <script src="turnos-guardia.js?v=20260402a"></script>
 <script src="triaje-ia.js?v=20260406a"></script>
@@ -3790,18 +3751,12 @@ function megaAppendMsg(role, text) {
     div.style.cssText = "margin-bottom:12px;display:flex;" +
         (isUser ? "justify-content:flex-end" : "justify-content:flex-start");
     var bubble = document.createElement("div");
-    var formatted;
-    if(isSystem){
-        // System messages come from our code (trusted) — allow HTML
-        formatted = text.replace(/\n/g,"<br>");
-    }else{
-        formatted = text
-            .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-            .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
-            .replace(/^#{1,3} (.+)$/gm,"<strong>$1</strong>")
-            .replace(/^[-*] (.+)$/gm,"&bull; $1")
-            .replace(/\n/g,"<br>");
-    }
+    var formatted = text
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+        .replace(/^#{1,3} (.+)$/gm,"<strong>$1</strong>")
+        .replace(/^[-*] (.+)$/gm,"&bull; $1")
+        .replace(/\n/g,"<br>");
     bubble.innerHTML = formatted;
     bubble.style.cssText = "max-width:88%;padding:10px 14px;border-radius:12px;" +
         "font-size:.85rem;line-height:1.6;" +
