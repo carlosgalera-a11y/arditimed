@@ -1,0 +1,40 @@
+title = "Cartagenaeste gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "groq-api-key"
+description = "Groq API key"
+regex = '''gsk_[0-9A-Za-z]{40,}'''
+tags = ["key", "groq"]
+
+[[rules]]
+id = "deepseek-api-key"
+description = "DeepSeek API key"
+regex = '''sk-[a-f0-9]{32}'''
+tags = ["key", "deepseek"]
+
+[[rules]]
+id = "openrouter-api-key"
+description = "OpenRouter API key"
+regex = '''sk-or-v1-[a-f0-9]{64}'''
+tags = ["key", "openrouter"]
+
+[allowlist]
+description = "Patterns allowlisted because they are placeholders, historical audits, or documented sentinels"
+paths = [
+    '''docs/security-audit.*\.md''',
+    '''docs/diagnostico.*\.md''',
+    '''AUDIT_2026-04-04\.md''',
+    '''CHANGELOG\.md''',
+    '''FIREBASE-(SETUP|INTEGRAR-CLAVE)\.md''',
+    '''\.gitleaks\.toml''',
+]
+regexes = [
+    '''AIzaSyD9c-EXAMPLE-KEY-CHANGE-ME''',
+    '''AIzaSyD9c-TU-CLAVE-AQUI''',
+    '''YOUR_API_KEY_HERE''',
+    '''REDACTED_.*''',
+    '''about:disabled-.*''',
+]
