@@ -1,113 +1,111 @@
 #!/bin/bash
 # ══════════════════════════════════════════════════════════════════════
-# test-deploy.sh — Smoke tests para la PWA Área II Cartagena
-# Ejecutar después de cada deploy: bash test-deploy.sh
+# test-deploy.sh · Smoke tests post-deploy para Cartagenaeste
+# Uso: bash test-deploy.sh  (BASE_URL override opcional)
 # ══════════════════════════════════════════════════════════════════════
 
-BASE_URL="https://carlosgalera-a11y.github.io/Cartagenaeste"
+set -u
+BASE_URL="${BASE_URL:-https://area2cartagena.es}"
 PASS=0
 FAIL=0
 WARN=0
 
-green() { echo -e "\033[32m✓ $1\033[0m"; PASS=$((PASS+1)); }
-red()   { echo -e "\033[31m✗ $1\033[0m"; FAIL=$((FAIL+1)); }
-yellow(){ echo -e "\033[33m⚠ $1\033[0m"; WARN=$((WARN+1)); }
+green()  { echo -e "\033[32m✓ $1\033[0m"; PASS=$((PASS+1)); }
+red()    { echo -e "\033[31m✗ $1\033[0m"; FAIL=$((FAIL+1)); }
+yellow() { echo -e "\033[33m⚠ $1\033[0m"; WARN=$((WARN+1)); }
 
 echo "══════════════════════════════════════════════════"
-echo "🏥 Smoke Tests — Área II Cartagena PWA"
+echo "🏥 Smoke Tests · Cartagenaeste · $BASE_URL"
 echo "   $(date '+%Y-%m-%d %H:%M:%S')"
 echo "══════════════════════════════════════════════════"
-echo ""
 
-# ── 1. Página principal carga ──
-echo "── Carga básica ──"
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/")
-if [ "$HTTP" = "200" ]; then green "index.html carga (HTTP $HTTP)"; else red "index.html NO carga (HTTP $HTTP)"; fi
-
-# ── 2. Archivos JS críticos ──
+# ── 1. URLs principales ──
 echo ""
-echo "── Archivos JS ──"
-for f in app-main.js app-modules.js triaje-ia.js api-config.js escalas-clinicas.js; do
-  HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/$f")
-  if [ "$HTTP" = "200" ]; then green "$f OK"; else red "$f FALTA (HTTP $HTTP)"; fi
+echo "── 1. Carga básica ──"
+for path in "/" "/notebook-local.html" "/chatbot-medicacion.html" "/status.html" "/privacidad.html" "/offline.html" "/manifest.json" "/sw.js" "/ai-client.js" "/errorMessages.js"; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE_URL$path")
+  if [ "$code" = "200" ]; then green "$path"; else red "$path HTTP $code"; fi
 done
 
-# ── 3. Service Worker ──
+# ── 2. Manifest PWA ──
 echo ""
-echo "── Service Worker ──"
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/sw.js")
-if [ "$HTTP" = "200" ]; then green "sw.js presente"; else yellow "sw.js no accesible (HTTP $HTTP)"; fi
-
-# ── 4. Manifest PWA ──
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/manifest.json")
-if [ "$HTTP" = "200" ]; then green "manifest.json presente"; else yellow "manifest.json no accesible"; fi
-
-# ── 5. Contenido HTML — secciones principales ──
-echo ""
-echo "── Secciones HTML ──"
-HTML=$(curl -s "$BASE_URL/")
-for section in pageLanding pagePatients pageProfessionals pageProtocolosAP pageProtocolosUrgencias pageTriaje pageScanIA pageEnfermeria; do
-  if echo "$HTML" | grep -q "id=\"$section\""; then green "$section presente"; else red "$section FALTA en HTML"; fi
-done
-
-# ── 6. API Keys NO expuestas en texto claro ──
-echo ""
-echo "── Seguridad: API Keys ──"
-# Patrones genéricos de claves expuestas (no hardcodeamos la clave aquí)
-MODULES=$(curl -s "$BASE_URL/app-modules.js")
-if echo "$HTML"    | grep -qE 'sk-[a-f0-9]{32}'; then red "Posible clave sk- expuesta en index.html"; else green "Sin claves sk- en index.html"; fi
-if echo "$MODULES" | grep -qE 'sk-[a-f0-9]{32}'; then red "Posible clave sk- expuesta en app-modules.js"; else green "Sin claves sk- en app-modules.js"; fi
-if echo "$HTML"    | grep -qE '192\.168\.[0-9]+\.[0-9]+'; then red "IP privada expuesta en index.html"; else green "Sin IPs privadas en index.html"; fi
-
-# ── 7. Fármacos de Urgencia ──
-echo ""
-echo "── Fármacos de Urgencia ──"
-if echo "$HTML" | grep -q "urg-farmacos-content"; then green "Sección Fármacos presente"; else red "Sección Fármacos FALTA"; fi
-if echo "$HTML" | grep -q "URG_FARMACOS"; then green "Array fármacos cargado"; else red "Array fármacos FALTA"; fi
-
-# ── 8. Triaje — Fix auth permanente ──
-echo ""
-echo "── Triaje: Fix auth ──"
-if echo "$MODULES" | grep -q "firebase.auth().currentUser"; then green "Guard auth en triaje presente"; else red "Guard auth en triaje FALTA — riesgo de 'insufficient permissions'"; fi
-if echo "$MODULES" | grep -q "NO ELIMINAR"; then green "Comentario protección permanente OK"; else yellow "Comentario protección no encontrado"; fi
-
-# ── 9. Triaje ficha ──
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/triaje-ficha.html")
-if [ "$HTTP" = "200" ]; then green "triaje-ficha.html accesible"; else yellow "triaje-ficha.html no accesible (HTTP $HTTP)"; fi
-
-# ── 10. PDFs de trípticos (muestra) ──
-echo ""
-echo "── Recursos (muestra) ──"
-for pdf in "tripticos/triptico-fibrilacion-auricular.pdf" "recursos-sociales-grado-dependencia.pdf"; do
-  HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/$pdf")
-  if [ "$HTTP" = "200" ]; then green "$pdf OK"; else yellow "$pdf no accesible (HTTP $HTTP)"; fi
-done
-
-# ── 11. API endpoints (solo si LOCAL_AI_PROXY está definido) ──
-echo ""
-echo "── API proxy local (opcional) ──"
-if [ -n "$LOCAL_AI_PROXY" ]; then
-  NAS_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 3 "$LOCAL_AI_PROXY/health" 2>/dev/null)
-  if [ "$NAS_HTTP" = "200" ]; then
-    green "Proxy local accesible"
-    AI_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 -X POST "$LOCAL_AI_PROXY/ai/chat" -H "Content-Type: application/json" -d '{"messages":[{"role":"user","content":"test"}],"max_tokens":5}' 2>/dev/null)
-    if [ "$AI_HTTP" = "200" ]; then green "Proxy AI endpoint responde"; else yellow "Proxy AI endpoint: HTTP $AI_HTTP"; fi
-  else
-    yellow "Proxy local no accesible"
-  fi
+echo "── 2. Manifest PWA ──"
+if curl -sf "$BASE_URL/manifest.json" | python3 -m json.tool >/dev/null 2>&1; then
+  green "manifest.json JSON válido"
 else
-  yellow "LOCAL_AI_PROXY no definido — test omitido (producción usa Cloud Function)"
+  red "manifest.json inválido"
 fi
+
+# ── 3. Claves API ──
+echo ""
+echo "── 3. Claves API en frontend ──"
+HTML=$(curl -s "$BASE_URL/index.html")
+MODULES=$(curl -s "$BASE_URL/app-modules.js")
+APPMAIN=$(curl -s "$BASE_URL/app-main.js")
+combined="$HTML$MODULES$APPMAIN"
+
+for pattern in 'sk-[a-f0-9]\{32\}' 'sk-or-v1-[a-f0-9]\{20,\}' 'gsk_[a-zA-Z0-9]\{20,\}' 'fh_[a-zA-Z0-9]\{10,\}'; do
+  count=$(echo "$combined" | grep -cE "$pattern" || true)
+  if [ "$count" = "0" ]; then green "Patrón '$pattern' ausente"; else red "Patrón '$pattern' presente ($count)"; fi
+done
+
+# ── 4. URLs directas a proveedores IA ──
+echo ""
+echo "── 4. URLs directas IA ──"
+for endpoint in "api.groq.com" "api.deepseek.com" "api.mistral.ai" "openrouter.ai/api" "pollinations.ai" "dashscope-intl.aliyuncs"; do
+  count=$(echo "$combined" | grep -cF "$endpoint" || true)
+  if [ "$count" = "0" ]; then green "Sin $endpoint"; else red "$count refs a $endpoint"; fi
+done
+
+# ── 5. IP interna ──
+echo ""
+echo "── 5. IP interna ──"
+count=$(echo "$combined" | grep -cE "192\.168\.[0-9]+\.[0-9]+" || true)
+if [ "$count" = "0" ]; then green "Sin IPs internas"; else red "$count IPs internas"; fi
+
+# ── 6. Service Worker ──
+echo ""
+echo "── 6. Service Worker ──"
+SW=$(curl -s "$BASE_URL/sw.js")
+if echo "$SW" | grep -qE "CACHE_NAME\s*=\s*'area2-v7[4-9]|'area2-v[89][0-9]"; then green "sw.js v74+"; else yellow "sw.js versión anterior a v74"; fi
+if echo "$SW" | grep -q "skipWaiting"; then green "skipWaiting presente"; else red "sw.js sin skipWaiting"; fi
+
+# ── 7. Headers / meta seguridad ──
+echo ""
+echo "── 7. Security headers ──"
+HDR=$(curl -sI "$BASE_URL/"; echo "---"; echo "$HTML" | head -100)
+echo "$HDR" | grep -qi "strict-transport-security"    && green "HSTS"          || yellow "HSTS ausente"
+echo "$HDR" | grep -qi "x-content-type-options.*nosniff" && green "nosniff"    || yellow "nosniff ausente"
+echo "$HDR" | grep -qi "Permissions-Policy"           && green "Permissions-Policy" || yellow "Permissions-Policy ausente"
+echo "$HDR" | grep -qi "Content-Security-Policy"      && green "CSP"           || red "CSP ausente"
+
+# ── 8. publicMetrics endpoint ──
+echo ""
+echo "── 8. publicMetrics ──"
+M_URL="https://europe-west1-docenciacartagenaeste.cloudfunctions.net/publicMetrics"
+MS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$M_URL")
+if [ "$MS" = "200" ]; then
+  green "publicMetrics HTTP 200"
+  if curl -sf "$M_URL" | python3 -m json.tool >/dev/null 2>&1; then green "publicMetrics JSON válido"; fi
+else
+  yellow "publicMetrics HTTP $MS (¿función no desplegada?)"
+fi
+
+# ── 9. Metadatos limpios ──
+echo ""
+echo "── 9. Metadatos ──"
+if echo "$HTML" | grep -qE "build 17[0-9]{8}"; then red "Title con build timestamp"; else green "Title limpio"; fi
+if echo "$HTML" | grep -qiE "IA diagn[oó]stica"; then red "Copy 'IA diagnóstica'"; else green "Copy 'IA docente'"; fi
 
 # ── Resumen ──
 echo ""
 echo "══════════════════════════════════════════════════"
 TOTAL=$((PASS+FAIL+WARN))
-echo "📊 Resultados: $PASS/$TOTAL passed, $FAIL failed, $WARN warnings"
+echo "📊 Resultados: $PASS/$TOTAL ok, $FAIL fail, $WARN warn"
 if [ "$FAIL" -gt 0 ]; then
-  echo -e "\033[31m❌ HAY FALLOS — revisar antes de continuar\033[0m"
+  echo -e "\033[31m❌ HAY FALLOS\033[0m"
   exit 1
 else
-  echo -e "\033[32m✅ Todo OK — deploy seguro\033[0m"
+  echo -e "\033[32m✅ Smoke tests OK\033[0m"
   exit 0
 fi
