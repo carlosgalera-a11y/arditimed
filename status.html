@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow">
+<title>Estado del servicio | Área II Cartagena</title>
+<meta name="description" content="Página pública de estado de Cartagenaeste: usuarios, casos, peticiones IA del mes y disponibilidad del servicio.">
+<link rel="canonical" href="https://area2cartagena.es/status.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0f6b4a;--bg:#f4f6f8;--card:#fff;--text:#2d3748;--muted:#64748b;--border:#e2e8f0;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--radius:14px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Source Sans 3',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 40px}
+header{background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;padding:20px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:10}
+header a{color:#bbdefb;text-decoration:none;font-weight:600;font-size:.9rem}
+header h1{font-size:1.1rem;font-weight:700;margin-left:auto}
+.container{max-width:880px;margin:0 auto;padding:28px 20px}
+.status-banner{background:var(--card);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:center;gap:16px;margin-bottom:22px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.status-dot{width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 4px rgba(34,197,94,.2)}
+.status-dot.ok{background:var(--green);box-shadow:0 0 0 4px rgba(34,197,94,.2)}
+.status-dot.warn{background:var(--yellow);box-shadow:0 0 0 4px rgba(234,179,8,.2)}
+.status-dot.err{background:var(--red);box-shadow:0 0 0 4px rgba(239,68,68,.2)}
+.status-text{flex:1}
+.status-text h2{font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:2px}
+.status-text p{color:var(--muted);font-size:.88rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.card{background:var(--card);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border)}
+.card .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600}
+.card .value{font-size:2rem;font-weight:700;margin-top:6px;color:#0f172a;line-height:1;font-feature-settings:"tnum"}
+.card .sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+section h3{font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:10px;margin-top:26px}
+.list{background:var(--card);border-radius:var(--radius);padding:14px 18px;border:1px solid var(--border)}
+.list p{color:var(--muted);font-size:.88rem;padding:8px 0}
+footer{text-align:center;margin-top:28px;font-size:.78rem;color:var(--muted);padding:0 20px}
+footer a{color:var(--primary);text-decoration:none}
+.disclaimer{background:#fff3e0;border-left:3px solid #fb923c;padding:10px 14px;border-radius:10px;font-size:.8rem;color:#9a3412;margin-top:24px}
+.skel{display:inline-block;background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:200% 100%;animation:skel 1.5s infinite;border-radius:4px;height:1.6rem;width:80%}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+<header>
+  <a href="/">← Volver</a>
+  <h1>📊 Estado del servicio</h1>
+</header>
+<main class="container">
+  <div class="status-banner">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="status-text">
+      <h2 id="statusTitle">Comprobando…</h2>
+      <p id="statusDesc">Consultando métricas en tiempo real.</p>
+    </div>
+  </div>
+
+  <section>
+    <h3>Métricas agregadas</h3>
+    <div class="grid">
+      <div class="card">
+        <div class="label">Usuarios totales</div>
+        <div class="value" id="kUsers"><span class="skel"></span></div>
+        <div class="sub">Cuentas registradas</div>
+      </div>
+      <div class="card">
+        <div class="label">Casos creados</div>
+        <div class="value" id="kCases"><span class="skel"></span></div>
+        <div class="sub">Casos docentes acumulados</div>
+      </div>
+      <div class="card">
+        <div class="label">Peticiones IA (mes)</div>
+        <div class="value" id="kAi"><span class="skel"></span></div>
+        <div class="sub">Llamadas a Cloud Function askAi</div>
+      </div>
+      <div class="card">
+        <div class="label">Última actualización</div>
+        <div class="value" id="kUpd" style="font-size:1.1rem;font-weight:600"><span class="skel"></span></div>
+        <div class="sub">Snapshot semanal</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Histórico de incidencias</h3>
+    <div class="list">
+      <p>Sin incidencias registradas.</p>
+    </div>
+  </section>
+
+  <p class="disclaimer">⚠️ <strong>Plataforma formativa.</strong> No diagnóstica. No sustituye juicio clínico. Datos seudonimizados con fines docentes.</p>
+</main>
+<footer>
+  <a href="/privacidad.html">Política de privacidad</a> ·
+  <a href="/informacion.html">Aviso legal</a> ·
+  <span>Cartagenaeste v1.0 · Carlos Galera Román · Reg. PI 00765-03096622</span>
+</footer>
+<script>
+(function(){
+  var ENDPOINT = 'https://europe-west1-docenciacartagenaeste.cloudfunctions.net/publicMetrics';
+  function fmt(n){ if(n==null) return '—'; return Number(n).toLocaleString('es-ES'); }
+  function formatDate(iso){
+    if(!iso) return '—';
+    try { var d=new Date(iso); return d.toLocaleString('es-ES',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+    catch(e){ return iso; }
+  }
+  function setStatus(cls, title, desc){
+    var dot = document.getElementById('statusDot');
+    dot.classList.remove('ok','warn','err');
+    dot.classList.add(cls);
+    document.getElementById('statusTitle').textContent = title;
+    document.getElementById('statusDesc').textContent = desc;
+  }
+  fetch(ENDPOINT, { cache:'no-cache' })
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){
+      document.getElementById('kUsers').textContent = fmt(d.usuariosTotal);
+      document.getElementById('kCases').textContent = fmt(d.casosTotal);
+      document.getElementById('kAi').textContent = fmt(d.peticionesIAMes);
+      document.getElementById('kUpd').textContent = d.ultimoUpdate ? formatDate(d.ultimoUpdate) : 'Sin snapshot';
+      var fresh = d.ultimoUpdate && (Date.now() - new Date(d.ultimoUpdate).getTime()) < 8*24*60*60*1000;
+      if(fresh) setStatus('ok','✅ Operativo','Servicio funcionando con normalidad.');
+      else setStatus('warn','⚠️ Sin actualizaciones recientes','Snapshot de métricas con más de una semana.');
+    })
+    .catch(function(err){
+      setStatus('err','❌ Incidencia en métricas','No se pudo consultar el endpoint. Servicio podría estar degradado.');
+      console.warn('[status] fetch error', err.message);
+    });
+})();
+</script>
+</body>
+</html>

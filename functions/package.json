@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "firebase-admin": "^12.7.0",
-    "firebase-functions": "^6.1.0"
+    "firebase-functions": "^6.1.0",
+    "google-auth-library": "^9.14.0"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.4",
