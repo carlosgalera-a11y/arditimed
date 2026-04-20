@@ -29,6 +29,26 @@
 7. Plan antes de código. Una rama por sesión. PR por feature. Carlos revisa rules y secretos.
 8. Nunca hacer force push a main. Nunca borrar commits de otros.
 9. Hosting es GitHub Pages. No usar `firebase deploy --only hosting`. Las cabeceras de seguridad van como `<meta>` tags en HTML, no en `firebase.json`. El frontend se despliega con `git push` a main.
+10. **Dos repos en GitHub, mismo contenido**. `carlosgalera-a11y/Cartagenaeste` es el source of truth (aquí se trabaja y se abren PRs). `carlosgalera-a11y/area2cartagena` es una copia conectada al dominio custom `area2cartagena.es` vía GitHub Pages. Tras cada merge a `Cartagenaeste/main`, re-sincronizar el segundo repo con: `git push area2 main:main --force-with-lease` (remote `area2` apunta a github.com/carlosgalera-a11y/area2cartagena). Hacer siempre backup antes: `git clone --mirror https://github.com/carlosgalera-a11y/area2cartagena.git /tmp/area2cartagena-backup-$(date +%F).git` y `git push area2 refs/remotes/area2/main:refs/heads/pre-sync-backup-$(date +%F)` para dejar rama de rescate en remoto.
+
+## Operaciones en dos repos (procedimiento)
+
+```bash
+# Una vez por sesión fresca:
+cd /Users/carlos/cartagenaestewebappSOLIDA
+git remote add area2 https://github.com/carlosgalera-a11y/area2cartagena.git 2>/dev/null || true
+git fetch area2
+
+# Tras cada merge a Cartagenaeste/main, sincronizar:
+TODAY=$(date +%F)
+git clone --mirror https://github.com/carlosgalera-a11y/area2cartagena.git /tmp/area2cartagena-backup-$TODAY.git
+git push area2 "refs/remotes/area2/main:refs/heads/pre-sync-backup-$TODAY"
+git push area2 main:main --force-with-lease
+
+# Verificar que GitHub Pages rebuild completó:
+until [ "$(gh api repos/carlosgalera-a11y/area2cartagena/pages/builds/latest --jq .status)" = "built" ]; do sleep 5; done
+curl -sI "https://area2cartagena.es/" | grep -i last-modified
+```
 
 ## Posicionamiento
 Plataforma FORMATIVA y organizador personal de guardia. NO diagnóstica. Datos seudonimizados con fines docentes. Sin co-branding institucional hasta firma.
