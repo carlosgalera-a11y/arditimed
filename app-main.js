@@ -1854,10 +1854,34 @@ function emailPasswordLogin(){
         }else{showPage("pageScanIA");if(typeof scanRenderHist==='function')scanRenderHist();}
     }).catch(function(err){
         console.error("Email/Pass login error:",err.code);
+        /* Auto-registro: si el usuario no existe, crear cuenta automáticamente */
+        if(err.code==='auth/user-not-found'||err.code==='auth/invalid-credential'){
+            firebase.auth().createUserWithEmailAndPassword(email,pass).then(function(result){
+                console.log("Auto-registro OK:",result.user.email);
+                try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+                loadModeradoresFromFirestore(function(){
+                    isAdminLoggedIn=isAdmin();
+                    apShowAdminTab(isAdminLoggedIn);
+                    updateModBadgeAll();
+                });
+                var pg=pendingPageAfterLogin;
+                pendingPageAfterLogin=null;
+                if(pg){if(typeof logPageAccess==='function')logPageAccess(pg,result.user);showPage(pg);}
+                else{showPage("pageScanIA");if(typeof scanRenderHist==='function')scanRenderHist();}
+                if(btn){btn.disabled=false;btn.textContent='Entrar';}
+            }).catch(function(regErr){
+                if(btn){btn.disabled=false;btn.textContent='Entrar';}
+                var msg='❌ ';
+                if(regErr.code==='auth/email-already-in-use') msg+='Contraseña incorrecta.';
+                else if(regErr.code==='auth/weak-password') msg+='La contraseña debe tener al menos 6 caracteres.';
+                else msg+=regErr.message||regErr.code;
+                if(errEl){errEl.innerHTML=msg;errEl.style.color='#dc2626';errEl.style.display='block';}
+            });
+            return;
+        }
         if(btn){btn.disabled=false;btn.textContent='Entrar';}
         var msg='❌ ';
-        if(err.code==='auth/user-not-found'||err.code==='auth/invalid-credential') msg+='Email o contraseña incorrectos.';
-        else if(err.code==='auth/wrong-password') msg+='Contraseña incorrecta.';
+        if(err.code==='auth/wrong-password') msg+='Contraseña incorrecta.';
         else if(err.code==='auth/too-many-requests') msg+='Demasiados intentos. Espera unos minutos.';
         else if(err.code==='auth/network-request-failed') msg+='Error de red. Comprueba tu conexión.';
         else msg+=err.message||err.code;
