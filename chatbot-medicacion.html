@@ -40,8 +40,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;min-height:1
 <script src="ai-client.js"></script>
 </head>
 <body>
-<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>💊 Consulta sobre tu Medicación</h1></div>
+<div class="nav"><a href="javascript:history.back()">← Volver</a><h1>💊 Consulta sobre tu Medicación</h1><span id="authStatus" style="margin-left:auto;font-size:.82rem;"></span></div>
 <div class="warning">⚠️ Esta herramienta es <strong>orientativa</strong>. No sustituye la consulta con tu médico o farmacéutico. Ante cualquier duda, consulta a un profesional.</div>
+<div id="loginGate" style="display:none;background:#fff3cd;border:1px solid #ffe69c;border-radius:10px;padding:16px;margin:10px 20px;text-align:center;">
+  <p style="margin-bottom:10px;color:#664d03;">🔐 Para usar la IA, inicia sesión con tu cuenta de Google.</p>
+  <button onclick="loginGoogle()" style="background:#4285f4;color:#fff;border:none;border-radius:6px;padding:10px 20px;font-size:.9rem;font-weight:600;cursor:pointer;">Iniciar sesión con Google</button>
+</div>
 <div class="chat-area" id="chatArea">
     <div class="msg bot">
         <div class="avatar">💊</div>
@@ -69,6 +73,31 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;min-height:1
 <script>
 // IA pasa por la Cloud Function askAi. No se consumen claves en el cliente.
 var chatHistory=[];
+
+// ── Auth UX ─────────────────────────────────────────────
+function loginGoogle(){
+  try{
+    var provider=new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt:'select_account'});
+    firebase.auth().signInWithPopup(provider).catch(function(e){alert('Error login: '+e.message);});
+  }catch(e){alert('Firebase no cargado. Recarga la página.');}
+}
+function logoutGoogle(){ try{firebase.auth().signOut();}catch(e){} }
+(function(){
+  try{
+    firebase.auth().onAuthStateChanged(function(user){
+      var badge=document.getElementById('authStatus');
+      var gate=document.getElementById('loginGate');
+      if(user){
+        if(badge) badge.innerHTML='👤 '+(user.email||user.displayName||'Usuario')+' · <a href="#" onclick="logoutGoogle();return false;" style="color:#d32f2f;">Salir</a>';
+        if(gate) gate.style.display='none';
+      }else{
+        if(badge) badge.innerHTML='<a href="#" onclick="loginGoogle();return false;" style="color:#4285f4;font-weight:600;">🔐 Login</a>';
+        if(gate) gate.style.display='block';
+      }
+    });
+  }catch(e){}
+})();
 
 function addMessage(who,text){
     var area=document.getElementById('chatArea');
@@ -101,11 +130,10 @@ async function sendChat(){
     chatHistory.push({role:'user',content:q});
     addTyping();
 
-    // askAi con tipo educational. Fallback: respuestas locales si falla.
+    // askAi con tipo educational. Si falla auth, mostramos gate en vez de tapar el error.
     if(typeof window.askAi==='function'){
         try{
             var sysPrompt='Eres un asistente farmacéutico para pacientes del Área II de Cartagena (España). Respondes en español, de forma clara y sencilla, adaptada a pacientes sin formación médica. Tus respuestas deben ser:\n- Concisas (máx 200 palabras)\n- Con lenguaje sencillo, evitando tecnicismos\n- Con emojis para claridad visual\n- SIEMPRE recuerda al paciente que consulte con su médico o farmacéutico ante dudas\n- Si preguntan sobre interacciones peligrosas, advierte claramente\n- Incluye horarios de toma recomendados cuando sea relevante\n- No diagnostiques ni prescribas. Solo informa sobre los fármacos que pregunten.\n- Responde SOLO sobre medicamentos y salud. Para otros temas, redirige amablemente.';
-            // chatHistory puede ser largo; mandamos el último user + systemPrompt que incluye un breve contexto.
             var ctx = chatHistory.slice(-8).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content}).join('\n---\n');
             var fullSys = sysPrompt + (ctx ? '\n\nContexto previo de la conversación:\n'+ctx : '');
             var res = await window.askAi({ type:'educational', prompt:q, systemPrompt:fullSys });
@@ -114,13 +142,26 @@ async function sendChat(){
             addMessage('bot',answer);
             chatHistory.push({role:'assistant',content:answer});
             return;
-        }catch(e){console.error('askAi error:', e.code||e.message);}
+        }catch(e){
+            console.error('askAi error:', e.code||e.message);
+            removeTyping();
+            if(e.code==='functions/unauthenticated'){
+                addMessage('bot','🔐 Para usar la IA, inicia sesión con Google usando el botón de arriba.');
+                var gate=document.getElementById('loginGate'); if(gate) gate.style.display='block';
+                return;
+            }
+            addMessage('bot','⚠️ '+(e.userMessage||e.message||'Error IA')+'\n\nMostrando respuesta básica local:');
+            var localA=localAnswer(q);
+            addMessage('bot',localA);
+            chatHistory.push({role:'assistant',content:localA});
+            return;
+        }
     }
 
-    // Fallback: respuestas locales básicas
+    // ai-client.js no cargado (fallback extremo)
     removeTyping();
     var localA=localAnswer(q);
-    addMessage('bot',localA);
+    addMessage('bot','⚠️ Cliente IA no cargado, respuesta básica:\n\n'+localA);
     chatHistory.push({role:'assistant',content:localA});
 }
 
