@@ -152,7 +152,7 @@ function fhRenderSuggestions(){
 
 function fhUpdateSubtitle(){
   var el=document.getElementById('fh-nb-subtitle');
-  if(el)el.textContent=fhFiles.length+' documento'+(fhFiles.length!==1?'s':'')+' · Groq LLaMA 3.3 70B';
+  if(el)el.textContent=fhFiles.length+' documento'+(fhFiles.length!==1?'s':'')+' · IA (askAi)';
 }
 
 function fhFormatSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
