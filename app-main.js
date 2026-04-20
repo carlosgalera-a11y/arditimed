@@ -1741,7 +1741,9 @@ function scanGoogleLogin(){
     provider.addScope('email');
     provider.addScope('profile');
     var errEl=document.getElementById("scanLoginError");
-    if(errEl){errEl.style.display="none";errEl.innerHTML="";}
+    if(errEl) errEl.style.display="none";
+
+    var isStandalone=(window.navigator.standalone===true)||(window.matchMedia('(display-mode: standalone)').matches);
 
     function onLoginSuccess(user){
         try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
@@ -1753,8 +1755,8 @@ function scanGoogleLogin(){
                 try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
             }
         });
-        var pg=pendingPageAfterLogin;
-        pendingPageAfterLogin=null;
+        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
+        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
         if(pg){logPageAccess(pg,user);showPage(pg);}
         else if(window._pendingDocencia){
             window._pendingDocencia=false;
@@ -1776,32 +1778,31 @@ function scanGoogleLogin(){
     function handleError(error){
         console.error("Login error:",error.code,error.message);
         if(error.code==="auth/popup-blocked"||error.code==="auth/popup-closed-by-browser"||error.code==="auth/cancelled-popup-request"){
-            if(errEl){errEl.innerHTML='⚠️ El navegador bloqueó la ventana de Google.<br><strong>Pulsa de nuevo el botón</strong> o desactiva el bloqueador de popups para este sitio.';errEl.style.color='#dc2626';errEl.style.display='block';}
+            // Popup bloqueado: mostrar instrucción clara (no usar redirect - rompe GitHub Pages)
+            if(errEl){errEl.innerHTML="⚠️ El navegador bloqueó la ventana de Google.<br><strong>Pulsa de nuevo el botón</strong> o desactiva el bloqueador de popups para este sitio.";errEl.style.display="block";}
         }else if(error.code==="auth/unauthorized-domain"){
-            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.color='#dc2626';errEl.style.display="block";}
-        }else if(error.code==="auth/network-request-failed"){
-            if(errEl){errEl.innerHTML="❌ Error de red. Comprueba tu conexión e inténtalo de nuevo.";errEl.style.color='#dc2626';errEl.style.display="block";}
+            if(errEl){errEl.innerHTML="❌ Dominio no autorizado en Firebase. Contacta con el administrador.";errEl.style.display="block";}
+        }else if(error.message&&(error.message.indexOf("IndexedDB")>-1||error.message.indexOf("transaction")>-1)){
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(function(){
+                return firebase.auth().signInWithPopup(provider);
+            }).then(function(r){onLoginSuccess(r.user);}).catch(function(e2){
+                if(errEl){errEl.innerHTML="❌ Desactiva el bloqueador de anuncios e inténtalo de nuevo.";errEl.style.display="block";}
+            });
         }else{
-            if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.color='#dc2626';errEl.style.display="block";}
+            if(errEl){errEl.innerHTML="❌ "+error.message;errEl.style.display="block";}
         }
     }
 
-    // Login con Google.
-    // iOS Chrome abre signInWithPopup en un WebView donde no se puede
-    // escribir en los inputs de Google. Solución: en iOS usar redirect.
-    // En desktop usar popup (funciona perfecto, confirmado).
-    var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-
-    if(isIOS){
-        // En iOS: redirect flow. Al volver, onAuthStateChanged cierra el modal.
-        firebase.auth().signInWithRedirect(provider);
-    } else {
-        // En desktop/Android: popup
-        firebase.auth().signInWithPopup(provider).then(function(result){
-            console.log("Login OK:",result.user.email);
-            onLoginSuccess(result.user);
-        }).catch(handleError);
-    }
+    // Usar siempre signInWithPopup — es compatible con iOS cuando se llama
+    // directamente desde un evento click del usuario (sin capas async intermedias)
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(function(){
+        return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+    }).then(function(){
+        return firebase.auth().signInWithPopup(provider);
+    }).then(function(result){
+        console.log("Login OK:",result.user.email);
+        onLoginSuccess(result.user);
+    }).catch(handleError);
 }
 
 /* ═══ Login alternativo: email + contraseña ═══

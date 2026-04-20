@@ -2701,53 +2701,6 @@ function showLoginModal(sectionName){
         });
         return;
     }
-    /* ─── Fix iOS redirect: no abrir modal si hay sesión persistente ───
-       Tras signInWithRedirect en iOS, la página se recarga y currentUser
-       es null durante ~1-2s. Pero localStorage._active_uid persiste de
-       la sesión anterior (puesto por onAuthStateChanged en index.html).
-       Si existe, significa que Auth va a resolver un usuario en breve.
-       Esperamos hasta 3s; si onAuthStateChanged confirma user, no
-       mostramos modal. Si no lo confirma, lo mostramos. */
-    if(localStorage.getItem('_active_uid')){
-        console.log('[showLoginModal] Sesión persistente detectada, esperando Auth…');
-        var _waitAttempts = 0;
-        var _waitInterval = setInterval(function(){
-            _waitAttempts++;
-            var u = firebase.auth().currentUser;
-            if(u){
-                clearInterval(_waitInterval);
-                console.log('[showLoginModal] Auth resuelto:', u.email);
-                try{document.getElementById('scanLoginModal').style.display='none';}catch(e){}
-                loadModeradoresFromFirestore(function(){
-                    isAdminLoggedIn=isAdmin();
-                    apShowAdminTab(isAdminLoggedIn);
-                    updateModBadgeAll();
-                });
-                /* Abrir la sección que se intentó */
-                if(sectionName){
-                    var pageMap = {
-                        'Herramientas':'pageScanIA','Profesionales':'pageProfessionals',
-                        'Protocolos AP':'pageProtocolosAP','Protocolos Urgencias':'pageProtocolosUrgencias',
-                        'Enfermería':'pageEnfermeria','Docencia':'pageDocencia',
-                        'Teléfonos':'pageTelefonos'
-                    };
-                    var targetPage = pageMap[sectionName];
-                    if(targetPage) showPage(targetPage);
-                }
-                return;
-            }
-            if(_waitAttempts >= 15){ /* 15 * 200ms = 3 segundos max */
-                clearInterval(_waitInterval);
-                console.log('[showLoginModal] Auth no resolvió tras 3s, mostrando modal');
-                localStorage.removeItem('_active_uid'); /* Sesión caducada */
-                _showLoginModalUI(sectionName);
-            }
-        }, 200);
-        return;
-    }
-    _showLoginModalUI(sectionName);
-}
-function _showLoginModalUI(sectionName){
     // Actualizar título del modal con el nombre de la sección
     var icons = {
         'Herramientas':'🔬','Profesionales':'👤','Protocolos AP':'📋',
@@ -2764,8 +2717,7 @@ function _showLoginModalUI(sectionName){
     // Sin sesion — mostrar modal de Google login
     try{
         document.getElementById("scanLoginModal").style.display="flex";
-        var errReset=document.getElementById("scanLoginError");
-        if(errReset){errReset.style.display="none";errReset.innerHTML="";errReset.style.color="#dc2626";}
+        document.getElementById("scanLoginError").style.display="none";
         resetDisclaimerCheck();
     }catch(e){console.error(e);}
 }
