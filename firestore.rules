@@ -2,101 +2,180 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
-    function isAuth() { return request.auth != null; }
-    function isSuperAdmin() {
-      return isAuth() && request.auth.token.email in [
-        'ramongalera22@gmail.com','carlosgalera2roman@gmail.com','esther.montoro@gmail.com'
-      ];
+    // ══ Helpers ══════════════════════════════════════════════════════
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    // Admin via custom claim primary; hardcoded fallback para migración.
+    function isAdmin() {
+      return signedIn() && (
+        request.auth.token.admin == true
+        || request.auth.token.role == 'superadmin'
+        || request.auth.token.role == 'admin'
+        || request.auth.token.email == 'carlosgalera2roman@gmail.com'
+      );
+    }
+    function noDni(text) {
+      return text is string
+        && !text.matches('.*[0-9]{8}[A-HJ-NP-TV-Zа-я].*')
+        && !text.matches('.*[XYZ][0-9]{7}[A-HJ-NP-TV-Z].*');
+    }
+    function docSizeOk(data) {
+      // Firestore tiene límite de 1MB. 100KB es un sanity check.
+      return debug(data).size() <= 100;
     }
 
-    // Moderadores — read: authenticated, write: superadmin only
-    match /moderadores/{docId} {
-      allow read: if isAuth();
-      allow create, update, delete: if isSuperAdmin();
+    // ══ Usuarios ════════════════════════════════════════════════════
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid);
+      // Usuario NO puede modificar su propio campo `role`.
+      allow update: if isOwner(uid)
+        && !('role' in request.resource.data.diff(resource.data).affectedKeys());
+      allow delete: if isAdmin();
+
+      // Casos docentes: DNI/NIE bloqueado, iniciales <= 4.
+      match /cases/{cid} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow create: if isOwner(uid)
+          && request.resource.data.initials is string
+          && request.resource.data.initials.size() <= 4
+          && noDni(request.resource.data.get('notes', ''));
+        allow update: if isOwner(uid)
+          && noDni(request.resource.data.get('notes', ''));
+        allow delete: if isOwner(uid) || isAdmin();
+      }
+
+      // AI requests: lectura dueño/admin; escritura solo server (Cloud Function).
+      match /aiRequests/{rid} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow create, update, delete: if false;
+      }
+
+      // Quotas: lectura propia; escritura solo server.
+      match /quotas/{date} {
+        allow read: if isOwner(uid);
+        allow create, update, delete: if false;
+      }
+
+      // Progress: dueño lee/escribe.
+      match /progress/{pid} {
+        allow read, write: if isOwner(uid);
+      }
     }
 
-    // Propuestas — create: authenticated, moderate: admin/moderator, delete: superadmin
+    // ══ AI Cache ════════════════════════════════════════════════════
+    match /aiCache/{hash} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    // ══ Rate limit IP (solo server) ═════════════════════════════════
+    match /rate_limits_ip/{id} {
+      allow read, write: if false;
+    }
+    match /rate_limits/{id} {
+      allow read, write: if false;
+    }
+
+    // ══ Informes IA — cada usuario CRUD de los suyos ═══════════════
+    match /informes_ia/{docId} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow read, delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // ══ Per-user docs donde el docId == uid ════════════════════════
+    match /mis_plantillas/{docId} {
+      allow read, write: if signedIn() && docId == request.auth.uid;
+    }
+    match /mis_notebooks/{docId} {
+      allow read, write: if signedIn() && docId == request.auth.uid;
+    }
+    match /megacuaderno_backups/{docId} {
+      allow read, write: if signedIn() && docId == request.auth.uid;
+    }
+    match /plantillas_backup/{docId} {
+      allow read, write: if signedIn() && docId == request.auth.uid;
+    }
+
+    // ══ Scan uploads ═══════════════════════════════════════════════
+    match /scan_uploads/{docId} {
+      allow create: if signedIn();
+      allow read, update, delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // ══ Guardia pacientes (CRUD propio) ════════════════════════════
+    match /guardia_pacientes/{docId} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow read, update, delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // ══ Triajes (QR) ═══════════════════════════════════════════════
+    match /triajes/{docId} {
+      allow create: if signedIn();
+      // Read público (para que el paciente escanee QR sin login).
+      allow read: if true;
+      allow delete: if signedIn();
+      allow update: if isAdmin();
+    }
+
+    // ══ Sugerencias: crear cualquier auth, leer admin ══════════════
+    match /sugerencias/{docId} {
+      allow create: if signedIn();
+      allow read: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
     match /propuestas_contenido/{docId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update: if isAuth() && (isSuperAdmin() || 
-        exists(/databases/$(database)/documents/moderadores/$(request.auth.token.email)));
-      allow delete: if isSuperAdmin();
+      allow create: if signedIn();
+      allow read: if signedIn();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
-    // Documentos aprobados — read: authenticated, write: admin/mod
+    // ══ Documentos aprobados — todos leen, admin escribe ══════════
     match /documentos_aprobados/{docId} {
-      allow read: if isAuth();
-      allow write: if isAuth() && (isSuperAdmin() || 
-        exists(/databases/$(database)/documents/moderadores/$(request.auth.token.email)));
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
-    // Platform config — read: authenticated, write: superadmin
+    // ══ Moderadores/accesos (admin only) ═══════════════════════════
+    match /moderadores/{docId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /accesos_profesionales/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ══ Platform config / ai_audit_log (legacy) ═══════════════════
     match /platform_config/{docId} {
-      allow read: if isAuth();
-      allow write: if isSuperAdmin();
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /ai_audit_log/{docId} {
+      allow create: if signedIn();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+    match /config/{docId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
-    // AI Audit Log — create: authenticated, read: admin, no update/delete (immutable)
-    match /ai_audit_log/{docId} {
-      allow create: if isAuth();
-      allow read: if isSuperAdmin();
+    // ══ Métricas (solo server escribe, admin lee) ══════════════════
+    match /metrics_snapshots/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // ══ Audit log inmutable ════════════════════════════════════════
+    match /auditLogs/{id} {
+      allow read: if isAdmin();
+      allow create: if false; // solo server (trigger Cloud Function)
       allow update, delete: if false;
     }
 
-    // Config (legacy) — read: authenticated, write: superadmin
-    match /config/{docId} {
-      allow read: if isAuth();
-      allow write: if isSuperAdmin();
-    }
-
-    // Informes IA — each user can only CRUD their own reports
-    match /informes_ia/{docId} {
-      allow create: if isAuth() && request.resource.data.uid == request.auth.uid;
-      allow read, delete: if isAuth() && resource.data.uid == request.auth.uid;
-      allow update: if false;
-    }
-
-    // Per-user data — doc ID must match user's uid
-    match /mis_plantillas/{docId} {
-      allow read, write: if isAuth() && docId == request.auth.uid;
-    }
-    match /mis_notebooks/{docId} {
-      allow read, write: if isAuth() && docId == request.auth.uid;
-    }
-    match /megacuaderno_backups/{docId} {
-      allow read, write: if isAuth() && docId == request.auth.uid;
-    }
-
-    // Triajes QR — authenticated users can create, read own
-    match /triajes/{docId} {
-      allow create: if isAuth();
-      allow read: if true;
-      allow delete: if isAuth();
-      allow update: if false;
-    }
-
-    // Scan uploads — mobile image uploads per user
-    match /scan_uploads/{docId} {
-      allow create: if isAuth();
-      allow read: if isAuth() && resource.data.uid == request.auth.uid;
-      allow update: if isAuth() && resource.data.uid == request.auth.uid;
-      allow delete: if isAuth() && resource.data.uid == request.auth.uid;
-    }
-
-    // Guardia pacientes — each user can only CRUD their own patients
-    match /guardia_pacientes/{docId} {
-      allow create: if isAuth() && request.resource.data.uid == request.auth.uid;
-      allow read, update, delete: if isAuth() && resource.data.uid == request.auth.uid;
-    }
-
-    // Plantillas backup — per-user doc (docId = uid)
-    match /plantillas_backup/{docId} {
-      allow read, write: if isAuth() && docId == request.auth.uid;
-    }
-
-    // Default: deny all
+    // ══ DENY BY DEFAULT ════════════════════════════════════════════
     match /{document=**} {
       allow read, write: if false;
     }

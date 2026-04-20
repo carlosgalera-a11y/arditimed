@@ -14,9 +14,10 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "vitest run",
+    "test": "vitest run --exclude '**/firestore-rules.test.ts'",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --exclude '**/firestore-rules.test.ts'",
+    "test:rules": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 vitest run test/firestore-rules.test.ts",
     "lint": "eslint --ext .js,.ts ."
   },
   "dependencies": {
@@ -24,8 +25,10 @@
     "firebase-functions": "^6.1.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
     "@types/node": "^20.14.0",
     "@vitest/coverage-v8": "^2.1.0",
+    "firebase": "^10.13.0",
     "typescript": "^5.5.4",
     "vitest": "^2.1.0"
   },
