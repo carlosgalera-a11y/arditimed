@@ -11,10 +11,18 @@ import { checkIpRateLimit } from './rateLimit';
 import { buildProviderChain, tryProviderChain } from './routing';
 import { logAiCall, logSecurityEvent, estimateCostEur } from './logging';
 
+// Secretos OBLIGATORIOS — deploy falla si faltan.
 const DEEPSEEK_API_KEY = defineSecret('DEEPSEEK_API_KEY');
-const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
-const MISTRAL_API_KEY = defineSecret('MISTRAL_API_KEY');
-const QWEN_API_KEY = defineSecret('QWEN_API_KEY');
+const OPENROUTER_API_KEY = defineSecret('OPENROUTER_API_KEY');
+
+// Secretos OPCIONALES — si existen en Secret Manager, añadirlos aquí y a
+// `secrets: [...]` más abajo. El router los prefiere automáticamente sobre
+// OpenRouter. Útil para cumplir EU-residency estricta (Gemini EU, Mistral EU).
+//
+// Ejemplo de activación:
+//   const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
+//   ... en secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY, GEMINI_API_KEY]
+//   ... en buildProviderChain: secrets: { ..., geminiKey: GEMINI_API_KEY.value() }
 
 const VALID_TYPES: readonly AiType[] = ['clinical_case', 'educational', 'vision'] as const;
 
@@ -32,7 +40,7 @@ function extractIp(raw: unknown): string {
 export const askAi = onCall(
   {
     region: 'europe-west1',
-    secrets: [DEEPSEEK_API_KEY, GEMINI_API_KEY, MISTRAL_API_KEY, QWEN_API_KEY],
+    secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY],
     enforceAppCheck: true,
     minInstances: 1,
     maxInstances: 10,
@@ -129,10 +137,12 @@ export const askAi = onCall(
       imageBase64,
       modelOverride,
       secrets: {
-        geminiKey: GEMINI_API_KEY.value(),
         deepseekKey: DEEPSEEK_API_KEY.value(),
-        mistralKey: MISTRAL_API_KEY.value(),
-        qwenKey: QWEN_API_KEY.value(),
+        openrouterKey: OPENROUTER_API_KEY.value(),
+        // Directas opcionales (ver comentario arriba):
+        // geminiKey: GEMINI_API_KEY.value(),
+        // mistralKey: MISTRAL_API_KEY.value(),
+        // qwenKey: QWEN_API_KEY.value(),
       },
     });
 

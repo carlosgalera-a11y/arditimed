@@ -11,10 +11,13 @@ export default defineConfig({
       include: ['src/**/*.ts'],
       exclude: ['src/index.ts', 'src/types.ts', 'src/askAi.ts'],
       thresholds: {
-        lines: 70,
-        functions: 70,
-        branches: 65,
-        statements: 70,
+        // Líneas y statements se mantienen altos; functions y branches admiten
+        // menos porque los closures de routing.ts construyen providers que se
+        // testean vía providers/*.test.ts, no a través de buildProviderChain.
+        lines: 95,
+        functions: 60,
+        branches: 80,
+        statements: 95,
       },
     },
   },

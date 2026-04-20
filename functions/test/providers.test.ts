@@ -3,6 +3,7 @@ import { callGemini } from '../src/providers/gemini';
 import { callDeepSeek } from '../src/providers/deepseek';
 import { callMistral } from '../src/providers/mistral';
 import { callQwen } from '../src/providers/qwen';
+import { callOpenRouter } from '../src/providers/openrouter';
 
 const originalFetch = globalThis.fetch;
 
@@ -167,5 +168,84 @@ describe('callQwen', () => {
     expect(r.text).toBe('plain');
     const body = JSON.parse(fetchMock.mock.calls[0][1].body) as any;
     expect(typeof body.messages[0].content).toBe('string');
+  });
+});
+
+describe('callOpenRouter', () => {
+  it('parsea respuesta OpenAI-compatible con usage', async () => {
+    stubFetch({
+      ok: true,
+      body: {
+        choices: [{ message: { content: 'hola openrouter' } }],
+        usage: { prompt_tokens: 7, completion_tokens: 11 },
+      },
+    });
+    const r = await callOpenRouter({
+      apiKey: 'k',
+      model: 'google/gemini-2.5-flash-lite',
+      systemPrompt: 's',
+      userPrompt: 'u',
+    });
+    expect(r.text).toBe('hola openrouter');
+    expect(r.tokensIn).toBe(7);
+    expect(r.tokensOut).toBe(11);
+  });
+
+  it('incluye HTTP-Referer y X-Title para attribution', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ choices: [{ message: { content: 'ok' } }] }),
+      text: async () => '',
+    });
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    await callOpenRouter({
+      apiKey: 'k',
+      model: 'google/gemini-2.5-flash',
+      systemPrompt: '',
+      userPrompt: 'u',
+    });
+    const headers = fetchMock.mock.calls[0][1].headers as Record<string, string>;
+    expect(headers['HTTP-Referer']).toBe('https://area2cartagena.es');
+    expect(headers['X-Title']).toBe('Cartagenaeste');
+    expect(headers.Authorization).toBe('Bearer k');
+  });
+
+  it('envía content array con image_url cuando hay imagen', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ choices: [{ message: { content: 'vision ok' } }] }),
+      text: async () => '',
+    });
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    const r = await callOpenRouter({
+      apiKey: 'k',
+      model: 'qwen/qwen2.5-vl-72b-instruct',
+      systemPrompt: 's',
+      userPrompt: 'describe',
+      imageBase64: 'XYZ',
+    });
+    expect(r.text).toBe('vision ok');
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body) as any;
+    // messages[0] es system, messages[1] es user con array
+    expect(Array.isArray(body.messages[1].content)).toBe(true);
+    expect(body.messages[1].content[0].type).toBe('image_url');
+    expect(body.messages[1].content[0].image_url.url).toContain('base64,XYZ');
+    expect(body.messages[1].content[1].type).toBe('text');
+  });
+
+  it('lanza con status code cuando no OK', async () => {
+    stubFetch({ ok: false, status: 402, body: { error: 'payment required' } });
+    await expect(
+      callOpenRouter({ apiKey: 'k', model: 'x', systemPrompt: '', userPrompt: 'u' }),
+    ).rejects.toThrow(/openrouter 402/);
+  });
+
+  it('lanza si respuesta vacía', async () => {
+    stubFetch({ ok: true, body: { choices: [] } });
+    await expect(
+      callOpenRouter({ apiKey: 'k', model: 'x', systemPrompt: '', userPrompt: 'u' }),
+    ).rejects.toThrow(/vacía/);
   });
 });

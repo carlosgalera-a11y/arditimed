@@ -30,28 +30,38 @@ npm install
 
 Todas las claves IA viven en Google Secret Manager, **nunca** en el repo ni en `.env` desplegado. Se cargan en Cloud Function en tiempo de ejecución vía `defineSecret()`.
 
-### 2.1 Crear/rotar cada secreto
+### 2.1 Secretos mínimos para deploy (obligatorios)
+
+Con solo estos 2, `askAi` funciona para los 3 tipos (clinical_case / educational / vision). OpenRouter enruta Gemini, Mistral y Qwen.
 
 ```bash
 # Cada comando abre un prompt interactivo; pega el valor cuando lo pida.
 # NUNCA pegues la key como argumento de línea de comandos (queda en shell history).
 
 firebase functions:secrets:set DEEPSEEK_API_KEY
-firebase functions:secrets:set GEMINI_API_KEY
-firebase functions:secrets:set MISTRAL_API_KEY
-firebase functions:secrets:set QWEN_API_KEY
+firebase functions:secrets:set OPENROUTER_API_KEY
 ```
 
-### 2.2 Verificar que existen (sin ver el valor entero)
+### 2.2 Secretos opcionales (direct keys — prioridad sobre OpenRouter)
+
+Añadir solo si quieres cumplir EU-residency estricta (clinical_case nunca sale de la UE) o bajar coste:
+
+```bash
+firebase functions:secrets:set GEMINI_API_KEY   # Google AI Studio
+firebase functions:secrets:set MISTRAL_API_KEY  # Mistral EU
+firebase functions:secrets:set QWEN_API_KEY     # DashScope
+```
+
+Tras añadir cualquiera, activarla en `functions/src/askAi.ts` descomentando su `defineSecret` y añadiéndola al array `secrets: [...]`, y descomentando la línea correspondiente en `buildProviderChain`. Redeploy.
+
+### 2.3 Verificar que existen (sin ver el valor entero)
 
 ```bash
 firebase functions:secrets:access DEEPSEEK_API_KEY | head -c 10 ; echo "..."
-firebase functions:secrets:access GEMINI_API_KEY | head -c 10 ; echo "..."
-firebase functions:secrets:access MISTRAL_API_KEY | head -c 10 ; echo "..."
-firebase functions:secrets:access QWEN_API_KEY | head -c 10 ; echo "..."
+firebase functions:secrets:access OPENROUTER_API_KEY | head -c 10 ; echo "..."
 ```
 
-### 2.3 Rotación
+### 2.4 Rotación
 
 ```bash
 # Al revocar una key en el provider, generar la nueva y:
@@ -60,14 +70,15 @@ firebase functions:secrets:set DEEPSEEK_API_KEY
 firebase deploy --only functions:askAi
 ```
 
-### 2.4 Inventario de secretos activos
+### 2.5 Inventario de secretos
 
-| Secret name | Provider | Consola |
-|---|---|---|
-| `DEEPSEEK_API_KEY` | DeepSeek | https://platform.deepseek.com/api_keys |
-| `GEMINI_API_KEY` | Google AI Studio (Gemini) | https://aistudio.google.com/apikey |
-| `MISTRAL_API_KEY` | Mistral EU | https://console.mistral.ai/api-keys/ |
-| `QWEN_API_KEY` | DashScope (Alibaba Cloud) | https://dashscope.console.aliyun.com/apiKey |
+| Secret name | Estado | Provider | Consola |
+|---|---|---|---|
+| `DEEPSEEK_API_KEY` | **Obligatorio** | DeepSeek | https://platform.deepseek.com/api_keys |
+| `OPENROUTER_API_KEY` | **Obligatorio** | OpenRouter | https://openrouter.ai/keys |
+| `GEMINI_API_KEY` | Opcional (EU-strict) | Google AI Studio | https://aistudio.google.com/apikey |
+| `MISTRAL_API_KEY` | Opcional (EU-strict) | Mistral EU | https://console.mistral.ai/api-keys/ |
+| `QWEN_API_KEY` | Opcional (ahorro) | DashScope | https://dashscope.console.aliyun.com/apiKey |
 
 ---
 
