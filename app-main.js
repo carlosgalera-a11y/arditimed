@@ -1960,7 +1960,7 @@ async function scanAnalyze(){
                     res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
                     var orH={"Content-Type":"application/json","HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"};
                     if(orKey)orH["Authorization"]="Bearer "+orKey;
-                    var r2=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+                    var r2=await fetch("about:disabled-openrouter",{
                         method:"POST",
                         headers:orH,
                         body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}],max_tokens:2000,temperature:0.3})
@@ -2630,7 +2630,7 @@ function tradCallOpenRouterTranslate(text,srcLang,tgtLang){
     var models=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free'];
     function tryModel(idx){
         if(idx>=models.length) return Promise.reject('all failed');
-        return fetch('https://openrouter.ai/api/v1/chat/completions',{
+        return fetch('about:disabled-openrouter',{
             method:'POST',
             headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Traductor Area II'},
             body:JSON.stringify({model:models[idx],messages:[

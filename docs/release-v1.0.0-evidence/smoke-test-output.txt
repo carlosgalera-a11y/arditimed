@@ -1,0 +1,57 @@
+══════════════════════════════════════════════════
+🏥 Smoke Tests · Cartagenaeste · https://area2cartagena.es
+   2026-04-21 01:20:02
+══════════════════════════════════════════════════
+
+── 1. Carga básica ──
+[32m✓ /[0m
+[32m✓ /notebook-local.html[0m
+[32m✓ /chatbot-medicacion.html[0m
+[32m✓ /status.html[0m
+[32m✓ /privacidad.html[0m
+[32m✓ /offline.html[0m
+[32m✓ /manifest.json[0m
+[32m✓ /sw.js[0m
+[32m✓ /ai-client.js[0m
+[32m✓ /errorMessages.js[0m
+
+── 2. Manifest PWA ──
+[32m✓ manifest.json JSON válido[0m
+
+── 3. Claves API en frontend ──
+[32m✓ Patrón 'sk-[a-f0-9]\{32\}' ausente[0m
+[32m✓ Patrón 'sk-or-v1-[a-f0-9]\{20,\}' ausente[0m
+[32m✓ Patrón 'gsk_[a-zA-Z0-9]\{20,\}' ausente[0m
+[32m✓ Patrón 'fh_[a-zA-Z0-9]\{10,\}' ausente[0m
+
+── 4. URLs directas IA ──
+[32m✓ Sin api.groq.com[0m
+[32m✓ Sin api.deepseek.com[0m
+[32m✓ Sin api.mistral.ai[0m
+[31m✗ 2 refs a openrouter.ai/api[0m
+[32m✓ Sin pollinations.ai[0m
+[32m✓ Sin dashscope-intl.aliyuncs[0m
+
+── 5. IP interna ──
+[32m✓ Sin IPs internas[0m
+
+── 6. Service Worker ──
+[32m✓ sw.js v74+[0m
+[32m✓ skipWaiting presente[0m
+
+── 7. Security headers ──
+[32m✓ HSTS[0m
+[32m✓ nosniff[0m
+[32m✓ Permissions-Policy[0m
+[32m✓ CSP[0m
+
+── 8. publicMetrics ──
+[33m⚠ publicMetrics HTTP 404 (¿función no desplegada?)[0m
+
+── 9. Metadatos ──
+[32m✓ Title limpio[0m
+[32m✓ Copy 'IA docente'[0m
+
+══════════════════════════════════════════════════
+📊 Resultados: 29/31 ok, 1 fail, 1 warn
+[31m❌ HAY FALLOS[0m
