@@ -976,7 +976,7 @@ async function llamarIA(up,sp){
   try { aiRateLimiter.check(); } catch(e) { return e.message; }
   /* ═══ Fallback chain: DeepSeek API → Pollinations → OpenRouter ═══ */
   var OR_KEY=_dk();
-  var NAS_URL=localStorage.getItem('api_proxy_url')||'http://REDACTED_INTERNAL_IP:3100';
+  var NAS_URL=localStorage.getItem('api_proxy_url')||'';
   
   function _xd(c){return c.split(',').map(function(n){return String.fromCharCode(parseInt(n)^42)}).join('');}
   var DS_KEY=_xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');

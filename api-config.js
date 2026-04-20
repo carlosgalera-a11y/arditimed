@@ -5,9 +5,10 @@
 // ══════════════════════════════════════════════════════════════════════
 
 var API_CONFIG = {
-  // NAS proxy (UGREEN DXP2800) — rutas todas las peticiones IA por aquí
+  // NAS proxy (solo uso local offline). URL se lee de localStorage para no
+  // exponer IPs internas en el código público. Vacío = deshabilitado.
   nasProxy: {
-    base: 'http://REDACTED_INTERNAL_IP:3100',
+    base: (typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'',
     deepseek: '/api/deepseek',
     openrouter: '/api/openrouter',
     anthropic: '/api/anthropic',

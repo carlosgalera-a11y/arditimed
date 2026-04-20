@@ -34,7 +34,7 @@ var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','qwen/qwen3.5-flash','q
 
 async function enfCallOR(prompt,sysPrompt,idx){
   idx=idx||0;
-  var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
+  var NAS_URL=(typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'';
   var DS_KEY=_xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19'); // ⚠️ KEY REMOVED — routed through NAS proxy. See api-config.js;
   var msgs=[{role:'system',content:sysPrompt},{role:'user',content:prompt}];
   // Try NAS first (keys hidden) — only on HTTP to avoid mixed content
@@ -868,7 +868,7 @@ async function trIASend(){
 
     // Try OpenRouter models in sequence
     async function trIATryModel(idx) {
-        var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
+        var NAS_URL=(typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'';
   var DS_KEY=_xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19'); // ⚠️ KEY REMOVED — routed through NAS proxy. See api-config.js;
         // Try NAS FIRST (keys hidden) — only on HTTP
         if (idx === 0 && location.protocol!=='https:') {

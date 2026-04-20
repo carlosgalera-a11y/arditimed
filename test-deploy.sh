@@ -53,14 +53,11 @@ done
 # ── 6. API Keys NO expuestas en texto claro ──
 echo ""
 echo "── Seguridad: API Keys ──"
-# Verificar que no hay keys de DeepSeek en claro
-DS_KEYS=$(echo "$HTML" | grep -c "REDACTED_DEEPSEEK_OLD_2026-04")
-if [ "$DS_KEYS" = "0" ]; then green "DeepSeek key NO expuesta en index.html"; else red "DeepSeek key EXPUESTA en index.html ($DS_KEYS ocurrencias)"; fi
-
-# Verificar app-modules.js
+# Patrones genéricos de claves expuestas (no hardcodeamos la clave aquí)
 MODULES=$(curl -s "$BASE_URL/app-modules.js")
-DS_MOD=$(echo "$MODULES" | grep -c "REDACTED_DEEPSEEK_OLD_2026-04")
-if [ "$DS_MOD" = "0" ]; then green "DeepSeek key NO expuesta en app-modules.js"; else red "DeepSeek key EXPUESTA en app-modules.js ($DS_MOD ocurrencias)"; fi
+if echo "$HTML"    | grep -qE 'sk-[a-f0-9]{32}'; then red "Posible clave sk- expuesta en index.html"; else green "Sin claves sk- en index.html"; fi
+if echo "$MODULES" | grep -qE 'sk-[a-f0-9]{32}'; then red "Posible clave sk- expuesta en app-modules.js"; else green "Sin claves sk- en app-modules.js"; fi
+if echo "$HTML"    | grep -qE '192\.168\.[0-9]+\.[0-9]+'; then red "IP privada expuesta en index.html"; else green "Sin IPs privadas en index.html"; fi
 
 # ── 7. Fármacos de Urgencia ──
 echo ""
@@ -86,17 +83,20 @@ for pdf in "tripticos/triptico-fibrilacion-auricular.pdf" "recursos-sociales-gra
   if [ "$HTTP" = "200" ]; then green "$pdf OK"; else yellow "$pdf no accesible (HTTP $HTTP)"; fi
 done
 
-# ── 11. API endpoints (solo si NAS accesible) ──
+# ── 11. API endpoints (solo si LOCAL_AI_PROXY está definido) ──
 echo ""
-echo "── API/NAS (solo red local) ──"
-NAS_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 3 "http://REDACTED_INTERNAL_IP:3100/health" 2>/dev/null)
-if [ "$NAS_HTTP" = "200" ]; then
-  green "NAS proxy accesible"
-  # Test AI endpoint
-  AI_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 -X POST "http://REDACTED_INTERNAL_IP:3100/ai/chat" -H "Content-Type: application/json" -d '{"messages":[{"role":"user","content":"test"}],"max_tokens":5}' 2>/dev/null)
-  if [ "$AI_HTTP" = "200" ]; then green "NAS AI endpoint responde"; else yellow "NAS AI endpoint: HTTP $AI_HTTP"; fi
+echo "── API proxy local (opcional) ──"
+if [ -n "$LOCAL_AI_PROXY" ]; then
+  NAS_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 3 "$LOCAL_AI_PROXY/health" 2>/dev/null)
+  if [ "$NAS_HTTP" = "200" ]; then
+    green "Proxy local accesible"
+    AI_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 -X POST "$LOCAL_AI_PROXY/ai/chat" -H "Content-Type: application/json" -d '{"messages":[{"role":"user","content":"test"}],"max_tokens":5}' 2>/dev/null)
+    if [ "$AI_HTTP" = "200" ]; then green "Proxy AI endpoint responde"; else yellow "Proxy AI endpoint: HTTP $AI_HTTP"; fi
+  else
+    yellow "Proxy local no accesible"
+  fi
 else
-  yellow "NAS no accesible (no estás en red local)"
+  yellow "LOCAL_AI_PROXY no definido — test omitido (producción usa Cloud Function)"
 fi
 
 # ── Resumen ──

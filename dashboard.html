@@ -83,7 +83,7 @@ a{color:var(--accent2);text-decoration:none}
   </div>
   <div class="nas-status" id="nasStatus">
     <div class="indicator" style="background:var(--muted)"></div>
-    <span>Comprobando NAS (REDACTED_INTERNAL_IP:3100)...</span>
+    <span>Comprobando proxy local...</span>
   </div>
   <div class="grid-2">
     <div class="card">
@@ -155,7 +155,7 @@ var firebaseConfig={apiKey:"AIzaSyCnCPbSM8vMOBh0QLxquGhG_K6iFCPctPU",authDomain:
 var db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();}catch(e){}
 
-var NAS_URL='http://REDACTED_INTERNAL_IP:3100';
+var NAS_URL=(typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'';
 
 async function checkNAS(){
   var badge=document.getElementById('nasBadge'),st=document.getElementById('nasStatus');
