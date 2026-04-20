@@ -26,48 +26,24 @@ function switchEnfTab(id,btn){
   btn.classList.add('active');
 }
 
-function enfGetKey(){
-  return _dk();
-}
+function enfGetKey(){ return ''; } // deprecated, conservado para callers legacy
+var ENF_OR_MODELS = []; // deprecated, mantenido para compatibilidad
 
-var ENF_OR_MODELS=['deepseek/deepseek-chat-v3-0324:free','qwen/qwen3.5-flash','qwen/qwen3.5-9b','qwen/qwen3.6-plus:free'];
-
-async function enfCallOR(prompt,sysPrompt,idx){
-  idx=idx||0;
-  var NAS_URL=(typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'';
-  var DS_KEY=_xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19'); // ⚠️ KEY REMOVED — routed through NAS proxy. See api-config.js;
-  var msgs=[{role:'system',content:sysPrompt},{role:'user',content:prompt}];
-  // Try NAS first (keys hidden) — only on HTTP to avoid mixed content
-  if(idx===0 && location.protocol!=='https:'){
-    try{
-      var rn=await fetch(NAS_URL+'/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,max_tokens:2000,temperature:0.3})});
-      if(rn.ok){var dn=await rn.json();var na=(dn.choices&&dn.choices[0]&&dn.choices[0].message)?dn.choices[0].message.content:null;if(na)return na;}
-    }catch(e){}
-  }
-  // Try DeepSeek direct (5M free tokens, no rate limit)
-  if(idx<=1){
-    try{
-      var rd=await fetch('https://api.deepseek.com/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},body:JSON.stringify({model:'deepseek-chat',messages:msgs,max_tokens:2000,temperature:0.3})});
-      if(rd.ok){var dd=await rd.json();var da=(dd.choices&&dd.choices[0]&&dd.choices[0].message)?dd.choices[0].message.content:null;if(da)return da;}
-    }catch(e){}
-  }
-  // Try Pollinations (no rate limit)
-  if(idx<=1){
-    try{
-      var rp=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai-large',messages:msgs,seed:Math.floor(Math.random()*9999),private:true})});
-      if(rp.ok){var dp=await rp.json();var pa=(dp.choices&&dp.choices[0]&&dp.choices[0].message)?dp.choices[0].message.content:null;if(pa)return pa;}
-    }catch(e){}
-  }
-  // Then try OpenRouter models
-  var orIdx=(idx===0)?0:idx-1;
-  if(orIdx>=ENF_OR_MODELS.length) return null;
+// Enfermería: todas las llamadas IA pasan por la Cloud Function askAi.
+// El fallback chain (provider → provider) se hace server-side.
+async function enfCallOR(prompt, sysPrompt, _idx){
+  if(typeof window.askAi !== 'function') return null;
   try{
-    var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+enfGetKey(),'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Enfermeria Area II Cartagena'},body:JSON.stringify({model:ENF_OR_MODELS[orIdx],messages:msgs,max_tokens:2000,temperature:0.3})});
-    if(r.status===429||r.status===502||r.status===503||r.status===402)return enfCallOR(prompt,sysPrompt,idx+1);
-    if(!r.ok)return enfCallOR(prompt,sysPrompt,idx+1);
-    var d=await r.json();var ans=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
-    return ans||enfCallOR(prompt,sysPrompt,idx+1);
-  }catch(e){return enfCallOR(prompt,sysPrompt,idx+1);}
+    var res = await window.askAi({
+      type: 'educational',
+      prompt: prompt,
+      systemPrompt: sysPrompt || 'Eres un experto en enfermería clínica española.',
+    });
+    return (res && res.text) || null;
+  }catch(e){
+    console.warn('[enfCallOR] askAi error:', e.code || e.message);
+    return null;
+  }
 }
 
 async function enfCallAI(prompt,resultDiv,titleDiv,titleText){
@@ -151,9 +127,13 @@ document.addEventListener('keydown',function(e){
 });
 
 // ═══ FILEHUB CONFIG ═══
-var FH_GROQ_KEY=['Z3NrX0dU','VHFmVFhwQzV','IR3lNSFRr','RzByV0dkeW','IzRllPSHNnVVRB','OE5ZalVWVDROOVd5ak1NeFQ='].join('');FH_GROQ_KEY=atob(FH_GROQ_KEY);
-var FH_GROQ_MODEL='deepseek/deepseek-chat-v3-0324:free';
-var FH_BLOG_WP={url:'https://cartagenaeste.es',apiKey:'REDACTED_FH_WP_2026-04'};
+// ⚠ DEPRECATED: claves hardcodeadas retiradas tras auditoría S1.2.
+// FH_GROQ_KEY (Groq) y FH_BLOG_WP.apiKey (FileHub token) deben rotarse.
+// La integración con blog WP queda deshabilitada hasta implementar proxy
+// server-side. El chat FileHub (fhSendMsg) usa askAi.
+var FH_GROQ_KEY='';
+var FH_GROQ_MODEL='deepseek-chat-v3';
+var FH_BLOG_WP={url:'https://cartagenaeste.es',apiKey:''};
 
 // ═══ NOTEBOOK IA ═══
 var fhFiles=[];
@@ -232,12 +212,15 @@ async function fhSendMsg(){
     var sysPrompt='Eres un asistente de cuaderno digital inteligente integrado en FILEHUB. Ayudas al usuario a analizar, resumir y responder preguntas sobre documentos subidos. Responde SIEMPRE en español. Sé conciso pero completo. Usa markdown (negritas, listas). Si hay documentos, cita información relevante.'+filesCtx;
     var chatHist=fhMessages.slice(-10).map(function(m){return{role:m.role,content:m.content}});
     var apiMsgs=[{role:'system',content:sysPrompt}].concat(chatHist);
-    var res=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+FH_GROQ_KEY,'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Area II Cartagena'},body:JSON.stringify({model:FH_GROQ_MODEL,messages:apiMsgs,max_tokens:4096,temperature:0.7})});
-    if(!res.ok)throw new Error('API error: '+res.status);
-    var data=await res.json();
-    var reply=data.choices[0]?.message?.content||'Sin respuesta';
-    fhAddMessage('assistant',reply);
-  }catch(err){fhAddMessage('assistant','❌ Error: '+err.message);}
+    if(typeof window.askAi!=='function'){ throw new Error('Cliente IA no cargado'); }
+    // apiMsgs[0] es system, resto es historial. Coger el último user.
+    var lastUserMsg='';
+    for(var li=apiMsgs.length-1;li>=0;li--){
+      if(apiMsgs[li].role==='user'){ lastUserMsg=apiMsgs[li].content; break; }
+    }
+    var r=await window.askAi({type:'educational',prompt:lastUserMsg,systemPrompt:sysPrompt});
+    fhAddMessage('assistant',(r&&r.text)||'Sin respuesta');
+  }catch(err){fhAddMessage('assistant','❌ Error: '+(err.userMessage||err.message));}
   finally{fhIsLoading=false;fhRenderMessages();document.getElementById('fh-nb-send').disabled=false;}
 }
 
@@ -325,13 +308,13 @@ function fhBlogRenderFiles(){
 async function fhBlogGeneratePost(text,imgUrls){
   var imgCtx='';
   if(imgUrls&&imgUrls.length>0)imgCtx='\n\nImagenes: '+imgUrls.map(function(u,i){return(i+1)+'. '+u}).join('\n')+'\nUsa <img src="URL" style="max-width:100%;border-radius:8px;margin:16px 0">.';
-  var res=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+FH_GROQ_KEY,'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Area II Cartagena'},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4000,temperature:0.7,messages:[
-    {role:'system',content:'Editor blog cartagenaeste.es. Responde SOLO JSON: {"title":"","content":"<p>HTML</p>","excerpt":"","tags":[],"category_suggestion":""}. Si hay documentos adjuntos, incluye al final del HTML una seccion con enlaces de descarga usando: <div style="background:#f0f9ff;padding:16px;border-radius:12px;margin-top:24px"><h3>📎 Documentos adjuntos</h3><ul><li><a href="URL" target="_blank">NOMBRE</a></li></ul></div>'},
-    {role:'user',content:'Genera entrada completa. HTML limpio, tono local Cartagena.'+imgCtx+'\n\nContenido:\n'+text}
-  ]})});
-  if(!res.ok)throw new Error('Groq error: '+res.status);
-  var data=await res.json();
-  var t=(data.choices?.[0]?.message?.content||'').replace(/```json?\n?/g,'').replace(/```/g,'').trim();
+  if(typeof window.askAi!=='function') throw new Error('Cliente IA no cargado');
+  var res=await window.askAi({
+    type:'educational',
+    systemPrompt:'Editor blog cartagenaeste.es. Responde SOLO JSON: {"title":"","content":"<p>HTML</p>","excerpt":"","tags":[],"category_suggestion":""}. Si hay documentos adjuntos, incluye al final del HTML una seccion con enlaces de descarga usando: <div style="background:#f0f9ff;padding:16px;border-radius:12px;margin-top:24px"><h3>📎 Documentos adjuntos</h3><ul><li><a href="URL" target="_blank">NOMBRE</a></li></ul></div>',
+    prompt:'Genera entrada completa. HTML limpio, tono local Cartagena.'+imgCtx+'\n\nContenido:\n'+text,
+  });
+  var t=(res&&res.text||'').replace(/```json?\n?/g,'').replace(/```/g,'').trim();
   var m=t.match(/\{[\s\S]*\}/);
   if(!m)throw new Error('IA no devolvió JSON');
   return JSON.parse(m[0]);
@@ -866,74 +849,24 @@ async function trIASend(){
 
     var messages=[{role:'system',content:sysPrompt}].concat(trIAHistory.slice(-10));
 
-    // Try OpenRouter models in sequence
-    async function trIATryModel(idx) {
-        var NAS_URL=(typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'';
-  var DS_KEY=_xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19'); // ⚠️ KEY REMOVED — routed through NAS proxy. See api-config.js;
-        // Try NAS FIRST (keys hidden) — only on HTTP
-        if (idx === 0 && location.protocol!=='https:') {
-            try {
-                var rn = await fetch(NAS_URL+'/ai/chat', {
-                    method:'POST',headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({messages:messages,max_tokens:500,temperature:0.3})
-                });
-                if (rn.ok) {
-                    var dn = await rn.json();
-                    var na = (dn.choices && dn.choices[0] && dn.choices[0].message) ? dn.choices[0].message.content : null;
-                    if (na) return na;
-                }
-            } catch(e) { /* fall through */ }
+    // Triaje via askAi (fallback chain server-side). Último mensaje del histórico = prompt user.
+    async function trIATryModel() {
+        if(typeof window.askAi !== 'function') return null;
+        var lastUser = '';
+        for (var i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].role === 'user') { lastUser = messages[i].content; break; }
         }
-        // Try DeepSeek direct (5M free tokens, no rate limit)
-        if (idx <= 1 && DS_KEY) {
-            try {
-                var rd = await fetch('https://api.deepseek.com/chat/completions', {
-                    method:'POST',
-                    headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
-                    body:JSON.stringify({model:'deepseek-chat',messages:messages,max_tokens:500,temperature:0.3})
-                });
-                if (rd.ok) {
-                    var dd = await rd.json();
-                    var da = (dd.choices && dd.choices[0] && dd.choices[0].message) ? dd.choices[0].message.content : null;
-                    if (da) return da;
-                }
-            } catch(e) { /* fall through */ }
-        }
-        // Try Pollinations (no rate limit)
-        if (idx <= 1) {
-            try {
-                var rp = await fetch('https://text.pollinations.ai/openai', {
-                    method:'POST',
-                    headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({model:'openai-large',messages:messages,seed:Math.floor(Math.random()*9999),private:true})
-                });
-                if (rp.ok) {
-                    var dp = await rp.json();
-                    var pa = (dp.choices && dp.choices[0] && dp.choices[0].message) ? dp.choices[0].message.content : null;
-                    if (pa) return pa;
-                }
-            } catch(e) { /* fall through to OpenRouter */ }
-        }
-        // Then OpenRouter models
-        var orIdx = (idx === 0) ? 0 : idx - 1;
-        if (orIdx >= trIAModels.length) return null;
-        try {
-            var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                    'Authorization':'Bearer ' + trIAKey,
-                    'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/',
-                    'X-Title':'Autotriaje Area II Cartagena'
-                },
-                body:JSON.stringify({model:trIAModels[orIdx],messages:messages,max_tokens:500,temperature:0.3})
+        try{
+            var res = await window.askAi({
+                type: 'educational',
+                prompt: lastUser || (messages[messages.length-1] && messages[messages.length-1].content) || '',
+                systemPrompt: sysPrompt,
             });
-            if (r.status === 429 || r.status === 502 || r.status === 503 || r.status === 402) return trIATryModel(idx+1);
-            if (!r.ok) return trIATryModel(idx+1);
-            var d = await r.json();
-            var ans = (d.choices && d.choices[0] && d.choices[0].message) ? d.choices[0].message.content : null;
-            return ans || trIATryModel(idx+1);
-        } catch(e) { return trIATryModel(idx+1); }
+            return (res && res.text) || null;
+        }catch(e){
+            console.warn('[trIATryModel] askAi error:', e.code || e.message);
+            return null;
+        }
     }
 
     try{

@@ -98,6 +98,12 @@ main{max-width:860px;margin:0 auto;padding:24px 16px 60px}
 footer{padding:32px 24px;border-top:1px solid #e2e8f0;background:var(--card);text-align:center;margin-top:40px}
 footer p{font-size:.72rem;color:var(--slate)}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
 </head>
 <body>
 <div class="header">
@@ -352,8 +358,7 @@ async function sendVoiceText(){
 
     var key='';
     try{var cfg=JSON.parse(localStorage.getItem('notebook_ai_cfg_v3')||'{}');key=cfg.groqKey||'';}catch(e){}
-    if(!key){try{key=EMBEDDED_GROQ_KEY||'';}catch(e){}}
-    if(!key){voiceAddMsg('bot','⚠️ Configura tu API Key de Groq en <b>Profesionales → Config</b> de la app principal.');return;}
+    if(typeof window.askAi!=='function'){voiceAddMsg('bot','⚠️ Cliente IA no cargado. Recarga la página.');return;}
 
     voiceAddMsg('bot','<span style="color:#94a3b8;">Analizando...</span>');
 
@@ -362,13 +367,11 @@ async function sendVoiceText(){
         'Eres un asistente de FarmaCribado del Área II Cartagena. Determina si el paciente: (a) puede ser tratado en FARMACIA, (b) necesita TELECONSULTA, o (c) debe ir a URGENCIAS. Haz preguntas cortas. Identifica sistema afectado. Busca signos de alarma. Tras 3-5 preguntas da resultado con formato: 💊 NIVEL: [farmacia/teleconsulta/urgencias]. Responde en el idioma del paciente. Máx 80 palabras.';
 
     try{
-        var msgs=[{role:'system',content:sysPrompt}].concat(voiceHistory.slice(-10));
-        var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-            method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-            body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,max_tokens:300,temperature:0.3})
-        });
-        var data=await r.json();
-        var answer=data.choices[0].message.content;
+        var lastUser='';for(var i=voiceHistory.length-1;i>=0;i--){if(voiceHistory[i].role==='user'){lastUser=voiceHistory[i].content;break;}}
+        var ctx=voiceHistory.slice(-10).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content}).join('\n---\n');
+        var fullSys=sysPrompt+(ctx?'\n\nContexto previo:\n'+ctx:'');
+        var res=await window.askAi({type:'educational',prompt:lastUser,systemPrompt:fullSys});
+        var answer=(res&&res.text)||'Sin respuesta';
         // Remove the "analyzing" message
         var chat=document.getElementById('voiceChat');
         if(chat.lastChild)chat.removeChild(chat.lastChild);

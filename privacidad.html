@@ -59,13 +59,15 @@ li{margin-bottom:6px}
 </ul>
 
 <h2>5. Herramientas de IA</h2>
-<p>La sección de Herramientas IA utiliza la API de Groq (Llama 4 Scout) para análisis docente de imágenes médicas. Las imágenes se envían temporalmente a la API para procesamiento y no se almacenan permanentemente. Esta funcionalidad tiene <strong>finalidad exclusivamente docente</strong> y no debe usarse para diagnóstico clínico real.</p>
+<p>La sección de Herramientas IA enruta todas las peticiones a través de una Cloud Function propia (Google Firebase Functions, región <code>europe-west1</code>) que actúa como intermediario seguro frente a modelos de lenguaje de terceros (Google Gemini, DeepSeek, OpenRouter, Mistral, Qwen). Las imágenes y textos se envían temporalmente para procesamiento, no se almacenan permanentemente en los proveedores, y los registros de auditoría (metadatos, sin texto de prompt ni de respuesta) permanecen en Firestore asociados a tu cuenta. Esta funcionalidad tiene <strong>finalidad exclusivamente docente</strong> y no debe usarse para diagnóstico clínico real.</p>
 
 <h2>6. Servicios de terceros</h2>
 <ul>
-<li><strong>Google Firebase</strong> (autenticación y base de datos) — <a href="https://firebase.google.com/support/privacy" target="_blank">Política de privacidad de Firebase</a></li>
+<li><strong>Google Firebase</strong> (autenticación, Firestore, Storage, Cloud Functions) — <a href="https://firebase.google.com/support/privacy" target="_blank">Política de privacidad de Firebase</a></li>
 <li><strong>Google Sign-In</strong> (inicio de sesión) — <a href="https://policies.google.com/privacy" target="_blank">Política de privacidad de Google</a></li>
-<li><strong>Groq API</strong> (análisis de imágenes IA) — <a href="https://groq.com/privacy-policy/" target="_blank">Política de privacidad de Groq</a></li>
+<li><strong>Google Gemini</strong> (modelos IA, vía Google AI Studio u OpenRouter) — <a href="https://ai.google.dev/gemini-api/terms" target="_blank">Términos de Gemini API</a></li>
+<li><strong>DeepSeek</strong> (modelos de texto IA) — <a href="https://platform.deepseek.com/downloads/DeepSeek%20Privacy%20Policy.pdf" target="_blank">Política de privacidad de DeepSeek</a></li>
+<li><strong>OpenRouter</strong> (enrutador IA multi-proveedor) — <a href="https://openrouter.ai/privacy" target="_blank">Política de privacidad de OpenRouter</a></li>
 <li><strong>GitHub Pages</strong> (alojamiento web) — <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">Política de privacidad de GitHub</a></li>
 </ul>
 
