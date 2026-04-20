@@ -49,6 +49,12 @@ textarea::placeholder{color:var(--t3)}
 .shortcut{position:fixed;bottom:16px;right:16px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:8px 14px;font-size:.7rem;color:var(--t3);display:flex;align-items:center;gap:4px}
 .shortcut kbd{background:var(--s3);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:.68rem;color:var(--t2)}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
 </head>
 <body>
 <div class="nav"><a href="index.html">← Inicio</a><h1>✏️ Corrector Clínico IA</h1></div>
@@ -136,38 +142,22 @@ function doCorrect(){
   var sys=PROMPTS[mode];
   var usr=input;
   
-  // Try DeepSeek via OpenRouter
-  fetch('https://openrouter.ai/api/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'deepseek/deepseek-chat-v3-0324:free',
-      messages:[{role:'system',content:sys},{role:'user',content:usr}],
-      max_tokens:1500,
-      temperature:0.1
-    })
-  }).then(function(r){
-    if(!r.ok)throw new Error('API '+r.status);
-    return r.json();
-  }).then(function(d){
-    var text=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
-    if(!text)throw new Error('Empty response');
-    showResult(input,text);
-  }).catch(function(err){
-    // Fallback: Pollinations
-    fetch('https://text.pollinations.ai/openai',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'openai',messages:[{role:'system',content:sys},{role:'user',content:usr}],max_tokens:1500,temperature:0.1})
-    }).then(function(r){return r.json();}).then(function(d){
-      var text=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';
-      if(!text)throw new Error('No response');
+  // Corrección vía Cloud Function askAi (type=educational).
+  if(typeof window.askAi!=='function'){
+    outEl.innerHTML='<span style="color:var(--red)">❌ Cliente IA no cargado. Recarga la página.</span>';
+    document.getElementById('btnFix').disabled=false;
+    return;
+  }
+  window.askAi({type:'educational',prompt:usr,systemPrompt:sys})
+    .then(function(res){
+      var text=(res&&res.text)||'';
+      if(!text)throw new Error('Respuesta vacía');
       showResult(input,text);
-    }).catch(function(e2){
-      outEl.innerHTML='<span style="color:var(--red)">❌ Error: '+err.message+'. Intenta de nuevo.</span>';
+    })
+    .catch(function(err){
+      outEl.innerHTML='<span style="color:var(--red)">❌ '+(err.userMessage||err.message)+'</span>';
       document.getElementById('btnFix').disabled=false;
     });
-  });
 }
 
 function showResult(original,corrected){

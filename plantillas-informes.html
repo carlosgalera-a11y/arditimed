@@ -61,6 +61,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:1
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="ai-client.js"></script>
 <script>
 if(!firebase.apps.length){
   firebase.initializeApp({
@@ -104,7 +107,7 @@ var db = firebase.firestore();
 Enfermedades: HTA/DM/DLP
 Ingresos previos:
 Cirugías previas:
-H�bitos tóxicos:
+H�bitos tóxicos:
 Tratamiento habitual:"></textarea></div>
 </div>
 
@@ -511,76 +514,28 @@ async function iaGenerar(){
   content.push({ type: 'text', text: prompt });
   var hasImages = content.some(function(c){ return c.type === 'image_url'; });
 
-  // Keys (XOR obfuscated - undetectable by GitHub)
-  function _xd(c){return c.split(',').map(function(n){return String.fromCharCode(parseInt(n)^42)}).join('');}
-  var _DS = _xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');
-  var _OR = _xd('89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31');
-
-  // Provider chain
-  var providers = [];
-  if(!hasImages){
-    providers.push({name:'DeepSeek V3.2', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3}});
-  }
-  // Qwen paid vision models (stable, cheap with credits)
-  var orVisionModels = ['qwen/qwen3.5-flash','qwen/qwen3.5-9b','google/gemini-3.1-flash-lite-preview','qwen/qwen3.6-plus:free'];
-  var orTextModels = ['deepseek/deepseek-chat-v3-0324:free','meta-llama/llama-3.3-70b-instruct:free'];
-  var orModels = hasImages ? orVisionModels : orTextModels;
-
-  // Provider chain
-  var providers = [];
-  if(!hasImages){
-    providers.push({name:'DeepSeek V3.2', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat', messages:[{role:'user',content:prompt}], max_tokens:4000, temperature:0.3}});
-  }
-  // OpenRouter vision models - multiple fallbacks
-  orModels.forEach(function(m){
-    providers.push({name:'OR:'+m.split('/')[1], url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:m, messages:[{role:'user',content:content}], max_tokens:4000, temperature:0.3}, isOR:true});
-  });
-
-  var data, text='', success=false, lastErr='';
-
-  // ═══ Pollinations GPT-4o FIRST for vision (free, no key needed) ═══
-  if(hasImages){
-    loadMsg.textContent = 'Analizando imágenes con GPT-4o Vision...';
+  // Todo pasa por la Cloud Function askAi. Si hay imagen → vision.
+  var text='', success=false, lastErr='';
+  if(typeof window.askAi!=='function'){
+    lastErr='Cliente IA no cargado';
+  } else {
+    loadMsg.textContent = hasImages ? 'Analizando imágenes...' : 'Generando informe...';
     try{
-      var rP=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'user',content:content}],max_tokens:4000,temperature:0.3,seed:Math.floor(Math.random()*99999)}),signal:AbortSignal.timeout(60000)});
-      var dP=await rP.json();
-      if(dP.choices&&dP.choices[0]&&dP.choices[0].message){text=dP.choices[0].message.content;success=true;console.log('[Informe] OK via Pollinations GPT-4o Vision');}
-      else{lastErr='Pollinations: sin respuesta';}
-    }catch(e){lastErr='Pollinations: '+e.message;console.log('[Informe] '+lastErr);}
-  }
-
-  for(var p=0; p<providers.length && !success; p++){
-    var prov = providers[p];
-    loadMsg.textContent = 'Intentando ' + prov.name + '...';
-    try {
-      var hdrs = {'Content-Type':'application/json'};
-      // ⚠️ NO enviar key para modelos :free — causa 'No cookie auth credentials'
-      if(prov.key && prov.body.model.indexOf(':free')===-1) hdrs['Authorization'] = 'Bearer ' + prov.key;
-      if(prov.isOR){ hdrs['HTTP-Referer']='https://carlosgalera-a11y.github.io/Cartagenaeste/'; hdrs['X-Title']='Informes Area II'; }
-      var resp = await fetch(prov.url, {method:'POST', headers:hdrs, body:JSON.stringify(prov.body), signal:AbortSignal.timeout(90000)});
-      data = await resp.json();
-      if(data.choices && data.choices[0] && data.choices[0].message){
-        text = data.choices[0].message.content;
-        success = true;
-        console.log('[Informe] OK via ' + prov.name);
-      } else {
-        lastErr = prov.name + ': ' + (data.error ? (data.error.message||JSON.stringify(data.error)) : 'sin respuesta');
-        console.log('[Informe] ' + lastErr);
+      // Para vision, extraer imageBase64 del content array.
+      var imgBase64;
+      if(hasImages){
+        var imgPart = content.find(function(c){return c.type==='image_url';});
+        if(imgPart && imgPart.image_url && imgPart.image_url.url) imgBase64 = imgPart.image_url.url;
       }
-    } catch(e){
-      lastErr = prov.name + ': ' + e.message;
-      console.log('[Informe] ' + lastErr);
-    }
-  }
-
-  // ═══ Último recurso: Pollinations texto ═══
-  if(!success){
-    loadMsg.textContent = 'Último intento...';
-    try{
-      var rF=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'user',content:hasImages?content:prompt}],max_tokens:4000,temperature:0.3}),signal:AbortSignal.timeout(60000)});
-      var dF=await rF.json();
-      if(dF.choices&&dF.choices[0]&&dF.choices[0].message){text=dF.choices[0].message.content;success=true;}
-    }catch(e){lastErr+=' / Pollinations: '+e.message;}
+      var res = await window.askAi({
+        type: hasImages ? 'vision' : 'educational',
+        prompt: prompt,
+        imageBase64: imgBase64,
+      });
+      text = (res && res.text) || '';
+      if(text) success = true;
+      else lastErr = 'Respuesta vacía';
+    }catch(e){ lastErr = e.userMessage || e.message; }
   }
 
   if(!success) text = 'No se pudo generar el informe.\nUltimo error: ' + lastErr + '\n\nPrueba de nuevo en unos segundos.';
@@ -659,33 +614,27 @@ async function iaRefinar(){
   }
   content.push({ type: 'text', text: promptText });
 
-  function _xd(c){return c.split(',').map(function(n){return String.fromCharCode(parseInt(n)^42)}).join('');}
-  var _OR = _xd('89,65,7,69,88,7,92,27,7,28,76,26,79,27,73,26,73,73,79,24,24,31,29,72,31,25,31,79,24,19,75,72,18,24,26,78,72,25,27,28,27,27,30,31,26,78,30,26,18,27,75,19,79,30,24,79,75,28,31,18,27,72,18,79,79,28,31,76,30,19,73,78,31');
-  var _DS = _xd('89,65,7,75,18,19,78,78,27,29,76,75,75,18,30,30,18,73,24,75,75,26,75,28,73,79,28,75,73,73,72,18,19,72,19');
-
-  var providers = [];
-  var msgContent = hasImages ? content : promptText;
-  if(!hasImages){
-    providers.push({name:'DeepSeek', url:'https://api.deepseek.com/chat/completions', key:_DS, body:{model:'deepseek-chat',messages:[{role:'user',content:promptText}],max_tokens:4000,temperature:0.3}});
-  }
-  providers.push({name:'OR:qwen3.5-flash', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-flash',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
-  providers.push({name:'OR:qwen3.5-9b', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'qwen/qwen3.5-9b',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
-  providers.push({name:'OR:gemini-3.1-flash-lite', url:'https://openrouter.ai/api/v1/chat/completions', key:_OR, body:{model:'google/gemini-3.1-flash-lite-preview',messages:[{role:'user',content:msgContent}],max_tokens:4000,temperature:0.3}, isOR:true});
-
   var text='', success=false, lastErr='';
-  for(var p=0;p<providers.length&&!success;p++){
-    var prov=providers[p];
+  if(typeof window.askAi!=='function'){
+    lastErr='Cliente IA no cargado';
+  } else {
     var typingEl=document.getElementById('iaChatTyping');
-    if(typingEl) typingEl.textContent='🤖 Probando '+prov.name+'...';
+    if(typingEl) typingEl.textContent='🤖 Refinando informe...';
     try{
-      var hdrs={'Content-Type':'application/json'};
-      if(prov.key) hdrs['Authorization']='Bearer '+prov.key;
-      if(prov.isOR){hdrs['HTTP-Referer']='https://carlosgalera-a11y.github.io/Cartagenaeste/';hdrs['X-Title']='Informes Area II';}
-      var resp=await fetch(prov.url,{method:'POST',headers:hdrs,body:JSON.stringify(prov.body),signal:AbortSignal.timeout(90000)});
-      var data=await resp.json();
-      if(data.choices&&data.choices[0]&&data.choices[0].message){text=data.choices[0].message.content;success=true;}
-      else{lastErr=prov.name+': '+(data.error?(data.error.message||JSON.stringify(data.error)):'sin respuesta');console.log('[Refine] '+lastErr);}
-    }catch(e){lastErr=prov.name+': '+e.message;console.log('[Refine] '+lastErr);}
+      var imgBase64;
+      if(hasImages){
+        var imgPart = content.find(function(c){return c.type==='image_url';});
+        if(imgPart && imgPart.image_url && imgPart.image_url.url) imgBase64 = imgPart.image_url.url;
+      }
+      var res = await window.askAi({
+        type: hasImages ? 'vision' : 'educational',
+        prompt: promptText,
+        imageBase64: imgBase64,
+      });
+      text=(res&&res.text)||'';
+      if(text) success=true;
+      else lastErr='Respuesta vacía';
+    }catch(e){ lastErr = e.userMessage || e.message; }
   }
 
   var t = document.getElementById('iaChatTyping');

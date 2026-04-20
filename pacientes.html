@@ -151,6 +151,12 @@
             .section-header h2{font-size:1.2rem}
         }
     </style>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
 </head>
 <body>
     <!-- Skip link for accessibility -->
@@ -778,18 +784,24 @@
         pacVoiceAddMsg('user',q);
         pacVoiceHistory.push({role:'user',content:q});
         pacVoiceAddMsg('bot','<span style="color:#94a3b8;">Analizando...</span>');
-        var key='';try{var cfg=JSON.parse(localStorage.getItem('notebook_ai_cfg_v3')||'{}');key=cfg.groqKey||'';}catch(e){}
-        if(!key){var chat=document.getElementById('pacVoiceChat');if(chat&&chat.lastChild)chat.removeChild(chat.lastChild);pacVoiceAddMsg('bot','⚠️ Para usar la IA necesitas una API Key de Groq. Mientras, usa el cuestionario pulsando ← Elegir otro modo.');return;}
+        if(typeof window.askAi!=='function'){
+            var chat=document.getElementById('pacVoiceChat');if(chat&&chat.lastChild)chat.removeChild(chat.lastChild);
+            pacVoiceAddMsg('bot','⚠️ Cliente IA no cargado. Recarga la página o usa el cuestionario.');
+            return;
+        }
         var sys='Eres un asistente de triaje médico del Área II Cartagena (Hospital Santa Lucía). Evalúa síntomas según el SET (5 niveles: 1=Resucitación, 2=Emergencia, 3=Urgente, 4=Menos urgente, 5=No urgente). Haz preguntas cortas UNA a la vez. Tras 3-5 preguntas da resultado: 🚨 NIVEL X — [nombre]. Si emergencia, indica 112. Responde en el idioma del paciente. Máx 80 palabras. Sé claro y empático.';
         try{
-            var msgs=[{role:'system',content:sys}].concat(pacVoiceHistory.slice(-10));
-            var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,max_tokens:300,temperature:0.3})});
-            var data=await r.json();var answer=data.choices[0].message.content;
+            // Último user + contexto reciente dentro del system prompt.
+            var lastUser='';for(var i=pacVoiceHistory.length-1;i>=0;i--){if(pacVoiceHistory[i].role==='user'){lastUser=pacVoiceHistory[i].content;break;}}
+            var ctx=pacVoiceHistory.slice(-10).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content}).join('\n---\n');
+            var fullSys=sys+(ctx?'\n\nContexto previo:\n'+ctx:'');
+            var res=await window.askAi({type:'educational',prompt:lastUser,systemPrompt:fullSys});
+            var answer=(res&&res.text)||'Sin respuesta';
             var chat=document.getElementById('pacVoiceChat');if(chat&&chat.lastChild)chat.removeChild(chat.lastChild);
             pacVoiceAddMsg('bot',answer);
             pacVoiceHistory.push({role:'assistant',content:answer});
             try{var u=new SpeechSynthesisUtterance(answer.replace(/[🚨🔴🟡🟢🔵💊📋📞⚠️*#]/g,''));u.lang=document.getElementById('pacVoiceLang').value;u.rate=0.95;speechSynthesis.speak(u);}catch(e){}
-        }catch(err){var chat2=document.getElementById('pacVoiceChat');if(chat2&&chat2.lastChild)chat2.removeChild(chat2.lastChild);pacVoiceAddMsg('bot','❌ Error: '+err.message);}
+        }catch(err){var chat2=document.getElementById('pacVoiceChat');if(chat2&&chat2.lastChild)chat2.removeChild(chat2.lastChild);pacVoiceAddMsg('bot','❌ '+(err.userMessage||err.message));}
     }
     function pacVoiceRecord(){
         if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){alert('Tu navegador no soporta voz. Usa Chrome.');return;}

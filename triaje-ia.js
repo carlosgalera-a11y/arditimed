@@ -84,39 +84,21 @@ async function triajeAnalyze(){
 
     var txt=null;var usedModel="";var errors=[];
 
-    // 1. Pollinations
+    // Llamada única a la Cloud Function askAi (type=vision) — el fallback
+    // chain entre modelos se hace server-side.
     try{
-        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},30000);
-        document.getElementById("triajeProgress").textContent="Probando GPT-4o (Pollinations)...";
-        var r=await fetch("https://text.pollinations.ai/openai",{
-            method:"POST",signal:ctrl.signal,
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({model:"openai",messages:[{role:"system",content:sysPrompt},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:"Analiza este listado de pacientes y genera el JSON de triaje."}]}],seed:Math.floor(Math.random()*99999)})
+        document.getElementById("triajeProgress").textContent="Analizando imagen con IA...";
+        if(typeof window.askAi!=='function') throw new Error('Cliente IA no cargado');
+        var aiRes = await window.askAi({
+            type:'vision',
+            prompt:'Analiza este listado de pacientes y genera el JSON de triaje.',
+            systemPrompt:sysPrompt,
+            imageBase64:dataUrl,
         });
-        if(r.ok){var d=await r.json();txt=d.choices?.[0]?.message?.content||null;if(txt)usedModel="GPT-4o";}
-        else errors.push("Pollinations: HTTP "+r.status);
-    }catch(e){errors.push("Pollinations: "+e.message);}
-
-    // 2. OpenRouter fallback
-    if(!txt){
-        try{
-            var orKey=_dk();
-            if(orKey){
-                var models=["meta-llama/llama-4-scout:free","qwen/qwen2.5-vl-32b-instruct"];
-                for(var mi=0;mi<models.length&&!txt;mi++){
-                    var vm=models[mi];
-                    document.getElementById("triajeProgress").textContent="Probando "+vm.split("/")[1].split(":")[0]+"...";
-                    var r2=await fetch("https://openrouter.ai/api/v1/chat/completions",{
-                        method:"POST",
-                        headers:{"Content-Type":"application/json","Authorization":"Bearer "+orKey,"HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"TriajeIA Area II Cartagena"},
-                        body:JSON.stringify({model:vm,messages:[{role:"system",content:sysPrompt},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:"Analiza este listado y genera el JSON de triaje."}]}],max_tokens:3000,temperature:0.2})
-                    });
-                    var d2=await r2.json();
-                    if(r2.ok&&d2.choices&&d2.choices[0]){txt=d2.choices[0].message.content||null;if(txt)usedModel=vm.split("/")[1].split(":")[0];}
-                    else errors.push(vm.split("/")[1]+": "+r2.status);
-                }
-            }
-        }catch(e){errors.push("OpenRouter: "+e.message);}
+        txt = (aiRes && aiRes.text) || null;
+        usedModel = aiRes && aiRes.model ? aiRes.model : '';
+    }catch(e){
+        errors.push('askAi: '+(e.userMessage||e.message));
     }
 
     // Parse result

@@ -41,7 +41,10 @@ export const askAi = onCall(
   {
     region: 'europe-west1',
     secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY],
-    enforceAppCheck: true,
+    // TODO: reactivar a true cuando el frontend envíe token App Check.
+    // Requiere: reCAPTCHA v3 site key + window.RECAPTCHA_SITE_KEY + firebase.appCheck().activate(...).
+    // Ver docs/s1.2-deploy-pendiente-carlos.md §3.
+    enforceAppCheck: false,
     minInstances: 1,
     maxInstances: 10,
     concurrency: 40,
