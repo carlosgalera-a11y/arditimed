@@ -1793,13 +1793,12 @@ function scanGoogleLogin(){
         }
     }
 
-    // Usar siempre signInWithPopup — es compatible con iOS cuando se llama
-    // directamente desde un evento click del usuario (sin capas async intermedias)
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){
-        return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
-    }).then(function(){
-        return firebase.auth().signInWithPopup(provider);
-    }).then(function(result){
+    // signInWithPopup DEBE ser síncrono con el click del usuario.
+    // Si lo envuelves en .then() (como setPersistence().then(popup)),
+    // Safari iOS lo bloquea como "no iniciado por el usuario".
+    // Solución: setPersistence fire-and-forget, popup directo.
+    try{firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
+    firebase.auth().signInWithPopup(provider).then(function(result){
         console.log("Login OK:",result.user.email);
         onLoginSuccess(result.user);
     }).catch(handleError);
