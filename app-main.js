@@ -1793,20 +1793,16 @@ function scanGoogleLogin(){
         }
     }
 
-    // iOS: signInWithPopup abre un WKWebView donde los inputs no responden.
-    // Usamos signInWithRedirect que abre Google en el navegador real.
-    // Al volver, onAuthStateChanged (línea ~2535) cierra el modal.
-    // Desktop/Android: popup directo (funciona perfecto).
+    // signInWithPopup en TODOS los dispositivos.
+    // signInWithRedirect NO funciona en GitHub Pages (authDomain mismatch).
+    // select_account fuerza selector de cuentas → en iOS no necesitas
+    // escribir email, solo pulsas tu cuenta.
     try{firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);}catch(e){}
-    var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    if(isIOS){
-        firebase.auth().signInWithRedirect(provider);
-    } else {
-        firebase.auth().signInWithPopup(provider).then(function(result){
-            console.log("Login OK:",result.user.email);
-            onLoginSuccess(result.user);
-        }).catch(handleError);
-    }
+    provider.setCustomParameters({prompt:'select_account'});
+    firebase.auth().signInWithPopup(provider).then(function(result){
+        console.log("Login OK:",result.user.email);
+        onLoginSuccess(result.user);
+    }).catch(handleError);
 }
 
 /* ═══ Login alternativo: email + contraseña ═══
