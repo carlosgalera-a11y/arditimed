@@ -1,10 +1,10 @@
 {
-  "id": "/Cartagenaeste/",
+  "id": "/",
   "name": "Área II Cartagena - Centro de Salud",
   "short_name": "Área II",
   "description": "Protocolos médicos, herramientas clínicas con IA docente y recursos del Área II Cartagena.",
-  "start_url": "/Cartagenaeste/",
-  "scope": "/Cartagenaeste/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "background_color": "#0a0f1a",
@@ -32,10 +32,10 @@
     { "src": "icons/screenshot-wide.png", "sizes": "1920x1080", "type": "image/png", "form_factor": "wide", "label": "Vista escritorio" }
   ],
   "shortcuts": [
-    { "name": "Protocolos Urgencias", "short_name": "Urgencias", "description": "77 protocolos", "url": "/Cartagenaeste/#urgencias", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] },
-    { "name": "Herramientas IA", "short_name": "IA Médica", "description": "Imagen médica con IA", "url": "/Cartagenaeste/#herramientas", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] },
-    { "name": "Pacientes Guardia", "short_name": "Pacientes", "description": "Gestión pacientes", "url": "/Cartagenaeste/#pacientes", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] },
-    { "name": "Teléfonos Hospital", "short_name": "Teléfonos", "description": "Directorio buscas", "url": "/Cartagenaeste/#telefonos", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] }
+    { "name": "Protocolos Urgencias", "short_name": "Urgencias", "description": "77 protocolos", "url": "/#urgencias", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] },
+    { "name": "Herramientas IA", "short_name": "IA Médica", "description": "Imagen médica con IA", "url": "/#herramientas", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] },
+    { "name": "Pacientes Guardia", "short_name": "Pacientes", "description": "Gestión pacientes", "url": "/#pacientes", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] },
+    { "name": "Teléfonos Hospital", "short_name": "Teléfonos", "description": "Directorio buscas", "url": "/#telefonos", "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }] }
   ],
   "related_applications": []
 }
