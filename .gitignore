@@ -5,3 +5,6 @@ secrets.js
 api-keys.json
 *.key
 *.pem
+
+# Claude Code workspace
+.claude/

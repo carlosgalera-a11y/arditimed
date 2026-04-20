@@ -7,11 +7,10 @@
       "**/node_modules/**",
       "*.md",
       "*.py",
-      "ADMIN-CREDENTIALS.md",
-      "FIREBASE-*.md",
-      "MODERACION_SETUP.md",
-      "SETUP.md",
-      "README.md"
+      "*.sh",
+      "docs/**",
+      "functions-setup/**",
+      "firebase-functions/**"
     ],
     "rewrites": [
       {

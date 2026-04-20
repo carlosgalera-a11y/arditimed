@@ -12,7 +12,7 @@ triaje-ia.js        ← Motor de triaje con IA conversacional
 escalas-clinicas.js ← Calculadoras/escalas médicas
 guardia-notas.js    ← Notas de guardia
 turnos-guardia.js   ← Gestión de turnos
-sw.js / sw-v2.js    ← Service Workers
+sw.js               ← Service Worker
 test-deploy.sh      ← ⭐ NUEVO: Smoke tests post-deploy
 ```
 
@@ -40,14 +40,15 @@ Modales y JS global: líneas 3878-6634 (~2756 L)
 
 ### Principio: NUNCA keys en el cliente
 ```
-┌─────────────┐     ┌──────────────────┐     ┌──────────────┐
-│  Browser    │────▶│  NAS Proxy       │────▶│  DeepSeek    │
-│  (sin key)  │     │  REDACTED_INTERNAL_IP    │     │  OpenRouter  │
-│             │     │  :3100           │     │  Anthropic   │
-└─────────────┘     │  (keys aquí)     │     └──────────────┘
-                    └──────────────────┘
-                           │
-                    Si no hay NAS ──▶ Modelos :free (sin key)
+┌─────────────┐     ┌──────────────────────────┐     ┌──────────────┐
+│  Browser    │────▶│  Cloud Function askAi    │────▶│  DeepSeek    │
+│  (sin key)  │     │  europe-west1            │     │  OpenRouter  │
+│  App Check  │     │  (secrets + rate limit)  │     │  Gemini      │
+└─────────────┘     └──────────────────────────┘     └──────────────┘
+
+Modo offline opcional (solo Carlos, no en prod público):
+  localStorage.setItem('api_proxy_url','http://host-interno:3100')
+  → el frontend enruta por ese proxy cuando la URL está presente.
 ```
 
 ### Estado de migración de keys
@@ -57,14 +58,20 @@ Modales y JS global: líneas 3878-6634 (~2756 L)
 | OpenRouter `_KP` | ⚠️ DEPRECADA | index.html + app-main.js (base64 ofuscada) |
 | Firebase Web | ✅ OK (pública) | index.html — necesaria para Firebase SDK |
 
-### Proxy NAS — Endpoints
+### Cloud Function (producción)
 ```
-POST /ai/chat          → Chat genérico (auto-selecciona modelo)
-POST /api/deepseek     → DeepSeek directo
-POST /api/openrouter   → OpenRouter con key
-POST /api/anthropic    → Claude/Haiku
-POST /api/vision       → Análisis de imagen
-GET  /health           → Health check
+functions-setup/functions/index.js → región europe-west1
+  - llamarIA({user, system})        → DeepSeek + OpenRouter fallback
+  - scanIA({imageBase64, ...})      → OpenRouter vision chain
+  App Check enforce + rate limit (30/min, 500/día).
+```
+
+### Proxy opcional local (solo Carlos)
+```
+POST /ai/chat   → Chat genérico
+POST /api/*     → DeepSeek / OpenRouter / Anthropic / Vision
+GET  /health    → Health check
+URL se define vía localStorage.api_proxy_url (no hardcoded).
 ```
 
 ## Roadmap de modularización
