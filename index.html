@@ -113,6 +113,17 @@ main{padding:24px 28px 48px;display:flex;flex-direction:column;justify-content:c
 .disclaimer{max-width:720px;padding:10px 16px;background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.28);border-radius:10px;font-size:.76rem;line-height:1.55;color:#fff;opacity:.88;margin-top:6px}
 .disclaimer strong{color:#ffd54f}
 
+/* ── Quick tiles row (Protocolos / Enfermería / Herramientas / Buscas / Docencia) ── */
+.quick-tiles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;width:100%;max-width:760px;margin-top:4px}
+.q-tile{display:flex;flex-direction:column;gap:4px;padding:16px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:14px;color:#fff;font-family:inherit;text-align:left;cursor:pointer;transition:all .2s ease;backdrop-filter:blur(10px);min-height:96px;justify-content:center}
+.q-tile:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.3);transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.3)}
+.q-tile:focus-visible{box-shadow:0 0 0 3px rgba(212,168,83,.55)}
+.q-emoji{font-size:1.5rem;line-height:1;margin-bottom:4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.q-title{font-size:.95rem;font-weight:700;font-family:'Playfair Display',serif;letter-spacing:.2px}
+.q-sub{font-size:.72rem;opacity:.72;font-weight:400;line-height:1.35}
+.q-tile.locked{border-color:rgba(212,168,83,.4);background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(255,255,255,.05))}
+.q-tile.locked:hover{border-color:rgba(212,168,83,.65);background:linear-gradient(135deg,rgba(212,168,83,.14),rgba(255,255,255,.09))}
+
 /* ── Sidebar ── */
 .sidebar{padding:26px 22px 40px;display:flex;flex-direction:column;gap:18px;position:relative;z-index:1;max-width:360px;margin:0 auto;width:100%}
 @media(min-width:1024px){.sidebar{background:rgba(0,0,0,.3);border-left:1px solid rgba(255,255,255,.1);backdrop-filter:blur(16px);padding:32px 26px 40px;max-width:none}}
@@ -230,6 +241,35 @@ footer a:hover{color:#ffd54f}
           <span class="emoji">🚨</span>
           <span class="label">Autotriaje</span>
           <span class="desc">Asistente inteligente que te orienta según tus síntomas. Sin login.</span>
+        </button>
+      </div>
+
+      <!-- Quick tiles: accesos directos (requieren login) -->
+      <div class="quick-tiles-grid" role="list" aria-label="Accesos directos">
+        <button type="button" class="q-tile" onclick="goToQuickTile('panel-medico.html?page=pageProtocolosAP')" role="listitem">
+          <span class="q-emoji">📋</span>
+          <span class="q-title">Protocolos</span>
+          <span class="q-sub">AP · Urgencias · Antibióticos</span>
+        </button>
+        <button type="button" class="q-tile" onclick="goToQuickTile('panel-medico.html?page=pageEnfermeria')" role="listitem">
+          <span class="q-emoji">👩‍⚕️</span>
+          <span class="q-title">Enfermería</span>
+          <span class="q-sub">Protocolos · Técnicas · Vacunas</span>
+        </button>
+        <button type="button" class="q-tile" onclick="goToQuickTile('panel-medico.html?page=pageScanIA')" role="listitem">
+          <span class="q-emoji">🛠️</span>
+          <span class="q-title">Herramientas</span>
+          <span class="q-sub">IA · Calculadoras · Informes</span>
+        </button>
+        <button type="button" class="q-tile" onclick="goToBuscasGate()" role="listitem">
+          <span class="q-emoji">📟🔒</span>
+          <span class="q-title">Teléfonos Buscas</span>
+          <span class="q-sub">Hospital · Centros · Buscas</span>
+        </button>
+        <button type="button" class="q-tile" onclick="goToQuickTile('docencia.html')" role="listitem">
+          <span class="q-emoji">📚</span>
+          <span class="q-title">Docencia</span>
+          <span class="q-sub">Casos · Cuaderno IA · MIR</span>
         </button>
       </div>
 
@@ -373,6 +413,36 @@ footer a:hover{color:#ffd54f}
     function goToFavoritos(){
       if(currentUser){ location.href = 'panel-medico.html?action=favoritos'; }
       else { openLoginModalWithRedirect('panel-medico.html?action=favoritos', 'Inicia sesión para ver tus favoritos.'); }
+    }
+
+    // Quick tiles: Protocolos, Enfermería, Herramientas, Docencia
+    function goToQuickTile(url){
+      if(currentUser){ location.href = url; }
+      else { openLoginModalWithRedirect(url, 'Inicia sesión con Google para acceder a este apartado profesional.'); }
+    }
+
+    // Gate de Buscas (SHA-256 de "caridad", misma que en profesionales.html)
+    var BUSCAS_PWD_HASH_INDEX = '9ffe80cde00f4ae81a2b38ef5f75b4cb770f3e7a0a59daf22a86f88a1e8cf3cb';
+    function goToBuscasGate(){
+      if(!currentUser){
+        openLoginModalWithRedirect('profesionales.html', 'Inicia sesión primero para acceder a Buscas.');
+        return;
+      }
+      var pwd = prompt('📟 Acceso Teléfonos Buscas\n\nIntroduce la contraseña compartida:');
+      if(!pwd) return;
+      sha256Local(pwd.trim()).then(function(h){
+        if(h === BUSCAS_PWD_HASH_INDEX){
+          sessionStorage.setItem('buscas_ok','1');
+          location.href = 'panel-medico.html?page=pageTelefonos';
+        } else {
+          alert('❌ Contraseña incorrecta');
+        }
+      }).catch(function(){ alert('Error interno'); });
+    }
+    async function sha256Local(str){
+      var enc = new TextEncoder().encode(str);
+      var buf = await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
     }
 
     function openInstrucciones(){
