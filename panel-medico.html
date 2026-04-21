@@ -3208,9 +3208,11 @@ if ('serviceWorker' in navigator) {
       });
     });
 
-    // Register the correct SW
-    navigator.serviceWorker.register('/Cartagenaeste/sw.js', {
-      scope: '/Cartagenaeste/',
+    // Register the correct SW — path relativo para funcionar en ambos hosts:
+    //   area2cartagena.es/          → ./sw.js  con scope ./
+    //   carlosgalera-a11y.github.io/Cartagenaeste/ → ./sw.js con scope ./
+    navigator.serviceWorker.register('sw.js', {
+      scope: './',
       updateViaCache: 'none'
     }).then(function(reg) {
       // Check for update immediately and every 5 minutes
