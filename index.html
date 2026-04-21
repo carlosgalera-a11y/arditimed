@@ -3497,9 +3497,9 @@ function megaDispatch(question) {
         return;
     }
 
-    // Construir prompt: KB + historial + pregunta. Reservar ~1500 para historial+pregunta.
-    var kbBudget = 8000 - historyBlock.length - question.length - 300;
-    var kb = MEGA_KB.length > kbBudget ? MEGA_KB.substring(0, Math.max(0, kbBudget)) : MEGA_KB;
+    // Construir prompt: KB + historial + pregunta. KB cap 3000 chars (latencia IA).
+    var KB_MAX = 3000;
+    var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
     var fullPrompt = "CONOCIMIENTO BASE:\n" + kb + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
 
     window.askAi({ type: "educational", systemPrompt: sp, prompt: fullPrompt })
