@@ -5078,6 +5078,20 @@ document.addEventListener('click', function(){
   }catch(e){ console.warn('[deep-link] init error:', e); }
 })();
 
+// Redirect: si se abre panel-medico.html SIN ?page=X, volver a la landing
+// nueva (index.html). Así nunca se ve la pageLanding vieja aunque alguien
+// navegue a /panel-medico.html directamente, pulse Actualizar tras haber
+// entrado, o siga un bookmark antiguo.
+(function(){
+  try{
+    var p = new URLSearchParams(location.search).get('page');
+    if(p && /^page[A-Za-z]+$/.test(p)) return;
+    // Sólo redirigir si estamos realmente en panel-medico.html.
+    if(!/\/panel-medico\.html?$/i.test(location.pathname)) return;
+    location.replace('index.html' + (location.hash || ''));
+  }catch(e){}
+})();
+
 // Deep-link adicional: ?page=pageEnfermeria|pageScanIA|pageProtocolosAP|pageProtocolosUrgencias|pageTelefonos|pageTriaje|pageFilehub
 (function(){
   try{
@@ -5166,11 +5180,8 @@ document.addEventListener('click', function(){
       clearInterval(iv);
       if(document.getElementById(p)){
         showPage(p);
-        try{
-          var url = new URL(location.href);
-          url.searchParams.delete('page');
-          history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
-        }catch(e){}
+        // Conservar ?page=X en la URL para que Actualizar recargue el mismo
+        // apartado con focus-mode en vez de caer al redirect de index.html.
       }
     }, 120);
   }catch(e){ console.warn('[focus-mode] init error:', e); }
