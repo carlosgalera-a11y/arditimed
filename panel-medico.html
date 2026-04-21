@@ -5075,6 +5075,33 @@ document.addEventListener('click', function(){
     }
   }catch(e){ console.warn('[deep-link] init error:', e); }
 })();
+
+// Deep-link adicional: ?page=pageEnfermeria|pageScanIA|pageProtocolosAP|pageProtocolosUrgencias|pageTelefonos|pageTriaje|pageFilehub
+(function(){
+  try{
+    var p = new URLSearchParams(location.search).get('page');
+    if(!p || !/^page[A-Za-z]+$/.test(p)) return;
+    var attempts = 0;
+    var iv = setInterval(function(){
+      attempts++;
+      if(attempts > 60){ clearInterval(iv); return; }
+      if(typeof showPage !== 'function') return;
+      if(typeof firebase !== 'undefined' && firebase.auth){
+        // Esperar 1 tick post-onAuthStateChanged
+        if(attempts < 4) return;
+      }
+      clearInterval(iv);
+      if(document.getElementById(p)){
+        showPage(p);
+        try{
+          var url = new URL(location.href);
+          url.searchParams.delete('page');
+          history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+        }catch(e){}
+      }
+    }, 120);
+  }catch(e){ console.warn('[deep-link page] init error:', e); }
+})();
 </script>
 
 </body>
