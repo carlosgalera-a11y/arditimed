@@ -19,6 +19,14 @@
   function $(id){ return document.getElementById(id); }
 
   function createButton(){
+    // Modo inline: si la página trae un elemento con [data-cart-update]
+    // (p.ej. un botón en el topbar), enganchamos ahí y no creamos flotante.
+    var inline = document.querySelector('[data-cart-update]');
+    if(inline && !inline.__cartWired){
+      inline.__cartWired = true;
+      inline.addEventListener('click', forceUpdate);
+      return;
+    }
     if($('cart-update-btn')) return;
     var btn = document.createElement('button');
     btn.id = 'cart-update-btn';
