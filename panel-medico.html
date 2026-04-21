@@ -5041,6 +5041,8 @@ document.addEventListener('click', function(){
         else if(action === 'moderate') done = call('abrirPanelModeracion');
         else if(action === 'sugerencias') done = call('abrirSugerencias');
         else if(action === 'mi-guardia') done = call('openGuardiaNotas');
+        else if(action === 'buscar')   done = call('abrirBuscador');
+        else if(action === 'favoritos') done = call('abrirFavoritos');
       }
       if(done || attempts > 20){
         clearInterval(iv);
@@ -5066,6 +5068,8 @@ document.addEventListener('click', function(){
           else if(pending === 'moderate' && typeof abrirPanelModeracion === 'function') abrirPanelModeracion();
           else if(pending === 'sugerencias' && typeof abrirSugerencias === 'function') abrirSugerencias();
           else if(pending === 'mi-guardia' && typeof openGuardiaNotas === 'function') openGuardiaNotas();
+          else if(pending === 'buscar' && typeof abrirBuscador === 'function') abrirBuscador();
+          else if(pending === 'favoritos' && typeof abrirFavoritos === 'function') abrirFavoritos();
         }, 400);
       });
     }
