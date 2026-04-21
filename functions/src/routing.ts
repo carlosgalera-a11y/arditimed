@@ -41,14 +41,32 @@ export function buildProviderChain(input: RoutingInput): ProviderCall[] {
   const { type, userPrompt, systemPrompt, imageBase64, modelOverride, secrets } = input;
   const chain: ProviderCall[] = [];
 
+  // Constantes: Qwen2.5-VL-72B es el primario para clinical_case y vision.
+  const QWEN_DIRECT = 'qwen2.5-vl-72b-instruct';
+  const QWEN_OR = 'qwen/qwen2.5-vl-72b-instruct';
+
   switch (type) {
     case 'clinical_case': {
-      const directModel = modelOverride || 'gemini-2.5-flash-lite';
+      // Qwen2.5-VL-72B primario (directo si hay qwenKey, si no OpenRouter).
+      // Fallbacks: Gemini/Mistral directos (si hay keys) → OpenRouter equivalentes.
+      const directModel = modelOverride || QWEN_DIRECT;
+      if (secrets.qwenKey) {
+        chain.push({
+          name: 'qwen',
+          model: directModel,
+          execute: () => callQwen({ apiKey: secrets.qwenKey!, model: directModel, systemPrompt, userPrompt }),
+        });
+      }
+      chain.push({
+        name: 'openrouter',
+        model: QWEN_OR,
+        execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: QWEN_OR, systemPrompt, userPrompt }),
+      });
       if (secrets.geminiKey) {
         chain.push({
           name: 'gemini',
-          model: directModel,
-          execute: () => callGemini({ apiKey: secrets.geminiKey!, model: directModel, systemPrompt, userPrompt }),
+          model: 'gemini-2.5-flash-lite',
+          execute: () => callGemini({ apiKey: secrets.geminiKey!, model: 'gemini-2.5-flash-lite', systemPrompt, userPrompt }),
         });
       }
       if (secrets.mistralKey) {
@@ -92,30 +110,32 @@ export function buildProviderChain(input: RoutingInput): ProviderCall[] {
     }
 
     case 'vision': {
-      const directModel = modelOverride || 'gemini-2.5-flash';
-      if (secrets.geminiKey) {
-        chain.push({
-          name: 'gemini',
-          model: directModel,
-          execute: () => callGemini({ apiKey: secrets.geminiKey!, model: directModel, systemPrompt, userPrompt, imageBase64 }),
-        });
-      }
+      // Qwen2.5-VL-72B primario (directo si hay qwenKey, si no OpenRouter).
+      // Fallback: Gemini direct → OpenRouter Gemini.
+      const directModel = modelOverride || QWEN_DIRECT;
       if (secrets.qwenKey) {
         chain.push({
           name: 'qwen',
-          model: 'qwen-vl-max',
-          execute: () => callQwen({ apiKey: secrets.qwenKey!, model: 'qwen-vl-max', systemPrompt, userPrompt, imageBase64 }),
+          model: directModel,
+          execute: () => callQwen({ apiKey: secrets.qwenKey!, model: directModel, systemPrompt, userPrompt, imageBase64 }),
+        });
+      }
+      chain.push({
+        name: 'openrouter',
+        model: QWEN_OR,
+        execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: QWEN_OR, systemPrompt, userPrompt, imageBase64 }),
+      });
+      if (secrets.geminiKey) {
+        chain.push({
+          name: 'gemini',
+          model: 'gemini-2.5-flash',
+          execute: () => callGemini({ apiKey: secrets.geminiKey!, model: 'gemini-2.5-flash', systemPrompt, userPrompt, imageBase64 }),
         });
       }
       chain.push({
         name: 'openrouter',
         model: 'google/gemini-2.5-flash',
         execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: 'google/gemini-2.5-flash', systemPrompt, userPrompt, imageBase64 }),
-      });
-      chain.push({
-        name: 'openrouter',
-        model: 'qwen/qwen2.5-vl-72b-instruct',
-        execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: 'qwen/qwen2.5-vl-72b-instruct', systemPrompt, userPrompt, imageBase64 }),
       });
       return chain;
     }

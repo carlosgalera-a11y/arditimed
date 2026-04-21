@@ -16,16 +16,17 @@ const fullSecrets = {
 };
 
 describe('buildProviderChain — modo mínimo (solo DeepSeek + OpenRouter)', () => {
-  it('clinical_case → OpenRouter gemini-flash-lite → OpenRouter mistral', () => {
+  it('clinical_case → OpenRouter Qwen2.5-VL-72B primario → Gemini/Mistral como fallback', () => {
     const chain = buildProviderChain({
       type: 'clinical_case',
       userPrompt: 'u',
       systemPrompt: 's',
       secrets: minimalSecrets,
     });
-    expect(chain.map((c) => c.name)).toEqual(['openrouter', 'openrouter']);
-    expect(chain[0]!.model).toBe('google/gemini-2.5-flash-lite');
-    expect(chain[1]!.model).toBe('mistralai/mistral-small-3.2-24b-instruct');
+    expect(chain.map((c) => c.name)).toEqual(['openrouter', 'openrouter', 'openrouter']);
+    expect(chain[0]!.model).toBe('qwen/qwen2.5-vl-72b-instruct');
+    expect(chain[1]!.model).toBe('google/gemini-2.5-flash-lite');
+    expect(chain[2]!.model).toBe('mistralai/mistral-small-3.2-24b-instruct');
   });
 
   it('educational → DeepSeek directo → OpenRouter deepseek-v3 → OpenRouter gemini-flash-lite', () => {
@@ -41,7 +42,7 @@ describe('buildProviderChain — modo mínimo (solo DeepSeek + OpenRouter)', () 
     expect(chain[2]!.model).toBe('google/gemini-2.5-flash-lite');
   });
 
-  it('vision → OpenRouter gemini-flash → OpenRouter qwen-vl', () => {
+  it('vision → OpenRouter Qwen2.5-VL-72B primario → OpenRouter Gemini fallback', () => {
     const chain = buildProviderChain({
       type: 'vision',
       userPrompt: 'u',
@@ -50,27 +51,31 @@ describe('buildProviderChain — modo mínimo (solo DeepSeek + OpenRouter)', () 
       secrets: minimalSecrets,
     });
     expect(chain.map((c) => c.name)).toEqual(['openrouter', 'openrouter']);
-    expect(chain[0]!.model).toBe('google/gemini-2.5-flash');
-    expect(chain[1]!.model).toBe('qwen/qwen2.5-vl-72b-instruct');
+    expect(chain[0]!.model).toBe('qwen/qwen2.5-vl-72b-instruct');
+    expect(chain[1]!.model).toBe('google/gemini-2.5-flash');
   });
 });
 
 describe('buildProviderChain — direct keys preferidas', () => {
-  it('clinical_case con geminiKey prefiere Gemini directo', () => {
+  it('clinical_case con qwenKey prefiere Qwen directo como primario', () => {
     const chain = buildProviderChain({
       type: 'clinical_case',
       userPrompt: 'u',
       systemPrompt: 's',
       secrets: fullSecrets,
     });
-    expect(chain[0]!.name).toBe('gemini');
-    expect(chain[0]!.model).toBe('gemini-2.5-flash-lite');
-    expect(chain[1]!.name).toBe('mistral');
-    // OpenRouter fallbacks después:
-    expect(chain.filter((c) => c.name === 'openrouter')).toHaveLength(2);
+    expect(chain[0]!.name).toBe('qwen');
+    expect(chain[0]!.model).toBe('qwen2.5-vl-72b-instruct');
+    // Tras el OpenRouter de Qwen (fallback inmediato), vienen Gemini y Mistral directos:
+    expect(chain[1]!.name).toBe('openrouter');
+    expect(chain[1]!.model).toBe('qwen/qwen2.5-vl-72b-instruct');
+    expect(chain[2]!.name).toBe('gemini');
+    expect(chain[3]!.name).toBe('mistral');
+    // OpenRouter fallbacks al final (Gemini + Mistral):
+    expect(chain.filter((c) => c.name === 'openrouter')).toHaveLength(3);
   });
 
-  it('vision con geminiKey y qwenKey prefiere directos', () => {
+  it('vision con qwenKey y geminiKey: Qwen directo primario, Gemini como fallback', () => {
     const chain = buildProviderChain({
       type: 'vision',
       userPrompt: 'u',
@@ -78,7 +83,11 @@ describe('buildProviderChain — direct keys preferidas', () => {
       imageBase64: 'abc',
       secrets: fullSecrets,
     });
-    expect(chain.map((c) => c.name)).toEqual(['gemini', 'qwen', 'openrouter', 'openrouter']);
+    expect(chain.map((c) => c.name)).toEqual(['qwen', 'openrouter', 'gemini', 'openrouter']);
+    expect(chain[0]!.model).toBe('qwen2.5-vl-72b-instruct');
+    expect(chain[1]!.model).toBe('qwen/qwen2.5-vl-72b-instruct');
+    expect(chain[2]!.model).toBe('gemini-2.5-flash');
+    expect(chain[3]!.model).toBe('google/gemini-2.5-flash');
   });
 
   it('modelOverride se aplica al provider directo cuando existe', () => {
