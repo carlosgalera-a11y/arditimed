@@ -159,6 +159,81 @@
 <script src="ai-client.js"></script>
 <script>window.SENTRY_DSN='';/* ← pega aquí el DSN cuando esté: 'https://...@...ingest.de.sentry.io/...' */</script>
 <script src="sentry-init.js" defer></script>
+<script src="update-button.js" defer></script>
+<script>
+// ── Contador de visitas a /pacientes (Firestore) ────────────────────
+// Incrementa +1 por visita (cooldown 30 min por dispositivo).
+// Visible solo para admin/superadmin via custom claims.
+(function(){
+  'use strict';
+  var COOLDOWN_MS = 30 * 60 * 1000; // 30 min anti-abuso simple
+
+  function incrementIfCooled(){
+    try{
+      var last = parseInt(localStorage.getItem('pac_last_visit') || '0', 10);
+      var now = Date.now();
+      if(now - last < COOLDOWN_MS) return;
+      localStorage.setItem('pac_last_visit', String(now));
+      var db = firebase.firestore();
+      db.collection('stats').doc('pacientes_visits').set({
+        count: firebase.firestore.FieldValue.increment(1),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastVisit: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(function(e){
+        // Fail silencioso: no romper UX del paciente si Firestore falla
+        console.warn('[pac-stats] increment failed:', e && e.code);
+      });
+    }catch(e){ /* ignore */ }
+  }
+
+  function showAdminCounter(count){
+    if(document.getElementById('pac-admin-counter')) return;
+    var d = document.createElement('div');
+    d.id = 'pac-admin-counter';
+    d.style.cssText = 'position:fixed;bottom:16px;left:16px;z-index:999999;background:rgba(15,62,38,.92);color:#fff;padding:10px 16px;border-radius:22px;font-family:-apple-system,sans-serif;font-size:.8rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;';
+    d.innerHTML = '<span style="font-size:1rem">👁️</span><span>Visitas: <strong id="pac-counter-num">' + count + '</strong></span><span style="opacity:.6;font-size:.7rem;font-weight:400;">(solo admin)</span>';
+    document.body.appendChild(d);
+  }
+
+  function watchAdminCounter(){
+    try{
+      var db = firebase.firestore();
+      db.collection('stats').doc('pacientes_visits').onSnapshot(function(snap){
+        if(!snap.exists) return;
+        var n = snap.data().count || 0;
+        var el = document.getElementById('pac-counter-num');
+        if(el){ el.textContent = String(n); }
+        else { showAdminCounter(n); }
+      }, function(err){
+        // Rules deniega lectura si no admin → esperado. No logueamos.
+      });
+    }catch(e){}
+  }
+
+  // Ejecutar cuando auth state esté resuelto
+  function init(){
+    // Siempre intentamos incrementar (cooldown 30 min)
+    incrementIfCooled();
+
+    // Solo si el usuario es admin vemos el contador
+    try{
+      firebase.auth().onAuthStateChanged(function(u){
+        if(!u){ return; }
+        u.getIdTokenResult(true).then(function(t){
+          var role = t && t.claims && t.claims.role;
+          if(role === 'admin' || role === 'superadmin' || t.claims.admin === true){
+            watchAdminCounter();
+          }
+        }).catch(function(){});
+      });
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+})();
+</script>
 </head>
 <body>
     <!-- Skip link for accessibility -->

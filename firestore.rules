@@ -175,6 +175,21 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // ══ Contadores de visitas públicas ═════════════════════════════
+    // Permite increment +1 anónimo (uso: landing pacientes sin login).
+    // Rule valida que count no decrezca y solo cambien campos permitidos.
+    match /stats/{statDoc} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['count','updatedAt','lastVisit'])
+                 && request.resource.data.count is int
+                 && request.resource.data.count >= 0
+                 && request.resource.data.count <= 1;
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count','updatedAt','lastVisit'])
+                 && request.resource.data.count is int
+                 && request.resource.data.count >= resource.data.count;
+      allow delete: if isAdmin();
+    }
+
     // ══ DENY BY DEFAULT ════════════════════════════════════════════
     match /{document=**} {
       allow read, write: if false;
