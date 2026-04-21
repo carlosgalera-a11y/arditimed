@@ -5002,6 +5002,77 @@ document.addEventListener('click', function(){
   }, 300);
 });
 </script>
+
+<!-- Deep-link handler: ?action=propose|moderate|sugerencias|mi-guardia -->
+<script>
+(function(){
+  try{
+    var action = new URLSearchParams(location.search).get('action');
+    if(!action) return;
+    var attempts = 0;
+    var iv = setInterval(function(){
+      attempts++;
+      if(attempts > 60){ clearInterval(iv); return; }
+      if(typeof firebase === 'undefined' || !firebase.auth) return;
+      // Espera a que el user esté resuelto (puede ser null si no logged)
+      var u = firebase.auth().currentUser;
+      // Primer tick después de auth init
+      var authReady = firebase.auth()._initialized === true || attempts > 6;
+      if(!authReady) return;
+
+      var call = function(fn, arg){
+        try{
+          if(typeof window[fn] === 'function'){
+            if(arg !== undefined) window[fn](arg);
+            else window[fn]();
+            return true;
+          }
+        }catch(e){ console.warn('[deep-link]', fn, e); }
+        return false;
+      };
+
+      var done = false;
+      if(!u){
+        // Sin login → abrir modal login antes. Preservar action en el sessionStorage.
+        try{ sessionStorage.setItem('pending_action', action); }catch(e){}
+        if(call('showLoginModal','Profesionales')){ done = true; }
+      } else {
+        if(action === 'propose')      done = call('abrirModalSubir','');
+        else if(action === 'moderate') done = call('abrirPanelModeracion');
+        else if(action === 'sugerencias') done = call('abrirSugerencias');
+        else if(action === 'mi-guardia') done = call('openGuardiaNotas');
+      }
+      if(done || attempts > 20){
+        clearInterval(iv);
+        // Limpia la URL para que no se redispare al recargar
+        try{
+          var url = new URL(location.href);
+          url.searchParams.delete('action');
+          history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+        }catch(e){}
+      }
+    }, 120);
+
+    // Cuando vuelve del login, relanza la acción pendiente
+    if(typeof firebase !== 'undefined' && firebase.auth){
+      firebase.auth().onAuthStateChanged(function(u){
+        if(!u) return;
+        var pending = null;
+        try{ pending = sessionStorage.getItem('pending_action'); }catch(e){}
+        if(!pending) return;
+        try{ sessionStorage.removeItem('pending_action'); }catch(e){}
+        setTimeout(function(){
+          if(pending === 'propose' && typeof abrirModalSubir === 'function') abrirModalSubir('');
+          else if(pending === 'moderate' && typeof abrirPanelModeracion === 'function') abrirPanelModeracion();
+          else if(pending === 'sugerencias' && typeof abrirSugerencias === 'function') abrirSugerencias();
+          else if(pending === 'mi-guardia' && typeof openGuardiaNotas === 'function') openGuardiaNotas();
+        }, 400);
+      });
+    }
+  }catch(e){ console.warn('[deep-link] init error:', e); }
+})();
+</script>
+
 </body>
 </html>
 
