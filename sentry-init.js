@@ -180,6 +180,32 @@
     global.__sentryInitialized = true;
   }
 
+  // Helper de test explícito: window.sentryTest('msg opcional')
+  // Captura una excepción con Sentry.captureException y fuerza flush.
+  // Útil cuando el hook global (onerror/unhandledrejection) no llega por
+  // timing o por bloqueos de extensiones del navegador.
+  global.sentryTest = function(msg){
+    try{
+      if(!global.Sentry || !global.Sentry.captureException){
+        console.warn('[sentryTest] Sentry SDK aún no cargado. Reintenta en 2s.');
+        return;
+      }
+      var tag = 'sentryTest ' + Date.now() + (msg ? ' · ' + String(msg).slice(0,80) : '');
+      var id = global.Sentry.captureException(new Error(tag));
+      console.log('[sentryTest] eventId=', id, 'tag=', tag);
+      if(typeof global.Sentry.flush === 'function'){
+        global.Sentry.flush(3000).then(function(ok){
+          console.log('[sentryTest] flush ok=', ok);
+        }).catch(function(e){
+          console.warn('[sentryTest] flush error', e);
+        });
+      }
+      return id;
+    }catch(e){
+      console.warn('[sentryTest] error', e);
+    }
+  };
+
   // Carga diferida del SDK para no bloquear render.
   var s = document.createElement('script');
   s.src = SDK_URL;
