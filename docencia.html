@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#15803d">
+<title>Docencia · Cartagenaeste</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+<link rel="manifest" href="manifest.json">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
+<script>window.SENTRY_DSN='';</script>
+<script src="sentry-init.js" defer></script>
+<script src="update-button.js" defer></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0fdf4;color:#2d3748;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+
+header{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:18px 20px 14px;box-shadow:0 2px 12px rgba(21,128,61,.2)}
+.nav-top{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.back-link{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:18px;font-size:.82rem;color:#fff;font-weight:600;cursor:pointer}
+.back-link:hover{background:rgba(255,255,255,.28)}
+.brand{font-weight:800;font-size:1.05rem;display:inline-flex;align-items:center;gap:8px}
+.hero{max-width:1100px;margin:12px auto 0}
+.hero h1{font-size:clamp(1.3rem,3vw,1.7rem);font-weight:800;letter-spacing:-.3px;margin-bottom:4px}
+.hero p{font-size:.84rem;opacity:.85}
+
+.tabs{display:flex;gap:0;max-width:1100px;margin:24px auto 0;padding:0 20px;border-bottom:2px solid #d1fae5}
+.tab{flex:1;max-width:280px;padding:14px 18px;border:none;background:transparent;color:#475569;font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.tab:hover{color:#15803d}
+.tab.active{color:#15803d;border-bottom-color:#15803d}
+
+main{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:26px 20px 60px}
+
+/* Tab 1: Generador de casos */
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card h2{color:#15803d;font-size:1.1rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card p.lead{color:#64748b;font-size:.88rem;line-height:1.5;margin-bottom:14px}
+textarea.case-input{width:100%;min-height:150px;padding:12px 14px;border:2px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:.88rem;line-height:1.55;color:#2d3748;outline:none;resize:vertical}
+textarea.case-input:focus{border-color:#15803d}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.btn-primary{padding:10px 20px;background:#15803d;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.92rem;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;transition:.2s}
+.btn-primary:hover{background:#0d5828;transform:translateY(-1px);box-shadow:0 4px 14px rgba(21,128,61,.3)}
+.btn-primary:disabled{background:#94a3b8;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{padding:10px 18px;background:#f1f5f9;color:#475569;border:none;border-radius:10px;font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit}
+.btn-secondary:hover{background:#e2e8f0}
+.hint{font-size:.72rem;color:#94a3b8}
+
+.dropzone{border:2px dashed #d1fae5;border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:#f0fdf4;transition:.2s;font-size:.85rem;color:#475569}
+.dropzone:hover{border-color:#15803d;background:#ecfdf5}
+
+.example-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.example-chip{padding:6px 12px;background:#ecfdf5;color:#166534;border:1px solid #d1fae5;border-radius:18px;font-size:.76rem;cursor:pointer;font-weight:600;transition:.2s}
+.example-chip:hover{background:#d1fae5;border-color:#15803d}
+
+.quiz-area{display:none;margin-top:18px}
+.quiz-q{padding:16px 18px;background:#f0fdf4;border-left:4px solid #15803d;border-radius:10px;margin-bottom:14px}
+.quiz-q-num{font-size:.75rem;color:#15803d;font-weight:800;letter-spacing:.5px;margin-bottom:6px}
+.quiz-q-text{font-size:.95rem;color:#1a3a2a;font-weight:600;margin-bottom:12px;line-height:1.5}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;background:#fff;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;font-size:.88rem;color:#2d3748;transition:.15s;font-family:inherit;text-align:left;line-height:1.45}
+.quiz-opt:hover{border-color:#15803d;background:#f0fdf4}
+.quiz-opt.correct{border-color:#15803d;background:#dcfce7;color:#166534;font-weight:700}
+.quiz-opt.wrong{border-color:#dc2626;background:#fee2e2;color:#991b1b}
+.quiz-opt.disabled{cursor:default;opacity:.7}
+.quiz-opt-letter{min-width:22px;height:22px;border-radius:50%;background:#e5e7eb;color:#64748b;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.quiz-opt.correct .quiz-opt-letter{background:#15803d;color:#fff}
+.quiz-opt.wrong .quiz-opt-letter{background:#dc2626;color:#fff}
+.quiz-explain{display:none;margin-top:10px;padding:10px 12px;background:#fff;border-radius:8px;font-size:.82rem;color:#475569;line-height:1.5;border:1px dashed #d1fae5}
+.quiz-explain.show{display:block}
+.quiz-score{padding:16px 20px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;border-radius:12px;text-align:center;margin-top:14px;font-weight:700;font-size:1rem}
+
+.loading{display:none;text-align:center;padding:30px;color:#15803d;font-weight:600}
+.loading.show{display:block}
+.loading .spinner{display:inline-block;width:22px;height:22px;border:3px solid #d1fae5;border-top-color:#15803d;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.error-box{display:none;padding:12px 16px;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;color:#991b1b;font-size:.85rem;margin-top:12px}
+.error-box.show{display:block}
+
+/* Tab 2: MIR por especialidad */
+.mir-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.mir-tile{padding:14px 16px;background:#fff;border:2px solid #e5e7eb;border-radius:12px;text-align:center;cursor:pointer;transition:.2s;color:#2d3748;font-weight:700}
+.mir-tile:hover{border-color:#15803d;color:#15803d;transform:translateY(-2px);box-shadow:0 6px 16px rgba(21,128,61,.12)}
+.mir-tile-emoji{font-size:1.8rem;margin-bottom:4px;display:block}
+.mir-tile-name{font-size:.88rem}
+.mir-tile-count{font-size:.72rem;color:#94a3b8;font-weight:500;margin-top:2px}
+
+footer{padding:16px 20px;text-align:center;font-size:.72rem;color:#94a3b8;line-height:1.5;background:#fff;border-top:1px solid #e2e8f0}
+footer a{color:#64748b;text-decoration:underline}
+
+.login-gate{max-width:420px;margin:60px auto;background:#fff;padding:28px 24px;border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.08);text-align:center}
+.login-gate h2{color:#15803d;font-size:1.2rem;margin-bottom:10px}
+.login-gate p{color:#64748b;font-size:.9rem;line-height:1.5;margin-bottom:18px}
+.btn-google{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:10px;font-weight:600;font-size:.92rem;cursor:pointer}
+.btn-google:hover{background:#f8f9fa;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+
+@media(max-width:560px){
+  .tabs{flex-direction:column;border-bottom:none}
+  .tab{border-bottom:1px solid #d1fae5}
+  .tab.active{border-bottom-color:#15803d}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav-top">
+    <a href="profesionales.html" class="back-link">← Profesionales</a>
+    <div class="brand"><span style="font-size:1.3rem">🎓</span> Docencia</div>
+    <a href="index.html" class="back-link">Inicio</a>
+  </div>
+  <div class="hero" style="padding:0 4px">
+    <h1>Docencia · Área II Cartagena</h1>
+    <p>Generador de casos clínicos tipo test con IA + catálogo MIR por especialidad.</p>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab active" id="tabGen" onclick="switchTab('gen')" role="tab">🧪 Generador de casos</button>
+  <button class="tab" id="tabMir" onclick="switchTab('mir')" role="tab">📚 Casos clínicos MIR</button>
+</div>
+
+<main>
+  <!-- Login gate -->
+  <div id="loginGate" class="login-gate" style="display:none">
+    <h2>🔐 Requiere inicio de sesión</h2>
+    <p>El generador de casos usa la Cloud Function askAi con auth obligatoria. Inicia sesión con Google.</p>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <span>Continuar con Google</span>
+    </button>
+  </div>
+
+  <!-- TAB 1: Generador -->
+  <section id="panelGen" class="panel-content">
+    <div class="card">
+      <h2>🧪 Generador de Casos Clínicos Tipo Test</h2>
+      <p class="lead">Pega un caso clínico (propio del hospital, anonimizado) o describe una patología. La IA generará <strong>5 preguntas tipo test</strong> con 4 opciones y explicación de la respuesta correcta. Uso docente.</p>
+
+      <label for="caseText" style="font-size:.82rem;font-weight:700;color:#475569;margin-bottom:6px;display:block">Caso clínico o tema</label>
+      <textarea id="caseText" class="case-input" placeholder="Ejemplo: Varón de 67 años, EPOC moderado, acude por disnea progresiva de 3 días, fiebre 38.5ºC y tos productiva con expectoración purulenta. Auscultación: crepitantes en base derecha. Rx: consolidación lobar inferior derecha. Gasometría arterial: pH 7.30, pCO2 55, PaO2 58. Hb 14, Hto 42, leucocitos 18500 con 85% neutrófilos, PCR 180 mg/L..."></textarea>
+
+      <div class="example-chips">
+        <span style="font-size:.75rem;color:#94a3b8;padding:6px 0">Ejemplos:</span>
+        <button class="example-chip" onclick="insertExample('infarto')">💔 Infarto inferior</button>
+        <button class="example-chip" onclick="insertExample('ictus')">🧠 Ictus agudo</button>
+        <button class="example-chip" onclick="insertExample('neumonia')">🫁 Neumonía aguda</button>
+        <button class="example-chip" onclick="insertExample('sepsis')">💉 Sepsis urinaria</button>
+        <button class="example-chip" onclick="insertExample('anafilaxia')">⚡ Anafilaxia</button>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="genBtn" onclick="generateQuiz()">
+          <span>🎯</span><span>Generar preguntas tipo test</span>
+        </button>
+        <button class="btn-secondary" onclick="clearCase()">🗑️ Limpiar</button>
+        <span class="hint" id="caseMeta">0 caracteres · límite 3000</span>
+      </div>
+
+      <!-- Upload propio del hospital -->
+      <div style="margin-top:16px">
+        <label class="dropzone" for="caseFile">
+          📎 <strong>Subir caso propio del hospital</strong> (opcional) — .txt, .md, .pdf<br>
+          <small style="color:#94a3b8">No incluyas nombres, DNI ni datos identificativos. La IA descartará el caso si detecta PII.</small>
+        </label>
+        <input type="file" id="caseFile" accept=".txt,.md,.pdf" style="display:none" onchange="handleCaseFile(event)">
+      </div>
+
+      <div class="error-box" id="errorBox"></div>
+      <div class="loading" id="loadingBox"><span class="spinner"></span><span id="loadingMsg">Generando preguntas con IA…</span></div>
+
+      <div class="quiz-area" id="quizArea">
+        <div id="quizList"></div>
+        <div class="quiz-score" id="quizScore" style="display:none"></div>
+        <button class="btn-secondary" onclick="resetQuiz()" style="margin-top:10px">↻ Nueva generación</button>
+      </div>
+    </div>
+
+    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px 16px;font-size:.82rem;color:#92400e;line-height:1.5">
+      <strong>⚠️ Privacidad:</strong> NO subas casos con nombres, DNI, NHC ni datos identificativos del paciente. La función askAi rechaza prompts que contengan DNI/NIE/NHC. Anonimiza SIEMPRE antes de pegar.
+    </div>
+  </section>
+
+  <!-- TAB 2: MIR -->
+  <section id="panelMir" class="panel-content" style="display:none">
+    <div class="card">
+      <h2>📚 Casos Clínicos MIR</h2>
+      <p class="lead">136 preguntas de 17 especialidades MIR. Elige una especialidad para empezar a estudiar.</p>
+
+      <div class="mir-grid">
+        <a class="mir-tile" href="casos-clinicos.html?esp=cardiologia"><span class="mir-tile-emoji">🫀</span><div class="mir-tile-name">Cardiología</div><div class="mir-tile-count">10 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=neumologia"><span class="mir-tile-emoji">🫁</span><div class="mir-tile-name">Neumología</div><div class="mir-tile-count">8 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=digestivo"><span class="mir-tile-emoji">🫃</span><div class="mir-tile-name">Digestivo</div><div class="mir-tile-count">12 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=nefrologia"><span class="mir-tile-emoji">🧪</span><div class="mir-tile-name">Nefrología</div><div class="mir-tile-count">6 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=endocrino"><span class="mir-tile-emoji">🧬</span><div class="mir-tile-name">Endocrino</div><div class="mir-tile-count">8 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=infecciosas"><span class="mir-tile-emoji">🦠</span><div class="mir-tile-name">Infecciosas</div><div class="mir-tile-count">10 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=hematologia"><span class="mir-tile-emoji">🩸</span><div class="mir-tile-name">Hematología</div><div class="mir-tile-count">6 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=neurologia"><span class="mir-tile-emoji">🧠</span><div class="mir-tile-name">Neurología</div><div class="mir-tile-count">10 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=reumatologia"><span class="mir-tile-emoji">🦴</span><div class="mir-tile-name">Reumatología</div><div class="mir-tile-count">6 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=oncologia"><span class="mir-tile-emoji">🎗️</span><div class="mir-tile-name">Oncología</div><div class="mir-tile-count">8 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=ginecologia"><span class="mir-tile-emoji">🤰</span><div class="mir-tile-name">Ginecología</div><div class="mir-tile-count">8 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=pediatria"><span class="mir-tile-emoji">👶</span><div class="mir-tile-name">Pediatría</div><div class="mir-tile-count">10 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=psiquiatria"><span class="mir-tile-emoji">🧠</span><div class="mir-tile-name">Psiquiatría</div><div class="mir-tile-count">6 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=dermatologia"><span class="mir-tile-emoji">🩹</span><div class="mir-tile-name">Dermatología</div><div class="mir-tile-count">6 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=traumatologia"><span class="mir-tile-emoji">🩻</span><div class="mir-tile-name">Traumatología</div><div class="mir-tile-count">8 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=urologia"><span class="mir-tile-emoji">💧</span><div class="mir-tile-name">Urología</div><div class="mir-tile-count">6 casos</div></a>
+        <a class="mir-tile" href="casos-clinicos.html?esp=urgencias"><span class="mir-tile-emoji">🚨</span><div class="mir-tile-name">Urgencias</div><div class="mir-tile-count">8 casos</div></a>
+      </div>
+
+      <div style="text-align:center;margin-top:20px">
+        <a href="casos-clinicos.html" class="btn-primary">📖 Abrir catálogo completo</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>© 2026 Cartagenaeste · Docencia formativa. No sustituye estudio formal MIR.</div>
+  <div style="margin-top:4px"><a href="privacidad.html">Privacidad</a></div>
+</footer>
+
+<script>
+  var auth = firebase.auth();
+  var currentUser = null;
+
+  auth.onAuthStateChanged(function(u){
+    currentUser = u;
+    document.getElementById('loginGate').style.display = u ? 'none' : 'block';
+    document.getElementById('panelGen').style.display = u ? (activeTab==='gen'?'block':'none') : 'none';
+    document.getElementById('panelMir').style.display = u ? (activeTab==='mir'?'block':'none') : 'none';
+    document.querySelector('.tabs').style.display = u ? 'flex' : 'none';
+  });
+
+  function signInWithGoogle(){
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    auth.signInWithPopup(provider).catch(function(err){
+      alert('Login fallido: ' + (err.message || err.code));
+    });
+  }
+
+  // ── Tabs ────────────────────────────────────────────
+  var activeTab = 'gen';
+  function switchTab(name){
+    activeTab = name;
+    document.getElementById('tabGen').classList.toggle('active', name==='gen');
+    document.getElementById('tabMir').classList.toggle('active', name==='mir');
+    document.getElementById('panelGen').style.display = name==='gen' ? 'block' : 'none';
+    document.getElementById('panelMir').style.display = name==='mir' ? 'block' : 'none';
+  }
+
+  // ── Generador ───────────────────────────────────────
+  var EXAMPLES = {
+    infarto: 'Varón 62 años, fumador, HTA, dislipemia. Acude por dolor centrotorácico opresivo de 40 min irradiado a mandíbula, sudoración profusa. TA 90/60, FC 110. ECG: elevación ST en DII, DIII, aVF con descenso espejo en I y aVL. Troponina I 4.5 ng/mL (N <0.04). En traslado se produce bradicardia con TA 70/40.',
+    ictus: 'Mujer 78 años, FA no anticoagulada, HTA. Inicio súbito hace 90 min de hemiparesia derecha y afasia de expresión. NIHSS 14. TA 180/100. Glucemia 140 mg/dL. TC craneal sin signos de sangrado. Angio-TC: oclusión en M1 izquierda.',
+    neumonia: 'Mujer 72 años, EPOC moderado, disnea progresiva 4 días, fiebre 38.8ºC, tos productiva con esputo amarillento, dolor pleurítico derecho. SatO2 86%. Auscultación: crepitantes en base derecha. Rx: consolidación lobar inferior derecha con broncograma. PCR 220, procalcitonina 4.5. CURB-65: 3.',
+    sepsis: 'Mujer 80 años, residente en geriátrico, portadora de sonda vesical permanente. 48h de fiebre 39ºC, confusión, oliguria. TA 85/50, FC 115, FR 24, SatO2 92%. Sedimento: piuria franca + nitritos positivos. Lactato 4.5. Leucos 22000 con desviación izquierda. qSOFA: 3.',
+    anafilaxia: 'Varón 28 años sin antecedentes. Durante la cena en restaurante inicia urticaria generalizada, edema labial y de úvula, disnea con sibilancias, mareo. TA 75/40, FC 130, SatO2 90%. Había comido ensalada con frutos secos.'
+  };
+
+  function insertExample(key){
+    document.getElementById('caseText').value = EXAMPLES[key] || '';
+    updateMeta();
+  }
+  function clearCase(){
+    document.getElementById('caseText').value = '';
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('errorBox').classList.remove('show');
+    updateMeta();
+  }
+  function updateMeta(){
+    var t = document.getElementById('caseText').value;
+    document.getElementById('caseMeta').textContent = t.length + ' caracteres · límite 3000';
+  }
+  document.getElementById('caseText').addEventListener('input', updateMeta);
+
+  function handleCaseFile(ev){
+    var f = ev.target.files[0];
+    if(!f) return;
+    if(f.size > 500 * 1024){ alert('Archivo demasiado grande (>500KB)'); return; }
+    if(f.type === 'application/pdf'){
+      alert('PDF aún no soportado. Por favor pega el texto manualmente.');
+      return;
+    }
+    var r = new FileReader();
+    r.onload = function(e){
+      document.getElementById('caseText').value = String(e.target.result || '').substring(0, 3000);
+      updateMeta();
+    };
+    r.readAsText(f);
+  }
+
+  async function generateQuiz(){
+    var text = document.getElementById('caseText').value.trim();
+    if(!text){ showError('Pega un caso clínico o selecciona un ejemplo.'); return; }
+    if(text.length < 50){ showError('Caso demasiado corto. Añade más detalle clínico.'); return; }
+    if(text.length > 3000){ showError('Caso demasiado largo (máx 3000). Abrévialo.'); return; }
+
+    if(typeof window.askAi !== 'function'){ showError('Cliente IA no cargado. Recarga la página.'); return; }
+
+    document.getElementById('errorBox').classList.remove('show');
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('loadingBox').classList.add('show');
+    document.getElementById('genBtn').disabled = true;
+
+    var sysPrompt = 'Eres un tutor MIR senior experto en formación clínica. Dado un caso, generas 5 preguntas tipo test (A/B/C/D) con 1 respuesta correcta y explicación breve pero rigurosa. Responde SOLO JSON válido, sin markdown ni backticks, con este esquema exacto:\n{"preguntas":[{"pregunta":"...","opciones":["A) ...","B) ...","C) ...","D) ..."],"correcta":0,"explicacion":"..."}]}\nReglas:\n- Exactamente 5 preguntas.\n- Cada pregunta cubre un aspecto diferente (diagnóstico, exploración, pruebas, tratamiento, complicaciones).\n- "correcta" es el índice 0-3 de la opción correcta.\n- Explicación 2-4 frases. Cita guía/criterio si aplica.\n- Español clínico formal. Sin menciones comerciales de fármacos (solo principio activo).\n- Si el caso contiene nombres, DNI, NHC o datos identificativos, responde {"error":"El caso contiene datos identificativos. Anonimiza primero."}.';
+
+    try{
+      var res = await window.askAi({ type:'educational', systemPrompt: sysPrompt, prompt: 'CASO:\n' + text + '\n\nGenera las 5 preguntas tipo test en JSON.' });
+      var raw = (res && res.text || '').replace(/```json?/gi,'').replace(/```/g,'').trim();
+      var m = raw.match(/\{[\s\S]*\}/);
+      if(!m) throw new Error('La IA no devolvió JSON. Reintenta.');
+      var data = JSON.parse(m[0]);
+      if(data.error){ showError(data.error); return; }
+      if(!Array.isArray(data.preguntas) || !data.preguntas.length) throw new Error('Formato inválido');
+      renderQuiz(data.preguntas);
+    }catch(e){
+      showError('No se pudo generar: ' + (e.userMessage || e.message || 'error desconocido'));
+    }finally{
+      document.getElementById('loadingBox').classList.remove('show');
+      document.getElementById('genBtn').disabled = false;
+    }
+  }
+
+  function renderQuiz(preguntas){
+    var list = document.getElementById('quizList');
+    list.innerHTML = '';
+    window._quizState = { total: preguntas.length, answered: 0, correct: 0 };
+
+    preguntas.forEach(function(q, idx){
+      var wrap = document.createElement('div');
+      wrap.className = 'quiz-q';
+      var opts = (q.opciones || []).map(function(o, i){
+        var letter = String.fromCharCode(65 + i);
+        return '<button class="quiz-opt" data-correct="' + (i === q.correcta ? '1' : '0') + '" onclick="answerQuiz(this,' + idx + ')"><span class="quiz-opt-letter">' + letter + '</span><span>' + escapeHtml(String(o).replace(/^[A-D]\)\s*/,'')) + '</span></button>';
+      }).join('');
+      wrap.innerHTML =
+        '<div class="quiz-q-num">PREGUNTA ' + (idx+1) + ' / ' + preguntas.length + '</div>' +
+        '<div class="quiz-q-text">' + escapeHtml(q.pregunta || '') + '</div>' +
+        '<div class="quiz-opts">' + opts + '</div>' +
+        '<div class="quiz-explain" id="explain-' + idx + '"><strong>Explicación:</strong> ' + escapeHtml(q.explicacion || '—') + '</div>';
+      list.appendChild(wrap);
+    });
+    document.getElementById('quizArea').style.display = 'block';
+    document.getElementById('quizScore').style.display = 'none';
+    document.getElementById('quizArea').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function answerQuiz(btn, qIdx){
+    var parent = btn.closest('.quiz-q');
+    if(parent.dataset.answered === '1') return;
+    parent.dataset.answered = '1';
+    var correct = btn.dataset.correct === '1';
+    btn.classList.add(correct ? 'correct' : 'wrong');
+    // marca la correcta
+    parent.querySelectorAll('.quiz-opt').forEach(function(b){
+      b.classList.add('disabled');
+      if(b.dataset.correct === '1' && b !== btn) b.classList.add('correct');
+    });
+    var ex = document.getElementById('explain-' + qIdx);
+    if(ex) ex.classList.add('show');
+
+    window._quizState.answered++;
+    if(correct) window._quizState.correct++;
+    if(window._quizState.answered === window._quizState.total){
+      var s = document.getElementById('quizScore');
+      s.style.display = 'block';
+      s.textContent = '✅ ' + window._quizState.correct + ' / ' + window._quizState.total + ' aciertos';
+    }
+  }
+
+  function resetQuiz(){
+    document.getElementById('quizArea').style.display = 'none';
+    document.getElementById('caseText').focus();
+  }
+
+  function showError(msg){
+    var eb = document.getElementById('errorBox');
+    eb.textContent = '❌ ' + msg;
+    eb.classList.add('show');
+  }
+
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+</script>
+<script src="sw-update.js" defer></script>
+
+</body>
+</html>

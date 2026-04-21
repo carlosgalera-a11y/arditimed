@@ -2,404 +2,265 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profesionales - Centro de Salud Cartagena Este</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0d3d26">
+<meta name="description" content="Área de profesionales · Cartagenaeste — protocolos, IA clínica, urgencias, enfermería, docencia.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
+<link rel="manifest" href="manifest.json">
+<title>Profesionales · Cartagenaeste</title>
+
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="firebase-init.js"></script>
+
+<script>window.SENTRY_DSN='';</script>
+<script src="sentry-init.js" defer></script>
+<script src="update-button.js" defer></script>
+
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Segoe UI',sans-serif; background:#f0f4f8; }
-header { background:linear-gradient(135deg,#0d3d26,#1a6b4a); padding:28px 20px 24px; text-align:center; color:#fff; }
-header h1 { font-size:1.6rem; font-weight:700; margin-bottom:6px; }
-header p { font-size:.85rem; color:rgba(255,255,255,.75); }
-.back { display:inline-flex; align-items:center; gap:5px; color:rgba(255,255,255,.8); text-decoration:none; font-size:.8rem; margin-bottom:14px; }
-.search-wrap { max-width:900px; margin:20px auto 0; padding:0 16px; }
-.search { display:block; width:100%; padding:11px 20px; border:2px solid #1a6b4a; border-radius:30px; font-size:.95rem; outline:none; background:#fff; }
-.content { max-width:900px; margin:0 auto; padding:20px 16px 60px; }
-.section { background:#fff; border-radius:14px; margin-bottom:14px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,.06); }
-.sh { display:flex; align-items:center; gap:12px; padding:15px 20px; cursor:pointer; border-bottom:1px solid #f0f0f0; user-select:none; transition:background .15s; }
-.sh:hover { background:#f9fdf9; }
-.si { font-size:1.4rem; flex-shrink:0; }
-.st { font-weight:700; font-size:.92rem; color:#1a3a2a; flex:1; }
-.sc { font-size:.72rem; color:#888; margin-right:6px; }
-.chev { color:#aaa; font-size:.75rem; transition:transform .2s; }
-.sb { display:none; padding:6px 0; }
-.sb.open { display:block; }
-.sh.open .chev { transform:rotate(180deg); }
-.item { display:flex; align-items:center; gap:12px; padding:11px 20px; text-decoration:none; color:#333; border-bottom:1px solid #f7f7f7; transition:background .15s; }
-.item:last-child { border-bottom:none; }
-.item:hover { background:#f0faf5; }
-.ii { font-size:1rem; flex-shrink:0; width:22px; text-align:center; }
-.it { flex:1; min-width:0; }
-.it-title { font-size:.86rem; font-weight:600; color:#1a3a2a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.it-desc { font-size:.73rem; color:#888; margin-top:1px; }
-.bp { font-size:.67rem; background:#fff0e0; color:#c8920a; padding:2px 8px; border-radius:10px; font-weight:700; flex-shrink:0; white-space:nowrap; }
-.hidden { display:none !important; }
-.footer { text-align:center; font-size:.72rem; color:#aaa; padding:20px; }
-.footer a { color:#1a6b4a; text-decoration:none; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f4f8;color:#2d3748;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+
+header{background:linear-gradient(135deg,#0d3d26,#1a6b4a);color:#fff;padding:18px 20px 16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.nav-top{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.back-link{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:18px;font-size:.82rem;color:#fff;font-weight:600;cursor:pointer;transition:.2s}
+.back-link:hover{background:rgba(255,255,255,.22)}
+.brand{display:inline-flex;align-items:center;gap:8px}
+.brand-name{font-size:1.05rem;font-weight:700}
+.user-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);border-radius:18px;font-size:.78rem;font-weight:600}
+.user-avatar{width:22px;height:22px;border-radius:50%;background:#fff;color:#1a6b4a;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
+.user-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.hero-title{margin-top:16px;font-size:clamp(1.3rem,3vw,1.7rem);font-weight:800;letter-spacing:-.3px}
+.hero-sub{margin-top:4px;font-size:.84rem;opacity:.85}
+
+main{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:30px 20px 50px}
+.login-gate{max-width:420px;margin:40px auto;background:#fff;padding:28px 24px;border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.08);text-align:center}
+.login-gate h2{color:#1a3a2a;font-size:1.2rem;margin-bottom:10px}
+.login-gate p{color:#64748b;font-size:.9rem;line-height:1.5;margin-bottom:18px}
+.btn-google{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:10px;font-weight:600;font-size:.92rem;cursor:pointer;transition:.2s}
+.btn-google:hover{background:#f8f9fa;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.btn-google svg{width:20px;height:20px}
+
+.tiles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.tile{display:flex;flex-direction:column;gap:10px;padding:24px 22px;background:#fff;border:2px solid #e2e8f0;border-radius:16px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;color:#2d3748;min-height:170px;font-family:inherit;text-align:left;position:relative;overflow:hidden}
+.tile::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--tile-color,#1a6b4a);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.tile:hover{border-color:var(--tile-color,#1a6b4a);transform:translateY(-3px);box-shadow:0 12px 30px rgba(26,107,74,.18)}
+.tile:hover::before{transform:scaleX(1)}
+.tile-head{display:flex;align-items:center;gap:12px}
+.tile-icon{width:46px;height:46px;display:inline-flex;align-items:center;justify-content:center;background:var(--tile-bg,#e8f5e9);color:var(--tile-color,#1a6b4a);border-radius:12px;font-size:1.5rem}
+.tile-title{font-size:1.05rem;font-weight:800;color:#1a3a2a;letter-spacing:-.2px}
+.tile-desc{font-size:.82rem;color:#64748b;line-height:1.45;flex:1}
+.tile-badge{display:inline-block;margin-top:4px;padding:3px 10px;background:var(--tile-bg,#e8f5e9);color:var(--tile-color,#1a6b4a);border-radius:10px;font-size:.68rem;font-weight:700;align-self:flex-start}
+
+.tile[data-k="ap"]{--tile-color:#0369a1;--tile-bg:#e0f2fe}
+.tile[data-k="hospitalaria"]{--tile-color:#7c3aed;--tile-bg:#f3e8ff}
+.tile[data-k="urgencias"]{--tile-color:#dc2626;--tile-bg:#fee2e2}
+.tile[data-k="enfermeria"]{--tile-color:#0d9488;--tile-bg:#ccfbf1}
+.tile[data-k="herramientas"]{--tile-color:#0066cc;--tile-bg:#dbeafe}
+.tile[data-k="buscas"]{--tile-color:#92400e;--tile-bg:#fef3c7}
+.tile[data-k="docencia"]{--tile-color:#15803d;--tile-bg:#dcfce7}
+
+footer{padding:16px 20px;text-align:center;font-size:.72rem;color:#94a3b8;line-height:1.5;background:#fff;border-top:1px solid #e2e8f0}
+footer a{color:#64748b;text-decoration:underline}
+footer a:hover{color:#1a6b4a}
+.links-row{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 16px;margin-top:4px}
+
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-backdrop.show{display:flex}
+.modal{background:#fff;border-radius:14px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h3{color:#1a3a2a;margin-bottom:8px;font-size:1.1rem}
+.modal p{color:#64748b;font-size:.85rem;margin-bottom:14px;line-height:1.5}
+.modal input{width:100%;padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:.92rem;font-family:inherit;outline:none;margin-bottom:12px}
+.modal input:focus{border-color:#1a6b4a}
+.modal .actions{display:flex;gap:10px;justify-content:flex-end}
+.modal button{padding:10px 18px;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit}
+.modal .ok{background:#1a6b4a;color:#fff}
+.modal .ok:hover{background:#0d4a30}
+.modal .cancel{background:#e2e8f0;color:#475569}
+.modal .cancel:hover{background:#cbd5e1}
+.modal .err{color:#dc2626;font-size:.8rem;margin-top:4px;min-height:1em}
+
+@media(max-width:560px){
+  .tile{min-height:140px;padding:18px}
+  .tile-icon{width:38px;height:38px;font-size:1.25rem}
+  .hero-title{font-size:1.25rem}
+  .user-name{max-width:90px}
+}
 </style>
 </head>
+
 <body>
-<header>
-  <a class="back" href="https://carlosgalera-a11y.github.io/Cartagenaeste/sites-inicio.html" target="_top">← Inicio</a>
-  <h1>👨‍⚕️ Recursos Profesionales</h1>
-  <p>Archivo Clínico · Centro de Salud Cartagena Este · 620 documentos</p>
-</header>
-
-<div class="search-wrap">
-  <input class="search" type="text" placeholder="🔍 Buscar especialidad, protocolo o tema..." oninput="filtrar(this.value)">
-</div>
-
-<div class="content" id="content">
-
-  <!-- URGENCIAS -->
-  <div class="section">
-    <div class="sh open" onclick="toggle(this)">
-      <span class="si">🚨</span><span class="st" id="urgencias">Urgencias y Emergencias</span><span class="sc">40+ docs</span><span class="chev">▼</span>
+  <header>
+    <div class="nav-top">
+      <a href="index.html" class="back-link" aria-label="Volver a inicio">← Inicio</a>
+      <div class="brand"><span style="font-size:1.3rem">🩺</span> <span class="brand-name">Profesionales</span></div>
+      <div id="userPill" style="min-width:40px"></div>
     </div>
-    <div class="sb open">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Chuleta-urgencias-actualizada-.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Chuleta de Urgencias Actualizada</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/PROTOCOLO-CETOACIDOSIS-DIABETICA-URGENCIAS-copia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Cetoacidosis Diabética Urgencias</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-cetoacidosis-diabetica-03.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento Cetoacidosis Diabética</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/cetoacidosis-diabetica.-Victo-2-11.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Cetoacidosis Diabética (sesión)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-situacion-hiperosmolar-04.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Situación Hiperosmolar</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-shock.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Shock</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-Anafilaxia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Anafilaxia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-trauma-grave.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Trauma Grave</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-trauma-toracico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Trauma Torácico</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-trauma-abdominal.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Trauma Abdominal</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-Traumatismo-Craneo-Encefalico-TCE.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo TCE (Traumatismo Craneo-Encefálico)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-RCP-Reanimacion-Cardio-Pulmonar.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo RCP</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-RCP-guiada-por-telefono-Reanimacion-Cardio-Pulmonar.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">RCP Guiada por Teléfono</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-RCP-pediatrica-Reanimacion-Cardio-Pulmonar-pediatrica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">RCP Pediátrica</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-disnea-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Disnea Aguda</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-dolor-toracico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Dolor Torácico</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-crisis-hipertensiva-Hipertension.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Crisis Hipertensiva</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-Bradiarritmia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Bradiarritmia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-taquicardia-QRS-ancho.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Taquicardia QRS Ancho</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-taquicardia-QRS-estrecho.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Taquicardia QRS Estrecho</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-sindrome-coronario-agudo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Síndrome Coronario Agudo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-sindrome-coronario-agudo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento SCA</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-fibrinolisis.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Fibrinolisis</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-crisis-convulsiva-en-adultos.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Crisis Convulsiva Adultos</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-convulsiones-ninos-Crisis-convulsivas-ninos.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Convulsiones Niños</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-sincopes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento Síncopes</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-manejo-insuficiencia-cardiaca-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Insuficiencia Cardíaca Aguda</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-edema-agudo-de-pulmon-cardiogenico-EAPC.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Edema Agudo de Pulmón Cardiogénico</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-atencion-al-quemado.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Atención al Quemado</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-paciente-ahogado.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Paciente Ahogado</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-Sistema-de-Alerta-Precoz-y-Respuesta-Rapida-SIARP.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SIARP - Alerta Precoz y Respuesta Rápida</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolos-pat.-vascular-SU-HUSL-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos Patología Vascular SU HUSL</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-VMNI-del-HUGCR.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual VMNI</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Guia-de-manejo-avanzado-de-la-via-aerea.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Manejo Avanzado Vía Aérea</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-crisis-asmatica-07.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento Crisis Asmática</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-ventilacion-mecanica-no-invasiva-prehospitalaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">VMNI Prehospitalaria</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Libro-para-Urgencias-2010-vol.-I.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro de Urgencias 2010 Vol. I</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Libro-para-Urgencias-2010-vol.-II.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro de Urgencias 2010 Vol. II</div></div><span class="bp">📥 PDF</span></a>
+    <div class="hero-title">Área de Profesionales</div>
+    <div class="hero-sub">Protocolos, IA clínica, docencia y herramientas.</div>
+  </header>
+
+  <main>
+    <div id="loginGate" class="login-gate" style="display:none">
+      <h2>🔐 Requiere inicio de sesión</h2>
+      <p>Esta zona es exclusiva para profesionales sanitarios del Área II Cartagena. Inicia sesión con tu cuenta de Google.</p>
+      <button class="btn-google" onclick="signInWithGoogle()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <span>Continuar con Google</span>
+      </button>
+    </div>
+
+    <div id="hub" class="tiles-grid" style="display:none">
+      <button type="button" class="tile" data-k="ap" onclick="location.href='protocolos-atencion.html'" aria-label="Atención Primaria">
+        <div class="tile-head"><span class="tile-icon">🏘️</span><span class="tile-title">Atención Primaria</span></div>
+        <div class="tile-desc">Protocolos de Atención Primaria, guías clínicas, algoritmos de decisión.</div>
+        <span class="tile-badge">Protocolos AP</span>
+      </button>
+
+      <button type="button" class="tile" data-k="hospitalaria" onclick="location.href='panel-medico.html'" aria-label="Atención Hospitalaria">
+        <div class="tile-head"><span class="tile-icon">🏥</span><span class="tile-title">Atención Hospitalaria</span></div>
+        <div class="tile-desc">Panel completo: MegaCuaderno IA, casos clínicos, calculadoras, fármacos, checklist IA.</div>
+        <span class="tile-badge">Panel completo</span>
+      </button>
+
+      <button type="button" class="tile" data-k="urgencias" onclick="location.href='urgencias.html'" aria-label="Urgencias">
+        <div class="tile-head"><span class="tile-icon">🚨</span><span class="tile-title">Urgencias</span></div>
+        <div class="tile-desc">Protocolos de urgencias + vista rápida de camas y ambulancias del área.</div>
+        <span class="tile-badge">Protocolos + Camas</span>
+      </button>
+
+      <button type="button" class="tile" data-k="enfermeria" onclick="location.href='app.html#enfermeria'" aria-label="Enfermería">
+        <div class="tile-head"><span class="tile-icon">💉</span><span class="tile-title">Enfermería</span></div>
+        <div class="tile-desc">Protocolos de enfermería, técnicas, fármacos, consultas IA especializadas.</div>
+        <span class="tile-badge">Protocolos técnicos</span>
+      </button>
+
+      <button type="button" class="tile" data-k="herramientas" onclick="location.href='app.html#herramientas'" aria-label="Herramientas">
+        <div class="tile-head"><span class="tile-icon">🔬</span><span class="tile-title">Herramientas</span></div>
+        <div class="tile-desc">Scan IA (Rx, ECG, derma, eco), ECG-GPT integrado, Quiz NIH Chest X-Ray, FileHub.</div>
+        <span class="tile-badge">IA clínica</span>
+      </button>
+
+      <button type="button" class="tile" data-k="buscas" onclick="openBuscasGate()" aria-label="Buscas">
+        <div class="tile-head"><span class="tile-icon">📟</span><span class="tile-title">Buscas</span></div>
+        <div class="tile-desc">Directorio de buscas del área. Requiere contraseña adicional.</div>
+        <span class="tile-badge">🔒 Protegido</span>
+      </button>
+
+      <button type="button" class="tile" data-k="docencia" onclick="location.href='docencia.html'" aria-label="Docencia">
+        <div class="tile-head"><span class="tile-icon">🎓</span><span class="tile-title">Docencia</span></div>
+        <div class="tile-desc">Generador de casos clínicos tipo test (con IA) + casos MIR por especialidad.</div>
+        <span class="tile-badge">Casos + MIR</span>
+      </button>
+    </div>
+  </main>
+
+  <footer>
+    <div>© 2026 Cartagenaeste · Uso formativo. No diagnóstico. · Reg. PI 00765-03096622</div>
+    <div class="links-row">
+      <a href="privacidad.html">Privacidad</a>
+      <a href="informacion.html">Aviso legal</a>
+      <a href="status.html">Estado</a>
+    </div>
+  </footer>
+
+  <div class="modal-backdrop" id="buscasModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>📟 Acceso a Buscas</h3>
+      <p>Introduce la contraseña compartida del directorio.</p>
+      <input type="password" id="buscasPwd" placeholder="Contraseña" autocomplete="off" onkeydown="if(event.key==='Enter')checkBuscasPassword()">
+      <div class="err" id="buscasErr"></div>
+      <div class="actions">
+        <button class="cancel" onclick="closeBuscasGate()">Cancelar</button>
+        <button class="ok" onclick="checkBuscasPassword()">Entrar</button>
+      </div>
     </div>
   </div>
 
-  <!-- NEUROLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🧠</span><span class="st" id="neurologia">Neurología</span><span class="sc">10 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/4.1.-Accidente-isquemico-transitorio.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">AIT - Accidente Isquémico Transitorio</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/4.2.-Ictus-isquemico-agudo-I.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Ictus Isquémico Agudo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Guia-atencion-ICTUS-isquemico-agudo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Atención ICTUS Isquémico Agudo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/4.5.-Hemorragia-cerebral.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hemorragia Cerebral</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/8.9.-Estado-epileptico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Estado Epiléptico</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Cefaleas.2019.-REcomendacionesSEN.Pregunar.EF_.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Cefaleas - Recomendaciones SEN 2019</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/5_Guia-oficial-SEN-de-practica-clinica-en-Cefaleas-2020.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía SEN Cefaleas 2020</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Migrana-y-Mujer.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Migraña y Mujer</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Migrana-y-gestacion-300725.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Migraña y Gestación</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual_Urgencias_neurologicas_2023_DIGITAL.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Urgencias Neurológicas 2023</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
+  <script>
+    var auth = firebase.auth();
+    var gate = document.getElementById('loginGate');
+    var hub = document.getElementById('hub');
+    var pill = document.getElementById('userPill');
 
-  <!-- CARDIOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">❤️</span><span class="st" id="cardiologia">Cardiología</span><span class="sc">8 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/CODIGO-IAM-CARM-2018.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Código IAM CARM 2018</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-Codigo-Infarto-Protocolo-regional.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Código Infarto Regional</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Traslados-angioplastia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Traslados Angioplastia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/IC-caprimur.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Insuficiencia Cardíaca - CAPRIMUR</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/guia-ic-esc.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía IC ESC</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Interpretacion-ECG-cardiologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Interpretación ECG</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/RESUMEN-PRESENTACION-ARRIXACA-MAYO-2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Presentación Arrixaca Mayo 2025</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
+    function esc(s){ return String(s).replace(/[<>&"]/g,''); }
 
-  <!-- NEUMOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🫁</span><span class="st" id="neumologia">Neumología</span><span class="sc">8 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Actualizacion-en-el-Abordaje-de-las-Neumonias-desde-Atencion-Primaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Actualización Neumonía desde AP</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/actualizacion-del-manejo-de-nnac-en-ap-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Actualización NAC en AP</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/GEMA_50_ok_22.05.2020_red-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">GEMA 5.0 - Guía Asma</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/epoc-gold-2023-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">EPOC GOLD 2023</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-obstruccion-cronica-al-flujo-aereo-reagudizado-OCFA.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Procedimiento OCFA Reagudizado</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/LIBRO-INHALADORES-TABLAS-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro Inhaladores - Tablas</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/LIBRO-INHALADORESTABLA-NEBULIZADOS.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Libro Inhaladores - Nebulizados</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/5-EXPLORACION-Neumologia-3_ed.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Exploración Neumología 3ª ed.</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/CURSO-DE-RADIOLOGIA-TORACICA.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Curso de Radiología Torácica</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
+    auth.onAuthStateChanged(function(u){
+      if(u){
+        gate.style.display = 'none';
+        hub.style.display = 'grid';
+        var ini = (u.displayName || u.email || '?').charAt(0).toUpperCase();
+        var nm = u.displayName || u.email || 'Usuario';
+        pill.innerHTML =
+          '<span class="user-pill">' +
+            '<span class="user-avatar">' + esc(ini) + '</span>' +
+            '<span class="user-name">' + esc(nm) + '</span>' +
+          '</span>';
+      } else {
+        gate.style.display = 'block';
+        hub.style.display = 'none';
+        pill.innerHTML = '<a href="index.html" class="back-link">Inicio</a>';
+      }
+    });
 
-  <!-- ENDOCRINOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🩸</span><span class="st" id="endocrinologia">Endocrinología y Metabolismo</span><span class="sc">8 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Definicion-y-clasificacion-de-la-diabetes-mellitus.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Diabetes Mellitus: Definición y Clasificación</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Hipertiroidismo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Hipertiroidismo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Hipotiroidismo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Hipotiroidismo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Bocio-y-nodulo-tiroideo-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Bocio y Nódulo Tiroideo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Epidemiologia-diagnostico-y-clasificacion-de-las-dislipidemias.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SEEN - Dislipemias</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/DISLIPIEMIAS-DEFINITIVO-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Dislipemias - Guía definitiva</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/hoja-de-controles-glucosa.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hoja de Controles de Glucosa</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- GERIATRÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👴</span><span class="st" id="geriatria">Geriatría y Demencias</span><span class="sc">4 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/NUTRICION-ANCVIANO-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Nutrición en el Paciente Anciano</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/deprescripcion-AP-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Deprescripción en AP</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/ERC.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Enfermedad Renal Crónica</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Enfermedad-renal-cronica-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Enfermedad Renal Crónica (2)</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- DIGESTIVO -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🫃</span><span class="st" id="digestivo">Digestivo</span><span class="sc">8 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/enfermedad-inflamatoria-cronica-intestinal-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Enfermedad Inflamatoria Crónica Intestinal</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Colangitis-Aguda-Protocolo-de-Manejo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Colangitis Aguda - Protocolo de Manejo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/protocolo-colangitis-urgencias.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Colangitis Urgencias</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/SIBO-GEH.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">SIBO - GEH</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Infografia-dispepsia-min.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Infografía Dispepsia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/recomendaciones-dieteticas-en-diarrea-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Recomendaciones Dietéticas Diarrea Aguda</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/recomendaciones-generales-para-pacientes-con-enfermedad-por-reflujo-20150528093913.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Recomendaciones Enfermedad por Reflujo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/recomendaciones-nutricionales-para-pacientes-de-colelitiasis-20150114114017.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Recomendaciones Colelitiasis</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- REUMATOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🦴</span><span class="st" id="reumatologia">Reumatología y Aparato Locomotor</span><span class="sc">3 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Guia-de-infiltraciones_compressed-1-copia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía de Infiltraciones</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual_de_Exploracion_Fisica_del_Aparato_Locomotor-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Exploración Aparato Locomotor</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-de-Rotacion-del-residente-en-Reumatologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Rotación Residente Reumatología</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-del-Residente-De-C.O.T.DeLaSECOT-SECOT.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manual Residente COT - SECOT</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- DERMATOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🧬</span><span class="st" id="dermatologia">Dermatología</span><span class="sc">5 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/543680445-Fitzpatrick-Atlas-de-Dermatologia-Clinica-7-Ed.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Fitzpatrick - Atlas Dermatología Clínica 7ª Ed.</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/PUNTOS-SOYER.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Puntos Soyer</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/manejo-qujeratosis-actinica-en-AP2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Queratosis Actínica en AP</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/4.sesion-diagnostico-diferencial-exantemas.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Diagnóstico Diferencial Exantemas</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/22-36-Exantemas.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Exantemas</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- PEDIATRÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👶</span><span class="st" id="pediatria">Pediatría</span><span class="sc">4 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Guia-emergencias-y-urgencias-pediatricas-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Emergencias y Urgencias Pediátricas 2024</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolos-SEUP-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos SEUP 2024</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-regional-de-translados-de-neonatos-criticos.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Traslados Neonatos Críticos</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-RCP-pediatrica-Reanimacion-Cardio-Pulmonar-pediatrica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">RCP Pediátrica</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- GINECOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👩‍⚕️</span><span class="st" id="ginecologia">Ginecología, Obstetricia e ITS</span><span class="sc">10 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/AEPCC_revista09-Anticonceptivos-web.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Anticonceptivos AEPCC</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Metodos-Anticonceptivos-para-Adolescentes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Métodos Anticonceptivos para Adolescentes</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/AEPCC_guia_CRIBADO_2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Cribado Cáncer Cuello Útero 2025</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/AEPCC-guia-13_CONDILOMAS-22112025_web.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Condilomas AEPCC 2025</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Gripe-y-gestacion-2024-2025-14112024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Gripe y Gestación 2024-2025</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Tiroides-y-embarazo-140725.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Tiroides y Embarazo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/hiperemesis-gravidica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hiperemesis Gravídica</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/hiperemesis-gravidica-recomendaciones.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Hiperemesis Gravídica - Recomendaciones</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/ITS.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">ITS - Infecciones de Transmisión Sexual</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Infeccion-por-VPH-Vacunacion.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Infección VPH y Vacunación</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Salud_Sexual_Conocer_Prevenir_Actuar.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Salud Sexual: Conocer, Prevenir, Actuar</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/triptico_mutilacion.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Mutilación Genital Femenina</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- SALUD MENTAL -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🧩</span><span class="st" id="salud-mental">Salud Mental</span><span class="sc">5 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Depresion-sesion.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Depresión - Sesión clínica</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/PDF-1.-Sueno.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Trastornos del Sueño</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/2.-INFORMACION-SOBRE-LA-UNIDAD-DE-SALUD-MENTAL-LABORAL.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Unidad Salud Mental Laboral</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-de-primeros-auxilios-psicologicos-PAP.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Primeros Auxilios Psicológicos (PAP)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-traslado-enfermos-mentales.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Traslado Enfermos Mentales</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- ORL -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">👂</span><span class="st" id="orl">ORL - Otorrinolaringología</span><span class="sc">5 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/PROTOCOLO-DE-ACTUACION-EN-LA-PATOLOGIA-ORL-URGENTE-EN-EL-AREA-II-DEL-SMS-1.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo ORL Urgente Área II SMS</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-faringoamigdalitis-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Faringoamigdalitis Aguda</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-manejo-faringoamigdalitis.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Faringoamigdalitis</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-manejo-otitis-aguda.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Manejo Otitis Aguda</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/5.-sesion-ORL2pdf.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Sesión ORL</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- UROLOGÍA / NEFROLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🫘</span><span class="st" id="urologia">Urología y Nefrología</span><span class="sc">4 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Urgencias-urolA³gicas-curso-residentes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Urgencias Urológicas - Curso Residentes</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/guia-Colico-nefritico-2.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Cólico Nefrítico</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/IRA.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Insuficiencia Renal Aguda</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/guia_urgencias_oftalmologica.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía Urgencias Oftalmológicas</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- INFECTOLOGÍA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🦠</span><span class="st" id="infectologia">Infectología y Enfermedades Infecciosas</span><span class="sc">5 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-riesgo-biologico-Profilaxis-Meningitis.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Profilaxis Meningitis</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-riesgo-biologico-Profilaxis-Rabia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Profilaxis Rabia</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-Toma-de-Muestras-Viruela-del-Mono-MPX.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Viruela del Mono (MPX) - Toma de Muestras</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Procedimiento-de-actuacion-frente-a-casos-sospechosos-de-enfermedad-por-virus-ebola-EVE.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolo Ébola</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-exposicion-accidental-ocupacional-a-material-biologico-Riesgo-biologico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Exposición Accidental Material Biológico</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- PREVENCIÓN -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🌿</span><span class="st" id="prevencion">Prevención y Salud Pública</span><span class="sc">6 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Calendario-de-vacunacion-a-lo-largo-de-toda-la-vida.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Calendario Vacunación a lo Largo de la Vida</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/TabaquIsmo-Guia-para-dejar-de-fumar_2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía para Dejar de Fumar 2025</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Tabaquismo-Guia-para-Fumadores_2025.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Guía para Fumadores 2025</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Protocolo-vigilancia-calor-Region-de-Murcia-2024.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Vigilancia Calor - Región de Murcia 2024</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/el-plato-para-comer-saludable.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">El Plato para Comer Saludable</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/docs/PNC-3.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Plan Nacional de Control (PNC)</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- PROTOCOLOS AP -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">📋</span><span class="st" id="protocolos-ap">Protocolos Atención Primaria</span><span class="sc">11 docs</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-atencion-primaria.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">Protocolos AP (documento completo)</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/01-problemas-generales.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">01 · Problemas Generales</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/02-respiratorio-cardiovascular.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">02 · Respiratorio y Cardiovascular</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/03-digestivo.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">03 · Digestivo</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/04-neurologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">04 · Neurología</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/05-salud-mental.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">05 · Salud Mental</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/06-cronicas-frecuentes.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">06 · Crónicas Frecuentes</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/07-musculoesqueletico.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">07 · Musculoesquelético</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/08-dermatologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">08 · Dermatología</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/09-urologia-nefrologia.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">09 · Urología y Nefrología</div></div><span class="bp">📥 PDF</span></a>
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos/10-ORL.pdf" target="_blank"><span class="ii">📄</span><div class="it"><div class="it-title">10 · ORL</div></div><span class="bp">📥 PDF</span></a>
-    </div>
-  </div>
-
-  <!-- APP IA -->
-  <div class="section">
-    <div class="sh" onclick="toggle(this)">
-      <span class="si">🤖</span><span class="st" id="app-ia">App Médica IA</span><span class="sc">Herramientas</span><span class="chev">▼</span>
-    </div>
-    <div class="sb">
-      <a class="item" href="https://carlosgalera-a11y.github.io/Cartagenaeste/index.html" target="_top"><span class="ii">📱</span><div class="it"><div class="it-title">App Médica Area II Cartagena</div><div class="it-desc">Cuaderno IA · Protocolos · Calculadoras</div></div><span class="bp">🔗 Abrir</span></a>
-    </div>
-  </div>
-
-</div>
-
-<p class="footer">© 2026 <a href="https://cartagenaeste.es">cartagenaeste.es</a> · Centro de Salud Cartagena Este · 620 documentos alojados en GitHub</p>
-
-<script>
-function toggle(h) {
-  h.classList.toggle('open');
-  h.nextElementSibling.classList.toggle('open');
-}
-function filtrar(q) {
-  const q2 = q.toLowerCase();
-  document.querySelectorAll('.section').forEach(s => {
-    const match = !q2 || s.textContent.toLowerCase().includes(q2);
-    s.classList.toggle('hidden', !match);
-    if (match && q2) {
-      s.querySelector('.sh').classList.add('open');
-      s.querySelector('.sb').classList.add('open');
+    function signInWithGoogle(){
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      auth.signInWithPopup(provider).catch(function(err){
+        console.error('Login error:', err);
+        alert('No se pudo iniciar sesión: ' + (err.message || err.code));
+      });
     }
-  });
-}
-</script>
 
-<script>
-// Scroll automático a la sección si hay hash en la URL
-window.addEventListener('load', function() {
-  if (window.location.hash) {
-    const id = window.location.hash.substring(1);
-    const el = document.getElementById(id);
-    if (el) {
-      const section = el.closest('.section');
-      if (section) {
-        // Abrir la sección
-        const sh = section.querySelector('.sh');
-        const sb = section.querySelector('.sb');
-        sh.classList.add('open');
-        sb.classList.add('open');
-        // Scroll suave
-        setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+    // Buscas: SHA-256 hash de la contraseña original "caridad" del PR viejo.
+    var BUSCAS_PWD_HASH = '9ffe80cde00f4ae81a2b38ef5f75b4cb770f3e7a0a59daf22a86f88a1e8cf3cb';
+
+    function openBuscasGate(){
+      document.getElementById('buscasErr').textContent = '';
+      document.getElementById('buscasPwd').value = '';
+      document.getElementById('buscasModal').classList.add('show');
+      setTimeout(function(){ document.getElementById('buscasPwd').focus(); }, 100);
+    }
+    function closeBuscasGate(){ document.getElementById('buscasModal').classList.remove('show'); }
+
+    async function sha256(str){
+      var enc = new TextEncoder().encode(str);
+      var buf = await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    }
+
+    async function checkBuscasPassword(){
+      var pwd = document.getElementById('buscasPwd').value.trim();
+      if(!pwd){ document.getElementById('buscasErr').textContent = 'Introduce la contraseña'; return; }
+      try{
+        var h = await sha256(pwd);
+        if(h === BUSCAS_PWD_HASH){
+          sessionStorage.setItem('buscas_ok', '1');
+          location.href = 'buscas.html';
+        } else {
+          document.getElementById('buscasErr').textContent = '❌ Contraseña incorrecta';
+        }
+      }catch(e){
+        document.getElementById('buscasErr').textContent = 'Error interno';
       }
     }
-  }
-});
-</script>
 
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeBuscasGate(); });
+
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('sw.js').catch(function(e){ console.warn('SW:', e); });
+      });
+    }
+  </script>
+
+  <script src="sw-update.js" defer></script>
 </body>
 </html>

@@ -160,6 +160,37 @@ window.gaTrack=function(event,params){
         });
     }
     var db = firebase.firestore();
+
+    // ═══ PER-USER SESSION MANAGER ═══
+    firebase.auth().onAuthStateChanged(function(user){
+      if(user){
+        // Store active uid for key prefix
+        localStorage.setItem('_active_uid', user.uid);
+        // Reload notebooks from Firestore
+        db.collection('mis_notebooks').doc(user.uid).get().then(function(doc){
+          if(doc.exists && doc.data().notebooks){
+            localStorage.setItem(user.uid+'_mis_notebooks_v1', JSON.stringify(doc.data().notebooks));
+            if(typeof nbRenderAll==='function') try{nbRenderAll();}catch(e){}
+          }
+        }).catch(function(){});
+        // Reload megacuaderno from Firestore
+        db.collection('megacuaderno_backups').doc(user.uid).get().then(function(doc){
+          if(doc.exists && doc.data().history){
+            localStorage.setItem(user.uid+'_megacuaderno_history_v1', JSON.stringify(doc.data().history));
+            if(typeof megaHistory!=='undefined') try{megaHistory=doc.data().history;}catch(e){}
+          }
+        }).catch(function(){});
+        // Update login buttons
+        document.querySelectorAll('[id^="loginBtn"]').forEach(function(btn){
+          btn.textContent='👤 '+user.email.split('@')[0];
+        });
+      } else {
+        localStorage.removeItem('_active_uid');
+        document.querySelectorAll('[id^="loginBtn"]').forEach(function(btn){
+          btn.textContent='🔐 Login';
+        });
+      }
+    });
     </script>
     <link rel="stylesheet" href="styles.css?v=20260404z">
     <script src="ai-client.js"></script>
@@ -244,41 +275,41 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                 <!-- ── GRID PRINCIPAL DE SECCIONES ── -->
                 <div class="hero-buttons">
                     <div style="display:flex;gap:8px;margin-bottom:16px;justify-content:center;flex-wrap:wrap;">
-                        <button onclick="abrirBuscador()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">🔍 Buscar</button>
-                        <button onclick="abrirFavoritos()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">⭐ Favoritos</button>
+                        <button onclick="if(!firebase.auth().currentUser){showLoginModal();return;}abrirBuscador()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">🔍 Buscar</button>
+                        <button onclick="if(!firebase.auth().currentUser){showLoginModal();return;}abrirFavoritos()" style="padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.88rem;font-weight:600;backdrop-filter:blur(4px);">⭐ Favoritos</button>
                     </div>
                     <!-- 2 BOTONES PRINCIPALES -->
                     <a class="hero-btn hero-btn-patients" href="javascript:void(0)" onclick="showPage('pagePatients')" aria-label="Acceder a sección de Pacientes" ><span class="hero-btn-icon">👤</span> Pacientes</a>
-                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="showPage('pageProfessionals')" aria-label="Acceder a sección de Profesionales"><span class="hero-btn-icon">🩺</span> Profesionales</a>
+                    <a class="hero-btn hero-btn-professionals" href="javascript:void(0)" onclick="if(!firebase.auth().currentUser){showLoginModal('Profesionales');return;}showPage('pageProfessionals')" aria-label="Acceder a sección de Profesionales"><span class="hero-btn-icon">🩺</span> Profesionales</a>
                 </div>
 
                 <!-- GRID COMPACTO DE CATEGORÍAS -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;max-width:520px;width:100%;position:relative;z-index:5;">
 
                     <!-- PROTOCOLOS Y GUÍAS -->
-                    <button onclick="toggleSubMenu('subProtocolos')" aria-label="Ver protocolos clínicos" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Protocolos');return;}toggleSubMenu('subProtocolos')" aria-label="Ver protocolos clínicos" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">📋</div>
                         <div style="font-weight:700;font-size:.88rem;">Protocolos</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">AP · Urgencias · Antibióticos</div>
                     </button>
 
                     <!-- ENFERMERÍA -->
-                    <button onclick="showPage('pageEnfermeria')" aria-label="Acceder a sección de Enfermería" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Enfermería');return;}showPage('pageEnfermeria')" aria-label="Acceder a sección de Enfermería" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">👩‍⚕️</div>
                         <div style="font-weight:700;font-size:.88rem;">Enfermería</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Protocolos · Técnicas · Vacunas</div>
                     </button>
 
                     <!-- HERRAMIENTAS CLÍNICAS -->
-                    <button onclick="toggleSubMenu('subHerramientas')" aria-label="Ver herramientas clínicas" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Herramientas');return;}toggleSubMenu('subHerramientas')" aria-label="Ver herramientas clínicas" aria-expanded="false" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
                         <div style="font-size:1.6rem;margin-bottom:4px;">🛠️</div>
                         <div style="font-weight:700;font-size:.88rem;">Herramientas</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">IA · Calculadoras · Informes</div>
                     </button>
 
                     <!-- TELÉFONOS Y BUSCAS -->
-                    <button onclick="showPage('pageTelefonos')" aria-label="Directorio de teléfonos y buscas" style="background:linear-gradient(135deg,rgba(202,138,4,.25),rgba(161,98,7,.2));border:2px solid rgba(202,138,4,.5);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
-                        <div style="font-size:1.6rem;margin-bottom:4px;">📞</div>
+                    <button onclick="if(!firebase.auth().currentUser){showLoginModal('Teléfonos');return;}showPage('pageTelefonos')" aria-label="Directorio de teléfonos y buscas" style="background:linear-gradient(135deg,rgba(202,138,4,.25),rgba(161,98,7,.2));border:2px solid rgba(202,138,4,.5);border-radius:12px;padding:16px;cursor:pointer;text-align:center;color:#fff;font-family:var(--font-body);transition:all .2s;">
+                        <div style="font-size:1.6rem;margin-bottom:4px;">📞🔒</div>
                         <div style="font-weight:700;font-size:.88rem;">Teléfonos Buscas</div>
                         <div style="color:rgba(255,255,255,.5);font-size:.72rem;margin-top:2px;">Hospital · Centros · Buscas</div>
                     </button>
@@ -307,6 +338,9 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
                         <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('calc')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🧮 Calculadoras Médicas</a>
                         <a href="plantillas-informes.html?v=1775483919" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📄 Plantillas de Informes</a>
                         <a href="javascript:void(0)" onclick="showPage('pageTraductor')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🌍 Traductor de Consulta</a>
+                        <a href="transcripcion.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(34,197,94,.2)'" onmouseout="this.style.background='rgba(34,197,94,.12)'">🎙️ Transcripción en Directo</a>
+                        <a href="corrector-clinico.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(59,130,246,.2)'" onmouseout="this.style.background='rgba(59,130,246,.12)'">✏️ Corrector Clínico IA</a>
+                        <a href="analiticas.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(139,92,246,.2)'" onmouseout="this.style.background='rgba(139,92,246,.12)'">🔬 Analíticas IA</a>
                         <a href="generador-qr.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📱 Generador QR Paciente</a>
                         <a href="javascript:void(0)" onclick="showPage('pageTelefonos')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📞 Teléfonos y Buscas</a>
                         <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('plantillas')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Plantillas de Pacientes</a>
@@ -317,12 +351,15 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
                 <div id="subDocencia" style="display:none;position:relative;z-index:10;max-width:520px;width:100%;margin-top:10px;background:rgba(0,0,0,.3);border-radius:12px;padding:10px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);">
                     <div style="display:flex;flex-direction:column;gap:6px;">
-                        <a href="casos-clinicos.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🧠 Casos Clínicos MIR</a>
-                        <a href="cuadernos-ia.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📓 Cuadernos IA</a>
-                        <a href="javascript:void(0)" onclick="showPage('pageScanIA');setTimeout(function(){switchScanTab('notebooks')},200)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">🤖 MegaCuaderno Clínico IA</a>
-                        <a href="javascript:void(0)" onclick="showNotebooksModal()" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📚 Cuadernos NotebookLM</a>
-                        <a href="plantillas-informes.html?v=1775483919" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📄 Plantillas de Informes</a>
-                        <a href="agenda-guardia.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.08);border-radius:8px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">📋 Generador de Turnos</a>
+                        <a href="camas-y-ambulancias.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(135deg,rgba(185,145,70,.25),rgba(192,84,64,.2));border:1px solid rgba(185,145,70,.4);border-radius:10px;color:#fff;text-decoration:none;font-size:.9rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(185,145,70,.4),rgba(192,84,64,.35))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(185,145,70,.25),rgba(192,84,64,.2))'">
+                            <span style="font-size:1.3rem">🏥</span>
+                            <div><div>Camas y Ambulancias</div><div style="font-size:.72rem;opacity:.75;font-weight:400;margin-top:1px">Vademécum + Paratus · Adulto · Pediátrico · Neonatal</div></div>
+                            <span style="margin-left:auto;font-size:.65rem;background:rgba(255,200,50,.3);padding:2px 8px;border-radius:10px;border:1px solid rgba(255,200,50,.4);">NUEVO</span>
+                        </a>
+                        <a href="casos-clinicos.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;text-decoration:none;font-size:.9rem;font-weight:700;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+                            <span style="font-size:1.3rem">🧠</span>
+                            <div><div>Casos Clínicos MIR</div><div style="font-size:.72rem;opacity:.75;font-weight:400;margin-top:1px">Casos resueltos para residentes</div></div>
+                        </a>
                     </div>
                 </div>
 
@@ -508,14 +545,227 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
         </div>
       </div>
     </div>
+
+    <!-- ═══ RECOMENDACIONES PARA PACIENTES ═══ -->
+    <div style="grid-column:1/-1;margin-bottom:8px;">
+      <div onclick="var p=document.getElementById('recoList');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#e65100,#f57c00);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+        <div style="display:flex;align-items:center;gap:10px;color:#fff;"><span style="font-size:1.4rem;">📋</span><div><div style="font-weight:700;font-size:1rem;">Recomendaciones para Pacientes</div><div style="font-size:.75rem;opacity:.8;">Información y consejos sobre patologías frecuentes</div></div></div>
+        <span class="arr" style="color:#fff;font-size:.9rem;">▶</span>
+      </div>
+      <div id="recoList" style="display:none;margin-top:8px;">
+
+        <!-- Hernias -->
+        <div style="margin-bottom:12px;">
+          <div onclick="var p=document.getElementById('recoHernias');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">🩺</span><strong style="font-size:.92rem;color:#e65100;">Hernia Inguinal — Recomendaciones</strong></div>
+            <span class="arr2" style="color:#e65100;font-size:.85rem;">▶</span>
+          </div>
+          <div id="recoHernias" style="display:none;padding:16px;background:#fff;border:1px solid #ffe0b2;border-radius:0 0 10px 10px;border-top:none;">
+
+            <div style="background:#e3f2fd;border-left:4px solid #1565c0;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#0d47a1;margin-bottom:6px;">📖 Lo que dicen las guías sobre conducta expectante</div>
+              <p style="font-size:.82rem;color:#333;line-height:1.6;margin:0;">Según la <strong>Guía Internacional para el Manejo de la Hernia Inguinal</strong> (European Hernia Society y sociedades quirúrgicas españolas):</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:8px 0 0;padding-left:20px;">
+                <li>La <strong>conducta expectante es aceptable</strong> en hombres con hernia asintomática o con molestias mínimas, ya que el riesgo de urgencia es bajo en ese perfil</li>
+                <li>La mayoría de estos pacientes acabarán necesitando cirugía, por lo que se recomienda <strong>no demorarla indefinidamente</strong></li>
+                <li>Las <strong>hernias sintomáticas deben operarse</strong></li>
+                <li>El riesgo de incarceración/estrangulación es mayor en: <strong>mujeres, hernia femoral</strong>, y pacientes con ingreso previo relacionado con la hernia</li>
+              </ul>
+            </div>
+
+            <div style="background:#f1f8e9;border-left:4px solid #558b2f;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#33691e;margin-bottom:6px;">⚠️ Qué evitar mientras esperas la cirugía</div>
+              <p style="font-size:.82rem;color:#333;font-weight:600;margin:8px 0 4px;">💪 Esfuerzos físicos</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:0 0 8px;padding-left:20px;">
+                <li>Evitar levantar objetos pesados (&gt;4-5 kg) o cargas que requieran tensión abdominal</li>
+                <li>No realizar ejercicios de fuerza, abdominales ni de alto impacto</li>
+                <li>Al agacharse, doblar las rodillas en lugar de la espalda</li>
+                <li>Al toser o estornudar, sujetar con la mano la zona de la ingle</li>
+              </ul>
+              <p style="font-size:.82rem;color:#333;font-weight:600;margin:8px 0 4px;">🥗 Tránsito intestinal</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:0 0 8px;padding-left:20px;">
+                <li>Dieta rica en fibra y líquidos abundantes para evitar el estreñimiento</li>
+                <li>No hacer esfuerzos al defecar — usar laxantes si es necesario</li>
+                <li>Evitar alimentos que produzcan gases o distensión abdominal importante</li>
+              </ul>
+              <p style="font-size:.82rem;color:#333;font-weight:600;margin:8px 0 4px;">📌 Otros factores</p>
+              <ul style="font-size:.82rem;color:#333;line-height:1.7;margin:0;padding-left:20px;">
+                <li>Controlar el peso corporal: la obesidad aumenta la presión intraabdominal de forma crónica</li>
+                <li>Tratar la tos crónica si existe (tabaco, EPOC), ya que cada golpe de tos eleva la presión abdominal</li>
+                <li>Si el bulto habitualmente se reduce solo al tumbarse, comprobar que sigue haciéndolo — si deja de reducirse, es señal de alerta</li>
+              </ul>
+            </div>
+
+            <div style="background:#ffebee;border:2px solid #ef5350;border-radius:8px;padding:14px;margin-bottom:8px;">
+              <div style="font-weight:700;font-size:.95rem;color:#c62828;margin-bottom:8px;">🚨 Acude a Urgencias de INMEDIATO si:</div>
+              <p style="font-size:.82rem;color:#b71c1c;margin:0 0 6px;font-style:italic;">Son signos de incarceración o estrangulación — NO esperes a consulta normal:</p>
+              <ul style="font-size:.85rem;color:#333;line-height:1.8;margin:0;padding-left:20px;">
+                <li><strong>El bulto no desaparece al tumbarte</strong> y está tenso o duro (irreductible)</li>
+                <li><strong>Dolor intenso y continuo</strong> en la ingle que no cede o va en aumento</li>
+                <li><strong>Náuseas y/o vómitos</strong></li>
+                <li><strong>Incapacidad de expulsar gases o heces</strong></li>
+                <li><strong>Enrojecimiento, calor o cambio de color</strong> de la piel sobre el bulto</li>
+                <li><strong>Fiebre</strong> con malestar general</li>
+              </ul>
+            </div>
+
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:8px;">Fuente: Guía Internacional para el Manejo de la Hernia Inguinal (European Hernia Society). Uso docente.</p>
+          </div>
+        </div>
+
+        <!-- semFYC Guía Práctica de la Salud — 24 unidades, 237 fichas -->
+        <div style="margin-bottom:12px;">
+          <div onclick="var p=document.getElementById('recoSemfyc');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#1565c0,#0d47a1);border:1px solid #1976d2;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">📘</span><strong style="font-size:.92rem;color:#fff;">Guía Práctica de la Salud (semFYC) — 24 unidades</strong></div>
+            <span class="arr2" style="color:#fff;font-size:.85rem;">▶</span>
+          </div>
+          <div id="recoSemfyc" style="display:none;padding:12px;background:#fff;border:1px solid #bbdefb;border-radius:0 0 10px 10px;border-top:none;">
+            <p style="font-size:.82rem;color:#555;margin:0 0 10px;line-height:1.5;">237 fichas informativas para pacientes de la <strong>Sociedad Española de Medicina de Familia y Comunitaria</strong>. Cada ficha explica la enfermedad, consejos prácticos y cuándo consultar.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;" id="semfycGrid">
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/26" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🛡️</span><div><div style="font-weight:600;font-size:.82rem;color:#166534;">1. Prevención y promoción de la salud</div><div style="font-size:.7rem;color:#6b7280;">Vacunas, ejercicio, cribados</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/27" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">👂</span><div><div style="font-weight:600;font-size:.82rem;color:#92400e;">2. Cara, nariz, boca, garganta, oídos</div><div style="font-size:.7rem;color:#6b7280;">Resfriado, otitis, amigdalitis, sinusitis</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/28" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ede9fe;border:1px solid #c4b5fd;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🧠</span><div><div style="font-weight:600;font-size:.82rem;color:#5b21b6;">3. Sistema nervioso</div><div style="font-size:.7rem;color:#6b7280;">Migraña, vértigo, Parkinson, demencias</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/29" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fce7f3;border:1px solid #fbcfe8;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">💬</span><div><div style="font-weight:600;font-size:.82rem;color:#9d174d;">4. Conducta y relación</div><div style="font-size:.7rem;color:#6b7280;">Ansiedad, depresión, insomnio, violencia</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/30" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">⚠️</span><div><div style="font-weight:600;font-size:.82rem;color:#991b1b;">5. Conductas de riesgo</div><div style="font-size:.7rem;color:#6b7280;">Tabaco, alcohol, drogas, ludopatía, ETS</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/31" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fce7f3;border:1px solid #fbcfe8;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">♀️</span><div><div style="font-weight:600;font-size:.82rem;color:#9d174d;">6. Reproducción y ginecología</div><div style="font-size:.7rem;color:#6b7280;">Menopausia, regla, vaginitis, esterilidad</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/32" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">♂️</span><div><div style="font-weight:600;font-size:.82rem;color:#1e40af;">7. Aparato genital masculino</div><div style="font-size:.7rem;color:#6b7280;">Próstata, disfunción eréctil</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/33" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">💧</span><div><div style="font-weight:600;font-size:.82rem;color:#065f46;">8. Riñón y vías urinarias</div><div style="font-size:.7rem;color:#6b7280;">Cólico renal, infección urinaria, incontinencia</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/34" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🫁</span><div><div style="font-weight:600;font-size:.82rem;color:#0c4a6e;">9. Aparato respiratorio</div><div style="font-size:.7rem;color:#6b7280;">EPOC, asma, inhaladores, apnea del sueño</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/35" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">❤️</span><div><div style="font-weight:600;font-size:.82rem;color:#991b1b;">10. Cardiovascular y sangre</div><div style="font-size:.7rem;color:#6b7280;">HTA, infarto, varices, anticoagulantes, anemia</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/36" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">⚗️</span><div><div style="font-weight:600;font-size:.82rem;color:#9a3412;">11. Metabolismo</div><div style="font-size:.7rem;color:#6b7280;">Diabetes, obesidad, colesterol, tiroides</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/37" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fdf4ff;border:1px solid #e9d5ff;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🧴</span><div><div style="font-weight:600;font-size:.82rem;color:#7e22ce;">12. Piel y pelo</div><div style="font-size:.7rem;color:#6b7280;">Eccema, psoriasis, acné, herpes, verrugas</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/38" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🍽️</span><div><div style="font-weight:600;font-size:.82rem;color:#9a3412;">13. Aparato digestivo</div><div style="font-size:.7rem;color:#6b7280;">Úlcera, reflujo, colon irritable, hemorroides</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/39" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🦴</span><div><div style="font-weight:600;font-size:.82rem;color:#065f46;">14. Aparato locomotor</div><div style="font-size:.7rem;color:#6b7280;">Espalda, ciática, fibromialgia, osteoporosis</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/40" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🚑</span><div><div style="font-weight:600;font-size:.82rem;color:#991b1b;">15. Accidentes e intoxicaciones</div><div style="font-size:.7rem;color:#6b7280;">Quemaduras, heridas, mordeduras</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/41" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">👁️</span><div><div style="font-weight:600;font-size:.82rem;color:#1e40af;">16. Enfermedades de los ojos</div><div style="font-size:.7rem;color:#6b7280;">Conjuntivitis, glaucoma, cataratas</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/42" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fef9c3;border:1px solid #fde047;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">👶</span><div><div style="font-weight:600;font-size:.82rem;color:#854d0e;">17. Enfermedades en la infancia</div><div style="font-size:.7rem;color:#6b7280;">Fiebre, diarrea, enuresis, cólicos</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/43" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🤰</span><div><div style="font-weight:600;font-size:.82rem;color:#166534;">18. Embarazo y puerperio</div><div style="font-size:.7rem;color:#6b7280;">Consejos, alimentación, lactancia</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/44" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fce7f3;border:1px solid #fbcfe8;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">💑</span><div><div style="font-weight:600;font-size:.82rem;color:#9d174d;">19. Sexualidad</div><div style="font-size:.7rem;color:#6b7280;">Anticoncepción, planificación familiar</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/45" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">👴</span><div><div style="font-weight:600;font-size:.82rem;color:#475569;">20. Personas mayores</div><div style="font-size:.7rem;color:#6b7280;">Prevención de caídas, cuidados</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/46" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🦠</span><div><div style="font-weight:600;font-size:.82rem;color:#991b1b;">21. Enfermedades infecciosas</div><div style="font-size:.7rem;color:#6b7280;">Gripe, meningitis, tuberculosis, VIH</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/47" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🔬</span><div><div style="font-weight:600;font-size:.82rem;color:#0c4a6e;">22. Análisis y exploraciones</div><div style="font-size:.7rem;color:#6b7280;">Preparación análisis sangre y orina</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/48" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">🏥</span><div><div style="font-weight:600;font-size:.82rem;color:#475569;">23. Organización sanitaria</div><div style="font-size:.7rem;color:#6b7280;">Legislación, derechos del paciente</div></div></a>
+              <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica/49" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fef9c3;border:1px solid #fde047;border-radius:8px;text-decoration:none;transition:all .15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''"><span style="font-size:1.2rem;">📎</span><div><div style="font-weight:600;font-size:.82rem;color:#854d0e;">24. Miscelánea</div><div style="font-size:.7rem;color:#6b7280;">Etiquetado alimentos, consejo genético, viajes</div></div></a>
+            </div>
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:10px;">Fuente: <a href="https://www.semfyc.es/recursos-ciudadania/guia-practica" target="_blank" style="color:#1565c0;">semFYC — Guía Práctica de la Salud</a> · 237 fichas · Acceso gratuito</p>
+          </div>
+        </div>
+
+        <!-- ═══ CONSEJOS VÉRTIGO ═══ -->
+        <div style="margin-bottom:12px;">
+          <div onclick="var p=document.getElementById('recoVertigo');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#1a237e,#283593);border:1px solid #3949ab;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">🌀</span><strong style="font-size:.92rem;color:#fff;">Consejos Vértigo — Reeducación Vestibular</strong></div>
+            <span class="arr2" style="color:#fff;font-size:.85rem;">▶</span>
+          </div>
+          <div id="recoVertigo" style="display:none;padding:16px;background:#fff;border:1px solid #c5cae9;border-radius:0 0 10px 10px;border-top:none;">
+
+            <div style="background:#e8eaf6;border-left:4px solid #3f51b5;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#1a237e;margin-bottom:6px;">ℹ️ ¿Qué son estos ejercicios?</div>
+              <p style="font-size:.83rem;color:#333;line-height:1.6;margin:0;">Los ejercicios de reeducación vestibular ayudan a tu cerebro a compensar el problema de equilibrio. Deben hacerse de forma progresiva, comenzando desde la posición acostada o sentada si tienes mucho mareo.</p>
+            </div>
+
+            <!-- NIVEL 1 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN1');p.style.display=p.style.display==='none'?'block':'none'" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#0d47a1;">👁️ NIVEL 1 — Ejercicios oculares y de cabeza (acostado o sentado)</span>
+                <span style="color:#0d47a1;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN1" style="display:block;padding:12px;background:#f8fbff;border:1px solid #bbdefb;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">1. Mirar arriba y abajo</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Cabeza inmóvil. Primero despacio, luego deprisa. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">2. Mirar de lado a lado</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Cabeza inmóvil. Primero despacio, luego deprisa. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">3. Focalizar dedo</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Sigue con la vista un dedo mientras lo acercas (38 cm) y lo alejas. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">4. Flexión/extensión de cabeza</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Ojos abiertos. Despacio y luego deprisa. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#1565c0;margin-bottom:4px;">5. Inclinación lateral de cabeza</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Inclinar la cabeza de un lado al otro. Despacio y deprisa. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 2 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN2');p.style.display=p.style.display==='none'?'block':'none'" style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#1b5e20;">🪑 NIVEL 2 — Movimientos de brazo y cuerpo (sentado)</span>
+                <span style="color:#1b5e20;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN2" style="display:none;padding:12px;background:#f1fdf4;border:1px solid #c8e6c9;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">6. Encogerse de hombros y círculos</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Encoge y haz círculos con los hombros. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">7. Giros de cintura</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Girar la cintura a derecha e izquierda. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">8. Inclinarse a recoger objeto</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Inclinarse a coger un objeto del suelo y volver a incorporarse. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#2e7d32;margin-bottom:4px;">9. Giros de cabeza</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">2 giros lentos, luego 3 rápidos. Al mejorar, repetir con ojos cerrados. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 3 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN3');p.style.display=p.style.display==='none'?'block':'none'" style="background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#e65100;">🔄 NIVEL 3 — Nivel 2 con ojos cerrados</span>
+                <span style="color:#e65100;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN3" style="display:none;padding:12px;background:#fffbe7;border:1px solid #ffe0b2;border-radius:0 0 8px 8px;border-top:none;">
+                <p style="font-size:.82rem;color:#555;margin:0 0 8px;line-height:1.5;">Cuando el desequilibrio haya mejorado, repite todos los ejercicios del Nivel 2 con <strong>los ojos cerrados</strong>. Realiza los niveles 1 y 2 sentado primero si antes los hacías en la cama.</p>
+                <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:10px;">
+                  <p style="font-size:.78rem;color:#5d4037;margin:0;"><strong>⚠️ Precaución:</strong> Asegúrate de tener apoyo cerca (silla, pared) al hacer ejercicios con ojos cerrados.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 4 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN4');p.style.display=p.style.display==='none'?'block':'none'" style="background:#fce4ec;border:1px solid #f48fb1;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#880e4f;">🧍 NIVEL 4 — Levantándose (repetir nivel 3 de pie)</span>
+                <span style="color:#880e4f;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN4" style="display:none;padding:12px;background:#fdf0f6;border:1px solid #f8bbd0;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">10. Sentado a de pie</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Levantarse con ojos abiertos. Repetir con ojos cerrados. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">11. Sentado-de pie-girar-sentarse</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Levantarse, girar una vez y volver a sentarse. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">12. Caminar alrededor de una silla</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Dar vueltas y luego hacia atrás. Tras 10 repeticiones, intentar con ojos cerrados. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#ad1457;margin-bottom:4px;">13. Subir y bajar plataforma</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Primero ojos abiertos; tras 10 rep., ojos cerrados. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- NIVEL 5 -->
+            <div style="margin-bottom:12px;">
+              <div onclick="var p=document.getElementById('vertN5');p.style.display=p.style.display==='none'?'block':'none'" style="background:#e8eaf6;border:1px solid #9fa8da;border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-weight:700;font-size:.88rem;color:#1a237e;">🏃 NIVEL 5 — Traslado y actividades en grupo</span>
+                <span style="color:#1a237e;font-size:.8rem;">▼</span>
+              </div>
+              <div id="vertN5" style="display:none;padding:12px;background:#f5f5ff;border:1px solid #c5cae9;border-radius:0 0 8px 8px;border-top:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">14. Pasar pelota de mano en mano</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Asegúrate de que la pelota pase por encima del nivel del ojo. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">15. Pelota bajo la rodilla</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Inclinarse y pasar la pelota de mano en mano por detrás de la rodilla. Repetir con ojos cerrados. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">16. Pelota en grupo (en movimiento)</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Caminar en círculo alrededor de una persona que lanza y recoge la pelota. <strong>20 veces.</strong></p></div>
+                  <div style="background:#fff;border:1px solid #ddd;border-radius:7px;padding:10px;"><div style="font-size:.8rem;font-weight:700;color:#283593;margin-bottom:4px;">17. Juegos de pelota o bolos</div><p style="font-size:.78rem;color:#444;margin:0;line-height:1.5;">Cualquier juego que implique parar, tirar o recoger objetos. Excelente para la última fase. <strong>20 veces.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#ffebee;border:2px solid #ef5350;border-radius:8px;padding:12px 14px;margin-top:4px;">
+              <div style="font-weight:700;font-size:.88rem;color:#c62828;margin-bottom:6px;">🚨 Consulta a tu médico si:</div>
+              <ul style="font-size:.79rem;color:#333;line-height:1.7;margin:0;padding-left:18px;">
+                <li>El vértigo es muy intenso o va acompañado de <strong>pérdida de audición brusca</strong></li>
+                <li>Aparece <strong>dolor de cabeza intenso, visión doble o dificultad para hablar</strong></li>
+                <li>Los síntomas <strong>empeoran</strong> tras realizar los ejercicios de forma mantenida</li>
+                <li>No notas mejoría tras <strong>2-3 semanas</strong> de ejercicios regulares</li>
+              </ul>
+            </div>
+
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:10px;">Fuente: Programa de reeducación vestibular SERC · Uso docente · Área II Cartagena</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <a class="patient-card" href="multiidioma.html" target="_blank" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;"><div class="patient-card-icon">🌍</div><div class="patient-card-title" style="color:#bf360c;">Info Multilingüe</div><div class="patient-card-desc" style="color:#e65100;">عربي · Français · English</div></a>
-    <a class="patient-card" href="citas.html" target="_blank"><div class="patient-card-icon">📅</div><div class="patient-card-title">Pedir Cita</div><div class="patient-card-desc">Solicitar cita médica</div></a>
     <a class="patient-card" href="mapa.html" target="_blank"><div class="patient-card-icon">🗺️</div><div class="patient-card-title">Mapa Sanitario</div><div class="patient-card-desc">Centros, farmacias, urgencias</div></a>
     <a class="patient-card" href="dietas.html" target="_blank"><div class="patient-card-icon">🥗</div><div class="patient-card-title">Dietas</div><div class="patient-card-desc">Planes nutricionales</div></a>
     <a class="patient-card" href="violencia-genero.html" target="_blank"><div class="patient-card-icon">💜</div><div class="patient-card-title">Violencia de género</div><div class="patient-card-desc">Recursos y apoyo</div></a>
     <a class="patient-card" href="recursos-sociales.html" target="_blank"><div class="patient-card-icon">🤝</div><div class="patient-card-title">Recursos sociales</div><div class="patient-card-desc">Servicios comunitarios</div></a>
-    <a class="patient-card" href="informacion.html" target="_blank"><div class="patient-card-icon">ℹ️</div><div class="patient-card-title">Información</div><div class="patient-card-desc">Info general del centro</div></a>
-    <a class="patient-card" href="factores-riesgo.html" target="_blank"><div class="patient-card-icon">⚠️</div><div class="patient-card-title">Factores de riesgo</div><div class="patient-card-desc">Prevención y salud</div></a>
+        <a class="patient-card" href="factores-riesgo.html" target="_blank"><div class="patient-card-icon">⚠️</div><div class="patient-card-title">Factores de riesgo</div><div class="patient-card-desc">Prevención y salud</div></a>
     <a class="patient-card" href="ejercicios.html" target="_blank"><div class="patient-card-icon">🏃</div><div class="patient-card-title">Ejercicios</div><div class="patient-card-desc">Guías de actividad física</div></a>
     <a class="patient-card" href="dentista.html" target="_blank"><div class="patient-card-icon">🦷</div><div class="patient-card-title">Dentista</div><div class="patient-card-desc">Salud bucodental</div></a>
     <a class="patient-card" href="enlaces-interes.html" target="_blank"><div class="patient-card-icon">🔗</div><div class="patient-card-title">Enlaces de interés</div><div class="patient-card-desc">Webs y recursos útiles</div></a>
@@ -523,10 +773,106 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
     <a class="patient-card" href="programacion.html" target="_blank"><div class="patient-card-icon">📅</div><div class="patient-card-title">Programación del Centro</div><div class="patient-card-desc">Horarios y agenda</div></a>
     <a class="patient-card" href="dejar-fumar.html" target="_blank"><div class="patient-card-icon">🚭</div><div class="patient-card-title">Dejar de fumar</div><div class="patient-card-desc">Programas y ayuda</div></a>
     <a class="patient-card" href="podcast.html" target="_blank"><div class="patient-card-icon">🎙️</div><div class="patient-card-title">Podcast</div><div class="patient-card-desc">Audio salud comunitaria</div></a>
-    <a class="patient-card" href="javascript:void(0)" onclick="showNotebooksModal()" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;"><div class="patient-card-icon">🤖</div><div class="patient-card-title" style="color:#0d47a1;">Cuadernos IA</div><div class="patient-card-desc" style="color:#1565c0;">5 cuadernos NotebookLM</div></a>
     <a class="patient-card" href="chatbot-medicacion.html" target="_blank" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#42a5f5;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#0d47a1;">Mi Medicación</div><div class="patient-card-desc" style="color:#1565c0;">Pregunta sobre tus fármacos</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showPage('pageTraductor')" style="background:linear-gradient(135deg,#fbe9e7,#ffccbc);border-color:#ff7043;"><div class="patient-card-icon">🌍</div><div class="patient-card-title" style="color:#bf360c;">Traductor</div><div class="patient-card-desc" style="color:#e65100;">Traducción en consulta</div></a>
+    <a class="patient-card" href="preparacion-consulta.html" target="_blank" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#1565c0;"><div class="patient-card-icon">📋</div><div class="patient-card-title" style="color:#0d47a1;">Preparar mi consulta</div><div class="patient-card-desc" style="color:#1565c0;">Formulario para el médico</div></a>
+    <a class="patient-card" href="enfermedades-cronicas.html" target="_blank" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);border-color:#c2185b;"><div class="patient-card-icon">🩺</div><div class="patient-card-title" style="color:#880e4f;">Mis enfermedades</div><div class="patient-card-desc" style="color:#ad1457;">HTA, diabetes, EPOC, asma...</div></a>
+    <a class="patient-card" href="recordatorio-medicacion.html" target="_blank" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#2e7d32;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#1b5e20;">Mi medicación</div><div class="patient-card-desc" style="color:#2e7d32;">Recordatorio de pastillas</div></a>
+    <a class="patient-card" href="salud-infantil.html" target="_blank" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-color:#f57c00;"><div class="patient-card-icon">👶</div><div class="patient-card-title" style="color:#e65100;">Salud infantil</div><div class="patient-card-desc" style="color:#f57c00;">Fiebre, vacunas, desarrollo</div></a>
+    <a class="patient-card" href="embarazo-postparto.html" target="_blank" style="background:linear-gradient(135deg,#fce4ec,#f48fb1);border-color:#ec4899;"><div class="patient-card-icon">🤰</div><div class="patient-card-title" style="color:#880e4f;">Embarazo y postparto</div><div class="patient-card-desc" style="color:#c2185b;">Trimestres, parto, lactancia</div></a>
+    <a class="patient-card" href="guia-cuidador.html" target="_blank" style="background:linear-gradient(135deg,#fefce8,#fef08a);border-color:#a16207;"><div class="patient-card-icon">🧓</div><div class="patient-card-title" style="color:#78350f;">Guía del cuidador</div><div class="patient-card-desc" style="color:#92400e;">Dependencia y autocuidado</div></a>
     <a class="patient-card" href="javascript:void(0)" onclick="showFarmacias24h()" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#66bb6a;"><div class="patient-card-icon">💊</div><div class="patient-card-title" style="color:#1b5e20;">Farmacias 24h</div><div class="patient-card-desc" style="color:#388e3c;">Región de Murcia</div></a>
+    <a class="patient-card" href="javascript:void(0)" onclick="var p=document.getElementById('psicologiaList');if(p){p.style.display=p.style.display==='none'?'block':'none';p.parentElement.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼';}" style="background:linear-gradient(135deg,#ede7f6,#d1c4e9);border-color:#7e57c2;"><div class="patient-card-icon">🧠</div><div class="patient-card-title" style="color:#4527a0;">Atención Psicológica</div><div class="patient-card-desc" style="color:#5e35b1;">Apoyo emocional y salud mental</div></a>
+
+    <!-- ═══ ATENCIÓN PSICOLÓGICA ═══ -->
+    <div style="grid-column:1/-1;margin-bottom:8px;">
+      <div onclick="var p=document.getElementById('psicologiaList');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#5e35b1,#7e57c2);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+        <div style="display:flex;align-items:center;gap:10px;color:#fff;"><span style="font-size:1.4rem;">🧠</span><div><div style="font-weight:700;font-size:1rem;">Atención Psicológica y Salud Mental</div><div style="font-size:.75rem;opacity:.8;">Apoyo emocional gratuito · Cartagena y Área II</div></div></div>
+        <span class="arr" style="color:#fff;font-size:.9rem;">▶</span>
+      </div>
+      <div id="psicologiaList" style="display:none;margin-top:8px;">
+
+        <!-- TELÉFONOS DE CRISIS -->
+        <div style="background:#ffebee;border:2px solid #ef5350;border-radius:12px;padding:16px;margin-bottom:14px;">
+          <div style="font-weight:800;font-size:.95rem;color:#c62828;margin-bottom:10px;">🆘 Teléfonos de ayuda inmediata (gratuitos, 24h)</div>
+          <div style="display:grid;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">024 — Línea de conducta suicida</div><div style="font-size:.72rem;color:#666;">Ministerio de Sanidad · Confidencial · 24/7</div></div>
+              <a href="tel:024" style="background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 024</a>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">Teléfono de la Esperanza</div><div style="font-size:.72rem;color:#666;">Apoyo emocional permanente</div></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;"><a href="tel:717003717" style="background:#c62828;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 717 003 717</a><a href="tel:968343400" style="background:#e65100;color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;">📞 968 34 34 00 (Murcia)</a></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">Cruz Roja Te Escucha</div><div style="font-size:.72rem;color:#666;">Apoyo psicosocial y acompañamiento emocional</div></div>
+              <a href="tel:900107917" style="background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 900 107 917</a>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;background:#fff;border-radius:8px;padding:10px 12px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#c62828;">112 — Emergencias</div><div style="font-size:.72rem;color:#666;">Urgencias sanitarias y psiquiátricas</div></div>
+              <a href="tel:112" style="background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 112</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- SERVICIOS SOCIALES AYUNTAMIENTO -->
+        <div style="font-weight:700;font-size:.88rem;color:#5e35b1;margin:14px 0 8px;padding-left:4px;">🏛️ Servicios Sociales — Ayuntamiento de Cartagena</div>
+        <div style="display:grid;gap:8px;">
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Concejalía de Servicios Sociales (PASSS)</div><div style="font-size:.74rem;color:#666;margin-top:2px;">📍 C/ Sor Francisca Armendáriz s/n, Edificio La Milagrosa</div><div style="font-size:.74rem;color:#666;">Acompañamiento social, orientación familiar, atención psicológica</div></div>
+              <a href="tel:900923491" style="background:#5e35b1;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 900 923 491</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- JÓVENES -->
+        <div style="font-weight:700;font-size:.88rem;color:#5e35b1;margin:14px 0 8px;padding-left:4px;">👩‍🎓 Jóvenes (14–35 años)</div>
+        <div style="display:grid;gap:8px;">
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+              <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Espacio Salud y Género — Concejalía de Juventud</div><div style="font-size:.74rem;color:#666;margin-top:2px;">Asesoramiento psicológico, terapia breve (2–3 sesiones), grupos de apoyo</div><div style="font-size:.74rem;color:#666;">Autoestima, habilidades sociales, diversidad, TCA</div><div style="font-size:.72rem;color:#999;margin-top:4px;">📧 espaciojoven@ayto-cartagena.es · L–V 09–14h, M–J 17–20h</div></div>
+              <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+                <a href="tel:968128862" style="background:#5e35b1;color:#fff;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;">📞 968 12 88 62</a>
+                <a href="https://wa.me/34661480373" target="_blank" style="background:#25d366;color:#fff;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;">💬 661 480 373</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SALUD MENTAL PÚBLICA -->
+        <div style="font-weight:700;font-size:.88rem;color:#5e35b1;margin:14px 0 8px;padding-left:4px;">🏥 Salud Mental Pública — Servicio Murciano de Salud</div>
+        <div style="display:grid;gap:8px;">
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Centro de Salud Mental — Adultos (≥16 años)</div><div style="font-size:.74rem;color:#666;margin-top:2px;">📍 C/ Real, 8, Cartagena · Psiquiatría, psicología clínica, enfermería</div><div style="font-size:.72rem;color:#999;">Acceso: derivación desde tu médico de familia</div></div>
+            <a href="tel:968326700" style="background:#5e35b1;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 968 32 67 00</a>
+          </div>
+          <div style="border:1px solid #d1c4e9;border-radius:10px;padding:12px;background:#ede7f6;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-weight:700;font-size:.88rem;color:#4527a0;">Centro de Salud Mental Infanto‑Juvenil (&lt;16 años)</div><div style="font-size:.74rem;color:#666;margin-top:2px;">Atención psicológica, psiquiátrica y sociofamiliar a menores</div><div style="font-size:.72rem;color:#999;">Acceso: derivación desde pediatra o médico de familia</div></div>
+            <a href="tel:968326720" style="background:#5e35b1;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;white-space:nowrap;">📞 968 32 67 20</a>
+          </div>
+        </div>
+
+        <!-- CRUZ ROJA -->
+        <div style="font-weight:700;font-size:.88rem;color:#c62828;margin:14px 0 8px;padding-left:4px;">❤️ Cruz Roja — Programas de salud emocional</div>
+        <div style="border:1px solid #ffcdd2;border-radius:10px;padding:12px;background:#ffebee;">
+          <div style="font-size:.84rem;color:#333;line-height:1.6;">Talleres de gestión emocional, acompañamiento a personas en situación de soledad, campañas de sensibilización. Coordinan con recursos locales para derivar cuando es necesario.</div>
+          <div style="margin-top:8px;"><a href="tel:900107917" style="display:inline-flex;align-items:center;gap:6px;background:#c62828;color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;">📞 900 107 917 — Cruz Roja Te Escucha</a></div>
+        </div>
+
+        <!-- GUÍA RÁPIDA -->
+        <div style="background:#e8eaf6;border:2px solid #7986cb;border-radius:12px;padding:16px;margin-top:14px;">
+          <div style="font-weight:800;font-size:.92rem;color:#283593;margin-bottom:10px;">📋 ¿Qué hago en la práctica?</div>
+          <div style="font-size:.84rem;color:#333;line-height:1.8;">
+            <div style="margin-bottom:8px;">👉 <strong>Apoyo social y psicológico municipal:</strong> Llama a Servicios Sociales <a href="tel:900923491" style="color:#5e35b1;font-weight:700;">900 923 491</a> o pide derivación a Salud Mental desde tu centro de salud.</div>
+            <div style="margin-bottom:8px;">👉 <strong>Si eres joven (14–35 años):</strong> Contacta con Espacio Salud por WhatsApp al <a href="https://wa.me/34661480373" target="_blank" style="color:#25d366;font-weight:700;">661 480 373</a> o llama al <a href="tel:968128862" style="color:#5e35b1;font-weight:700;">968 12 88 62</a>.</div>
+            <div>👉 <strong>Apoyo inmediato ahora:</strong> Llama al <a href="tel:024" style="color:#c62828;font-weight:700;">024</a>, al <a href="tel:900107917" style="color:#c62828;font-weight:700;">900 107 917</a> (Cruz Roja), o al <a href="tel:717003717" style="color:#c62828;font-weight:700;">717 003 717</a> (Esperanza).</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
 </div>
 
 <!-- Modal farmacias 24h -->
@@ -627,15 +973,19 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
 </div>
 
 <script>
+// ═══ SESSION PER USER: localStorage keys prefixed with uid ═══
+function _uid(){try{var u=firebase.auth().currentUser;return u?u.uid:'anon';}catch(e){return 'anon';}}
+function _userKey(base){return _uid()+'_'+base;}
+
 // ═══ CUADERNOS NOTEBOOKLM PERSONALES ═══
-var NB_KEY='mis_notebooks_v1';
+function _nbKey(){return _userKey('mis_notebooks_v1');}
 
 function nbGetAll(){
-  try{return JSON.parse(localStorage.getItem(NB_KEY)||'[]');}catch(e){return [];}
+  try{return JSON.parse(localStorage.getItem(_nbKey())||'[]');}catch(e){return [];}
 }
 
 function nbSaveAll(list){
-  localStorage.setItem(NB_KEY,JSON.stringify(list));
+  localStorage.setItem(_nbKey(),JSON.stringify(list));
   try{
     if(typeof firebase!=='undefined'&&firebase.auth().currentUser){
       var uid=firebase.auth().currentUser.uid;
@@ -730,7 +1080,7 @@ window.showNotebooksModal=function(){
           var cloud=doc.data().notebooks;
           var local=nbGetAll();
           if(cloud.length>local.length){
-            localStorage.setItem(NB_KEY,JSON.stringify(cloud));
+            localStorage.setItem(_nbKey(),JSON.stringify(cloud));
             nbRender();
           }
         }
@@ -1313,7 +1663,18 @@ window.showNotebooksModal=function(){
 <!-- ═══════ TELÉFONOS BUSCAS PAGE ═══════ -->
 <div class="page" id="pageTelefonos">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
-    <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;">
+    <!-- PASSWORD GATE BUSCAS -->
+    <div id="buscasGate" style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg-main);padding:40px 20px;">
+      <div style="text-align:center;max-width:380px;">
+        <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
+        <h2 style="font-family:var(--font-display);margin-bottom:8px;">Acceso restringido</h2>
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:20px;">Introduce la contraseña para acceder al directorio de buscas del Hospital Santa Lucía.</p>
+        <input type="password" id="buscasPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkBuscasPass()" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;font-family:var(--font-body);background:var(--bg-card);text-align:center;margin-bottom:12px;">
+        <button onclick="checkBuscasPass()" style="width:100%;padding:12px;background:linear-gradient(135deg,#d4a853,#b8912e);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:.95rem;cursor:pointer;font-family:var(--font-body);">Acceder</button>
+        <p id="buscasError" style="color:#e74c3c;font-size:.82rem;margin-top:10px;display:none;">❌ Contraseña incorrecta</p>
+      </div>
+    </div>
+    <div id="buscasContent" style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;display:none;">
         <div style="max-width:800px;margin:0 auto;">
             <div style="background:linear-gradient(135deg,#d4a853,#b8912e);border-radius:var(--radius);padding:28px;color:#fff;margin-bottom:28px;position:relative;overflow:hidden;">
                 <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.15;">📞</div>
@@ -2101,8 +2462,7 @@ var patientSections=[
     {icon:"🥗",title:"Dietas",desc:"Planes nutricionales",url:"dietas.html"},
     {icon:"💜",title:"Violencia de género",desc:"Recursos y apoyo",url:"violencia-genero.html"},
     {icon:"🤝",title:"Recursos sociales",desc:"Servicios comunitarios",url:"recursos-sociales.html"},
-    {icon:"ℹ️",title:"Información",desc:"Info general del centro",url:"informacion.html"},
-    {icon:"⚠️",title:"Factores de riesgo",desc:"Prevención y salud",url:"factores-riesgo.html"},
+        {icon:"⚠️",title:"Factores de riesgo",desc:"Prevención y salud",url:"factores-riesgo.html"},
     {icon:"🏃",title:"Ejercicios",desc:"Guías de actividad física",url:"ejercicios.html"},
     {icon:"🦷",title:"Dentista",desc:"Salud bucodental",url:"dentista.html"},
     {icon:"🔗",title:"Enlaces de interés",desc:"Webs y recursos útiles",url:"enlaces-interes.html"},
@@ -2121,7 +2481,7 @@ function renderPatients(){
 // ═══ SISTEMA DE MODERADORES ═══
 var SUPERADMIN_EMAIL="ramongalera22@gmail.com";
 var SUPERADMIN_EMAILS=["ramongalera22@gmail.com","carlosgalera2roman@gmail.com","esther.montoro@gmail.com"];
-var MODERATOR_EMAILS=["urgenciashuslcartagena@gmail.com"];
+var MODERATOR_EMAILS=["urgenciashuslcartagena@gmail.com","luciagarcia@hotmail.com","ajallomin@hotmail.com"];
 var ADMIN_EMAIL=SUPERADMIN_EMAIL; // compatibilidad hacia atrás
 var isAdminLoggedIn=false;
 var isModerador=false;
@@ -2164,6 +2524,30 @@ function isAdmin(){
     if(SUPERADMIN_EMAILS.indexOf(user.email)!==-1)return true;
     if(moderadoresCache&&moderadoresCache[user.email]&&moderadoresCache[user.email].activo)return true;
     return false;
+}
+
+// Auto-seed MODERATOR_EMAILS into Firestore (runs once per session on superadmin login)
+function seedModeradoresFirestore(){
+    if(sessionStorage.getItem('mods_seeded'))return;
+    try{
+        MODERATOR_EMAILS.forEach(function(email){
+            // Use email as doc ID so Firestore rules exists() check works
+            var ref=db.collection("moderadores").doc(email);
+            ref.get().then(function(doc){
+                if(!doc.exists){
+                    ref.set({
+                        email:email,
+                        nombre:email.split("@")[0],
+                        rol:"moderador",
+                        activo:true,
+                        añadidoPor:"auto-seed",
+                        fechaAlta:new Date()
+                    }).then(function(){console.log("Moderador seeded:",email);});
+                }
+            }).catch(function(){});
+        });
+        sessionStorage.setItem('mods_seeded','1');
+    }catch(e){}
 }
 function isSuperAdmin(){
     var user=firebase.auth().currentUser;
@@ -2223,7 +2607,7 @@ function checkAdminStatus(){
         if(isAdminLoggedIn&&!wasAdmin){
             apShowAdminTab(true);
             saveConfigToFirestore();
-            // Mostrar badge de moderador en navbar
+            if(isSuperAdmin())seedModeradoresFirestore();
             updateModBadgeAll();
         }else if(!isAdminLoggedIn&&wasAdmin){
             apShowAdminTab(false);
@@ -2582,25 +2966,64 @@ async function infGenerar(){
     if(!confirm('⚠️ Se han detectado posibles datos personales en el texto.\n\nRecuerda: NO incluyas nombres de pacientes, DNI ni datos identificativos.\n\n¿Has verificado que el texto está anonimizado?'))return;
   }
 
+  // Get API key from AP config
+  var provider=localStorage.getItem('iaProvider')||'groq';
+  var key,model,apiUrl;
+  if(provider==='qwen'){
+    key=localStorage.getItem('qwenApiKey');
+    model=localStorage.getItem('qwenModel')||'qwen-turbo';
+    apiUrl='about:disabled-qwen';
+  }else{
+    // ⚠️ NAS proxy first, then OpenRouter free (no key needed for :free models)
+    key=_dk()||'';
+    model='deepseek/deepseek-chat-v3-0324:free';
+    apiUrl='about:disabled-openrouter';
+  }
+
   var instrucciones=document.getElementById('infInstrucciones').value.trim();
 
   var tipoLabels={derivacion:'Informe de Derivación / Interconsulta',alta:'Informe de Alta',seguimiento:'Informe de Seguimiento',urgencia:'Informe de Atención Urgente',enfermeria:'Informe de Enfermería / Cuidados',libre:'Informe Clínico'};
 
-  // systemPrompt corto y fijo (<4000). Formato + instrucciones van en prompt.
-  var sysPrompt='Eres un asistente médico experto en elaborar informes clínicos en español para Atención Primaria en España. '+
-                'PRIVACIDAD: si detectas nombres, DNI, NHC u otros datos identificativos en texto o imagen, RECHAZA generar y pide anonimización. '+
-                'Usa siempre "Paciente" en lugar de nombres propios. '+
-                'Genera informe profesional listo para imprimir, texto plano estructurado con secciones claras.';
+  // Build system prompt
+  var sysPrompt='Eres un asistente médico experto en elaborar informes clínicos en español para Atención Primaria en España.\n\n';
+  sysPrompt+='REGLAS ESTRICTAS DE PRIVACIDAD:\n';
+  sysPrompt+='- Si detectas nombres propios de pacientes, DNI, NHC, direcciones personales o cualquier dato identificativo en el texto o imágenes proporcionadas, RECHAZA generar el informe e indica que deben anonimizarse los datos.\n';
+  sysPrompt+='- Usa siempre "Paciente" o "El/La paciente" en lugar de cualquier nombre propio.\n';
+  sysPrompt+='- Si en una imagen aparecen nombres o datos personales visibles, indica que la imagen contiene datos personales y NO la proceses.\n\n';
+  sysPrompt+='FORMATO DEL INFORME:\n';
+  sysPrompt+='Genera un '+tipoLabels[infTipoSeleccionado]+' con la siguiente estructura:\n';
 
-  var formatos={
-    derivacion:'Centro de Salud Virgen de la Caridad, Cartagena · Motivo de derivación · Antecedentes · Enfermedad actual · Exploración física · Pruebas · Juicio clínico · Tratamiento actual · Motivo de interconsulta · Fecha',
-    alta:'Centro de Salud Virgen de la Caridad · Motivo de consulta · Resumen evolución · Diagnóstico · Tratamiento al alta · Recomendaciones · Plan seguimiento · Fecha',
-    seguimiento:'Centro de Salud Virgen de la Caridad · Antecedentes · Evolución desde última consulta · Exploración · Pruebas · Valoración · Plan terapéutico · Próxima revisión · Fecha',
-    urgencia:'Centro de Salud Virgen de la Caridad · Hora · Motivo consulta urgente · Anamnesis · Exploración · Pruebas · Juicio clínico · Tratamiento · Destino (alta/derivación) · Fecha',
-    enfermeria:'Centro de Salud Virgen de la Caridad · Valoración por patrones funcionales · Diagnósticos NANDA · Intervenciones NIC · Resultados NOC · Plan de cuidados · Educación sanitaria · Fecha',
-    libre:'Centro de Salud Virgen de la Caridad, Cartagena · Formato profesional · Fecha'
-  };
-  var formato=formatos[infTipoSeleccionado]||formatos.libre;
+  if(infTipoSeleccionado==='derivacion'){
+    sysPrompt+='- Centro de Salud: Centro de Salud Virgen de la Caridad, Cartagena\n- Motivo de derivación\n- Antecedentes personales relevantes\n- Enfermedad actual\n- Exploración física\n- Pruebas complementarias realizadas\n- Juicio clínico\n- Tratamiento actual\n- Motivo específico de interconsulta\n- Fecha\n';
+  }else if(infTipoSeleccionado==='alta'){
+    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Motivo de consulta\n- Resumen de evolución\n- Diagnóstico\n- Tratamiento al alta\n- Recomendaciones\n- Plan de seguimiento\n- Fecha\n';
+  }else if(infTipoSeleccionado==='seguimiento'){
+    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Antecedentes relevantes\n- Evolución desde última consulta\n- Exploración actual\n- Pruebas complementarias\n- Valoración\n- Plan terapéutico actualizado\n- Próxima revisión\n- Fecha\n';
+  }else if(infTipoSeleccionado==='urgencia'){
+    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Hora de atención\n- Motivo de consulta urgente\n- Anamnesis\n- Exploración física\n- Pruebas realizadas\n- Juicio clínico\n- Tratamiento administrado\n- Destino del paciente (alta/derivación hospital)\n- Fecha\n';
+  }else if(infTipoSeleccionado==='enfermeria'){
+    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Valoración de enfermería por patrones funcionales\n- Diagnósticos de enfermería (NANDA)\n- Intervenciones (NIC)\n- Resultados esperados (NOC)\n- Plan de cuidados\n- Educación sanitaria\n- Fecha\n';
+  }else{
+    sysPrompt+='- Formato profesional y bien estructurado\n- Centro: Centro de Salud Virgen de la Caridad, Cartagena\n- Fecha\n';
+  }
+
+  if(instrucciones)sysPrompt+='\nInstrucciones adicionales del profesional: '+instrucciones+'\n';
+  sysPrompt+='\nGenera el informe completo, profesional y listo para imprimir. Usa formato de texto plano bien estructurado con secciones claras.';
+
+  // Build messages
+  var messages=[{role:'system',content:sysPrompt}];
+  
+  // Build user content
+  var userContent=[];
+  if(infArchivos.length>0){
+    userContent.push({type:'text',text:'Analiza las siguientes imágenes del caso clínico (RECHAZA si contienen nombres u otros datos personales visibles) y con la información proporcionada elabora el informe:\n\n'+texto});
+    infArchivos.forEach(function(f){
+      userContent.push({type:'image_url',image_url:{url:f.data}});
+    });
+    messages.push({role:'user',content:userContent});
+  }else{
+    messages.push({role:'user',content:texto});
+  }
 
   // Show loading
   document.getElementById('infResultado').style.display='block';
@@ -2608,33 +3031,44 @@ async function infGenerar(){
   document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">⏳</div>Generando informe...</div>';
   document.getElementById('infBtnGenerar').disabled=true;
 
-  if(typeof window.askAi!=='function'){
-    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ IA no disponible. Inicia sesión y recarga.</span>';
+  var hasImages=infArchivos.length>0;
+
+  function infShowResult(text){
+    infResultadoTexto=(text||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+    document.getElementById('infResultContent').textContent=infResultadoTexto;
     document.getElementById('infBtnGenerar').disabled=false;
+  }
+  function infShowError(msg){
+    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">\u274c Error: '+msg+'</span>';
+    document.getElementById('infBtnGenerar').disabled=false;
+  }
+
+  if(typeof window.askAi!=='function'){
+    infShowError('IA no disponible. Recarga la página e inicia sesión.');
     return;
   }
 
   try{
-    var userTxt='TIPO: '+tipoLabels[infTipoSeleccionado]+'\nESTRUCTURA: '+formato;
-    if(instrucciones) userTxt+='\n\nINSTRUCCIONES ADICIONALES: '+instrucciones.substring(0,1500);
-    userTxt+='\n\nCASO: '+(texto||'(describe el caso basándote en la imagen)');
-    userTxt=userTxt.substring(0,7500);
-
-    var res;
-    if(infArchivos.length>0){
+    if(hasImages){
+      // Vision path — askAi soporta 1 imagen por llamada; usamos la primera.
+      document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">\u23f3</div>Analizando imagen...</div>';
       var img0=infArchivos[0].data||'';
       var imgB64=img0.indexOf(',')>=0?img0.split(',')[1]:img0;
-      if(infArchivos.length>1) userTxt+='\n\n[Nota: '+infArchivos.length+' imágenes adjuntas; se analiza la primera.]';
-      res=await window.askAi({type:'vision',systemPrompt:sysPrompt,prompt:userTxt,imageBase64:imgB64});
-    }else{
-      res=await window.askAi({type:'educational',systemPrompt:sysPrompt,prompt:userTxt});
+      var userTxt=texto||'Genera el informe clínico basándote en la imagen adjunta.';
+      if(infArchivos.length>1){
+        userTxt+='\n\n[Nota: se han adjuntado '+infArchivos.length+' imágenes; solo se analiza la primera en esta versión.]';
+      }
+      var resV=await window.askAi({type:'vision',systemPrompt:sysPrompt,prompt:userTxt,imageBase64:imgB64});
+      infShowResult(resV && resV.text ? resV.text : '');
+      return;
     }
-    infResultadoTexto=((res&&res.text)||'Sin respuesta').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-    document.getElementById('infResultContent').textContent=infResultadoTexto;
+
+    // Text path — educational
+    var resT=await window.askAi({type:'educational',systemPrompt:sysPrompt,prompt:texto||'Genera el informe clínico solicitado.'});
+    infShowResult(resT && resT.text ? resT.text : '');
   }catch(e){
-    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ '+(e.userMessage||e.message)+'</span>';
-  }finally{
-    document.getElementById('infBtnGenerar').disabled=false;
+    var msg=(e && e.userMessage) ? e.userMessage : (e && e.message) ? e.message : 'No se pudo generar el informe.';
+    infShowError(msg);
   }
 }
 
@@ -2740,8 +3174,8 @@ function infDescargar(formato){
 
 <script src="https://js.puter.com/v2/"></script>
 <script src="api-config.js?v=20260406a"></script>
-<script src="app-main.js?v=20260406a"></script>
-<script src="escalas-clinicas.js?v=20260402c"></script>
+<script src="app-main.js?v=20260408c"></script>
+<script src="escalas-clinicas.js?v=20260408b"></script>
 <script src="turnos-guardia.js?v=20260402a"></script>
 <script src="triaje-ia.js?v=20260406a"></script>
 <!-- PWA Install Banner -->
@@ -2933,7 +3367,7 @@ inp.type=inp.type==='password'?'text':'password';
 </script>
 
 <!-- ═══════ FILEHUB JS — Cuaderno IA + Blog Publisher ═══════ -->
-<script src="app-modules.js?v=20260406a"></script>
+<script src="app-modules.js?v=20260407b"></script>
 
 
 
@@ -2956,7 +3390,7 @@ function megaSaveHistory() {
       var compact = megaHistory.slice(-50).map(function(m) {
         return { role: m.role, content: m.content.substring(0, 1000) };
       });
-      localStorage.setItem('megacuaderno_history_v1', JSON.stringify(compact));
+      localStorage.setItem(_userKey('megacuaderno_history_v1'), JSON.stringify(compact));
     } catch(e) {}
     
     // 2. If logged in, also save to Firestore (cloud backup)
@@ -2978,7 +3412,7 @@ function megaSaveHistory() {
 // Restore history on load
 (function megaRestoreHistory() {
   try {
-    var saved = localStorage.getItem('megacuaderno_history_v1');
+    var saved = localStorage.getItem(_userKey('megacuaderno_history_v1'));
     if (saved) {
       megaHistory = JSON.parse(saved);
       console.log('[MegaCuaderno] Restored ' + megaHistory.length + ' messages from localStorage');
@@ -2996,7 +3430,7 @@ function megaSaveHistory() {
             // Only use cloud data if it has more messages than local
             if (cloudHistory.length > megaHistory.length) {
               megaHistory = cloudHistory;
-              localStorage.setItem('megacuaderno_history_v1', JSON.stringify(cloudHistory));
+              localStorage.setItem(_userKey('megacuaderno_history_v1'), JSON.stringify(cloudHistory));
               console.log('[MegaCuaderno] Restored ' + cloudHistory.length + ' messages from Firestore');
               // Re-render chat if it's visible
               var chatEl = document.getElementById('megaChat');
@@ -3050,6 +3484,7 @@ function megaDispatch(question) {
              "Cita protocolos cuando corresponda. Para fármacos indica dosis, vía y duración. " +
              "Si no tienes info, indícalo claramente.";
 
+    // MEGA_KB va en el prompt (límite 8000) porque no cabe en systemPrompt (límite 4000).
     var recent = megaHistory.length > 2 ? megaHistory.slice(-6, -1) : [];
     var historyBlock = "";
     if (recent.length > 0) {
@@ -3059,11 +3494,12 @@ function megaDispatch(question) {
     }
 
     if (typeof window.askAi !== "function") {
-        megaAppendMsg("system", "⚠️ IA no disponible. <button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
+        megaAppendMsg("system", "⚠️ IA no disponible en este momento. <button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
         megaReset(btn);
         return;
     }
 
+    // Construir prompt: KB + historial + pregunta. KB cap 3000 chars (latencia IA).
     var KB_MAX = 3000;
     var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
     var fullPrompt = "CONOCIMIENTO BASE:\n" + kb + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
@@ -3284,8 +3720,9 @@ function megaAppendMsg(role, text) {
     var bubble = document.createElement("div");
     var formatted;
     if(isSystem){
+        // System messages can contain trusted HTML (like Reintentar button)
         formatted = text.replace(/\n/g,"<br>");
-    }else{
+    } else {
         formatted = text
             .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
             .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
@@ -3479,10 +3916,10 @@ window.ckGenerate=function(fromChat){
 // AI call chain: Cloud Function askAi (educational)
 function ckCallAI(msgs,cb){
     if(typeof window.askAi!=="function"){ cb(null); return; }
-    var userTxt=msgs.map(function(m){return m.content;}).join("\n\n");
+    var userTxt = msgs.map(function(m){return m.content;}).join("\n\n");
     window.askAi({ type:"educational", systemPrompt: CK_SYS, prompt: userTxt })
         .then(function(res){
-            var a=(res && res.text) ? res.text : null;
+            var a = (res && res.text) ? res.text : null;
             if(!a) throw new Error("empty");
             cb(a);
         })
@@ -4291,8 +4728,8 @@ function escHtml(t){var d=document.createElement('div');d.textContent=t||'';retu
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="guardia-notas.js?v=20260404z"></script>
-<script src="supabase-plantillas.js?v=20260404z"></script>
+<script src="guardia-notas.js?v=20260409a"></script>
+<script src="supabase-plantillas.js?v=20260409a"></script>
 
 <!-- ═══ LSSI Art. 22.2 — Cookie Consent Banner ═══ -->
 <div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:10000;background:rgba(15,23,42,.97);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.15);padding:16px 24px;font-family:var(--font-body,system-ui);animation:fadeUp .4s;">
@@ -4533,6 +4970,37 @@ function cronoLap(){
     laps.innerHTML=html;
   }
 }
+</script>
+<button id="floatingHomeBtn" onclick="showPage('pageLanding')" style="display:none;position:fixed;bottom:20px;left:20px;z-index:9999;background:linear-gradient(135deg,#0a2e1a,#145a32);color:#fff;border:none;padding:10px 18px;border-radius:50px;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);font-family:inherit;align-items:center;gap:6px;">🏠 Inicio</button>
+<script>
+(function(){
+  var _orig=window.showPage;
+  if(_orig) window.showPage=function(id){
+    _orig(id);
+    var b=document.getElementById('floatingHomeBtn');
+    if(b) b.style.display=(id==='pageLanding')?'none':'flex';
+  };
+})();
+</script>
+<script>
+// FORCE DOCS v3: click-based DOM renderer
+window._FORCED_DOCS={"Cardiología": [{"id": "1jIBJq5x5iEfHaNRvqtcTNJZgQFUuR2kl", "name": "Interpretacion-ECG-cardiologia-2.pdf", "type": "PDF", "size_mb": 6.18, "url": "https://drive.google.com/file/d/1jIBJq5x5iEfHaNRvqtcTNJZgQFUuR2kl/view?usp=sharing"}, {"id": "1maxcFTdfM_GQ0a8JZB7UmPFz_K-SfhOy", "name": "guia-ic-esc-1.pdf", "type": "PDF", "size_mb": 8.55, "url": "https://drive.google.com/file/d/1maxcFTdfM_GQ0a8JZB7UmPFz_K-SfhOy/view?usp=sharing"}, {"id": "1Aobpr43Rw0VA1c8UEdH3POMBML7nvQHp", "name": "IC-caprimur-2.pdf", "type": "PDF", "size_mb": 1.78, "url": "https://drive.google.com/file/d/1Aobpr43Rw0VA1c8UEdH3POMBML7nvQHp/view?usp=sharing"}, {"id": "1ZGvi4P3SGuLyv7nxn9tvinytg0-0Oi0x", "name": "CODIGO-IAM-CARM-2018.pdf", "type": "PDF", "size_mb": 2.54, "url": "https://drive.google.com/file/d/1ZGvi4P3SGuLyv7nxn9tvinytg0-0Oi0x/view?usp=sharing"}], "Dermatología": [{"id": "1Gi6YUobTAJnAHbhaxiX-wkey4lfbnYhD", "name": "Lesiones Cutáneas Tropicales en Urgencias.pdf", "type": "PDF", "size_mb": 3.6, "url": "https://drive.google.com/file/d/1Gi6YUobTAJnAHbhaxiX-wkey4lfbnYhD/view?usp=sharing"}, {"id": "1PVA3SB49oriypoLy4MKCb4gHpsyR7lIM", "name": "Urgencias dermatológicas.pdf", "type": "PDF", "size_mb": 11.02, "url": "https://drive.google.com/file/d/1PVA3SB49oriypoLy4MKCb4gHpsyR7lIM/view?usp=sharing"}, {"id": "1u6MGtBypeLdmonMmmMGCYEyQTY0Wuer8", "name": "543680445-Fitzpatrick-Atlas-de-Dermatologia-Clinica-7-Ed.pdf", "type": "PDF", "size_mb": 29.08, "url": "https://drive.google.com/file/d/1u6MGtBypeLdmonMmmMGCYEyQTY0Wuer8/view?usp=sharing"}, {"id": "1Hk08oRECdgY9O70KKJQDYT1kGLMatKt5", "name": "PUNTOS-SOYER (1).pdf", "type": "PDF", "size_mb": 0.32, "url": "https://drive.google.com/file/d/1Hk08oRECdgY9O70KKJQDYT1kGLMatKt5/view?usp=sharing"}, {"id": "1co4UoIuDVemxfYiF_z6LHXwBF7t93W3K", "name": "PUNTOS-SOYER.pdf", "type": "PDF", "size_mb": 0.32, "url": "https://drive.google.com/file/d/1co4UoIuDVemxfYiF_z6LHXwBF7t93W3K/view?usp=sharing"}, {"id": "1sTC9VGvlx3CRxkHwXL_neTWPtJB1VmKt", "name": "Urgencias dermatológicas graves.pdf", "type": "PDF", "size_mb": 3.04, "url": "https://drive.google.com/file/d/1sTC9VGvlx3CRxkHwXL_neTWPtJB1VmKt/view?usp=sharing"}, {"id": "1lAb3Y1SgOrcWD-DRU1iSmUdMmvDxBdHy", "name": "Patologías dermatológicas prevalentes en urgencias.pdf", "type": "PDF", "size_mb": 5.54, "url": "https://drive.google.com/file/d/1lAb3Y1SgOrcWD-DRU1iSmUdMmvDxBdHy/view?usp=sharing"}], "Digestivo": [{"id": "1nZpOPhTJzNJUzzQsuaA9yU3QXQqFu74I", "name": "enfermedad-inflamatoria-cronica-intestinal-1-2.pdf", "type": "PDF", "size_mb": 3.81, "url": "https://drive.google.com/file/d/1nZpOPhTJzNJUzzQsuaA9yU3QXQqFu74I/view?usp=sharing"}, {"id": "1nLCFSHjaMzglfWrL9dA8swaV0-38ovt6", "name": "PROYECTO-AD-AP-3.pdf", "type": "PDF", "size_mb": 1.47, "url": "https://drive.google.com/file/d/1nLCFSHjaMzglfWrL9dA8swaV0-38ovt6/view?usp=sharing"}, {"id": "1VZO9mlySVrkt5aO85Cg87WesYNlyg_h3", "name": "PROYECTO-AD-AP-3.pdf", "type": "PDF", "size_mb": 1.47, "url": "https://drive.google.com/file/d/1VZO9mlySVrkt5aO85Cg87WesYNlyg_h3/view?usp=sharing"}], "Endocrinología": [{"id": "1MMd1UQAWj5Q8nE3sCCjns2JkjDFZf62Y", "name": "DISLIPEMIAS DEFINITIVO 2.pptx.pdf", "type": "PDF", "size_mb": 1.08, "url": "https://drive.google.com/file/d/1MMd1UQAWj5Q8nE3sCCjns2JkjDFZf62Y/view?usp=sharing"}, {"id": "1IL-TQXdO2aLPg5jy5XafGM2Hl4DnSDZI", "name": "Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Bocio-y-nodulo-tiroideo-1 (1).pdf", "type": "PDF", "size_mb": 1.44, "url": "https://drive.google.com/file/d/1IL-TQXdO2aLPg5jy5XafGM2Hl4DnSDZI/view?usp=sharing"}, {"id": "1MnMN4sFZ_60yUoxivsUGOjnU16ZcdIxU", "name": "Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Definicion-y-clasificacion-de-la-diabetes-mellitus.pdf", "type": "PDF", "size_mb": 1.52, "url": "https://drive.google.com/file/d/1MnMN4sFZ_60yUoxivsUGOjnU16ZcdIxU/view?usp=sharing"}, {"id": "1t4sNQyeNDgpSXTmRjms21mM9UzAYz1rW", "name": "Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Hipotiroidismo.pdf", "type": "PDF", "size_mb": 1.31, "url": "https://drive.google.com/file/d/1t4sNQyeNDgpSXTmRjms21mM9UzAYz1rW/view?usp=sharing"}, {"id": "1UP7ENx4ri4BRxZgjQ3Y2zNrNgLmw8zP7", "name": "Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_Bocio-y-nodulo-tiroideo-1.pdf", "type": "PDF", "size_mb": 1.44, "url": "https://drive.google.com/file/d/1UP7ENx4ri4BRxZgjQ3Y2zNrNgLmw8zP7/view?usp=sharing"}, {"id": "1W-sEwF69fPHBWg3du0emstxyQU4r8bKg", "name": "Manual-de-Endocrinologia-y-Nutricion-de-la-SEEN_-Hipertiroidismo.pdf", "type": "PDF", "size_mb": 3.72, "url": "https://drive.google.com/file/d/1W-sEwF69fPHBWg3du0emstxyQU4r8bKg/view?usp=sharing"}], "Geriatría": [{"id": "1a13ny_3pJn14GZCspDV4gSQJHAyMkMZm", "name": "2022-01-27-PACIENTE-AGITADO-EN-URG-.pptx", "type": "Otros", "size_mb": 1.17, "url": "https://drive.google.com/file/d/1a13ny_3pJn14GZCspDV4gSQJHAyMkMZm/view?usp=sharing"}, {"id": "1HAntBfH1HYU1iDbCQo5K7VprRL_kgC1r", "name": "CURSO-DE-GERIATRA_A-AP-NEUROLOGIA-PARTE-3.pptx", "type": "Otros", "size_mb": 17.2, "url": "https://drive.google.com/file/d/1HAntBfH1HYU1iDbCQo5K7VprRL_kgC1r/view?usp=sharing"}, {"id": "1zzQ6dh1EpKkiMpbdNqHGHpEiLg3rooMW", "name": "CURSO-GERIATRIA-AP-NEUROLOGA_A-PARTE-2 (1).pptx", "type": "Otros", "size_mb": 1.06, "url": "https://drive.google.com/file/d/1zzQ6dh1EpKkiMpbdNqHGHpEiLg3rooMW/view?usp=sharing"}, {"id": "1Yh2URSRiLggDe52IzfssJ6q0vtH3fhuV", "name": "CURSO-GERIATRIA-AP-NEUROLOGA_A-PARTE-2.pptx", "type": "Otros", "size_mb": 1.06, "url": "https://drive.google.com/file/d/1Yh2URSRiLggDe52IzfssJ6q0vtH3fhuV/view?usp=sharing"}, {"id": "1uVWOtBubay9BbBjxDVZBqFVfXcT4o4rQ", "name": "CURSO-DE-GERIATRA_A-AP-NEUROLOGIA-PARTE-4.pptx", "type": "Otros", "size_mb": 0.3, "url": "https://drive.google.com/file/d/1uVWOtBubay9BbBjxDVZBqFVfXcT4o4rQ/view?usp=sharing"}], "Ginecología": [{"id": "1jdntrKte2TtvTXJx3F8MPwtaAEARGs_z", "name": "guia_embarazo.pdf", "type": "PDF", "size_mb": 0.73, "url": "https://drive.google.com/file/d/1jdntrKte2TtvTXJx3F8MPwtaAEARGs_z/view?usp=sharing"}, {"id": "1PV67XDQetaPu31PgDI4P_XFEHzqx34Mp", "name": "hiperemesis-gravidica.pdf", "type": "PDF", "size_mb": 0.52, "url": "https://drive.google.com/file/d/1PV67XDQetaPu31PgDI4P_XFEHzqx34Mp/view?usp=sharing"}, {"id": "1l6NDeJ1hxiwKmFl5qXM9yMegnkLI9Ptx", "name": "Migrana-y-gestacion-300725.pdf", "type": "PDF", "size_mb": 0.5, "url": "https://drive.google.com/file/d/1l6NDeJ1hxiwKmFl5qXM9yMegnkLI9Ptx/view?usp=sharing"}, {"id": "1gEhUS5JdbZDLxAgHs2bmgv0WUyykcXze", "name": "Tiroides-y-embarazo-140725.pdf", "type": "PDF", "size_mb": 0.46, "url": "https://drive.google.com/file/d/1gEhUS5JdbZDLxAgHs2bmgv0WUyykcXze/view?usp=sharing"}, {"id": "1t9F4pTEqBeES00pbiuFQMqAb2-vSLkW6", "name": "Gripe-y-gestacion-2024-2025-14112024.pdf", "type": "PDF", "size_mb": 0.81, "url": "https://drive.google.com/file/d/1t9F4pTEqBeES00pbiuFQMqAb2-vSLkW6/view?usp=sharing"}, {"id": "1lLkNhpXYa_VBcgXcCDwTDXdllvciD-BU", "name": "AEPCC-guia-13_CONDILOMAS-22112025_web.pdf", "type": "PDF", "size_mb": 0.7, "url": "https://drive.google.com/file/d/1lLkNhpXYa_VBcgXcCDwTDXdllvciD-BU/view?usp=sharing"}, {"id": "17t97HD5bfues-iww-1qJLGkNMj8X6n5L", "name": "AEPCC_guia_CRIBADO_2025.pdf", "type": "PDF", "size_mb": 3.19, "url": "https://drive.google.com/file/d/17t97HD5bfues-iww-1qJLGkNMj8X6n5L/view?usp=sharing"}, {"id": "1TxIaGl3Lf0rE1O6_XTj8dk6djs0EnIil", "name": "AEPCC_revista09-Anticonceptivos-web.pdf", "type": "PDF", "size_mb": 1.4, "url": "https://drive.google.com/file/d/1TxIaGl3Lf0rE1O6_XTj8dk6djs0EnIil/view?usp=sharing"}], "Neurología": [{"id": "1omqkG-fcP9o1Gpmd_NP9H63LERKdvpO8", "name": "Manual_Urgencias_neurologicas_2023_DIGITAL.pdf", "type": "PDF", "size_mb": 11.49, "url": "https://drive.google.com/file/d/1omqkG-fcP9o1Gpmd_NP9H63LERKdvpO8/view?usp=sharing"}, {"id": "1J8xNYgo-KCVH1-l3Wz80pK0EeE8o2HUM", "name": "8.9.-Estado-epileptico.pdf", "type": "PDF", "size_mb": 9.63, "url": "https://drive.google.com/file/d/1J8xNYgo-KCVH1-l3Wz80pK0EeE8o2HUM/view?usp=sharing"}, {"id": "168Oi_Ty-8uHl7UVlD0rOgN43YwO8g4uT", "name": "4.2.-Ictus-isquemico-agudo-I.pdf", "type": "PDF", "size_mb": 6.31, "url": "https://drive.google.com/file/d/168Oi_Ty-8uHl7UVlD0rOgN43YwO8g4uT/view?usp=sharing"}, {"id": "10_znnlOdhXlFdMsz0aREiYDgtVM7NiCp", "name": "5_Guia-oficial-SEN-de-practica-clinica-en-Cefaleas-2020.pdf", "type": "PDF", "size_mb": 5.51, "url": "https://drive.google.com/file/d/10_znnlOdhXlFdMsz0aREiYDgtVM7NiCp/view?usp=sharing"}, {"id": "1Q2X8lKa1b38a7V55UGqo4nvlX-KZkxA5", "name": "Cefaleas.2019.-REcomendacionesSEN.Pregunar.EF_.pdf", "type": "PDF", "size_mb": 0.88, "url": "https://drive.google.com/file/d/1Q2X8lKa1b38a7V55UGqo4nvlX-KZkxA5/view?usp=sharing"}, {"id": "1ilh1yNc48V2GQDuz5Oc9cUtLHRHvv8SU", "name": "4.5.-Hemorragia-cerebral.pdf", "type": "PDF", "size_mb": 2.38, "url": "https://drive.google.com/file/d/1ilh1yNc48V2GQDuz5Oc9cUtLHRHvv8SU/view?usp=sharing"}, {"id": "1BCGxbZOYem2aUuVhIhscG-dbKMgShuzt", "name": "4.1.-Accidente-isquemico-transitorio.pdf", "type": "PDF", "size_mb": 0.22, "url": "https://drive.google.com/file/d/1BCGxbZOYem2aUuVhIhscG-dbKMgShuzt/view?usp=sharing"}], "Neumología": [{"id": "1zgJebMrBt6Td6i1PxbGcBZMfSiDcR7cI", "name": "epoc-gold-2023-2.pdf", "type": "PDF", "size_mb": 0.22, "url": "https://drive.google.com/file/d/1zgJebMrBt6Td6i1PxbGcBZMfSiDcR7cI/view?usp=sharing"}, {"id": "1riNH2bXZSNTOKS631ilQKhycsvZu787W", "name": "LIBRO-DEFINITIVO-ok-con-portadas-copia-2-2.pdf", "type": "PDF", "size_mb": 19.55, "url": "https://drive.google.com/file/d/1riNH2bXZSNTOKS631ilQKhycsvZu787W/view?usp=sharing"}, {"id": "1WcT-KvpB1QZYnjMMSyvEKsSCocp-6nzM", "name": "LIBRO-INHALADORESTABLA-NEBULIZADOS.pdf", "type": "PDF", "size_mb": 0.1, "url": "https://drive.google.com/file/d/1WcT-KvpB1QZYnjMMSyvEKsSCocp-6nzM/view?usp=sharing"}, {"id": "1snxk23Xm0yt6nSO8zKkHmGwAFOLxX2wS", "name": "actualizacion-del-manejo-de-nnac-en-ap-2.pdf", "type": "PDF", "size_mb": 0.8, "url": "https://drive.google.com/file/d/1snxk23Xm0yt6nSO8zKkHmGwAFOLxX2wS/view?usp=sharing"}], "Pediatría": [{"id": "1mDiIGkPScGzz556Ofult7bQjmzz99rZc", "name": "Chuleta-urgencias-actualizada-.pdf", "type": "PDF", "size_mb": 17.67, "url": "https://drive.google.com/file/d/1mDiIGkPScGzz556Ofult7bQjmzz99rZc/view?usp=sharing"}, {"id": "1PAHB2lcRqEGeJWk383xgPdcstKUxUcp9", "name": "22-36-Exantemas.pdf", "type": "PDF", "size_mb": 0.4, "url": "https://drive.google.com/file/d/1PAHB2lcRqEGeJWk383xgPdcstKUxUcp9/view?usp=sharing"}, {"id": "1274y_1QXU8oCTb1aWz-CYEp9694hEuDG", "name": "Guia-emergencias-y-urgencias-pediatricas-2024.pdf", "type": "PDF", "size_mb": 10.43, "url": "https://drive.google.com/file/d/1274y_1QXU8oCTb1aWz-CYEp9694hEuDG/view?usp=sharing"}, {"id": "1pjc16hc8WHXw3xgQBiAwmMWlH62LKK8n", "name": "Protocolos-SEUP-2024.pdf", "type": "PDF", "size_mb": 6.91, "url": "https://drive.google.com/file/d/1pjc16hc8WHXw3xgQBiAwmMWlH62LKK8n/view?usp=sharing"}], "Traumatología": [{"id": "155OMvUyWq-D8R86rKgHnLfMmPJXb9HeN", "name": "drive-download-20260218T201527Z-1-001 (Unzipped Files)", "type": "Otros", "size_mb": 0.0, "url": "https://drive.google.com/file/d/155OMvUyWq-D8R86rKgHnLfMmPJXb9HeN/view?usp=sharing"}, {"id": "1b7U_ktVNRqBlxc9-RQxbDq8QPNVYiuuM", "name": "drive-download-20260218T201527Z-1-001.zip", "type": "Otros", "size_mb": 117.14, "url": "https://drive.google.com/file/d/1b7U_ktVNRqBlxc9-RQxbDq8QPNVYiuuM/view?usp=sharing"}], "Protocolos Médicos": [{"id": "1V87tYy-PsuTfFI9aM3kH3h8edOuNaKun", "name": "UME", "type": "Otros", "size_mb": 0.0, "url": "https://drive.google.com/file/d/1V87tYy-PsuTfFI9aM3kH3h8edOuNaKun/view?usp=sharing"}, {"id": "1MHRGcDXMoaqLlPo47g4mjUAMqkK6Zf8n", "name": "Manual de Protocolos de Actuación en Urgencias.pdf", "type": "PDF", "size_mb": 0.38, "url": "https://drive.google.com/file/d/1MHRGcDXMoaqLlPo47g4mjUAMqkK6Zf8n/view?usp=sharing"}, {"id": "1Evf8A4UfhWOC4KVb_hchtRMtEXlIsKOR", "name": "cetoacidosis-diabetica.-Victo-2-11.pdf", "type": "PDF", "size_mb": 3.77, "url": "https://drive.google.com/file/d/1Evf8A4UfhWOC4KVb_hchtRMtEXlIsKOR/view?usp=sharing"}, {"id": "1clJxzoLcLmeop5T8Rwau44ecTy1u-QVE", "name": "protocolo de actuaciones de urgencias del hospital universitario de Toledo.pdf", "type": "PDF", "size_mb": 40.36, "url": "https://drive.google.com/file/d/1clJxzoLcLmeop5T8Rwau44ecTy1u-QVE/view?usp=sharing"}, {"id": "1CF9SNeF9ETqCgD-9ZrKyEaIW1ZYoDCZQ", "name": "protocolo violencia de genero.pdf", "type": "PDF", "size_mb": 64.89, "url": "https://drive.google.com/file/d/1CF9SNeF9ETqCgD-9ZrKyEaIW1ZYoDCZQ/view?usp=sharing"}, {"id": "1_QUxbG4RWDAlFtYu_2ll0JYx-0SzHAay", "name": "Protocolos pat. vascular SU-HUSL.pdf", "type": "PDF", "size_mb": 0.65, "url": "https://drive.google.com/file/d/1_QUxbG4RWDAlFtYu_2ll0JYx-0SzHAay/view?usp=sharing"}, {"id": "1ReIzte56fA5wtjGf5N_nYqmBsAC28k_o", "name": "protocolo_diabetes_husl.pdf", "type": "PDF", "size_mb": 0.65, "url": "https://drive.google.com/file/d/1ReIzte56fA5wtjGf5N_nYqmBsAC28k_o/view?usp=sharing"}], "Urología": [{"name": "ITU no complicada — Protocolo AP", "type": "protocolo", "size_mb": 0, "description": "Manejo de infección urinaria baja en mujer. Fosfomicina, nitrofurantoína. Criterios derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia", "tags": ["itu", "cistitis", "fosfomicina"]}, {"name": "Cólico renal — Actuación en Urgencias", "type": "protocolo", "size_mb": 0, "description": "Diagnóstico, analgesia (Dexketoprofeno, metamizol), criterios de ingreso, indicación eco/TAC.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia", "tags": ["colico renal", "litiasis", "urgencias"]}, {"name": "Retención aguda de orina (RAO)", "type": "protocolo", "size_mb": 0, "description": "Sondaje vesical, causas, manejo farmacológico con tamsulosina, criterios derivación urología.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia", "tags": ["rao", "sondaje", "prostata"]}, {"name": "HBP — Hiperplasia benigna de próstata", "type": "protocolo", "size_mb": 0, "description": "Escala IPSS, alfa-bloqueantes, inhibidores 5-alfa-reductasa, criterios derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia", "tags": ["prostata", "hbp", "tamsulosina"]}, {"name": "Hematuria — Algoritmo diagnóstico", "type": "protocolo", "size_mb": 0, "description": "Hematuria macro/micro, estudio básico AP, derivación urgente vs preferente.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urologia", "tags": ["hematuria", "derivacion"]}], "ORL": [{"name": "Otitis media aguda — Manejo AP", "type": "protocolo", "size_mb": 0, "description": "Criterios antibiótico vs espera vigilante. Amoxicilina dosis altas. OMA recurrente.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl", "tags": ["otitis", "oma", "amoxicilina"]}, {"name": "Faringoamigdalitis aguda", "type": "protocolo", "size_mb": 0, "description": "Criterios de Centor/McIsaac, test rápido estreptococo, tratamiento antibiótico.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl", "tags": ["amigdalitis", "faringitis", "centor"]}, {"name": "Epistaxis — Protocolo de actuación", "type": "protocolo", "size_mb": 0, "description": "Taponamiento anterior, cauterización, epistaxis posterior, criterios derivación ORL.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl", "tags": ["epistaxis", "hemorragia nasal"]}, {"name": "Vértigo — Diagnóstico diferencial", "type": "protocolo", "size_mb": 0, "description": "VPPB (Dix-Hallpike, Epley), neuronitis vestibular, Menière. Banderas rojas.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl", "tags": ["vertigo", "vppb", "epley"]}, {"name": "Hipoacusia súbita", "type": "protocolo", "size_mb": 0, "description": "Urgencia ORL, corticoides, derivación inmediata, diagnóstico diferencial.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#orl", "tags": ["hipoacusia", "sordera"]}], "Oftalmología": [{"name": "Ojo rojo — Algoritmo diagnóstico", "type": "protocolo", "size_mb": 0, "description": "Conjuntivitis vs uveítis vs glaucoma agudo. Banderas rojas. Derivación urgente.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia", "tags": ["ojo rojo", "conjuntivitis", "uveitis"]}, {"name": "Cuerpo extraño corneal", "type": "protocolo", "size_mb": 0, "description": "Extracción, tinción fluoresceína, anillo de óxido, cobertura antibiótica, derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia", "tags": ["cuerpo extrano", "cornea"]}, {"name": "Glaucoma agudo de ángulo cerrado", "type": "protocolo", "size_mb": 0, "description": "Urgencia oftalmológica. Clínica, tratamiento inicial (timolol, pilocarpina), derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia", "tags": ["glaucoma", "urgencia"]}, {"name": "Herpes ocular", "type": "protocolo", "size_mb": 0, "description": "Queratitis herpética dendrítica, aciclovir tópico, contraindicación corticoides, seguimiento.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia", "tags": ["herpes", "queratitis"]}, {"name": "Pérdida brusca de visión", "type": "protocolo", "size_mb": 0, "description": "Oclusión arteria/vena central retina, desprendimiento retina. Derivación urgente.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#oftalmologia", "tags": ["vision", "retina", "urgencia"]}], "Psiquiatría": [{"name": "Crisis de ansiedad / Ataque de pánico", "type": "protocolo", "size_mb": 0, "description": "Manejo no farmacológico, benzodiacepinas (alprazolam, lorazepam), derivación salud mental.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria", "tags": ["ansiedad", "panico", "benzodiacepinas"]}, {"name": "Agitación psicomotriz — Protocolo", "type": "protocolo", "size_mb": 0, "description": "Contención verbal, haloperidol + midazolam, olanzapina IM, medidas de seguridad.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria", "tags": ["agitacion", "haloperidol", "contencion"]}, {"name": "Ideación suicida — Evaluación y manejo", "type": "protocolo", "size_mb": 0, "description": "Escala Columbia (C-SSRS), factores riesgo/protección, decisión ingreso, plan de seguridad.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria", "tags": ["suicidio", "columbia", "riesgo"]}, {"name": "Insomnio — Manejo en AP", "type": "protocolo", "size_mb": 0, "description": "Higiene del sueño, terapia cognitivo-conductual, fármacos (zolpidem, trazodona, melatonina).", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria", "tags": ["insomnio", "sueno", "trazodona"]}, {"name": "Depresión — Guía rápida AP", "type": "protocolo", "size_mb": 0, "description": "PHQ-9, ISRS primera línea (sertralina, escitalopram), criterios derivación, seguimiento.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#psiquiatria", "tags": ["depresion", "isrs", "phq9"]}], "Hematología": [{"name": "Anemia ferropénica — Estudio y tratamiento", "type": "protocolo", "size_mb": 0, "description": "Ferritina, hierro oral vs IV, causas, indicación colonoscopia, derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia", "tags": ["anemia", "ferritina", "hierro"]}, {"name": "Anticoagulación oral — Manejo en AP", "type": "protocolo", "size_mb": 0, "description": "ACODs vs acenocumarol, INR, interacciones, manejo perioperatorio, reversión.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia", "tags": ["anticoagulacion", "sintrom", "acod"]}, {"name": "TVP / TEP — Diagnóstico y actuación", "type": "protocolo", "size_mb": 0, "description": "Escala de Wells, D-dímero, eco-doppler, HBPM, criterios ingreso.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia", "tags": ["trombosis", "tvp", "tep", "wells"]}, {"name": "Leucocitosis / Leucopenia — Estudio básico", "type": "protocolo", "size_mb": 0, "description": "Hemograma, frotis, causas frecuentes, derivación hematología.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia", "tags": ["leucocitos", "hemograma"]}, {"name": "Trombocitopenia — Algoritmo", "type": "protocolo", "size_mb": 0, "description": "Causas (PTI, fármacos, hiperesplenismo), estudio, criterios transfusión.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#hematologia", "tags": ["plaquetas", "trombocitopenia"]}, {"id": "manual-hematologia-basica-2024", "name": "Manual Práctico de Hematología Básica - Urgencias y AP", "type": "PDF", "size_mb": 11.24, "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/docs/Manual-Practico-Hematologia-Basica.pdf"}], "Nefrología": [{"name": "ERC — Clasificación y manejo AP", "type": "protocolo", "size_mb": 0, "description": "Estadios KDIGO, FGe, albuminuria, IECA/ARA-II, iSGLT2, derivación nefrología.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia", "tags": ["erc", "kdigo", "isglt2"]}, {"name": "Hiperpotasemia — Protocolo urgente", "type": "protocolo", "size_mb": 0, "description": "ECG, gluconato cálcico, insulina+glucosa, salbutamol, resinas, diálisis.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia", "tags": ["potasio", "hiperpotasemia", "ecg"]}, {"name": "Hiponatremia — Diagnóstico y manejo", "type": "protocolo", "size_mb": 0, "description": "Algoritmo osmolalidad, SIADH, restricción hídrica, suero salino hipertónico.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia", "tags": ["sodio", "hiponatremia", "siadh"]}, {"name": "Fracaso renal agudo — Actuación", "type": "protocolo", "size_mb": 0, "description": "Pre-renal, renal, post-renal. Fluidoterapia, ecografía, criterios derivación/diálisis.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia", "tags": ["fra", "insuficiencia renal aguda"]}, {"name": "Proteinuria / Síndrome nefrótico", "type": "protocolo", "size_mb": 0, "description": "Cociente albúmina/creatinina, estudio básico, edemas, derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#nefrologia", "tags": ["proteinuria", "nefrotico"]}], "Reumatología": [{"name": "Gota aguda — Manejo en AP/Urgencias", "type": "protocolo", "size_mb": 0, "description": "Colchicina, AINEs, corticoides, febuxostat/alopurinol profilaxis, dieta.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia", "tags": ["gota", "colchicina", "acido urico"]}, {"name": "Artritis reumatoide — Sospecha y derivación", "type": "protocolo", "size_mb": 0, "description": "Criterios ACR/EULAR, FR, anti-CCP, derivación precoz reumatología.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia", "tags": ["artritis", "reumatoide", "anti-ccp"]}, {"name": "Lumbalgia — Protocolo AP", "type": "protocolo", "size_mb": 0, "description": "Banderas rojas, tratamiento conservador, AINEs, criterios imagen, derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia", "tags": ["lumbalgia", "dolor espalda"]}, {"name": "Fibromialgia — Manejo integral", "type": "protocolo", "size_mb": 0, "description": "Criterios diagnósticos, ejercicio, duloxetina/pregabalina, abordaje multidisciplinar.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia", "tags": ["fibromialgia", "dolor cronico"]}, {"name": "Osteoporosis — Cribado y tratamiento", "type": "protocolo", "size_mb": 0, "description": "FRAX, densitometría, calcio/vitamina D, bifosfonatos, denosumab.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#reumatologia", "tags": ["osteoporosis", "frax", "bifosfonatos"]}], "Urgencias": [{"name": "PCR — Soporte vital avanzado", "type": "protocolo", "size_mb": 0, "description": "Algoritmo SVA/SVB, desfibrilación, adrenalina, amiodarona, causas reversibles (4H/4T).", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias", "tags": ["pcr", "rcp", "sva"]}, {"name": "Shock — Clasificación y manejo inicial", "type": "protocolo", "size_mb": 0, "description": "Hipovolémico, cardiogénico, distributivo, obstructivo. Fluidoterapia, vasopresores.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias", "tags": ["shock", "noradrenalina"]}, {"name": "Politraumatizado — ABCDE", "type": "protocolo", "size_mb": 0, "description": "Evaluación primaria y secundaria, vía aérea, neumotórax, hemorragia, inmovilización.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias", "tags": ["trauma", "abcde", "politrauma"]}, {"name": "Dolor torácico — Algoritmo urgencias", "type": "protocolo", "size_mb": 0, "description": "SCA vs TEP vs disección vs neumotórax. ECG, troponina, escala HEART.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias", "tags": ["dolor toracico", "sca", "troponina"]}, {"name": "Intoxicación aguda — Manejo general", "type": "protocolo", "size_mb": 0, "description": "Carbón activado, lavado gástrico, antídotos específicos, criterios UCI.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias", "tags": ["intoxicacion", "antidoto"]}, {"name": "Cetoacidosis diabética — Protocolo", "type": "protocolo", "size_mb": 0, "description": "Fluidoterapia, insulina IV, potasio, bicarbonato, monitorización.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias", "tags": ["cetoacidosis", "cad", "diabetes"]}], "Infecciosas": [{"name": "COVID-19 — Manejo actualizado 2025", "type": "protocolo", "size_mb": 0, "description": "Variantes actuales, antivirales (nirmatrelvir/ritonavir), vacunación, grupos riesgo.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas", "tags": ["covid", "paxlovid"]}, {"name": "Gripe — Protocolo AP y Urgencias", "type": "protocolo", "size_mb": 0, "description": "Diagnóstico clínico, oseltamivir, indicaciones ingreso, vacunación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas", "tags": ["gripe", "influenza", "oseltamivir"]}, {"name": "Infecciones oportunistas — Inmunodeprimidos", "type": "protocolo", "size_mb": 0, "description": "Profilaxis, CMV, PCP, toxoplasma, cribado pre-biológicos.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas", "tags": ["oportunistas", "inmunodeprimido"]}, {"name": "Herpes zóster — Manejo AP", "type": "protocolo", "size_mb": 0, "description": "Valaciclovir/aciclovir, dolor neuropático, vacuna Shingrix, neuralgia postherpética.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas", "tags": ["herpes zoster", "valaciclovir"]}, {"name": "Infección por VIH — Sospecha y derivación", "type": "protocolo", "size_mb": 0, "description": "Test rápido, indicadores clínicos, derivación a unidad VIH, PrEP/PEP.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#infecciosas", "tags": ["vih", "sida", "prep"]}], "Alergología": [{"name": "Anafilaxia — Protocolo de actuación", "type": "protocolo", "size_mb": 0, "description": "Adrenalina IM 0.3-0.5mg, posición Trendelenburg, observación 6-8h, auto-inyector.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia", "tags": ["anafilaxia", "adrenalina", "epipen"]}, {"name": "Urticaria aguda / Angioedema", "type": "protocolo", "size_mb": 0, "description": "Antihistamínicos, corticoides, angioedema por IECA (suspender), derivación alergología.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia", "tags": ["urticaria", "angioedema"]}, {"name": "Rinitis alérgica — Manejo AP", "type": "protocolo", "size_mb": 0, "description": "Corticoides nasales, antihistamínicos, inmunoterapia, derivación alergología.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia", "tags": ["rinitis", "alergia"]}, {"name": "Alergia medicamentosa — Actuación", "type": "protocolo", "size_mb": 0, "description": "Reacciones inmediatas vs tardías, registro en historia clínica, alternativas, derivación.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia", "tags": ["alergia farmacos", "penicilina"]}, {"name": "Picaduras / Reacciones alérgicas", "type": "protocolo", "size_mb": 0, "description": "Himenópteros, manejo local, indicación adrenalina, derivación inmunoterapia veneno.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#alergologia", "tags": ["picadura", "avispa", "abeja"]}], "Cirugía Menor": [{"name": "Incisión y drenaje de abscesos", "type": "protocolo", "size_mb": 0, "description": "Técnica, anestesia local, indicaciones antibiótico, curas posteriores.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor", "tags": ["absceso", "drenaje", "cirugia"]}, {"name": "Uña incarnata — Cirugía ungueal", "type": "protocolo", "size_mb": 0, "description": "Matricectomía parcial, fenolización, cuidados postoperatorios.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor", "tags": ["una incarnata", "onicocriptosis"]}, {"name": "Sutura de heridas — Técnicas básicas", "type": "protocolo", "size_mb": 0, "description": "Puntos simples, colchonero, intradérmico, materiales, tiempos de retirada.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor", "tags": ["sutura", "herida", "puntos"]}, {"name": "Quemaduras — Manejo inicial", "type": "protocolo", "size_mb": 0, "description": "Clasificación (grado/extensión), Wallace, curas, criterios derivación grandes quemados.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor", "tags": ["quemadura", "wallace"]}, {"name": "Extracción de cuerpos extraños", "type": "protocolo", "size_mb": 0, "description": "Anzuelos, astillas, anillos, técnicas, anestesia local.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#cirugia-menor", "tags": ["cuerpo extrano", "extraccion"]}], "Paliativos": [{"name": "Manejo del dolor — Escalera analgésica OMS", "type": "protocolo", "size_mb": 0, "description": "Paracetamol, AINEs, tramadol, morfina, fentanilo, coadyuvantes, rotación opioides.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos", "tags": ["dolor", "morfina", "opioides"]}, {"name": "Sedación paliativa — Protocolo", "type": "protocolo", "size_mb": 0, "description": "Midazolam, levomepromazina, indicaciones, consentimiento, registro, aspectos éticos.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos", "tags": ["sedacion", "paliativa", "midazolam"]}, {"name": "Control de síntomas — Guía rápida", "type": "protocolo", "size_mb": 0, "description": "Náuseas, disnea, estreñimiento, delirium, estertores, vía subcutánea.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos", "tags": ["sintomas", "via subcutanea"]}, {"name": "Vía subcutánea — Técnica y fármacos", "type": "protocolo", "size_mb": 0, "description": "Palomilla, infusor elastomérico, fármacos compatibles, mezclas, cuidados.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos", "tags": ["subcutanea", "infusor"]}, {"name": "Atención al final de la vida", "type": "protocolo", "size_mb": 0, "description": "Agonía, signos, comunicación con familia, medidas de confort, aspectos legales.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#paliativos", "tags": ["final vida", "agonia", "confort"]}], "Urgencias Hospitalarias": [{"name": "Evaluación primaria del politraumatizado — Guía xABCDE", "type": "protocolo", "size_mb": 0, "description": "Algoritmo xABCDE para la evaluación inicial del paciente traumatizado: control de hemorragia exsanguinante, vía aérea, ventilación, circulación, discapacidad neurológica y exposición.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["xabcde", "politrauma", "evaluacion primaria", "trauma"]}, {"name": "Control de hemorragia externa exsanguinante (x)", "type": "protocolo", "size_mb": 0, "description": "Presión directa, empaquetamiento de heridas y torniquete. Indicaciones, técnica de aplicación y tiempo máximo. Conversión de torniquete.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["hemorragia", "torniquete", "x", "sangrado"]}, {"name": "Manejo de la vía aérea en trauma (A)", "type": "protocolo", "size_mb": 0, "description": "Evaluación de permeabilidad, maniobras básicas (tracción mandibular, cánulas), dispositivos supraglóticos, ISR modificada, cricotiroidotomía. Restricción de movimiento cervical.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["via aerea", "intubacion", "isr", "cricotiroidotomia", "airway"]}, {"name": "Ventilación y lesiones torácicas (B)", "type": "protocolo", "size_mb": 0, "description": "Neumotórax a tensión, hemotórax masivo, neumotórax abierto, contusión pulmonar. Descompresión con aguja, toracostomía con dedo, drenaje torácico.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["neumotorax", "hemotorax", "torax", "breathing", "drenaje"]}, {"name": "Circulación, shock y resucitación con volumen (C)", "type": "protocolo", "size_mb": 0, "description": "Diagnóstico de shock (hemorrágico, obstructivo, distributivo, cardiogénico). Hipotensión permisiva. Protocolo de transfusión masiva. FAST y eFAST. Estabilización pélvica.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["shock", "hemorragia", "transfusion masiva", "fast", "pelvis", "circulation"]}, {"name": "Evaluación neurológica y TCE (D)", "type": "protocolo", "size_mb": 0, "description": "Glasgow Coma Scale, pupilas, signos de lateralización. Prevención de lesión cerebral secundaria. Manejo de hipertensión intracraneal. Lesión medular.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["glasgow", "tce", "neurologia", "medular", "disability"]}, {"name": "Exposición y control ambiental (E)", "type": "protocolo", "size_mb": 0, "description": "Prevención de hipotermia, tríada letal (hipotermia-acidosis-coagulopatía). Exposición completa preservando dignidad. Calentamiento activo.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["hipotermia", "triada letal", "exposicion", "environment"]}, {"name": "Trauma en poblaciones especiales", "type": "protocolo", "size_mb": 0, "description": "Particularidades en pediatría (reserva fisiológica, dosis por peso), embarazo (desplazamiento uterino, cesárea perimortem), ancianos (fragilidad, anticoagulantes) y obesos.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["pediatria", "embarazo", "anciano", "obeso", "especiales"]}, {"name": "Comunicación y trabajo en equipo — Resucitación trauma", "type": "protocolo", "size_mb": 0, "description": "Liderazgo, asertividad graduada (CUS), comunicación en bucle cerrado, huddle pre-llegada, MIST, S-xABCDE-BAR, debriefing post-evento.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["comunicacion", "equipo", "mist", "sbar", "debriefing", "teamwork"]}, {"name": "Quemaduras — Evaluación inicial y resucitación", "type": "protocolo", "size_mb": 0, "description": "Regla de los 9, fórmula de Parkland, manejo de vía aérea en quemado, escarotomías, criterios de derivación a unidad de quemados.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["quemadura", "parkland", "escarotomia", "burn"]}, {"name": "Trauma musculoesquelético", "type": "protocolo", "size_mb": 0, "description": "Fracturas abiertas (Gustilo-Anderson), síndrome compartimental, luxaciones con compromiso vascular, inmovilización, tracción.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["fractura", "compartimental", "musculoesqueletico", "inmovilizacion"]}, {"name": "Transferencia a cuidados definitivos — S-xABCDE-BAR", "type": "protocolo", "size_mb": 0, "description": "Criterios de transferencia, herramienta de comunicación S-xABCDE-BAR, documentación, preparación del traslado.", "url": "https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-nuevas-especialidades.html#urgencias-hospitalarias", "tags": ["transferencia", "traslado", "sxabcdebar", "definitivo"]}]};
+document.addEventListener('click', function(){
+  setTimeout(function(){
+    var dl=document.getElementById('documentosList');
+    var dc=document.getElementById('docsCount');
+    if(!dl || dl.offsetParent===null) return;
+    var cat=(typeof currentCategory!=='undefined')?currentCategory:'Cardiología';
+    var docs=window._FORCED_DOCS[cat]||[];
+    if(dc && parseInt(dc.textContent)===0 && docs.length>0){
+      dl.innerHTML=docs.map(function(d){
+        return '<div class="doc-item"><div><div class="doc-name">'+d.name+'</div><div class="doc-size">'+(d.size_mb||0)+' MB · '+(d.type||'PDF')+'</div></div><a href="'+d.url+'" target="_blank" class="doc-btn">Abrir</a></div>';
+      }).join('');
+      dc.textContent=docs.length;
+      if(typeof documents!=='undefined') documents=window._FORCED_DOCS;
+    }
+  }, 300);
+});
 </script>
 </body>
 </html>
