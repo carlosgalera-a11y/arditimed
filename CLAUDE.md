@@ -72,10 +72,11 @@ Colecciones existentes: users, informes_ia, mis_plantillas, mis_notebooks, megac
 Añadir: aiCache, auditLogs, metrics_snapshots, users/{uid}/cases, users/{uid}/aiRequests, users/{uid}/quotas/{date}, users/{uid}/progress.
 
 ## Política IA
-- type='clinical_case' → Gemini 2.5 Flash-Lite EU primario, Mistral Small EU fallback
-- type='educational' → DeepSeek V3 primario, Gemini 2.5 Flash-Lite EU fallback
-- type='vision' → Gemini 2.5 Flash primario, Qwen-VL fallback
+- type='clinical_case' → Qwen2.5-VL-72B primario (directo DashScope Intl si hay QWEN_API_KEY, si no OpenRouter `qwen/qwen2.5-vl-72b-instruct`). Fallbacks: Gemini 2.5 Flash-Lite → Mistral Small → OR Gemini → OR Mistral.
+- type='educational' → DeepSeek V3 primario, Gemini 2.5 Flash-Lite EU fallback.
+- type='vision' → Qwen2.5-VL-72B primario (directo DashScope Intl si hay QWEN_API_KEY, si no OpenRouter). Fallback: Gemini 2.5 Flash directo (si hay key) → OpenRouter Gemini 2.5 Flash.
 - Cuota dura 50/usuario/día. Caché 7d por hash. Rate limit 30/min por IP.
+- Nota EU residency: DashScope Intl no garantiza routing UE. Si se exige estrictamente UE para clinical_case, hay que preferir Gemini directo (europe-west1) vía modelOverride o reordenar la cadena.
 - NAS local desactivado en producción (mantener solo para uso personal offline).
 
 ## Co-branding
