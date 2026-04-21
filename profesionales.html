@@ -87,6 +87,21 @@ footer a:hover{color:#1a6b4a}
 .modal .cancel:hover{background:#cbd5e1}
 .modal .err{color:#dc2626;font-size:.8rem;margin-top:4px;min-height:1em}
 
+/* ── Toolbar: Proponer / Sugerencias / Moderación ── */
+.pro-toolbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:14px auto 0;max-width:900px;padding:0 4px}
+.pro-tbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:none;border-radius:18px;color:#fff;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:transform .15s ease, box-shadow .15s ease, filter .15s}
+.pro-tbtn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.28);filter:brightness(1.05)}
+.pro-tbtn:active{transform:translateY(0)}
+.tbtn-guardia{background:linear-gradient(135deg,#0d9488,#0f766e)}
+.tbtn-propose{background:linear-gradient(135deg,#0066cc,#0052a3)}
+.tbtn-sugerir{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
+.tbtn-mod{background:linear-gradient(135deg,#7c3aed,#5b21b6)}
+.pro-tbtn .badge{background:#ef4444;color:#fff;border-radius:10px;padding:1px 7px;font-size:.7rem;margin-left:4px;font-weight:800}
+@media(max-width:560px){
+  .pro-tbtn{padding:7px 10px;font-size:.76rem}
+  .pro-tbtn>span:nth-child(2){display:none}
+}
+
 @media(max-width:560px){
   .tile{min-height:140px;padding:18px}
   .tile-icon{width:38px;height:38px;font-size:1.25rem}
@@ -105,6 +120,22 @@ footer a:hover{color:#1a6b4a}
     </div>
     <div class="hero-title">Área de Profesionales</div>
     <div class="hero-sub">Protocolos, IA clínica, docencia y herramientas.</div>
+    <!-- Toolbar: Mi Guardia / Proponer / Sugerencias / Moderación (solo autenticados; Moderación solo admin) -->
+    <div id="proToolbar" class="pro-toolbar" style="display:none">
+      <button type="button" class="pro-tbtn tbtn-guardia" onclick="location.href='panel-medico.html?action=mi-guardia'">
+        <span>📋</span><span>Mi guardia</span>
+      </button>
+      <button type="button" class="pro-tbtn tbtn-propose" onclick="location.href='panel-medico.html?action=propose'">
+        <span>📤</span><span>Proponer contenido</span>
+      </button>
+      <button type="button" class="pro-tbtn tbtn-sugerir" onclick="location.href='panel-medico.html?action=sugerencias'">
+        <span>💡</span><span>Sugerencias</span>
+      </button>
+      <button type="button" class="pro-tbtn tbtn-mod" id="proTbtnMod" style="display:none" onclick="location.href='panel-medico.html?action=moderate'">
+        <span>🛡️</span><span>Moderación</span>
+        <span class="badge" id="proModCount" style="display:none"></span>
+      </button>
+    </div>
   </header>
 
   <main>
@@ -193,9 +224,11 @@ footer a:hover{color:#1a6b4a}
     function esc(s){ return String(s).replace(/[<>&"]/g,''); }
 
     auth.onAuthStateChanged(function(u){
+      var toolbar = document.getElementById('proToolbar');
       if(u){
         gate.style.display = 'none';
         hub.style.display = 'grid';
+        if(toolbar) toolbar.style.display = 'flex';
         var ini = (u.displayName || u.email || '?').charAt(0).toUpperCase();
         var nm = u.displayName || u.email || 'Usuario';
         pill.innerHTML =
@@ -203,12 +236,41 @@ footer a:hover{color:#1a6b4a}
             '<span class="user-avatar">' + esc(ini) + '</span>' +
             '<span class="user-name">' + esc(nm) + '</span>' +
           '</span>';
+        checkModeratorRole(u);
       } else {
         gate.style.display = 'block';
         hub.style.display = 'none';
+        if(toolbar) toolbar.style.display = 'none';
         pill.innerHTML = '<a href="index.html" class="back-link">Inicio</a>';
       }
     });
+
+    // Si el user es admin/superadmin (custom claim), muestra el botón Moderación con badge
+    function checkModeratorRole(u){
+      try{
+        u.getIdTokenResult(true).then(function(t){
+          var role = t && t.claims && t.claims.role;
+          var isAdmin = role === 'admin' || role === 'superadmin' || t.claims.admin === true;
+          var modBtn = document.getElementById('proTbtnMod');
+          if(!modBtn) return;
+          if(isAdmin){
+            modBtn.style.display = 'inline-flex';
+            // Contar propuestas pendientes
+            try{
+              firebase.firestore().collection('sugerencias')
+                .where('estado','==','pendiente').limit(100).get().then(function(snap){
+                  var n = snap.size;
+                  var badge = document.getElementById('proModCount');
+                  if(badge){
+                    if(n > 0){ badge.style.display='inline-block'; badge.textContent = String(n); }
+                    else badge.style.display='none';
+                  }
+                }).catch(function(){ /* rules denegan si no admin; ignorar */ });
+            }catch(e){}
+          }
+        }).catch(function(){});
+      }catch(e){}
+    }
 
     function signInWithGoogle(){
       var provider = new firebase.auth.GoogleAuthProvider();
