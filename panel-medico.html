@@ -3884,9 +3884,9 @@ window.ckGenerate=function(fromChat){
 
     var userMsg="";
     if(context){
-        userMsg="CONTEXTO DISPONIBLE:\n"+context+"\n---\nCon toda esta información, genera el checklist clínico completo (4 secciones: Anamnesis, Exploración, Pruebas, Tratamiento) para: "+q;
+        userMsg="CONTEXTO DISPONIBLE:\n"+context+"\n---\nCon toda esta información, genera el checklist clínico completo (5 secciones: Anamnesis, Exploración, Pruebas, Tratamiento hospitalario, Tratamiento domiciliario) para: "+q;
     } else {
-        userMsg="Genera el checklist clínico completo (4 secciones: Anamnesis, Exploración, Pruebas, Tratamiento) para: "+q;
+        userMsg="Genera el checklist clínico completo (5 secciones: Anamnesis, Exploración, Pruebas, Tratamiento hospitalario, Tratamiento domiciliario) para: "+q;
     }
 
     var msgs=[{role:"user",content:userMsg}];
@@ -3901,15 +3901,31 @@ window.ckGenerate=function(fromChat){
             return;
         }
         try{
-            var c=ans.replace(/```json|```/g,"").trim().replace(/<think>[\s\S]*?<\/think>/g,"").trim();
-            var s=c.indexOf("{"),e=c.lastIndexOf("}");
-            if(s>=0&&e>s)c=c.substring(s,e+1);
-            ckData=JSON.parse(c);
+            // Limpiar contenido: quitar <think>, fences y cualquier prefijo/sufijo
+            var c=String(ans||"")
+                .replace(/<think>[\s\S]*?<\/think>/gi,"")
+                .replace(/```(?:json)?/gi,"")
+                .trim();
+            // Tomar el bloque { ... } más amplio
+            var s=c.indexOf("{"), e=c.lastIndexOf("}");
+            if(s>=0 && e>s) c=c.substring(s, e+1);
+            // Parse con fallback: si falla, intentar reparar comillas/comas típicas
+            try{ ckData=JSON.parse(c); }
+            catch(ex1){
+                var repaired=c.replace(/,\s*([}\]])/g,"$1");
+                ckData=JSON.parse(repaired);
+            }
+            if(!ckData||!Array.isArray(ckData.secciones)||!ckData.secciones.length){
+                throw new Error("JSON sin secciones válidas");
+            }
             ckRender();
         }catch(ex){
-            console.error("CK parse:",ex,ans.substring(0,200));
+            var preview=String(ans||"").replace(/</g,"&lt;").substring(0,180);
+            console.error("CK parse:",ex,"\nRespuesta IA:",ans);
             document.getElementById("ckError").style.display="block";
-            document.getElementById("ckError").innerHTML="⚠️ Error al procesar. <button onclick=\"ckGenerate()\" style=\"background:#dc2626;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;margin-left:8px;font-size:.8rem\">🔄 Reintentar</button>";
+            document.getElementById("ckError").innerHTML="⚠️ Error al procesar (el modelo no devolvió JSON válido). "+
+                "<button onclick=\"ckGenerate()\" style=\"background:#dc2626;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;margin-left:8px;font-size:.8rem\">🔄 Reintentar</button>"+
+                "<div style=\"margin-top:8px;font-size:.72rem;opacity:.75;max-height:80px;overflow:auto;text-align:left;background:rgba(0,0,0,.05);padding:6px;border-radius:4px\"><strong>Respuesta IA:</strong> "+preview+"…</div>";
             document.getElementById("ckChips").style.display="flex";
         }
     });
