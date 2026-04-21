@@ -49,7 +49,7 @@ export const askAi = onCall(
     maxInstances: 10,
     concurrency: 40,
     memory: '512MiB',
-    timeoutSeconds: 60,
+    timeoutSeconds: 180,
     cors: [
       'https://area2cartagena.es',
       'https://carlosgalera-a11y.github.io',
