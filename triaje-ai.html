@@ -368,9 +368,10 @@ async function sendVoiceText(){
 
     try{
         var lastUser='';for(var i=voiceHistory.length-1;i>=0;i--){if(voiceHistory[i].role==='user'){lastUser=voiceHistory[i].content;break;}}
-        var ctx=voiceHistory.slice(-10).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content}).join('\n---\n');
-        var fullSys=sysPrompt+(ctx?'\n\nContexto previo:\n'+ctx:'');
-        var res=await window.askAi({type:'educational',prompt:lastUser,systemPrompt:fullSys});
+        // Contexto va en el prompt (limite 8000), no en systemPrompt (limite 4000).
+        var ctx=voiceHistory.slice(-10).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content.substring(0,400)}).join('\n---\n');
+        var fullPrompt=ctx?'Contexto previo de la conversación:\n'+ctx.substring(0,3000)+'\n\n---\n\nPACIENTE: '+lastUser:lastUser;
+        var res=await window.askAi({type:'educational',prompt:fullPrompt,systemPrompt:sysPrompt});
         var answer=(res&&res.text)||'Sin respuesta';
         // Remove the "analyzing" message
         var chat=document.getElementById('voiceChat');
