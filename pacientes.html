@@ -791,11 +791,11 @@
         }
         var sys='Eres un asistente de triaje médico del Área II Cartagena (Hospital Santa Lucía). Evalúa síntomas según el SET (5 niveles: 1=Resucitación, 2=Emergencia, 3=Urgente, 4=Menos urgente, 5=No urgente). Haz preguntas cortas UNA a la vez. Tras 3-5 preguntas da resultado: 🚨 NIVEL X — [nombre]. Si emergencia, indica 112. Responde en el idioma del paciente. Máx 80 palabras. Sé claro y empático.';
         try{
-            // Último user + contexto reciente dentro del system prompt.
+            // Contexto va en el prompt (limite 8000), no en systemPrompt (limite 4000).
             var lastUser='';for(var i=pacVoiceHistory.length-1;i>=0;i--){if(pacVoiceHistory[i].role==='user'){lastUser=pacVoiceHistory[i].content;break;}}
-            var ctx=pacVoiceHistory.slice(-10).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content}).join('\n---\n');
-            var fullSys=sys+(ctx?'\n\nContexto previo:\n'+ctx:'');
-            var res=await window.askAi({type:'educational',prompt:lastUser,systemPrompt:fullSys});
+            var ctx=pacVoiceHistory.slice(-10).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content.substring(0,400)}).join('\n---\n');
+            var fullPrompt=ctx?'Contexto previo:\n'+ctx.substring(0,3000)+'\n\n---\n\nPACIENTE: '+lastUser:lastUser;
+            var res=await window.askAi({type:'educational',prompt:fullPrompt,systemPrompt:sys});
             var answer=(res&&res.text)||'Sin respuesta';
             var chat=document.getElementById('pacVoiceChat');if(chat&&chat.lastChild)chat.removeChild(chat.lastChild);
             pacVoiceAddMsg('bot',answer);

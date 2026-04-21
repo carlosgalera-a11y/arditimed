@@ -134,9 +134,10 @@ async function sendChat(){
     if(typeof window.askAi==='function'){
         try{
             var sysPrompt='Eres un asistente farmacéutico para pacientes del Área II de Cartagena (España). Respondes en español, de forma clara y sencilla, adaptada a pacientes sin formación médica. Tus respuestas deben ser:\n- Concisas (máx 200 palabras)\n- Con lenguaje sencillo, evitando tecnicismos\n- Con emojis para claridad visual\n- SIEMPRE recuerda al paciente que consulte con su médico o farmacéutico ante dudas\n- Si preguntan sobre interacciones peligrosas, advierte claramente\n- Incluye horarios de toma recomendados cuando sea relevante\n- No diagnostiques ni prescribas. Solo informa sobre los fármacos que pregunten.\n- Responde SOLO sobre medicamentos y salud. Para otros temas, redirige amablemente.';
-            var ctx = chatHistory.slice(-8).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content}).join('\n---\n');
-            var fullSys = sysPrompt + (ctx ? '\n\nContexto previo de la conversación:\n'+ctx : '');
-            var res = await window.askAi({ type:'educational', prompt:q, systemPrompt:fullSys });
+            // Contexto conversacional va en el prompt (límite 8000), no en systemPrompt (límite 4000).
+            var ctx = chatHistory.slice(-8).filter(function(m){return m.role==='assistant'}).map(function(m){return m.content.substring(0,400)}).join('\n---\n');
+            var fullPrompt = ctx ? 'Contexto previo de la conversación:\n' + ctx.substring(0, 3000) + '\n\n---\n\nPREGUNTA ACTUAL: ' + q : q;
+            var res = await window.askAi({ type:'educational', prompt:fullPrompt, systemPrompt:sysPrompt });
             removeTyping();
             var answer = (res && res.text) || 'Sin respuesta';
             addMessage('bot',answer);

@@ -2580,64 +2580,25 @@ async function infGenerar(){
     if(!confirm('⚠️ Se han detectado posibles datos personales en el texto.\n\nRecuerda: NO incluyas nombres de pacientes, DNI ni datos identificativos.\n\n¿Has verificado que el texto está anonimizado?'))return;
   }
 
-  // Get API key from AP config
-  var provider=localStorage.getItem('iaProvider')||'groq';
-  var key,model,apiUrl;
-  if(provider==='qwen'){
-    key=localStorage.getItem('qwenApiKey');
-    model=localStorage.getItem('qwenModel')||'qwen-turbo';
-    apiUrl='about:disabled-qwen';
-  }else{
-    // ⚠️ NAS proxy first, then OpenRouter free (no key needed for :free models)
-    key=_dk()||'';
-    model='deepseek/deepseek-chat-v3-0324:free';
-    apiUrl='about:disabled-openrouter';
-  }
-
   var instrucciones=document.getElementById('infInstrucciones').value.trim();
 
   var tipoLabels={derivacion:'Informe de Derivación / Interconsulta',alta:'Informe de Alta',seguimiento:'Informe de Seguimiento',urgencia:'Informe de Atención Urgente',enfermeria:'Informe de Enfermería / Cuidados',libre:'Informe Clínico'};
 
-  // Build system prompt
-  var sysPrompt='Eres un asistente médico experto en elaborar informes clínicos en español para Atención Primaria en España.\n\n';
-  sysPrompt+='REGLAS ESTRICTAS DE PRIVACIDAD:\n';
-  sysPrompt+='- Si detectas nombres propios de pacientes, DNI, NHC, direcciones personales o cualquier dato identificativo en el texto o imágenes proporcionadas, RECHAZA generar el informe e indica que deben anonimizarse los datos.\n';
-  sysPrompt+='- Usa siempre "Paciente" o "El/La paciente" en lugar de cualquier nombre propio.\n';
-  sysPrompt+='- Si en una imagen aparecen nombres o datos personales visibles, indica que la imagen contiene datos personales y NO la proceses.\n\n';
-  sysPrompt+='FORMATO DEL INFORME:\n';
-  sysPrompt+='Genera un '+tipoLabels[infTipoSeleccionado]+' con la siguiente estructura:\n';
+  // systemPrompt corto y fijo (<4000). Formato + instrucciones van en prompt.
+  var sysPrompt='Eres un asistente médico experto en elaborar informes clínicos en español para Atención Primaria en España. '+
+                'PRIVACIDAD: si detectas nombres, DNI, NHC u otros datos identificativos en texto o imagen, RECHAZA generar y pide anonimización. '+
+                'Usa siempre "Paciente" en lugar de nombres propios. '+
+                'Genera informe profesional listo para imprimir, texto plano estructurado con secciones claras.';
 
-  if(infTipoSeleccionado==='derivacion'){
-    sysPrompt+='- Centro de Salud: Centro de Salud Virgen de la Caridad, Cartagena\n- Motivo de derivación\n- Antecedentes personales relevantes\n- Enfermedad actual\n- Exploración física\n- Pruebas complementarias realizadas\n- Juicio clínico\n- Tratamiento actual\n- Motivo específico de interconsulta\n- Fecha\n';
-  }else if(infTipoSeleccionado==='alta'){
-    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Motivo de consulta\n- Resumen de evolución\n- Diagnóstico\n- Tratamiento al alta\n- Recomendaciones\n- Plan de seguimiento\n- Fecha\n';
-  }else if(infTipoSeleccionado==='seguimiento'){
-    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Antecedentes relevantes\n- Evolución desde última consulta\n- Exploración actual\n- Pruebas complementarias\n- Valoración\n- Plan terapéutico actualizado\n- Próxima revisión\n- Fecha\n';
-  }else if(infTipoSeleccionado==='urgencia'){
-    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Hora de atención\n- Motivo de consulta urgente\n- Anamnesis\n- Exploración física\n- Pruebas realizadas\n- Juicio clínico\n- Tratamiento administrado\n- Destino del paciente (alta/derivación hospital)\n- Fecha\n';
-  }else if(infTipoSeleccionado==='enfermeria'){
-    sysPrompt+='- Centro: Centro de Salud Virgen de la Caridad\n- Valoración de enfermería por patrones funcionales\n- Diagnósticos de enfermería (NANDA)\n- Intervenciones (NIC)\n- Resultados esperados (NOC)\n- Plan de cuidados\n- Educación sanitaria\n- Fecha\n';
-  }else{
-    sysPrompt+='- Formato profesional y bien estructurado\n- Centro: Centro de Salud Virgen de la Caridad, Cartagena\n- Fecha\n';
-  }
-
-  if(instrucciones)sysPrompt+='\nInstrucciones adicionales del profesional: '+instrucciones+'\n';
-  sysPrompt+='\nGenera el informe completo, profesional y listo para imprimir. Usa formato de texto plano bien estructurado con secciones claras.';
-
-  // Build messages
-  var messages=[{role:'system',content:sysPrompt}];
-  
-  // Build user content
-  var userContent=[];
-  if(infArchivos.length>0){
-    userContent.push({type:'text',text:'Analiza las siguientes imágenes del caso clínico (RECHAZA si contienen nombres u otros datos personales visibles) y con la información proporcionada elabora el informe:\n\n'+texto});
-    infArchivos.forEach(function(f){
-      userContent.push({type:'image_url',image_url:{url:f.data}});
-    });
-    messages.push({role:'user',content:userContent});
-  }else{
-    messages.push({role:'user',content:texto});
-  }
+  var formatos={
+    derivacion:'Centro de Salud Virgen de la Caridad, Cartagena · Motivo de derivación · Antecedentes · Enfermedad actual · Exploración física · Pruebas · Juicio clínico · Tratamiento actual · Motivo de interconsulta · Fecha',
+    alta:'Centro de Salud Virgen de la Caridad · Motivo de consulta · Resumen evolución · Diagnóstico · Tratamiento al alta · Recomendaciones · Plan seguimiento · Fecha',
+    seguimiento:'Centro de Salud Virgen de la Caridad · Antecedentes · Evolución desde última consulta · Exploración · Pruebas · Valoración · Plan terapéutico · Próxima revisión · Fecha',
+    urgencia:'Centro de Salud Virgen de la Caridad · Hora · Motivo consulta urgente · Anamnesis · Exploración · Pruebas · Juicio clínico · Tratamiento · Destino (alta/derivación) · Fecha',
+    enfermeria:'Centro de Salud Virgen de la Caridad · Valoración por patrones funcionales · Diagnósticos NANDA · Intervenciones NIC · Resultados NOC · Plan de cuidados · Educación sanitaria · Fecha',
+    libre:'Centro de Salud Virgen de la Caridad, Cartagena · Formato profesional · Fecha'
+  };
+  var formato=formatos[infTipoSeleccionado]||formatos.libre;
 
   // Show loading
   document.getElementById('infResultado').style.display='block';
@@ -2645,110 +2606,32 @@ async function infGenerar(){
   document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">⏳</div>Generando informe...</div>';
   document.getElementById('infBtnGenerar').disabled=true;
 
-  // Vision: when images are attached, use vision-capable models
-  var hasImages=infArchivos.length>0;
-  
-  var body={model:model,messages:messages,max_tokens:4096,temperature:0.3};
+  if(typeof window.askAi!=='function'){
+    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ IA no disponible. Inicia sesión y recarga.</span>';
+    document.getElementById('infBtnGenerar').disabled=false;
+    return;
+  }
 
   try{
-    var NAS_URL=(typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'';
-    var infDone=false;
-    function infShowResult(text){
-      if(infDone)return;infDone=true;
-      infResultadoTexto=text.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-      document.getElementById('infResultContent').textContent=infResultadoTexto;
-      document.getElementById('infBtnGenerar').disabled=false;
+    var userTxt='TIPO: '+tipoLabels[infTipoSeleccionado]+'\nESTRUCTURA: '+formato;
+    if(instrucciones) userTxt+='\n\nINSTRUCCIONES ADICIONALES: '+instrucciones.substring(0,1500);
+    userTxt+='\n\nCASO: '+(texto||'(describe el caso basándote en la imagen)');
+    userTxt=userTxt.substring(0,7500);
+
+    var res;
+    if(infArchivos.length>0){
+      var img0=infArchivos[0].data||'';
+      var imgB64=img0.indexOf(',')>=0?img0.split(',')[1]:img0;
+      if(infArchivos.length>1) userTxt+='\n\n[Nota: '+infArchivos.length+' imágenes adjuntas; se analiza la primera.]';
+      res=await window.askAi({type:'vision',systemPrompt:sysPrompt,prompt:userTxt,imageBase64:imgB64});
+    }else{
+      res=await window.askAi({type:'educational',systemPrompt:sysPrompt,prompt:userTxt});
     }
-    function infShowError(msg){
-      if(infDone)return;infDone=true;
-      document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">\u274c Error: '+msg+'</span>';
-      document.getElementById('infBtnGenerar').disabled=false;
-    }
-
-    if(hasImages){
-      // ═══ VISION PATH — Mismos modelos y key que Scan IA / Rx Tórax ═══
-      console.log('[Informe] '+infArchivos.length+' images, using VISION_CONFIG (same as Scan IA)');
-      var visionMsgs=[{role:'system',content:sysPrompt}];
-      var userContent=[{type:'text',text:(texto||'Genera el informe cl\u00ednico bas\u00e1ndote en las im\u00e1genes adjuntas.')}];
-      infArchivos.forEach(function(f){userContent.push({type:'image_url',image_url:{url:f.data}});});
-      visionMsgs.push({role:'user',content:userContent});
-
-      var infTxt=null;
-
-      // 1) Pollinations (GPT-4o vision, gratis — same as Scan IA)
-      document.getElementById('infResultContent').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:8px;">\u23f3</div>Analizando im\u00e1genes con GPT-4o Vision...</div>';
-      try{
-        var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},30000);
-        var rP=await fetch('about:disabled-pollinations',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:visionMsgs,max_tokens:4096,seed:Math.floor(Math.random()*99999)})});
-        if(rP.ok){var dP=await rP.json();infTxt=(dP.choices&&dP.choices[0])?dP.choices[0].message.content:'';if(infTxt){infShowResult(infTxt);return;}}
-      }catch(e){console.log('[Informe] Pollinations vision:',e.message);}
-
-      // 2) OpenRouter — Llama 4 Scout + Qwen 2.5 VL (con _dk() key, same as Scan IA)
-      if(!infDone){
-        var orKey=_dk();
-        if(orKey){
-          var vModels=typeof VISION_CONFIG!=='undefined'&&VISION_CONFIG.openrouterModels?VISION_CONFIG.openrouterModels:['meta-llama/llama-4-scout:free','qwen/qwen2.5-vl-32b-instruct'];
-          for(var vi=0;vi<vModels.length&&!infDone;vi++){
-            try{
-              try{document.getElementById('infResultContent').querySelector('div:last-child').textContent='Probando '+vModels[vi].split('/')[1].split(':')[0]+'...';}catch(e){}
-              var orH={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Informe Area II Cartagena'};
-              if(orKey && vModels[vi].indexOf(':free')===-1)orH['Authorization']='Bearer '+orKey;
-              var rV=await fetch('about:disabled-openrouter',{method:'POST',headers:orH,body:JSON.stringify({model:vModels[vi],messages:visionMsgs,max_tokens:4096,temperature:0.3})});
-              var dV=await rV.json();
-              if(rV.ok&&dV.choices&&dV.choices[0]&&dV.choices[0].message){infTxt=dV.choices[0].message.content||'';if(infTxt){infShowResult(infTxt);return;}}
-              else{console.log('[Informe] '+vModels[vi]+': HTTP '+rV.status+' '+(dV.error&&dV.error.message||''));}
-            }catch(e){console.log('[Informe] '+vModels[vi]+':',e.message);}
-          }
-        }
-      }
-
-      // 3) Puter.js img2txt (Gemini gratis — same as Scan IA step 3)
-      if(!infDone && typeof puter!=='undefined' && puter.ai && puter.ai.img2txt){
-        try{
-          document.getElementById('infResultContent').querySelector('div').innerHTML='\u23f3 Probando Gemini...';
-          var puterModel=typeof VISION_CONFIG!=='undefined'?VISION_CONFIG.puterModel||'gemini-2.5-flash':'gemini-2.5-flash';
-          var pr=await puter.ai.img2txt(infArchivos[0].data,sysPrompt+'\n\n'+texto,{model:puterModel});
-          var pt=typeof pr==='string'?pr:(pr&&pr.text?pr.text:null);
-          if(pt&&pt.length>20){infShowResult(pt);return;}
-        }catch(e){console.log('[Informe] Puter:',e.message);}
-      }
-
-      if(!infDone)infShowError('No se pudo analizar las im\u00e1genes. Verifica tu conexi\u00f3n o describe el caso por texto.');
-      return;
-    }
-
-    // 1) Try NAS proxy (only on HTTP to avoid mixed content)
-    if(location.protocol!=='https:'){
-      try{
-        var rNas=await fetch(NAS_URL+'/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages,max_tokens:4096,temperature:0.3})});
-        if(rNas.ok){var dNas=await rNas.json();var t=(dNas.choices&&dNas.choices[0])?dNas.choices[0].message.content:(dNas.text||'');if(t){infShowResult(t);return;}}
-      }catch(e){console.log('[Informe] NAS unavailable:',e.message);}
-    }
-
-    // 2) Try OpenRouter — :free models don't need auth key
-    var orHeaders={'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/'};
-    // Don't send key for :free models — avoids 'No cookie auth credentials' error
-    if(key && model.indexOf(':free')===-1)orHeaders['Authorization']='Bearer '+key;
-    fetch(apiUrl,{method:'POST',headers:orHeaders,body:JSON.stringify(body)})
-    .then(function(res){
-      if(!res.ok)throw new Error('OpenRouter '+res.status);
-      return res.json();
-    })
-    .then(function(data){
-      var t=data.choices&&data.choices[0]?data.choices[0].message.content:'';
-      if(t)infShowResult(t);
-      else throw new Error('Respuesta vacia');
-    })
-    .catch(function(e){
-      console.log('[Informe] OpenRouter failed:',e.message,'. Trying Pollinations...');
-      // 3) Fallback: Pollinations (free, no key)
-      fetch('about:disabled-pollinations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:sysPrompt},{role:'user',content:texto||'Genera el informe clinico'}],max_tokens:4096})})
-      .then(function(r2){if(!r2.ok)throw new Error('Pollinations '+r2.status);return r2.json();})
-      .then(function(d2){infShowResult(d2.choices[0].message.content);})
-      .catch(function(e2){infShowError(e.message+' / Pollinations: '+e2.message);});
-    });
+    infResultadoTexto=((res&&res.text)||'Sin respuesta').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+    document.getElementById('infResultContent').textContent=infResultadoTexto;
   }catch(e){
-    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">\u274c '+e.message+'</span>';
+    document.getElementById('infResultContent').innerHTML='<span style="color:#ef4444;">❌ '+(e.userMessage||e.message)+'</span>';
+  }finally{
     document.getElementById('infBtnGenerar').disabled=false;
   }
 }
@@ -3161,17 +3044,39 @@ function megaDispatch(question) {
     if (btn) { btn.disabled = true; btn.textContent = "Pensando..."; }
 
     var sp = "Eres un asistente clinico del Centro de Salud Area II Cartagena (SMS). " +
-             "Uso exclusivamente DOCENTE e INFORMATIVO.\n\n" +
-             "CONOCIMIENTO BASE:\n" + MEGA_KB + "\n\n" +
-             "Responde en espanol, de forma clara y estructurada. " +
-             "Cita protocolos cuando corresponda. " +
-             "Para farmacos indica dosis, via y duracion. " +
-             "Si no tienes info, indicalo claramente.";
+             "Uso exclusivamente DOCENTE e INFORMATIVO. Responde en español, claro y estructurado. " +
+             "Cita protocolos cuando corresponda. Para fármacos indica dosis, vía y duración. " +
+             "Si no tienes info, indícalo claramente.";
 
-    var msgs = megaHistory.length > 2 ? megaHistory.slice(-6) : [{role:"user",content:question}];
+    var recent = megaHistory.length > 2 ? megaHistory.slice(-6, -1) : [];
+    var historyBlock = "";
+    if (recent.length > 0) {
+        historyBlock = "\n\nCONVERSACIÓN PREVIA:\n" + recent.map(function(m){
+            return (m.role === "user" ? "MÉDICO: " : "IA: ") + m.content.substring(0, 400);
+        }).join("\n\n");
+    }
 
-    // NAS first (keys hidden), then Pollinations, then OpenRouter fallback
-    megaCallNAS(sp, msgs, btn);
+    if (typeof window.askAi !== "function") {
+        megaAppendMsg("system", "⚠️ IA no disponible. <button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
+        megaReset(btn);
+        return;
+    }
+
+    var KB_MAX = 3000;
+    var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
+    var fullPrompt = "CONOCIMIENTO BASE:\n" + kb + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
+
+    window.askAi({ type: "educational", systemPrompt: sp, prompt: fullPrompt })
+        .then(function(res){
+            var ans = (res && res.text ? res.text : "").replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+            if (!ans) throw new Error("Respuesta vacía");
+            megaOnAnswer(ans, btn);
+        })
+        .catch(function(e){
+            var userMsg = (e && e.userMessage) ? e.userMessage : "No se pudo conectar con la IA.";
+            megaAppendMsg("system", "⚠️ " + userMsg + " <button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
+            megaReset(btn);
+        });
 }
 
 function megaCallNAS(sp, msgs, btn) {
@@ -3569,24 +3474,17 @@ window.ckGenerate=function(fromChat){
     });
 };
 
-// AI call chain: Pollinations → DeepSeek direct → OpenRouter
+// AI call chain: Cloud Function askAi (educational)
 function ckCallAI(msgs,cb){
-    fetch("about:disabled-pollinations",{
-        method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"openai-large",messages:[{role:"system",content:CK_SYS}].concat(msgs),seed:Math.floor(Math.random()*9999),private:true})
-    }).then(function(r){if(!r.ok)throw new Error("P"+r.status);return r.json()})
-    .then(function(d){var a=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;if(!a)throw new Error("empty");cb(a)})
-    .catch(function(){
-        var dk=typeof MEGA_DS_KEY!=="undefined"?MEGA_DS_KEY:"";
-        if(dk){
-            fetch("about:disabled-deepseek",{
-                method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+dk},
-                body:JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:4000,temperature:0.3})
-            }).then(function(r){if(!r.ok)throw new Error("DS"+r.status);return r.json()})
-            .then(function(d){var a=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;if(!a)throw new Error("empty");cb(a)})
-            .catch(function(){ckCallOR(msgs,0,cb)});
-        } else { ckCallOR(msgs,0,cb); }
-    });
+    if(typeof window.askAi!=="function"){ cb(null); return; }
+    var userTxt=msgs.map(function(m){return m.content;}).join("\n\n");
+    window.askAi({ type:"educational", systemPrompt: CK_SYS, prompt: userTxt })
+        .then(function(res){
+            var a=(res && res.text) ? res.text : null;
+            if(!a) throw new Error("empty");
+            cb(a);
+        })
+        .catch(function(){ cb(null); });
 }
 
 function ckCallOR(msgs,idx,cb){
