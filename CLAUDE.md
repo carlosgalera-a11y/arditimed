@@ -29,7 +29,11 @@
 7. Plan antes de código. Una rama por sesión. PR por feature. Carlos revisa rules y secretos.
 8. Nunca hacer force push a main. Nunca borrar commits de otros.
 9. Hosting es GitHub Pages. No usar `firebase deploy --only hosting`. Las cabeceras de seguridad van como `<meta>` tags en HTML, no en `firebase.json`. El frontend se despliega con `git push` a main.
-10. **Dos repos en GitHub, mismo contenido**. `carlosgalera-a11y/Cartagenaeste` es el source of truth (aquí se trabaja y se abren PRs). `carlosgalera-a11y/area2cartagena` es una copia conectada al dominio custom `area2cartagena.es` vía GitHub Pages. Tras cada merge a `Cartagenaeste/main`, re-sincronizar el segundo repo con: `git push area2 main:main --force-with-lease` (remote `area2` apunta a github.com/carlosgalera-a11y/area2cartagena). Hacer siempre backup antes: `git clone --mirror https://github.com/carlosgalera-a11y/area2cartagena.git /tmp/area2cartagena-backup-$(date +%F).git` y `git push area2 refs/remotes/area2/main:refs/heads/pre-sync-backup-$(date +%F)` para dejar rama de rescate en remoto.
+10. **Dos repos en GitHub, mismo contenido**. `carlosgalera-a11y/Cartagenaeste` es el source of truth (aquí se trabaja y se abren PRs). `carlosgalera-a11y/area2cartagena` es una copia conectada al dominio custom `area2cartagena.es` vía GitHub Pages. Tras cada merge a `Cartagenaeste/main`, re-sincronizar el segundo repo con `git push area2 main:main` (fast-forward; NO usar `--force-with-lease` por defecto — la branch protection de area2/main bloquea force-push intencionadamente).
+11. **Branch protection activa en ambos repos** (2026-04-21):
+    - `Cartagenaeste/main`: PR requerido (0 approvers), force-push bloqueado, delete bloqueado, enforce_admins=true, conversation resolution requerida. Todo cambio entra por PR.
+    - `area2cartagena/main`: push directo permitido (es mirror del source), force-push bloqueado, delete bloqueado, enforce_admins=true. No se abren PRs aquí.
+    - Operaciones destructivas (ej. `git filter-repo`) requieren relajar temporalmente allow_force_pushes vía `gh api -X PUT` y re-locking justo después. Ver `docs/s1.2-rotacion-claves-carlos.md` para el procedimiento exacto.
 
 ## Operaciones en dos repos (procedimiento)
 
@@ -39,15 +43,25 @@ cd /Users/carlos/cartagenaestewebappSOLIDA
 git remote add area2 https://github.com/carlosgalera-a11y/area2cartagena.git 2>/dev/null || true
 git fetch area2
 
-# Tras cada merge a Cartagenaeste/main, sincronizar:
-TODAY=$(date +%F)
-git clone --mirror https://github.com/carlosgalera-a11y/area2cartagena.git /tmp/area2cartagena-backup-$TODAY.git
-git push area2 "refs/remotes/area2/main:refs/heads/pre-sync-backup-$TODAY"
-git push area2 main:main --force-with-lease
+# Tras cada merge a Cartagenaeste/main, sincronizar (fast-forward):
+git push area2 main:main
 
 # Verificar que GitHub Pages rebuild completó:
 until [ "$(gh api repos/carlosgalera-a11y/area2cartagena/pages/builds/latest --jq .status)" = "built" ]; do sleep 5; done
 curl -sI "https://area2cartagena.es/" | grep -i last-modified
+```
+
+Para operaciones destructivas que requieran reescribir historia (p.ej. `git filter-repo`):
+```bash
+# 1. Backup mirror antes de nada
+git clone --mirror https://github.com/carlosgalera-a11y/area2cartagena.git /tmp/area2cartagena-backup-$(date +%F).git
+git clone --mirror https://github.com/carlosgalera-a11y/Cartagenaeste.git /tmp/Cartagenaeste-backup-$(date +%F).git
+
+# 2. Relajar protecciones temporalmente (guardar la config estricta antes)
+#    → ver docs/s1.2-rotacion-claves-carlos.md §backup section.
+
+# 3. Hacer la operación + force-push.
+# 4. Re-lockar protecciones.
 ```
 
 ## Posicionamiento
