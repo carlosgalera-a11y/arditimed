@@ -150,7 +150,7 @@ footer a:hover{color:#1a6b4a}
     </div>
 
     <div id="hub" class="tiles-grid" style="display:none">
-      <button type="button" class="tile" data-k="ap" onclick="location.href='protocolos-atencion.html'" aria-label="Atención Primaria">
+      <button type="button" class="tile" data-k="ap" onclick="location.href='panel-medico.html?page=pageProtocolosAP'" aria-label="Atención Primaria">
         <div class="tile-head"><span class="tile-icon">🏘️</span><span class="tile-title">Atención Primaria</span></div>
         <div class="tile-desc">Protocolos de Atención Primaria, guías clínicas, algoritmos de decisión.</div>
         <span class="tile-badge">Protocolos AP</span>
@@ -162,7 +162,7 @@ footer a:hover{color:#1a6b4a}
         <span class="tile-badge">Cuaderno IA completo</span>
       </button>
 
-      <button type="button" class="tile" data-k="urgencias" onclick="location.href='urgencias.html'" aria-label="Urgencias">
+      <button type="button" class="tile" data-k="urgencias" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias'" aria-label="Urgencias">
         <div class="tile-head"><span class="tile-icon">🚨</span><span class="tile-title">Urgencias</span></div>
         <div class="tile-desc">Protocolos de urgencias + vista rápida de camas y ambulancias del área.</div>
         <span class="tile-badge">Protocolos + Camas</span>
@@ -306,7 +306,7 @@ footer a:hover{color:#1a6b4a}
         var h = await sha256(pwd);
         if(h === BUSCAS_PWD_HASH){
           sessionStorage.setItem('buscas_ok', '1');
-          location.href = 'buscas.html';
+          location.href = 'panel-medico.html?page=pageTelefonos';
         } else {
           document.getElementById('buscasErr').textContent = '❌ Contraseña incorrecta';
         }

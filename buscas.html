@@ -3,189 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#92400e">
-<title>Buscas · Cartagenaeste</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📟</text></svg>">
-<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3d26">
 <meta name="robots" content="noindex,nofollow">
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-<script src="firebase-init.js"></script>
-<script>window.SENTRY_DSN='https://397ff22b9f93f5ed251ec81c68806546@o4511258495090688.ingest.de.sentry.io/4511258543784016';</script>
-<script src="sentry-init.js" defer></script>
-<script src="update-button.js" defer></script>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fef3c7;color:#2d3748;min-height:100vh;display:flex;flex-direction:column}
-a{color:inherit;text-decoration:none}
-
-header{background:linear-gradient(135deg,#92400e,#b45309);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.back-link{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:18px;font-size:.82rem;color:#fff;font-weight:600;cursor:pointer}
-.back-link:hover{background:rgba(255,255,255,.28)}
-.brand{font-weight:800;font-size:1.05rem;display:inline-flex;align-items:center;gap:8px}
-
-main{flex:1;max-width:860px;width:100%;margin:0 auto;padding:26px 20px 50px}
-.gate{max-width:420px;margin:60px auto;background:#fff;padding:28px 24px;border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.1);text-align:center}
-.gate h2{color:#92400e;font-size:1.2rem;margin-bottom:10px}
-.gate p{color:#64748b;font-size:.9rem;line-height:1.5;margin-bottom:12px}
-.gate .btn{display:inline-block;padding:10px 18px;background:#92400e;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;margin-top:6px}
-
-.search-box{display:flex;gap:10px;margin-bottom:20px}
-.search-box input{flex:1;padding:12px 16px;border:2px solid #fcd34d;border-radius:10px;font-family:inherit;font-size:.95rem;outline:none;background:#fff}
-.search-box input:focus{border-color:#92400e}
-
-.section-card{background:#fff;border:1px solid #fde68a;border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
-.section-card h3{color:#92400e;font-size:.98rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-
-.busca-list{display:grid;gap:6px}
-.busca-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;align-items:center;font-size:.85rem;transition:.15s}
-.busca-row:hover{background:#fef3c7;border-color:#fcd34d}
-.busca-name{font-weight:700;color:#1a3a2a}
-.busca-num{font-family:ui-monospace,Menlo,monospace;color:#92400e;font-weight:700;background:#fff;padding:4px 10px;border-radius:6px;font-size:.82rem;border:1px solid #fde68a;cursor:pointer}
-.busca-num:hover{background:#fef3c7}
-.busca-sub{font-size:.74rem;color:#94a3b8;display:block;margin-top:2px}
-
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#15803d;color:#fff;padding:10px 20px;border-radius:22px;font-weight:700;font-size:.85rem;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;z-index:9999}
-.toast.show{display:block;animation:slideUp .3s ease}
-@keyframes slideUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
-
-footer{padding:14px 20px;text-align:center;font-size:.72rem;color:#94a3b8;line-height:1.5;background:#fff;border-top:1px solid #fde68a}
-</style>
+<title>Redirigiendo…</title>
+<script>
+// Preservar el gate de sesión: solo redirige si ya pasó la contraseña en profesionales.html
+(function(){
+  try{
+    if(sessionStorage.getItem('buscas_ok') === '1'){
+      location.replace('panel-medico.html?page=pageTelefonos');
+    } else {
+      location.replace('profesionales.html');
+    }
+  }catch(e){
+    location.replace('profesionales.html');
+  }
+})();
+</script>
+<meta http-equiv="refresh" content="0; url=profesionales.html">
+<style>body{font-family:sans-serif;background:#0d3d26;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:24px;text-align:center}a{color:#ffd54f}</style>
 </head>
 <body>
-
-<header>
-  <a href="profesionales.html" class="back-link">← Profesionales</a>
-  <div class="brand"><span style="font-size:1.3rem">📟</span> Directorio de buscas</div>
-  <a href="index.html" class="back-link">Inicio</a>
-</header>
-
-<main>
-  <!-- Gate: debe haber pasado por profesionales.html con la password correcta -->
-  <div id="authGate" class="gate" style="display:none">
-    <h2>🔐 Acceso restringido</h2>
-    <p>Para consultar el directorio de buscas, accede primero desde <strong>Profesionales → Buscas</strong> e introduce la contraseña compartida.</p>
-    <a href="profesionales.html" class="btn">Volver a Profesionales</a>
-  </div>
-
-  <div id="content" style="display:none">
-    <div class="search-box">
-      <input type="search" id="searchInput" placeholder="🔍 Buscar por nombre, servicio o número…" oninput="filterBuscas()">
-    </div>
-
-    <div class="section-card">
-      <h3>🏥 Hospital General Universitario Santa Lucía</h3>
-      <div class="busca-list" id="hgusl"></div>
-    </div>
-
-    <div class="section-card">
-      <h3>🚨 Urgencias / 112</h3>
-      <div class="busca-list" id="urg"></div>
-    </div>
-
-    <div class="section-card">
-      <h3>🏘️ Centros de Salud Área II</h3>
-      <div class="busca-list" id="cs"></div>
-    </div>
-
-    <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:10px 14px;font-size:.76rem;color:#92400e;line-height:1.5;margin-top:10px">
-      ℹ️ <strong>Datos orientativos.</strong> Números internos del área — no son líneas de emergencia para público. Para incidencias: 112.
-    </div>
-  </div>
-
-</main>
-
-<div class="toast" id="toast"></div>
-
-<footer>
-  © 2026 Cartagenaeste · Directorio interno · Uso profesional
-</footer>
-
-<script>
-  // Gate: requiere session flag desde profesionales.html
-  var ok = sessionStorage.getItem('buscas_ok') === '1';
-  if(ok){
-    document.getElementById('content').style.display = 'block';
-  } else {
-    document.getElementById('authGate').style.display = 'block';
-  }
-
-  // Datos de ejemplo — ajustar con el listado real del Área II Cartagena
-  var BUSCAS = {
-    hgusl: [
-      { name: 'Cardiología de guardia',    num: '968 12 8910', sub: 'Interconsulta 24h' },
-      { name: 'Neurología guardia',        num: '968 12 8912', sub: 'Código ictus' },
-      { name: 'Medicina Interna planta',   num: '968 12 8920', sub: '3ª planta' },
-      { name: 'UCI adultos',               num: '968 12 8930', sub: 'Supervisión' },
-      { name: 'Digestivo guardia',         num: '968 12 8941', sub: 'Endoscopia urgente' },
-      { name: 'Anestesia',                 num: '968 12 8950', sub: 'Quirófano urgencias' },
-      { name: 'Radiología urgencias',      num: '968 12 8961', sub: 'Rx/TC de guardia' },
-      { name: 'Laboratorio urgencias',     num: '968 12 8970', sub: '24h' },
-      { name: 'Banco de sangre',           num: '968 12 8975', sub: 'Cruces urgentes' },
-      { name: 'Farmacia hospital',         num: '968 12 8980', sub: 'Horario 8-22h' }
-    ],
-    urg: [
-      { name: 'Centro Coordinador 061',    num: '061',         sub: 'Emergencias sanitarias' },
-      { name: 'Emergencias generales',     num: '112',         sub: '24/7' },
-      { name: 'Urgencias HGU Santa Lucía', num: '968 12 8000', sub: 'Puerta de urgencias' },
-      { name: 'Triaje urgencias',          num: '968 12 8001', sub: 'Interno' },
-      { name: 'Salud mental urgente',      num: '968 12 8005', sub: 'Psiquiatra guardia' }
-    ],
-    cs: [
-      { name: 'C.S. Virgen de la Caridad',  num: '968 12 7010', sub: 'Cartagena centro' },
-      { name: 'C.S. Los Barreros',          num: '968 12 7020', sub: 'Los Barreros' },
-      { name: 'C.S. El Algar',              num: '968 12 7030', sub: 'El Algar' },
-      { name: 'C.S. La Manga',              num: '968 12 7040', sub: 'La Manga del Mar Menor' },
-      { name: 'C.S. Fuente Álamo',          num: '968 12 7050', sub: 'Fuente Álamo' },
-      { name: 'C.S. Pozo Estrecho',         num: '968 12 7060', sub: 'Pozo Estrecho' },
-      { name: 'C.S. Mar Menor (San Javier)',num: '968 12 7070', sub: 'San Javier' },
-      { name: 'Gerencia Área II',           num: '968 12 7000', sub: 'Administración' }
-    ]
-  };
-
-  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-
-  function renderList(containerId, arr){
-    var el = document.getElementById(containerId);
-    if(!el) return;
-    el.innerHTML = arr.map(function(b){
-      return '<div class="busca-row">' +
-        '<div><span class="busca-name">' + escapeHtml(b.name) + '</span>' +
-        (b.sub ? '<span class="busca-sub">' + escapeHtml(b.sub) + '</span>' : '') +
-        '</div>' +
-        '<span class="busca-num" onclick="copyNum(\'' + escapeHtml(b.num) + '\')" title="Copiar">' + escapeHtml(b.num) + '</span>' +
-      '</div>';
-    }).join('');
-  }
-
-  function copyNum(num){
-    try{ navigator.clipboard.writeText(num).then(showCopied, showCopied); }
-    catch(e){ showCopied(); }
-  }
-  function showCopied(){
-    var t = document.getElementById('toast');
-    t.textContent = '✅ Copiado al portapapeles';
-    t.classList.add('show');
-    setTimeout(function(){ t.classList.remove('show'); }, 1600);
-  }
-
-  function filterBuscas(){
-    var q = document.getElementById('searchInput').value.toLowerCase().trim();
-    var filter = function(arr){ return q ? arr.filter(function(b){ return (b.name + ' ' + b.num + ' ' + (b.sub||'')).toLowerCase().indexOf(q) >= 0; }) : arr; };
-    renderList('hgusl', filter(BUSCAS.hgusl));
-    renderList('urg', filter(BUSCAS.urg));
-    renderList('cs', filter(BUSCAS.cs));
-  }
-
-  if(ok){ filterBuscas(); }
-
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
-  }
-</script>
-<script src="sw-update.js" defer></script>
-
+<div>
+  <p>📟 Redirigiendo…</p>
+  <p><a href="profesionales.html">Ir a Profesionales</a></p>
+</div>
 </body>
 </html>
