@@ -3909,11 +3909,32 @@ window.ckGenerate=function(fromChat){
             // Tomar el bloque { ... } más amplio
             var s=c.indexOf("{"), e=c.lastIndexOf("}");
             if(s>=0 && e>s) c=c.substring(s, e+1);
-            // Parse con fallback: si falla, intentar reparar comillas/comas típicas
-            try{ ckData=JSON.parse(c); }
+            // Parse con fallback progresivo: repara comas colgantes y,
+            // si el JSON quedó truncado (respuesta cortada por max_tokens),
+            // intenta cerrar llaves/corchetes abiertos para recuperar lo
+            // que sí devolvió el modelo.
+            function tryParse(txt){ return JSON.parse(txt); }
+            try{ ckData=tryParse(c); }
             catch(ex1){
                 var repaired=c.replace(/,\s*([}\]])/g,"$1");
-                ckData=JSON.parse(repaired);
+                try{ ckData=tryParse(repaired); }
+                catch(ex2){
+                    // Intento 3: auto-cerrar JSON truncado.
+                    var depth=0, inStr=false, esc=false;
+                    for(var i=0;i<repaired.length;i++){
+                        var ch=repaired.charAt(i);
+                        if(esc){ esc=false; continue; }
+                        if(ch==='\\' && inStr){ esc=true; continue; }
+                        if(ch==='"'){ inStr=!inStr; continue; }
+                        if(inStr) continue;
+                        if(ch==='{' || ch==='[') depth++;
+                        else if(ch==='}' || ch===']') depth--;
+                    }
+                    var tail=repaired.replace(/[,\s]+$/,'');
+                    if(inStr) tail+='"';
+                    while(depth-->0) tail+= tail.indexOf('[')>=0 && tail.lastIndexOf(']')<tail.lastIndexOf('}')? ']' : '}';
+                    ckData=tryParse(tail);
+                }
             }
             if(!ckData||!Array.isArray(ckData.secciones)||!ckData.secciones.length){
                 throw new Error("JSON sin secciones válidas");

@@ -43,7 +43,7 @@ export async function callQwen(opts: QwenOpts): Promise<ProviderResult> {
       body: JSON.stringify({
         model: opts.model,
         messages,
-        max_tokens: 2048,
+        max_tokens: 4096,
         temperature: 0.3,
       }),
       signal: ctrl.signal,
