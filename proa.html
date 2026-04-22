@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PROA · Uso racional de antibióticos | Área II Cartagena</title>
+<meta name="description" content="Programa de Optimización del Uso de Antibióticos (PROA) · recomendaciones empíricas por síndrome, de-escalada, duración.">
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-dark:#0a4d35;--primary-light:#238c62;
+  --amber:#d97706;--red:#dc2626;--blue:#1e40af;--purple:#7c3aed;
+  --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;
+  --card:#1e293b;--card2:#273449;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
+  --tx:#f1f5f9;--t2:#cbd5e1;--t3:#94a3b8;
+  --font:'Source Sans 3',system-ui,sans-serif;
+  --display:'Playfair Display',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:radial-gradient(ellipse at top,#0f2d24 0%,var(--bg) 60%);color:var(--tx);min-height:100vh;padding-bottom:60px}
+.nav{background:rgba(10,20,15,.9);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav a{color:#7dd3bb;text-decoration:none;font-size:.85rem;font-weight:600}
+.nav h1{font-size:1rem;font-weight:700;flex:1;font-family:var(--display)}
+.hero{background:linear-gradient(135deg,#0a4d35,#1a6b4a);padding:26px 20px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::after{content:"🛡️";position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.12}
+.hero h2{font-family:var(--display);font-size:1.7rem;font-weight:700;margin-bottom:6px;color:#fff}
+.hero p{color:rgba(255,255,255,.82);font-size:.9rem;font-weight:300;max-width:780px;line-height:1.55}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;transition:all .25s;position:relative;overflow:hidden}
+.card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.3)}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#fff}
+.card h3 .badge{font-size:.68rem;font-weight:600;background:rgba(255,255,255,.1);padding:2px 8px;border-radius:10px;color:var(--t2);letter-spacing:.04em}
+.syn-card{border-left:4px solid var(--primary)}
+.syn-card[data-risk="high"]{border-left-color:var(--red)}
+.syn-card[data-risk="med"]{border-left-color:var(--amber)}
+.syn-card ul{list-style:none;font-size:.84rem;color:var(--t2);line-height:1.65}
+.syn-card ul li{padding:4px 0;border-bottom:1px dashed rgba(255,255,255,.05)}
+.syn-card ul li:last-child{border-bottom:0}
+.syn-card strong{color:#7dd3bb;font-weight:700}
+.syn-card code{background:rgba(0,0,0,.35);padding:1px 6px;border-radius:4px;font-family:ui-monospace,monospace;font-size:.78rem;color:#fbbf24}
+.sec-title{font-family:var(--display);font-size:1.25rem;font-weight:700;margin:30px 0 14px;color:#fff;display:flex;align-items:center;gap:10px}
+.sec-title::before{content:"";width:4px;height:22px;background:linear-gradient(180deg,var(--primary-light),var(--primary));border-radius:2px}
+.principles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.principle{background:var(--card2);padding:12px 14px;border-radius:10px;border:1px solid var(--border);font-size:.84rem;color:var(--t2);line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.principle .n{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0}
+.principle b{color:#fff;display:block;margin-bottom:2px}
+.duration-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;font-size:.84rem}
+.duration-table th,.duration-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+.duration-table th{background:rgba(15,107,74,.22);color:#7dd3bb;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.duration-table tr:last-child td{border-bottom:0}
+.duration-table td:nth-child(2){color:#fbbf24;font-weight:600;font-family:ui-monospace,monospace}
+.duration-table td:nth-child(3){color:var(--t3);font-size:.8rem}
+.ai-box{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(59,130,246,.12));border:1px solid rgba(124,58,237,.35);border-radius:14px;padding:18px;margin-top:22px}
+.ai-box h3{color:#c4b5fd;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ai-box textarea{width:100%;min-height:90px;padding:12px;background:rgba(0,0,0,.35);color:var(--tx);border:1px solid var(--border2);border-radius:10px;font-family:var(--font);font-size:.88rem;line-height:1.55;resize:vertical;margin-bottom:10px}
+.ai-box textarea:focus{outline:none;border-color:#a78bfa}
+.ai-box textarea::placeholder{color:var(--t3)}
+.ai-box .btn{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;padding:11px 20px;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:var(--font);transition:.2s}
+.ai-box .btn:hover{opacity:.9;transform:translateY(-1px)}
+.ai-box .btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-out{margin-top:12px;padding:14px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;font-size:.88rem;line-height:1.65;color:var(--tx);white-space:pre-wrap;display:none}
+.ai-out.show{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.warn{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.35);color:#fcd34d;padding:11px 14px;border-radius:10px;font-size:.82rem;margin-bottom:16px;line-height:1.55}
+.refs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.ref{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:18px;color:var(--t2);text-decoration:none;font-size:.78rem;font-weight:500;transition:.15s}
+.ref:hover{background:rgba(255,255,255,.12);color:#fff;border-color:var(--border2)}
+@media (max-width:640px){.hero h2{font-size:1.4rem}.wrap{padding:16px 12px}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
+<script src="sw-update.js" defer></script>
+</head>
+<body>
+<nav class="nav">
+  <a href="panel-medico.html">← Panel médico</a>
+  <h1>🛡️ PROA · Uso racional de antibióticos</h1>
+</nav>
+
+<div class="hero">
+  <h2>Programa de Optimización del Uso de Antibióticos</h2>
+  <p>Herramienta docente para la prescripción antibiótica empírica basada en el <strong>Plan Nacional Resistencia Antibióticos (PRAN)</strong>, guías SEIMC-GEIRAS y protocolo local del H.G.U. Santa Lucía (Área II). Enfoque: acertar empírico, desescalar a las 48-72h, duración mínima eficaz.</p>
+</div>
+
+<div class="wrap">
+
+  <div class="warn">
+    ⚠️ <strong>Uso docente.</strong> Consulta siempre el antibiograma local, el microbiólogo de guardia y el protocolo vigente de tu centro. La política antibiótica de Área II se actualiza semestralmente.
+  </div>
+
+  <h3 class="sec-title">📜 Siete principios PROA</h3>
+  <div class="principles">
+    <div class="principle"><div class="n">1</div><div><b>¿Es infección?</b>Fiebre ≠ antibiótico. Descarta viral, inflamatorio, fármaco.</div></div>
+    <div class="principle"><div class="n">2</div><div><b>Cultivos antes del ATB</b>Hemocultivos x2, urocultivo, muestra del foco si accesible.</div></div>
+    <div class="principle"><div class="n">3</div><div><b>Empírico por foco + riesgo</b>Comunidad vs nosocomial, FR-MRE, inmunosupresión, instrumentación.</div></div>
+    <div class="principle"><div class="n">4</div><div><b>PK/PD correcto</b>β-lactámicos en infusión extendida en sepsis/PCT alta. Carga de vanco/amika.</div></div>
+    <div class="principle"><div class="n">5</div><div><b>Reevaluación 48-72h</b>Desescalada por cultivo, paso IV→VO precoz, stop si no confirmada.</div></div>
+    <div class="principle"><div class="n">6</div><div><b>Duración mínima eficaz</b>5-7 días cubre la mayoría. "More is not better".</div></div>
+    <div class="principle"><div class="n">7</div><div><b>Documenta el plan</b>Diagnóstico, fármaco, dosis, duración prevista y fecha de revisión.</div></div>
+  </div>
+
+  <h3 class="sec-title">🎯 Recomendaciones empíricas por síndrome</h3>
+  <div class="grid">
+
+    <div class="card syn-card" data-risk="med">
+      <h3>🫁 Neumonía comunitaria (NAC) <span class="badge">CURB-65</span></h3>
+      <ul>
+        <li><strong>Ambulatoria (CURB ≤1):</strong> <code>amoxicilina 1 g/8h VO</code> ± <code>azitromicina 500 mg/24h</code></li>
+        <li><strong>Hospitalizada (CURB 2):</strong> <code>ceftriaxona 2 g/24h IV</code> + <code>azitromicina 500 mg/24h</code></li>
+        <li><strong>UCI / grave:</strong> <code>ceftriaxona 2 g/12h</code> + <code>levofloxacino 500 mg/12h</code> (cubrir <em>Legionella</em>)</li>
+        <li><strong>Aspirativa:</strong> <code>amoxi-clavulánico 1-2 g/8h</code> o <code>ertapenem 1 g/24h</code></li>
+        <li>Duración: <strong>5-7 días</strong> si afebril 48-72h + mejoría clínica</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card" data-risk="high">
+      <h3>🏥 Neumonía nosocomial / VAP <span class="badge">NAC-IH</span></h3>
+      <ul>
+        <li><strong>Sin FR-MRE:</strong> <code>piperacilina-tazobactam 4/0,5 g/6h</code> IV extendida</li>
+        <li><strong>Con FR-MRE / séptica:</strong> <code>meropenem 1 g/8h</code> + <code>linezolid 600 mg/12h</code> (o vanco)</li>
+        <li><strong>Pseudomonas MDR:</strong> añadir <code>amikacina 20 mg/kg/24h</code> (ajuste niveles)</li>
+        <li>Duración: <strong>7 días</strong> (PNEUMA, Chastre). Más si bacteriemia / cavitación.</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card" data-risk="med">
+      <h3>💧 ITU baja / Pielonefritis <span class="badge">urocultivo</span></h3>
+      <ul>
+        <li><strong>Cistitis no complicada:</strong> <code>fosfomicina 3 g monodosis</code> o <code>nitrofurantoína 100 mg/8h × 5d</code></li>
+        <li><strong>Pielonefritis ambulatoria:</strong> <code>cefixima 400 mg/24h × 7-10d</code> (según R. local E. coli)</li>
+        <li><strong>Pielonefritis hospitalizada:</strong> <code>ceftriaxona 1-2 g/24h</code></li>
+        <li><strong>Urosepsis / FR-BLEE:</strong> <code>meropenem 1 g/8h</code> o <code>piperacilina-tazobactam</code></li>
+        <li>Duración: cistitis <strong>3-5d</strong>, pielonefritis <strong>7d</strong> (quinolona) o <strong>10-14d</strong></li>
+      </ul>
+    </div>
+
+    <div class="card syn-card" data-risk="high">
+      <h3>🩸 Sepsis / Shock séptico sin foco <span class="badge">1 hora bundle</span></h3>
+      <ul>
+        <li><strong>Empírico amplio:</strong> <code>meropenem 1 g/8h</code> + <code>vancomicina carga 25-30 mg/kg</code></li>
+        <li><strong>Si sospecha BLEE / AmpC:</strong> meropenem de entrada</li>
+        <li><strong>Neutropénico febril:</strong> <code>piperacilina-tazobactam 4/0,5 g/6h</code> ± amikacina</li>
+        <li><strong>Hemocultivos x2 + lactato + fluidos 30 mL/kg</strong> antes de 1 h del reconocimiento</li>
+        <li>Desescalar a 48-72h según antibiograma</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card" data-risk="high">
+      <h3>🧠 Meningitis bacteriana aguda <span class="badge">&lt;1 h</span></h3>
+      <ul>
+        <li><strong>Empírico adulto:</strong> <code>cefotaxima 2 g/4h</code> o <code>ceftriaxona 2 g/12h</code> + <code>vancomicina 15-20 mg/kg/8-12h</code></li>
+        <li><strong>&gt;50a / inmunosup / alcoholismo:</strong> añadir <code>ampicilina 2 g/4h</code> (Listeria)</li>
+        <li><strong>Dexametasona 10 mg/6h IV × 4d</strong> 15-20 min antes o con 1ª dosis de ATB</li>
+        <li>Duración: <em>S. pneumoniae</em> 10-14d · <em>N. meningitidis</em> 7d · <em>Listeria</em> 21d</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card" data-risk="med">
+      <h3>🍽️ Intraabdominal <span class="badge">control del foco</span></h3>
+      <ul>
+        <li><strong>Comunitaria leve-moderada:</strong> <code>amoxi-clavulánico 1-2 g/8h</code> o <code>ertapenem 1 g/24h</code></li>
+        <li><strong>Grave / nosocomial:</strong> <code>piperacilina-tazobactam 4/0,5 g/6h</code></li>
+        <li><strong>Séptica / BLEE:</strong> <code>meropenem 1 g/8h</code> ± fluconazol si FR-Candida</li>
+        <li>Duración: <strong>4 días tras control del foco</strong> (STOP-IT trial, NEJM 2015)</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card" data-risk="med">
+      <h3>🩹 Piel y partes blandas (SSTI)</h3>
+      <ul>
+        <li><strong>Erisipela / celulitis no purulenta:</strong> <code>cefazolina 2 g/8h IV</code> o <code>cloxacilina 2 g/6h</code></li>
+        <li><strong>Absceso (purulenta):</strong> drenaje + <code>cotrimoxazol 160/800 mg/12h VO</code> o <code>clindamicina</code></li>
+        <li><strong>Fascitis necrotizante:</strong> URGENTE quirúrgico + <code>meropenem 1 g/8h</code> + <code>clindamicina 900 mg/8h</code> + <code>linezolid</code></li>
+        <li><strong>Mordedura:</strong> <code>amoxi-clavulánico 875/125 mg/8h VO × 5-7d</code></li>
+        <li>Duración celulitis: <strong>5-7 días</strong></li>
+      </ul>
+    </div>
+
+    <div class="card syn-card" data-risk="high">
+      <h3>❤️ Endocarditis infecciosa <span class="badge">ESC 2023</span></h3>
+      <ul>
+        <li><strong>Válvula nativa empírico:</strong> <code>ampicilina 12 g/d</code> + <code>cloxacilina 12 g/d</code> + <code>gentamicina 3 mg/kg/24h</code></li>
+        <li><strong>Válvula protésica &lt;1 año:</strong> <code>vancomicina</code> + <code>gentamicina</code> + <code>rifampicina 900 mg/d</code></li>
+        <li><strong>S. aureus MSSA:</strong> <code>cloxacilina 12 g/d</code> en 4-6 tomas × 4-6 sem</li>
+        <li><strong>S. aureus MRSA:</strong> <code>daptomicina 10 mg/kg/24h</code> × 4-6 sem</li>
+        <li>Equipo endocarditis siempre: Cardiología + Cirugía + Enf. Infecciosas + Microbio</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card">
+      <h3>🦠 Bacteriemia por S. aureus <span class="badge">SAB</span></h3>
+      <ul>
+        <li><strong>MSSA:</strong> <code>cloxacilina 2 g/4h</code> (no β-lactámicos de espectro amplio)</li>
+        <li><strong>MRSA:</strong> <code>daptomicina 8-10 mg/kg/24h</code> o <code>vancomicina AUC 400-600</code></li>
+        <li><strong>Obligado:</strong> ecocardio TT o TE (endocarditis en 15-25%), foco metastásico</li>
+        <li>Duración: <strong>mín. 14 días</strong> desde 1.º hemocultivo negativo (no complicada)</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card">
+      <h3>🦴 Osteomielitis / Artritis séptica</h3>
+      <ul>
+        <li><strong>Empírico adulto:</strong> <code>cloxacilina 2 g/4h</code> + <code>ceftriaxona 2 g/24h</code></li>
+        <li><strong>Con FR-MRSA:</strong> sustituir cloxa por <code>vancomicina</code> o <code>daptomicina</code></li>
+        <li>Ajustar a cultivo siempre. Duración osteo: <strong>4-6 sem</strong> · artritis nativa: <strong>2-4 sem</strong></li>
+      </ul>
+    </div>
+
+    <div class="card syn-card">
+      <h3>💩 C. difficile (CDI) <span class="badge">retirar ATB desencadenante</span></h3>
+      <ul>
+        <li><strong>Primer episodio:</strong> <code>vancomicina oral 125 mg/6h × 10d</code> o <code>fidaxomicina 200 mg/12h × 10d</code></li>
+        <li><strong>Fulminante:</strong> <code>vanco oral 500 mg/6h</code> + <code>metronidazol 500 mg/8h IV</code> ± cirugía</li>
+        <li><strong>Recurrente:</strong> fidaxomicina o pauta tapered/pulsed vanco · valorar <em>bezlotoxumab</em> / FMT</li>
+        <li>NO metronidazol oral como 1ª línea (inferior desde 2018)</li>
+      </ul>
+    </div>
+
+    <div class="card syn-card">
+      <h3>🍬 Profilaxis quirúrgica</h3>
+      <ul>
+        <li><strong>General:</strong> <code>cefazolina 2 g IV</code> (3 g si &gt;120 kg) 30-60 min preincisión</li>
+        <li><strong>Alergia β-lactámicos:</strong> <code>clindamicina 900 mg</code> + <code>gentamicina 5 mg/kg</code></li>
+        <li><strong>Colorrectal:</strong> cefazolina + <code>metronidazol 500 mg</code></li>
+        <li>Redosificar si cirugía &gt;4 h o sangrado &gt;1500 mL. <strong>NO más de 24 h</strong> postop.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <h3 class="sec-title">⏱️ Duración estándar por síndrome</h3>
+  <table class="duration-table">
+    <thead>
+      <tr><th>Síndrome</th><th>Duración</th><th>Referencia / matiz</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>NAC no grave</td><td>5 días</td><td>IDSA 2019 · si afebril 48-72 h</td></tr>
+      <tr><td>Neumonía nosocomial / VAP</td><td>7 días</td><td>PNEUMA trial, Chastre 2003</td></tr>
+      <tr><td>Cistitis no complicada</td><td>3-5 días</td><td>Fosfomicina monodosis o nitrofurantoína 5 d</td></tr>
+      <tr><td>Pielonefritis (quinolona)</td><td>7 días</td><td>10-14 d si β-lactámico</td></tr>
+      <tr><td>Intraabdominal (control foco)</td><td>4 días</td><td>STOP-IT, NEJM 2015</td></tr>
+      <tr><td>Celulitis no complicada</td><td>5-7 días</td><td>Hepburn 2004</td></tr>
+      <tr><td>Bacteriemia Gram (-)</td><td>7 días</td><td>Yahav 2019 · si foco controlado</td></tr>
+      <tr><td>Bacteriemia S. aureus</td><td>14 días mín.</td><td>Desde 1er HC negativo · excluir endocarditis</td></tr>
+      <tr><td>Endocarditis nativa</td><td>4-6 sem</td><td>ESC 2023</td></tr>
+      <tr><td>Osteomielitis</td><td>4-6 sem</td><td>6 sem = 12 sem en ensayo OVIVA (NEJM 2019)</td></tr>
+      <tr><td>Meningitis neumocócica</td><td>10-14 días</td><td></td></tr>
+      <tr><td>Meningitis meningocócica</td><td>7 días</td><td></td></tr>
+      <tr><td>Listeriosis SNC</td><td>21 días</td><td></td></tr>
+      <tr><td>CDI primer episodio</td><td>10 días</td><td>Vancomicina oral o fidaxomicina</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ai-box">
+    <h3>🤖 Consulta PROA asistida por IA</h3>
+    <p style="color:var(--t2);font-size:.86rem;margin-bottom:12px;">Describe el caso (síndrome, foco, alergias, función renal, riesgo MRE) y te sugiero antibiótico empírico. Seudonimizado obligatorio.</p>
+    <textarea id="proaQ" placeholder="Ejemplo: Paciente 72 a. procedente de residencia, disnea + consolidación LII, PCR 220, sepsis, ClCr 35. Alergia a penicilina no documentada..."></textarea>
+    <button class="btn" id="proaBtn" onclick="proaAsk()">🛡️ Sugerir pauta empírica</button>
+    <div class="ai-out" id="proaOut"></div>
+  </div>
+
+  <h3 class="sec-title">📚 Referencias y acceso</h3>
+  <div class="refs">
+    <a class="ref" href="https://www.resistenciaantibioticos.es/es" target="_blank" rel="noopener">🇪🇸 PRAN · Plan Nacional</a>
+    <a class="ref" href="https://seimc.org/" target="_blank" rel="noopener">SEIMC</a>
+    <a class="ref" href="https://www.mscbs.gob.es/en/profesionales/saludPublica/ccayes/alertasActual/docs/20201217_Proa.pdf" target="_blank" rel="noopener">PROA-AP 2020</a>
+    <a class="ref" href="https://www.who.int/publications/i/item/9789240062382" target="_blank" rel="noopener">WHO AWaRe 2023</a>
+    <a class="ref" href="https://www.escmid.org/" target="_blank" rel="noopener">ESCMID guías</a>
+    <a class="ref" href="https://www.idsociety.org/practice-guideline/" target="_blank" rel="noopener">IDSA</a>
+  </div>
+
+</div>
+
+<script>
+async function proaAsk(){
+  const q=document.getElementById('proaQ').value.trim();
+  const out=document.getElementById('proaOut');
+  const btn=document.getElementById('proaBtn');
+  if(!q){alert('Describe el caso clínico primero.');return;}
+  if(typeof window.askAi!=='function'){out.textContent='⚠️ ai-client no cargado';out.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='⏳ Analizando...';
+  out.classList.add('show');out.textContent='Consultando IA clínica…';
+  const sys='Eres un infectólogo PROA experto. Ante un caso clínico, sugiere una pauta antibiótica EMPÍRICA basada en PRAN/SEIMC/IDSA. Formato: 1) Foco probable, 2) Riesgo MRE (bajo/medio/alto) y razonamiento, 3) Pauta recomendada (fármaco + dosis + vía + duración esperada), 4) Alternativas si alergia/función renal, 5) Plan de desescalada/reevaluación a 48-72h, 6) Cultivos obligados antes de iniciar. Usa SOLO clase terapéutica + principio activo (sin marcas). Termina: "⚠️ DOCENTE. No sustituye juicio clínico ni protocolo local."';
+  try{
+    const r=await window.askAi({type:'clinical_case',systemPrompt:sys,prompt:q});
+    if(r && r.text){
+      out.textContent=r.text+'\n\n—\nModelo: '+(r.model||'')+' · '+(r.provider||'');
+    } else {
+      out.textContent='❌ Respuesta vacía.';
+    }
+  }catch(e){
+    out.textContent='❌ Error: '+(e && (e.userMessage||e.message) || e);
+  }
+  btn.disabled=false;btn.textContent='🛡️ Sugerir pauta empírica';
+}
+</script>
+</body>
+</html>

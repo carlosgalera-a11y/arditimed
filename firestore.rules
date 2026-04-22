@@ -190,6 +190,19 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ══ Collection groups ═════════════════════════════════════════
+    // Admin dashboard: lectura cross-user de aiRequests/quotas solo para admins.
+    // Los usuarios siguen accediendo a su subcolección propia vía las reglas de
+    // /users/{uid}/aiRequests por owner. Aquí habilitamos el collectionGroup.
+    match /{path=**}/aiRequests/{rid} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+    match /{path=**}/quotas/{date} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
     // ══ DENY BY DEFAULT ════════════════════════════════════════════
     match /{document=**} {
       allow read, write: if false;

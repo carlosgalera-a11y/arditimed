@@ -33,7 +33,7 @@ export function validatePrompt(prompt: unknown): ValidationResult {
 export function validateSystemPrompt(sp: unknown): ValidationResult {
   if (sp === undefined || sp === null || sp === '') return { ok: true };
   if (typeof sp !== 'string') return { ok: false, reason: 'systemPrompt debe ser string' };
-  if (sp.length > 4000) return { ok: false, reason: 'systemPrompt excede 4000 caracteres' };
+  if (sp.length > 6000) return { ok: false, reason: 'systemPrompt excede 6000 caracteres' };
   return { ok: true };
 }
 

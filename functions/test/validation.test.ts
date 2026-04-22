@@ -66,9 +66,9 @@ describe('validateSystemPrompt', () => {
     expect(validateSystemPrompt({}).ok).toBe(false);
   });
 
-  it('aplica límite de 4000 chars', () => {
-    expect(validateSystemPrompt('a'.repeat(4000)).ok).toBe(true);
-    expect(validateSystemPrompt('a'.repeat(4001)).ok).toBe(false);
+  it('aplica límite de 6000 chars', () => {
+    expect(validateSystemPrompt('a'.repeat(6000)).ok).toBe(true);
+    expect(validateSystemPrompt('a'.repeat(6001)).ok).toBe(false);
   });
 });
 

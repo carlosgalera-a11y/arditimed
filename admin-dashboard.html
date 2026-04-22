@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel de administración · Área II Cartagena</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bg:#0b1220;--bg2:#111a2e;--bg3:#1c2744;
+  --card:#141f37;--card2:#1b2742;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.16);
+  --tx:#e6ecf7;--t2:#a7b3c9;--t3:#67758f;
+  --primary:#22c55e;--primary2:#16a34a;
+  --blue:#3b82f6;--purple:#8b5cf6;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;
+  --font:'Source Sans 3',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:radial-gradient(ellipse at top,#0f1c38 0%,var(--bg) 55%);color:var(--tx);min-height:100vh;padding-bottom:40px}
+.nav{background:rgba(10,15,28,.92);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav a{color:var(--blue);text-decoration:none;font-size:.85rem;font-weight:600}
+.nav h1{font-size:1rem;font-weight:800;flex:1}
+.nav .badge{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 18px}
+
+.gate{max-width:480px;margin:80px auto;padding:32px;background:var(--card);border:1px solid var(--border2);border-radius:18px;text-align:center}
+.gate h2{font-size:1.3rem;margin-bottom:10px}
+.gate p{color:var(--t2);margin-bottom:18px;font-size:.92rem;line-height:1.55}
+.gate button{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;padding:12px 24px;border-radius:10px;font-weight:700;font-family:var(--font);cursor:pointer;font-size:.9rem}
+.gate button:disabled{opacity:.5;cursor:not-allowed}
+.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fca5a5;padding:10px 14px;border-radius:10px;font-size:.82rem;margin-top:12px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+.kpi .lbl{font-size:.72rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:4px}
+.kpi .val{font-size:1.9rem;font-weight:800;line-height:1.1;font-family:var(--mono)}
+.kpi .sub{font-size:.72rem;color:var(--t2);margin-top:4px}
+.kpi.kpi-a{border-left:4px solid var(--blue)}
+.kpi.kpi-b{border-left:4px solid var(--primary)}
+.kpi.kpi-c{border-left:4px solid var(--amber)}
+.kpi.kpi-d{border-left:4px solid var(--purple)}
+.kpi.kpi-e{border-left:4px solid var(--cyan)}
+.kpi.kpi-f{border-left:4px solid var(--red)}
+
+.section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px}
+.section h3{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section h3 .meta{font-size:.72rem;font-weight:500;color:var(--t3);margin-left:auto;font-family:var(--mono)}
+
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+th{font-size:.72rem;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(255,255,255,.02)}
+td{color:var(--tx)}
+td.num{text-align:right;font-family:var(--mono)}
+.bar-wrap{position:relative;height:10px;background:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;min-width:80px}
+.bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:5px;transition:width .3s}
+.bar.b-cost{background:linear-gradient(90deg,var(--amber),var(--red))}
+.bar.b-tokens{background:linear-gradient(90deg,var(--cyan),var(--blue))}
+
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;font-family:var(--mono)}
+.tag-vision{background:rgba(139,92,246,.18);color:#c4b5fd}
+.tag-clinical{background:rgba(239,68,68,.18);color:#fca5a5}
+.tag-educational{background:rgba(59,130,246,.18);color:#93bbfc}
+.tag-ok{background:rgba(34,197,94,.18);color:#86efac}
+.tag-cache{background:rgba(6,182,212,.18);color:#67e8f9}
+.tag-err{background:rgba(239,68,68,.18);color:#fca5a5}
+
+.timeline{display:flex;align-items:flex-end;gap:3px;height:120px;padding:10px 0;overflow-x:auto}
+.tbar{flex:1;min-width:12px;background:linear-gradient(180deg,var(--blue),var(--purple));border-radius:3px 3px 0 0;position:relative;transition:background .2s}
+.tbar:hover{background:linear-gradient(180deg,var(--amber),var(--red))}
+.tbar span{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%) rotate(-45deg);transform-origin:left top;font-size:.62rem;color:var(--t3);font-family:var(--mono);white-space:nowrap}
+.tbar .tip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:4px 8px;border-radius:4px;font-size:.7rem;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s;font-family:var(--mono)}
+.tbar:hover .tip{opacity:1}
+
+.range-tabs{display:flex;gap:4px;background:var(--bg3);padding:4px;border-radius:10px;margin-bottom:18px;width:fit-content}
+.range-tab{padding:6px 14px;border:0;background:transparent;color:var(--t2);border-radius:7px;cursor:pointer;font-family:var(--font);font-size:.8rem;font-weight:600}
+.range-tab.active{background:var(--blue);color:#fff}
+
+.loading{text-align:center;padding:40px;color:var(--t2);font-size:.9rem}
+.loading .spin{display:inline-block;width:20px;height:20px;border:3px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty{text-align:center;padding:24px;color:var(--t3);font-size:.85rem}
+.small{font-size:.78rem;color:var(--t3)}
+
+@media (max-width:640px){
+  .wrap{padding:14px 12px}
+  .kpi .val{font-size:1.5rem}
+  .section{padding:14px}
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+</head>
+<body>
+<nav class="nav">
+  <a href="panel-medico.html">← Panel médico</a>
+  <h1>🛡️ Panel de administración</h1>
+  <span class="badge">Privado</span>
+</nav>
+
+<div id="gate" class="gate" style="display:none">
+  <h2>🔐 Acceso restringido</h2>
+  <p>Este panel es solo para el propietario de la webapp. Inicia sesión con la cuenta autorizada.</p>
+  <button id="gateLogin">Iniciar sesión con Google</button>
+  <div id="gateErr" class="err" style="display:none"></div>
+</div>
+
+<div id="dashboard" class="wrap" style="display:none">
+
+  <div class="range-tabs">
+    <button class="range-tab active" data-days="1">Hoy</button>
+    <button class="range-tab" data-days="7">7 días</button>
+    <button class="range-tab" data-days="30">30 días</button>
+    <button class="range-tab" data-days="90">90 días</button>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi kpi-a"><div class="lbl">Llamadas IA</div><div class="val" id="kCalls">—</div><div class="sub" id="kCallsSub">cargando…</div></div>
+    <div class="kpi kpi-b"><div class="lbl">Coste estimado</div><div class="val" id="kCost">—</div><div class="sub">EUR · acumulado rango</div></div>
+    <div class="kpi kpi-c"><div class="lbl">Tokens in/out</div><div class="val" id="kTokens">—</div><div class="sub" id="kTokensSub">de prompt / generados</div></div>
+    <div class="kpi kpi-d"><div class="lbl">Cache hit</div><div class="val" id="kCache">—</div><div class="sub">ahorro de coste</div></div>
+    <div class="kpi kpi-e"><div class="lbl">Usuarios únicos</div><div class="val" id="kUsers">—</div><div class="sub">en el rango</div></div>
+    <div class="kpi kpi-f"><div class="lbl">Errores</div><div class="val" id="kErrors">—</div><div class="sub" id="kErrorsSub">tasa y recuento</div></div>
+  </div>
+
+  <div class="section">
+    <h3>📆 Actividad diaria <span class="meta" id="tlMeta"></span></h3>
+    <div class="timeline" id="timeline"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section">
+    <h3>🤖 Uso y gasto por modelo <span class="meta">agregado del rango</span></h3>
+    <div id="byModel"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section">
+    <h3>📋 Uso por tipo de petición</h3>
+    <div id="byType"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section">
+    <h3>👥 Top usuarios por coste <span class="meta">uid seudonimizado</span></h3>
+    <div id="byUser"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section">
+    <h3>📈 Cuota diaria del admin · hoy</h3>
+    <div id="quota"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section">
+    <h3>🔍 Últimas 50 llamadas</h3>
+    <div id="recent"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <p class="small" style="text-align:center;margin-top:20px">Datos: <code style="font-family:var(--mono)">users/{uid}/aiRequests</code> · actualizados en tiempo real desde Firestore · no se almacena el texto de prompts ni respuestas.</p>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// Admin dashboard · solo Carlos
+// ═══════════════════════════════════════════════════════════════════
+const ADMIN_EMAILS = ['carlosgalera2roman@gmail.com'];
+
+const gate = document.getElementById('gate');
+const dashboard = document.getElementById('dashboard');
+const gateErr = document.getElementById('gateErr');
+
+function showErr(msg){gateErr.textContent=msg;gateErr.style.display='block';}
+
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user){
+    gate.style.display='block';
+    dashboard.style.display='none';
+    return;
+  }
+  if(ADMIN_EMAILS.indexOf((user.email||'').toLowerCase())<0){
+    gate.style.display='block';
+    dashboard.style.display='none';
+    showErr('⛔ La cuenta '+user.email+' no está autorizada. Cierra sesión y entra con la cuenta admin.');
+    return;
+  }
+  gate.style.display='none';
+  dashboard.style.display='block';
+  loadDashboard(1);
+});
+
+document.getElementById('gateLogin').onclick=function(){
+  const provider=new firebase.auth.GoogleAuthProvider();
+  provider.addScope('email');
+  firebase.auth().signInWithPopup(provider).catch(function(e){showErr(e.message||e);});
+};
+
+document.querySelectorAll('.range-tab').forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll('.range-tab').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    loadDashboard(parseInt(b.dataset.days,10));
+  };
+});
+
+// ── Pricing: EUR por 1k tokens (mantener sincronizado con functions/src/logging.ts) ──
+const COST_PER_1K = {
+  'gemini-2.5-flash-lite': { in: 0.00010, out: 0.00040 },
+  'gemini-2.5-flash':      { in: 0.00030, out: 0.00250 },
+  'deepseek-chat':         { in: 0.00025, out: 0.00100 },
+  'mistral-small-latest':  { in: 0.00020, out: 0.00060 },
+  'qwen-vl-max':           { in: 0.00180, out: 0.00540 },
+  'qwen2.5-vl-72b-instruct': { in: 0.00180, out: 0.00540 },
+};
+function priceFor(model){ return COST_PER_1K[model] || { in: 0, out: 0 }; }
+function estimateCost(model, tIn, tOut){
+  const p = priceFor(model);
+  return (tIn/1000)*p.in + (tOut/1000)*p.out;
+}
+function fmtEur(v){ return '€'+(v||0).toFixed(4); }
+function fmtNum(v){ return (v||0).toLocaleString('es-ES'); }
+function shortUid(uid){ return uid ? (uid.substring(0,6)+'…'+uid.substring(uid.length-4)) : '—'; }
+function dayKey(d){ return d.toISOString().substring(0,10); }
+
+async function loadDashboard(days){
+  const from = new Date();
+  from.setDate(from.getDate() - (days-1));
+  from.setHours(0,0,0,0);
+  const db = firebase.firestore();
+
+  // Render loading
+  ['timeline','byModel','byType','byUser','quota','recent'].forEach(function(id){
+    document.getElementById(id).innerHTML='<div class="loading"><span class="spin"></span>Consultando Firestore…</div>';
+  });
+
+  let snap;
+  try{
+    snap = await db.collectionGroup('aiRequests')
+      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(from))
+      .orderBy('createdAt','desc')
+      .get();
+  }catch(e){
+    console.error(e);
+    document.getElementById('byModel').innerHTML =
+      '<div class="err">❌ Error cargando datos: '+e.message+'<br><span class="small">Si falta un índice, Firestore mostrará un enlace en la consola para crearlo.</span></div>';
+    return;
+  }
+
+  // Aggregate
+  const rows = [];
+  snap.forEach(function(doc){
+    const d = doc.data();
+    const ref = doc.ref.parent.parent; // users/{uid}
+    rows.push({
+      uid: ref ? ref.id : '—',
+      type: d.type || '—',
+      provider: d.provider || '—',
+      model: d.model || '—',
+      latencyMs: d.latencyMs || 0,
+      cacheHit: !!d.cacheHit,
+      tokensIn: d.tokensIn || 0,
+      tokensOut: d.tokensOut || 0,
+      costEstimateEur: (typeof d.costEstimateEur === 'number') ? d.costEstimateEur : estimateCost(d.model, d.tokensIn||0, d.tokensOut||0),
+      error: d.error || null,
+      createdAt: d.createdAt ? d.createdAt.toDate() : null,
+    });
+  });
+
+  // KPIs
+  const total = rows.length;
+  const cached = rows.filter(function(r){ return r.cacheHit; }).length;
+  const errors = rows.filter(function(r){ return r.error; }).length;
+  const tIn = rows.reduce(function(a,r){ return a+r.tokensIn; },0);
+  const tOut = rows.reduce(function(a,r){ return a+r.tokensOut; },0);
+  const cost = rows.reduce(function(a,r){ return a+r.costEstimateEur; },0);
+  const users = new Set(rows.map(function(r){ return r.uid; })).size;
+
+  document.getElementById('kCalls').textContent = fmtNum(total);
+  document.getElementById('kCallsSub').textContent = 'últimos '+days+'d · '+(total/Math.max(days,1)).toFixed(1)+'/día';
+  document.getElementById('kCost').textContent = fmtEur(cost);
+  document.getElementById('kTokens').textContent = fmtNum(tIn)+' / '+fmtNum(tOut);
+  document.getElementById('kTokensSub').textContent = 'prompt / generados · '+fmtNum(tIn+tOut)+' totales';
+  document.getElementById('kCache').textContent = total? ((cached*100/total).toFixed(1)+'%') : '—';
+  document.getElementById('kUsers').textContent = fmtNum(users);
+  const errRate = total ? ((errors*100/total).toFixed(1)+'%') : '0%';
+  document.getElementById('kErrors').textContent = fmtNum(errors);
+  document.getElementById('kErrorsSub').textContent = errRate+' tasa de error';
+
+  // Timeline daily
+  const bucket = {};
+  for(let i=0; i<days; i++){
+    const d = new Date(from); d.setDate(d.getDate()+i);
+    bucket[dayKey(d)] = { calls:0, cost:0, tokens:0, errors:0 };
+  }
+  rows.forEach(function(r){
+    const k = r.createdAt ? dayKey(r.createdAt) : dayKey(from);
+    if(!bucket[k]) bucket[k] = { calls:0, cost:0, tokens:0, errors:0 };
+    bucket[k].calls++;
+    bucket[k].cost += r.costEstimateEur;
+    bucket[k].tokens += r.tokensIn + r.tokensOut;
+    if(r.error) bucket[k].errors++;
+  });
+  const keys = Object.keys(bucket).sort();
+  const maxCalls = Math.max.apply(null, keys.map(function(k){return bucket[k].calls;}).concat([1]));
+  document.getElementById('timeline').innerHTML = keys.map(function(k){
+    const b = bucket[k];
+    const h = b.calls ? Math.max(6, (b.calls/maxCalls)*100) : 2;
+    const label = k.substring(5); // MM-DD
+    return '<div class="tbar" style="height:'+h+'%"><span>'+label+'</span><div class="tip">'+k+' · '+b.calls+' llamadas · '+fmtEur(b.cost)+'</div></div>';
+  }).join('');
+  document.getElementById('tlMeta').textContent = 'barra más alta: '+maxCalls+' llamadas';
+
+  // By model
+  const mAgg = {};
+  rows.forEach(function(r){
+    if(!mAgg[r.model]) mAgg[r.model] = { model:r.model, provider:r.provider, calls:0, tIn:0, tOut:0, cost:0 };
+    mAgg[r.model].calls++;
+    mAgg[r.model].tIn += r.tokensIn;
+    mAgg[r.model].tOut += r.tokensOut;
+    mAgg[r.model].cost += r.costEstimateEur;
+  });
+  const mList = Object.values(mAgg).sort(function(a,b){ return b.cost-a.cost; });
+  const mMaxCost = Math.max.apply(null, mList.map(function(m){return m.cost;}).concat([0.0001]));
+  document.getElementById('byModel').innerHTML = mList.length ? (
+    '<table><thead><tr><th>Modelo</th><th>Proveedor</th><th class="num">Llamadas</th><th class="num">Tokens in</th><th class="num">Tokens out</th><th class="num">Coste</th><th>Coste (%)</th></tr></thead><tbody>' +
+    mList.map(function(m){
+      const pct = (m.cost/mMaxCost)*100;
+      return '<tr><td><code style="font-family:var(--mono);font-size:.8rem">'+m.model+'</code></td><td><span class="tag tag-ok">'+m.provider+'</span></td><td class="num">'+fmtNum(m.calls)+'</td><td class="num">'+fmtNum(m.tIn)+'</td><td class="num">'+fmtNum(m.tOut)+'</td><td class="num"><strong>'+fmtEur(m.cost)+'</strong></td><td><div class="bar-wrap"><div class="bar b-cost" style="width:'+pct+'%"></div></div></td></tr>';
+    }).join('') + '</tbody></table>'
+  ) : '<div class="empty">No hay datos en el rango.</div>';
+
+  // By type
+  const tAgg = {};
+  rows.forEach(function(r){
+    if(!tAgg[r.type]) tAgg[r.type] = { type:r.type, calls:0, tokens:0, cost:0 };
+    tAgg[r.type].calls++;
+    tAgg[r.type].tokens += r.tokensIn + r.tokensOut;
+    tAgg[r.type].cost += r.costEstimateEur;
+  });
+  const tList = Object.values(tAgg).sort(function(a,b){ return b.cost-a.cost; });
+  document.getElementById('byType').innerHTML = tList.length ? (
+    '<table><thead><tr><th>Tipo</th><th class="num">Llamadas</th><th class="num">Tokens</th><th class="num">Coste</th></tr></thead><tbody>' +
+    tList.map(function(t){
+      const tagCls = t.type==='vision'?'tag-vision':t.type==='clinical_case'?'tag-clinical':'tag-educational';
+      return '<tr><td><span class="tag '+tagCls+'">'+t.type+'</span></td><td class="num">'+fmtNum(t.calls)+'</td><td class="num">'+fmtNum(t.tokens)+'</td><td class="num"><strong>'+fmtEur(t.cost)+'</strong></td></tr>';
+    }).join('') + '</tbody></table>'
+  ) : '<div class="empty">Sin datos.</div>';
+
+  // By user
+  const uAgg = {};
+  rows.forEach(function(r){
+    if(!uAgg[r.uid]) uAgg[r.uid] = { uid:r.uid, calls:0, cost:0, tokens:0 };
+    uAgg[r.uid].calls++;
+    uAgg[r.uid].cost += r.costEstimateEur;
+    uAgg[r.uid].tokens += r.tokensIn + r.tokensOut;
+  });
+  const uList = Object.values(uAgg).sort(function(a,b){ return b.cost-a.cost; }).slice(0,15);
+  const uMaxCost = Math.max.apply(null, uList.map(function(u){return u.cost;}).concat([0.0001]));
+  document.getElementById('byUser').innerHTML = uList.length ? (
+    '<table><thead><tr><th>UID</th><th class="num">Llamadas</th><th class="num">Tokens</th><th class="num">Coste</th><th>%</th></tr></thead><tbody>' +
+    uList.map(function(u){
+      const pct = (u.cost/uMaxCost)*100;
+      return '<tr><td><code style="font-family:var(--mono);font-size:.78rem;color:var(--t2)">'+shortUid(u.uid)+'</code></td><td class="num">'+fmtNum(u.calls)+'</td><td class="num">'+fmtNum(u.tokens)+'</td><td class="num"><strong>'+fmtEur(u.cost)+'</strong></td><td><div class="bar-wrap"><div class="bar" style="width:'+pct+'%"></div></div></td></tr>';
+    }).join('') + '</tbody></table>'
+  ) : '<div class="empty">Sin usuarios.</div>';
+
+  // Today's admin quota
+  try{
+    const admin = firebase.auth().currentUser;
+    const today = new Date().toISOString().substring(0,10);
+    const qSnap = await db.collection('users').doc(admin.uid).collection('quotas').doc(today).get();
+    if(qSnap.exists){
+      const q = qSnap.data();
+      const usedPct = q.limit ? Math.min(100, (q.count*100/q.limit)) : 0;
+      const remaining = Math.max(0, (q.limit||0)-(q.count||0));
+      document.getElementById('quota').innerHTML =
+        '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+          '<div><div class="lbl small">CONSUMO HOY</div><div style="font-family:var(--mono);font-size:1.6rem;font-weight:800">'+q.count+' / '+q.limit+'</div></div>' +
+          '<div><div class="lbl small">TOKENS PENDIENTES (aprox.)</div><div style="font-family:var(--mono);font-size:1.6rem;font-weight:800;color:var(--primary)">'+fmtNum(remaining)+' llamadas</div></div>' +
+          '<div style="flex:1;min-width:200px"><div class="bar-wrap" style="height:14px"><div class="bar b-tokens" style="width:'+usedPct+'%"></div></div><div class="small" style="margin-top:4px">'+usedPct.toFixed(0)+'% de la cuota diaria admin usada</div></div>' +
+        '</div>';
+    } else {
+      document.getElementById('quota').innerHTML = '<div class="empty">Aún no has consumido cuota hoy. Límite admin: 200/día.</div>';
+    }
+  }catch(e){
+    document.getElementById('quota').innerHTML = '<div class="err small">No se pudo leer la cuota: '+e.message+'</div>';
+  }
+
+  // Recent 50
+  const recent = rows.slice(0, 50);
+  document.getElementById('recent').innerHTML = recent.length ? (
+    '<div style="overflow-x:auto"><table><thead><tr><th>Hora</th><th>Tipo</th><th>Modelo</th><th>UID</th><th class="num">Tokens</th><th class="num">Latencia</th><th class="num">Coste</th><th>Estado</th></tr></thead><tbody>' +
+    recent.map(function(r){
+      const hora = r.createdAt ? r.createdAt.toLocaleString('es-ES') : '—';
+      const tagCls = r.type==='vision'?'tag-vision':r.type==='clinical_case'?'tag-clinical':'tag-educational';
+      let status;
+      if(r.error) status = '<span class="tag tag-err">error</span>';
+      else if(r.cacheHit) status = '<span class="tag tag-cache">cache</span>';
+      else status = '<span class="tag tag-ok">ok</span>';
+      return '<tr><td class="small">'+hora+'</td><td><span class="tag '+tagCls+'">'+r.type+'</span></td><td><code style="font-family:var(--mono);font-size:.76rem">'+r.model+'</code></td><td class="small">'+shortUid(r.uid)+'</td><td class="num">'+fmtNum(r.tokensIn+r.tokensOut)+'</td><td class="num">'+fmtNum(r.latencyMs)+'ms</td><td class="num">'+fmtEur(r.costEstimateEur)+'</td><td>'+status+'</td></tr>';
+    }).join('') + '</tbody></table></div>'
+  ) : '<div class="empty">Sin llamadas registradas.</div>';
+}
+</script>
+</body>
+</html>
