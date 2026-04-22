@@ -24,6 +24,7 @@
                 <button id="tabPlantillas" onclick="switchScanTab('plantillas')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📋 Plantillas</button>
                 <button id="tabTriaje" onclick="switchScanTab('triaje')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🚨 Triaje IA</button>
                 <button id="tabTurnos" onclick="switchScanTab('turnos')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">⏰ Turnos</button>
+                <button id="tabResumen" onclick="switchScanTab('resumen')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📝 Resúmenes rápidos</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -1585,6 +1586,58 @@
                 <!-- Resultado -->
                 <div id="turnoResult"></div>
             </div><!-- end panelTurnos -->
+
+
+            <!-- TAB 7: RESÚMENES RÁPIDOS -->
+            <div id="panelResumen" style="display:none;">
+                <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);padding:12px 16px;font-size:.82rem;color:#856404;margin-bottom:14px;line-height:1.55;">
+                    ⚠️ <strong>Datos seudonimizados.</strong> Pega solo iniciales/edad/motivo. NO incluyas nombre, DNI, NHC u otros identificadores. Uso docente.
+                </div>
+
+                <!-- Sub-tabs -->
+                <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);overflow-x:auto;">
+                    <button id="subtabAnalitica" onclick="resumenSwitch('analitica')" style="padding:10px 18px;border:none;background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);white-space:nowrap;">🧪 Analíticas</button>
+                    <button id="subtabInter" onclick="resumenSwitch('inter')" style="padding:10px 18px;border:none;background:var(--bg-subtle);color:var(--text);border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);white-space:nowrap;">📨 Interconsultas</button>
+                </div>
+
+                <!-- Sub-panel: Analíticas -->
+                <div id="subpanelAnalitica">
+                    <h3 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:6px;font-size:1.1rem;">🧪 Resumen rápido de analítica</h3>
+                    <p style="color:var(--text-muted);font-size:.84rem;line-height:1.55;margin-bottom:12px;">Pega aquí una analítica completa (hemograma, bioquímica, coagulación, gasometría…). La IA DeepSeek V3 devuelve un resumen estructurado con hallazgos relevantes.</p>
+                    <textarea id="anaInput" placeholder="Pega la analítica completa tal cual (no pasa nada si hay columnas y espacios)…" style="width:100%;min-height:200px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:ui-monospace,monospace;background:var(--bg-main);line-height:1.5;" onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'"></textarea>
+                    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+                        <button class="btn btn-primary" id="anaBtn" onclick="anaResumir()" style="padding:12px 22px;background:linear-gradient(135deg,#0d47a1,#1565c0);border:none;color:#fff;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">📝 Resumir con IA</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('anaInput').value='';document.getElementById('anaOut').innerHTML='';" style="padding:12px 16px;background:var(--bg-subtle);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">🗑 Limpiar</button>
+                    </div>
+                    <div id="anaOut" style="margin-top:14px;"></div>
+                </div>
+
+                <!-- Sub-panel: Interconsultas -->
+                <div id="subpanelInter" style="display:none;">
+                    <h3 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:6px;font-size:1.1rem;">📨 Redactar interconsulta (≤ 700 car.)</h3>
+                    <p style="color:var(--text-muted);font-size:.84rem;line-height:1.55;margin-bottom:12px;">Pega texto o varias capturas (Cmd+V sobre la caja) con procesos/antecedentes del paciente. La IA redacta un párrafo único y compacto listo para enviar al especialista.</p>
+
+                    <!-- Zona para imágenes pegadas (OCR con Qwen2.5-VL) -->
+                    <div id="interImgs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
+
+                    <textarea id="interInput" placeholder="Pega aquí texto clínico (antecedentes, tratamientos, analíticas previas, pruebas). También puedes hacer Cmd+V con capturas y se añadirán abajo…" style="width:100%;min-height:200px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:var(--font-body);background:var(--bg-main);line-height:1.5;" onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'" onpaste="interOnPaste(event)"></textarea>
+
+                    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center;">
+                        <select id="interDest" style="padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.88rem;background:var(--bg-main);">
+                            <option value="">(Destino — opcional)</option>
+                            <option>Cardiología</option><option>Neurología</option><option>Digestivo</option>
+                            <option>Endocrinología</option><option>Nefrología</option><option>Reumatología</option>
+                            <option>Neumología</option><option>Hematología</option><option>Psiquiatría</option>
+                            <option>Cirugía General</option><option>Traumatología</option><option>Urología</option>
+                            <option>ORL</option><option>Oftalmología</option><option>Dermatología</option>
+                            <option>Ginecología</option><option>Medicina Interna</option>
+                        </select>
+                        <button class="btn btn-primary" id="interBtn" onclick="interResumir()" style="padding:12px 22px;background:linear-gradient(135deg,#0d47a1,#1565c0);border:none;color:#fff;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">✉️ Generar interconsulta</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('interInput').value='';document.getElementById('interOut').innerHTML='';document.getElementById('interImgs').innerHTML='';window._interImgs=[];" style="padding:12px 16px;background:var(--bg-subtle);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">🗑 Limpiar</button>
+                    </div>
+                    <div id="interOut" style="margin-top:14px;"></div>
+                </div>
+            </div><!-- end panelResumen -->
 
 
         </div>

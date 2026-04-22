@@ -1910,22 +1910,22 @@ var SCAN_OR_KEY="";var SCAN_ANT_KEY="";var GEMINI_KEY="";var GEMINI_MODEL="";
 
 async function scanAnalyze(){
     if(!scanB64){alert("Sube una imagen primero");return;}
-    /* ═══ FIX 2: RGPD Art. 9 — Mandatory disclaimer before sending medical images ═══ */
+    /* RGPD Art. 9 — disclaimer antes de enviar imágenes clínicas. */
     if(!sessionStorage.getItem('scan_disclaimer_accepted')){
         var accepted=confirm(
             "⚠️ AVISO IMPORTANTE — RGPD Art. 9 / Ley 41/2002\n\n"+
-            "• Esta imagen se enviará a servicios de IA externos para su análisis.\n"+
-            "• NO suba imágenes que contengan nombre, NHC, DNI u otros datos identificativos del paciente.\n"+
-            "• La imagen NO se almacena en servidores externos tras el análisis.\n"+
+            "• Esta imagen se enviará a la Cloud Function askAi (europe-west1) y al proveedor de IA.\n"+
+            "• NO suba imágenes que contengan nombre, NHC, DNI u otros datos identificativos.\n"+
+            "• La imagen NO se almacena tras el análisis.\n"+
             "• Uso EXCLUSIVAMENTE DOCENTE. No constituye diagnóstico médico.\n\n"+
             "¿Confirma que la imagen NO contiene datos identificativos del paciente?"
         );
         if(!accepted){return;}
-        sessionStorage.setItem('scan_disclaimer_accepted','1');/* Solo preguntar 1 vez por sesión */
+        sessionStorage.setItem('scan_disclaimer_accepted','1');
     }
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
-    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Procesando con IA de visión...</div></div>';
+    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Enviando a Qwen2.5-VL-72B (Cloud Function askAi)…</div></div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
     var mt="image/jpeg";if(document.getElementById("scanImgPreview").src.indexOf("image/png")>-1)mt="image/png";
     var dataUrl="data:"+mt+";base64,"+scanB64;
@@ -1934,37 +1934,27 @@ async function scanAnalyze(){
     var userText=ctx?"Analiza esta imagen médica. Contexto clínico: "+ctx:"Analiza esta imagen médica de forma sistemática y detallada.";
     var txt=null;var usedModel="";var errors=[];
 
-    // Pollinations removed (CORS blocked from HTTPS)
-
-    // ── 2. OpenRouter — Qwen 2.5 VL + Llama 4 Scout ──
-    if(!txt){
+    // Un único canal: Cloud Function askAi (type=vision → Qwen2.5-VL-72B).
+    if(typeof window.askAi!=="function"){
+        errors.push("ai-client.js no cargado");
+    } else {
         try{
-            var orKey=_dk();
-                var orModels=VISION_CONFIG.openrouterModels||["qwen/qwen3.5-flash","google/gemma-3-27b-it:free","qwen/qwen3.5-9b"];
-                for(var mi=0;mi<orModels.length&&!txt;mi++){
-                    var vm=orModels[mi];
-                    res.querySelector('div:last-child').textContent='Probando '+vm.split('/')[1].split(':')[0]+'...';
-                    var orH={"Content-Type":"application/json","HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"ScanIA Area II Cartagena"};
-                    if(orKey)orH["Authorization"]="Bearer "+orKey;
-                    var r2=await fetch("about:disabled-openrouter",{
-                        method:"POST",
-                        headers:orH,
-                        body:JSON.stringify({model:vm,messages:[{role:"system",content:sys},{role:"user",content:[{type:"image_url",image_url:{url:dataUrl}},{type:"text",text:userText}]}],max_tokens:2000,temperature:0.3})
-                    });
-                    var d2=await r2.json();
-                    if(r2.ok&&d2.choices&&d2.choices[0]&&d2.choices[0].message){txt=d2.choices[0].message.content||null;if(txt)usedModel=vm.split('/')[1].split(':')[0];}
-                    else{errors.push(vm.split('/')[1]+": HTTP "+r2.status+" "+(d2.error?.message||""));if(r2.status===429||r2.status===502||r2.status===503)continue;}
-                }
-        }catch(e){errors.push("OpenRouter: "+e.message);}
-    }
-
-    // ── 3. Puter.js img2txt (Gemini gratis) ──
-    if(!txt && typeof puter!=="undefined" && puter.ai && puter.ai.img2txt){
-        try{
-            var pr=await puter.ai.img2txt(dataUrl,sys+"\n\n"+userText,{model:"gemini-2.5-flash"});
-            var pt=typeof pr==="string"?pr:(pr&&pr.text?pr.text:null);
-            if(pt&&pt.length>20){txt=pt;usedModel="Gemini 2.5 Flash (Puter)";}
-        }catch(e){errors.push("Puter: "+e.message);}
+            var b64only = dataUrl.indexOf(',')>=0 ? dataUrl.substring(dataUrl.indexOf(',')+1) : dataUrl;
+            var aiRes = await window.askAi({
+                type:'vision',
+                systemPrompt: sys,
+                prompt: userText,
+                imageBase64: b64only
+            });
+            if(aiRes && aiRes.text){
+                txt = aiRes.text;
+                usedModel = (aiRes.model || 'Qwen2.5-VL-72B') + (aiRes.provider ? ' · '+aiRes.provider : '');
+            } else {
+                errors.push('askAi devolvió respuesta vacía');
+            }
+        }catch(e){
+            errors.push('askAi: '+(e&&(e.userMessage||e.message)||e));
+        }
     }
 
     var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por IA y <strong>NO constituye diagnóstico médico</strong>. Requiere valoración presencial por profesional sanitario.</div>';
@@ -2006,6 +1996,167 @@ function switchScanTab(tab){
     var tuEl=document.getElementById("panelTurnos");if(tuEl)tuEl.style.display=tab==="turnos"?"block":"none";
     var tuBtn=document.getElementById("tabTurnos");if(tuBtn){tuBtn.style.background=tab==="turnos"?"linear-gradient(135deg,#1e40af,#1d4ed8)":"var(--bg-subtle)";tuBtn.style.color=tab==="turnos"?"#fff":"var(--text)";}
     if(tab==="turnos")turnoCalc();
+    var rsEl=document.getElementById("panelResumen");if(rsEl)rsEl.style.display=tab==="resumen"?"block":"none";
+    var rsBtn=document.getElementById("tabResumen");if(rsBtn){rsBtn.style.background=tab==="resumen"?"linear-gradient(135deg,#0d47a1,#1565c0)":"var(--bg-subtle)";rsBtn.style.color=tab==="resumen"?"#fff":"var(--text)";}
+}
+
+// ═══════ RESÚMENES RÁPIDOS ═══════
+window._interImgs = window._interImgs || [];
+function resumenSwitch(which){
+    var a = document.getElementById('subpanelAnalitica');
+    var i = document.getElementById('subpanelInter');
+    var ba= document.getElementById('subtabAnalitica');
+    var bi= document.getElementById('subtabInter');
+    var on='linear-gradient(135deg,#0d47a1,#1565c0)', off='var(--bg-subtle)';
+    if(which==='analitica'){
+        a.style.display='block'; i.style.display='none';
+        ba.style.background=on; ba.style.color='#fff';
+        bi.style.background=off; bi.style.color='var(--text)';
+    } else {
+        a.style.display='none'; i.style.display='block';
+        bi.style.background=on; bi.style.color='#fff';
+        ba.style.background=off; ba.style.color='var(--text)';
+    }
+}
+
+function _resumenCard(title, text, meta){
+    var safe = String(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var metaHtml = meta ? '<div style="font-size:.72rem;color:var(--text-muted);margin-top:8px;">'+meta+'</div>' : '';
+    return '<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0d47a1;border-radius:var(--radius);padding:16px;position:relative;">'+
+           '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">'+
+             '<strong style="color:#0d47a1;font-family:var(--font-display);font-size:1rem;">'+title+'</strong>'+
+             '<button onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText).then(()=>{this.textContent=\'✓ Copiado\';setTimeout(()=>this.textContent=\'📋 Copiar\',1500)})" style="padding:5px 12px;background:#0d47a1;color:#fff;border:none;border-radius:14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--font-body);">📋 Copiar</button>'+
+           '</div>'+
+           '<div style="white-space:pre-wrap;line-height:1.6;font-size:.92rem;color:var(--text);">'+safe+'</div>'+
+           metaHtml+
+           '</div>';
+}
+
+async function anaResumir(){
+    var ta = document.getElementById('anaInput');
+    var out= document.getElementById('anaOut');
+    var btn= document.getElementById('anaBtn');
+    var txt= (ta && ta.value || '').trim();
+    if(!txt){ alert('Pega la analítica antes de resumir.'); return; }
+    if(typeof window.askAi !== 'function'){ out.innerHTML = '<div style="color:#dc2626;">IA no disponible.</div>'; return; }
+    // Cap prompt a 7500 chars para dejar hueco a systemPrompt y respuesta.
+    if(txt.length > 7500){ txt = txt.substring(0, 7500) + '\n[…truncado]'; }
+    btn.disabled = true; var old = btn.textContent; btn.textContent = '…';
+    out.innerHTML = '<div style="color:var(--text-muted);font-size:.88rem;">⏳ Resumiendo con IA…</div>';
+    var sys =
+      'Eres un asistente docente del Área II Cartagena. Resume analíticas clínicas en español para un médico '+
+      'con prisa. Formato OBLIGATORIO:\n'+
+      '• Resumen breve (2–3 líneas) destacando lo más relevante.\n'+
+      '• Listado de alteraciones: parámetro (valor) ↑/↓ con referencia y posible significado clínico.\n'+
+      '• Diagnósticos diferenciales o patrón sugerido (si aplica).\n'+
+      '• Recomendaciones iniciales orientativas (NO prescribir, solo enfocar).\n'+
+      'No inventes datos que no aparezcan. Si faltan, indícalo. Máx 300 palabras. Uso docente.';
+    try{
+        var res = await window.askAi({ type:'educational', systemPrompt: sys, prompt: 'Resume esta analítica:\n\n'+txt });
+        var ans = (res && res.text) ? res.text.replace(/<think>[\s\S]*?<\/think>/g,'').trim() : '';
+        if(!ans) throw new Error('Respuesta vacía.');
+        var meta = (res && res.model) ? ('Modelo: '+res.model+(res.provider?' · '+res.provider:'')) : '';
+        out.innerHTML = _resumenCard('🧪 Resumen de analítica', ans, meta);
+    }catch(e){
+        out.innerHTML = '<div style="color:#dc2626;padding:10px;">❌ '+((e&&(e.userMessage||e.message))||e)+'</div>';
+    }
+    btn.disabled = false; btn.textContent = old;
+}
+
+function interOnPaste(ev){
+    try{
+        var items = (ev.clipboardData || ev.originalEvent && ev.originalEvent.clipboardData || {}).items || [];
+        for(var i=0;i<items.length;i++){
+            var it = items[i];
+            if(it && it.type && it.type.indexOf('image/')===0){
+                var file = it.getAsFile();
+                if(!file) continue;
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    var dataUrl = e.target.result;
+                    // Compress client-side a 1024px máx / JPEG 70%
+                    var img = new Image();
+                    img.onload = function(){
+                        var w=img.width, h=img.height, MAX=1024;
+                        if(w>MAX||h>MAX){ if(w>h){ h=Math.round(h*MAX/w); w=MAX; } else { w=Math.round(w*MAX/h); h=MAX; } }
+                        var c=document.createElement('canvas'); c.width=w; c.height=h;
+                        c.getContext('2d').drawImage(img,0,0,w,h);
+                        var small = c.toDataURL('image/jpeg',0.7);
+                        var b64 = small.substring(small.indexOf(',')+1);
+                        window._interImgs.push(b64);
+                        var thumbs = document.getElementById('interImgs');
+                        if(thumbs){
+                            var i = window._interImgs.length - 1;
+                            var div = document.createElement('div');
+                            div.style.cssText='position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--border);';
+                            div.innerHTML='<img src="'+small+'" style="width:100%;height:100%;object-fit:cover;"><button onclick="window._interImgs.splice('+i+',1);this.parentElement.remove();" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:.72rem;cursor:pointer;padding:0;line-height:1;">✕</button>';
+                            thumbs.appendChild(div);
+                        }
+                    };
+                    img.src = dataUrl;
+                };
+                reader.readAsDataURL(file);
+                ev.preventDefault();
+            }
+        }
+    }catch(e){ console.warn('[inter paste]', e); }
+}
+
+async function interResumir(){
+    var ta = document.getElementById('interInput');
+    var out= document.getElementById('interOut');
+    var btn= document.getElementById('interBtn');
+    var dest = (document.getElementById('interDest')||{}).value || '';
+    var txt= (ta && ta.value || '').trim();
+    var imgs = (window._interImgs || []).slice();
+    if(!txt && imgs.length===0){ alert('Pega texto o imágenes antes de redactar.'); return; }
+    if(typeof window.askAi !== 'function'){ out.innerHTML='<div style="color:#dc2626;">IA no disponible.</div>'; return; }
+    btn.disabled = true; var old = btn.textContent; btn.textContent = '…';
+    out.innerHTML = '<div style="color:var(--text-muted);font-size:.88rem;">⏳ '+(imgs.length?'Extrayendo texto de las capturas (Qwen2.5-VL) y ':'')+'redactando interconsulta…</div>';
+
+    // 1) Si hay imágenes, OCR/descripción con Qwen2.5-VL-72B (type=vision) por cada una.
+    var extracted = '';
+    try{
+        for(var i=0;i<imgs.length;i++){
+            var sys =
+              'Extrae en texto claro y estructurado el contenido clínico relevante de esta captura '+
+              '(antecedentes, diagnósticos, pruebas, tratamientos, resultados). No inventes datos. '+
+              'Devuelve solo el texto extraído, sin introducción.';
+            var r = await window.askAi({
+                type:'vision',
+                systemPrompt: sys,
+                prompt: 'Extrae el texto clínico útil para redactar una interconsulta.',
+                imageBase64: imgs[i]
+            });
+            if(r && r.text) extracted += '\n\n[captura '+(i+1)+']\n' + r.text.trim();
+        }
+    }catch(e){
+        extracted += '\n\n[imagen '+(i+1)+'] (no se pudo procesar: '+((e&&(e.userMessage||e.message))||e)+')';
+    }
+
+    // 2) Redactar la interconsulta final (DeepSeek V3, educational).
+    var body = (txt ? txt : '') + (extracted ? '\n\nCONTENIDO EXTRAÍDO DE CAPTURAS:\n' + extracted : '');
+    if(body.length > 7500) body = body.substring(0, 7500) + '\n[…truncado]';
+    var sys2 =
+      'Eres un médico que redacta interconsultas concisas para un compañero. A partir del material '+
+      'proporcionado, escribe UN único párrafo (sin listas ni viñetas) de MÁXIMO 700 caracteres que '+
+      'incluya: datos demográficos clave (edad/sexo si constan, sin identificadores), motivo de '+
+      'consulta, antecedentes relevantes, resultados de pruebas/analíticas más destacados y la pregunta '+
+      'concreta al especialista'+(dest?' de '+dest:'')+'. Tono clínico, claro, profesional. Cuenta los '+
+      'caracteres y respeta el límite (≤700). No incluyas nombre ni datos identificativos aunque aparezcan.';
+    try{
+        var res = await window.askAi({ type:'educational', systemPrompt: sys2, prompt: 'Redacta la interconsulta:\n\n'+body });
+        var ans = (res && res.text) ? res.text.replace(/<think>[\s\S]*?<\/think>/g,'').trim() : '';
+        if(!ans) throw new Error('Respuesta vacía.');
+        // Hard-cap a 700 caracteres por si el modelo se excede.
+        var finalText = ans.length > 700 ? ans.substring(0, 697).replace(/[\s,;.]+$/,'') + '…' : ans;
+        var meta = 'Longitud: '+finalText.length+'/700 caracteres · Destino: '+(dest||'sin especificar');
+        if(res && res.model) meta += ' · '+res.model+(res.provider?' ('+res.provider+')':'');
+        out.innerHTML = _resumenCard('📨 Interconsulta lista para enviar', finalText, meta);
+    }catch(e){
+        out.innerHTML = '<div style="color:#dc2626;padding:10px;">❌ '+((e&&(e.userMessage||e.message))||e)+'</div>';
+    }
+    btn.disabled = false; btn.textContent = old;
 }
 
 // ═══ NOTEBOOKLM VIEWER ═══
