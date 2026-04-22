@@ -5149,6 +5149,7 @@ document.addEventListener('click', function(){
       '#cart-focus-top .focus-title{flex:1;font-family:"Playfair Display",Georgia,serif;font-size:1.05rem;font-weight:700;letter-spacing:.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
       '#cart-focus-top .focus-actions{display:flex;gap:6px;flex-wrap:nowrap}',
       '#cart-focus-top .focus-actions button{padding:6px 10px;font-size:.72rem;font-weight:700;border:none;border-radius:14px;cursor:pointer;font-family:inherit;color:#fff;display:inline-flex;align-items:center;gap:4px}',
+      '#cart-focus-top .ba-update{background:linear-gradient(135deg,#0d47a1,#1565c0)}',
       '#cart-focus-top .ba-propose{background:linear-gradient(135deg,#0066cc,#0052a3)}',
       '#cart-focus-top .ba-sug{background:linear-gradient(135deg,#f59e0b,#d97706)}',
       '#cart-focus-top .ba-mod{background:linear-gradient(135deg,#7c3aed,#5b21b6)}',
@@ -5163,6 +5164,7 @@ document.addEventListener('click', function(){
       '<a class="back-hub" href="profesionales.html">← Profesionales</a>' +
       '<span class="focus-title" id="cart-focus-title">' + (TITLES[p] || 'Apartado') + '</span>' +
       '<div class="focus-actions" id="cart-focus-actions">' +
+        '<button class="ba-update" data-cart-update type="button" title="Actualizar app">🔄 <span>Actualizar</span></button>' +
         '<button class="ba-propose" onclick="if(typeof abrirModalSubir===\'function\')abrirModalSubir(\'\');" title="Proponer contenido">📤 <span>Proponer</span></button>' +
         '<button class="ba-sug" onclick="if(typeof abrirSugerencias===\'function\')abrirSugerencias();" title="Sugerencias">💡 <span>Sugerir</span></button>' +
         '<button class="ba-mod" id="cart-focus-mod-btn" style="display:none" onclick="if(typeof abrirPanelModeracion===\'function\')abrirPanelModeracion();" title="Moderación">🛡️ <span>Mod</span></button>' +

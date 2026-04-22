@@ -34,9 +34,11 @@
     btn.type = 'button';
     btn.innerHTML = '<span style="font-size:16px;line-height:1;">🔄</span><span class="cart-update-label">Actualizar</span>';
     btn.style.cssText = [
+      // Esquina inferior-derecha: nunca se solapa con headers/navbars ni
+      // con contenido primario del body (texto, inputs, CTAs superiores).
       'position:fixed',
-      'top:10px',
-      'right:10px',
+      'bottom:16px',
+      'right:16px',
       'z-index:2147483646',
       'display:inline-flex',
       'align-items:center',
@@ -50,9 +52,9 @@
       'font-size:12px',
       'font-weight:700',
       'cursor:pointer',
-      'box-shadow:0 2px 8px rgba(13,71,161,.35)',
+      'box-shadow:0 4px 14px rgba(13,71,161,.4)',
       'transition:transform .15s ease, box-shadow .15s ease',
-      'opacity:.85'
+      'opacity:.9'
     ].join(';');
 
     // Estilo responsive: en móviles <=480px solo icono
