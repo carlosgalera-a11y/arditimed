@@ -12,20 +12,36 @@
     <div style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:8px;padding:10px 14px;margin:10px 16px;font-size:.76rem;color:#0c4a6e;line-height:1.5;">
         <strong>📚 Propiedad intelectual y uso responsable:</strong> Los documentos disponibles en esta plataforma son para uso interno del Área II de Cartagena. Su distribución externa puede vulnerar los derechos de las sociedades científicas emisoras (SEMES, SMS, SEMES-CAM y otras). Acceso restringido a profesionales autorizados.
     </div>
+    <style>
+      .urg-accordion summary::-webkit-details-marker{display:none}
+      .urg-accordion summary:hover{background:rgba(255,255,255,.04)!important}
+      .urg-accordion[open] .urg-chevron{transform:rotate(180deg)}
+      .urg-accordion summary:focus-visible{outline:2px solid #f59e0b;outline-offset:-2px}
+    </style>
     <div style="background:linear-gradient(135deg,var(--bg-dark),#1a1a2e);padding:30px 40px 20px;color:#fff;min-height:100vh;">
         <div style="max-width:1200px;margin:0 auto;">
-        <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:4px;">🚨 Protocolos de Urgencias</h2>
-        <p style="font-size:.88rem;opacity:.65;margin-bottom:24px;">23 trípticos + 16 SEMFyC + 38 hospitalarios · 77 en total · Fuente: ARDITI + SMS Murcia + Toledo + SEUP + HUSL</p>
-        
-        <div style="background:rgba(255,255,255,.04);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
-            <div class="tab-buttons" style="border-bottom-color:rgba(255,255,255,.12);display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;-ms-overflow-style:none;scrollbar-width:none;">
+        <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:4px;">🚨 Urgencias</h2>
+        <p style="font-size:.88rem;opacity:.75;margin-bottom:24px;">Dos bloques: <strong>Protocolos</strong> (trípticos, SEMFyC, hospitalarios) y <strong>Camas &amp; Ambulancias</strong> (Vademécum + Paratus). Haz clic para desplegar.</p>
+
+        <!-- ═════ ACCORDION 1 · PROTOCOLOS ═════ -->
+        <details class="urg-accordion" id="urgAccProto" open style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;">
+          <summary style="cursor:pointer;padding:18px 22px;font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:12px;list-style:none;user-select:none;background:linear-gradient(90deg,rgba(220,38,38,.18),rgba(153,27,27,.1));">
+            <span style="font-size:1.5rem;line-height:1">📋</span>
+            <span style="flex:1">Protocolos de Urgencias</span>
+            <span style="font-size:.72rem;font-weight:400;opacity:.75;background:rgba(255,255,255,.1);padding:3px 10px;border-radius:12px;white-space:nowrap">23 trípticos · 16 SEMFyC · 38 hospitalarios</span>
+            <span class="urg-chevron" aria-hidden="true" style="transition:transform .2s;font-size:.9rem;opacity:.7">▾</span>
+          </summary>
+          <div style="padding:20px;">
+
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
+            <div class="tab-buttons" style="background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;border-bottom-color:rgba(255,255,255,.14);display:flex;gap:4px;overflow-x:auto;padding:6px;-ms-overflow-style:none;scrollbar-width:none;">
                 <button class="tab-btn tab-urg active" onclick="switchUrgTab('urg-trip',this)" style="cursor:pointer;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📄</span> Trípticos</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-list',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📋</span> Protocolos</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🤖</span> Preguntas IA</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">✨</span> Studio</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🛏️</span> Pacientes</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">💊</span> Fármacos</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-biblioteca',this)" style="cursor:pointer;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📚</span> Biblioteca</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-list',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📋</span> Protocolos</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🤖</span> Preguntas IA</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">✨</span> Studio</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🛏️</span> Pacientes</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">💊</span> Fármacos</button>
+                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-biblioteca',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📚</span> Biblioteca</button>
             </div>
             
             <!-- TRÍPTICOS VISUALES -->
@@ -871,6 +887,42 @@
             </div>
 
         </div>
+          </div>
+        </details>
+        <!-- ═════ /ACCORDION 1 ═════ -->
+
+        <!-- ═════ ACCORDION 2 · CAMAS Y AMBULANCIAS ═════ -->
+        <details class="urg-accordion" id="urgAccCamas" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;">
+          <summary style="cursor:pointer;padding:18px 22px;font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:12px;list-style:none;user-select:none;background:linear-gradient(90deg,rgba(13,71,161,.22),rgba(46,125,50,.14));">
+            <span style="font-size:1.5rem;line-height:1">🚑</span>
+            <span style="flex:1">Camas &amp; Ambulancias</span>
+            <span style="font-size:.72rem;font-weight:400;opacity:.75;background:rgba(255,255,255,.1);padding:3px 10px;border-radius:12px;white-space:nowrap">Vademécum + Paratus · dosis, procedimientos, referencias</span>
+            <span class="urg-chevron" aria-hidden="true" style="transition:transform .2s;font-size:.9rem;opacity:.7">▾</span>
+          </summary>
+          <div style="padding:0;background:#faf6ee;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 18px;background:rgba(13,71,161,.08);border-bottom:1px solid rgba(13,71,161,.18);color:#1c2434;font-size:.82rem;flex-wrap:wrap;">
+              <span>Módulo completo <strong>Camas y Ambulancias</strong> (Área II HUSL). Se carga bajo demanda.</span>
+              <a href="camas-y-ambulancias.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:#0d47a1;color:#fff;border-radius:14px;font-size:.76rem;font-weight:700;text-decoration:none;">↗ Abrir en pestaña nueva</a>
+            </div>
+            <iframe id="urgCamasFrame" loading="lazy" data-src="camas-y-ambulancias.html" title="Camas y Ambulancias · Vademécum + Paratus" style="display:block;width:100%;height:80vh;min-height:560px;border:0;background:#faf6ee;"></iframe>
+          </div>
+        </details>
+        <!-- ═════ /ACCORDION 2 ═════ -->
+
+        <script>
+          // Lazy-load del iframe: solo carga cuando abres el desplegable por
+          // primera vez, para no impactar el tiempo de pintado inicial.
+          (function(){
+            var det = document.getElementById('urgAccCamas');
+            if(!det) return;
+            det.addEventListener('toggle', function(){
+              if(!det.open) return;
+              var fr = document.getElementById('urgCamasFrame');
+              if(fr && !fr.src && fr.dataset.src){ fr.src = fr.dataset.src; }
+            });
+          })();
+        </script>
+
         </div>
     </div>
 </div>
