@@ -118,12 +118,12 @@ table td{color:var(--t2)}
   </div>
 </div>
 
-<div class="modal" id="modal" onclick="if(event.target===this)close()">
+<div class="modal" id="modal" onclick="if(event.target===this)closeFicha()">
   <div class="modal-inner">
     <div class="modal-head" id="mh">
       <span id="micon" style="font-size:1.8rem"></span>
       <h2 id="mtitle"></h2>
-      <button class="close" onclick="close()" aria-label="Cerrar">✕</button>
+      <button class="close" onclick="closeFicha()" aria-label="Cerrar">✕</button>
     </div>
     <div class="modal-body" id="mbody"></div>
   </div>
@@ -260,7 +260,7 @@ const FICHAS = [
 
 function renderGrid(list){
   document.getElementById('grid').innerHTML = list.map(function(f){
-    return '<button class="tile '+f.cls+'" onclick="open(\''+f.id+'\')">'
+    return '<button class="tile '+f.cls+'" onclick="openFicha(\''+f.id+'\')">'
          + '<span class="icon">'+f.icon+'</span>'
          + '<div class="t">'+f.title+'</div>'
          + '<div class="s">'+f.sub+'</div>'
@@ -280,7 +280,7 @@ function filter(){
   renderGrid(filtered);
 }
 
-window.open = function(id){
+window.openFicha = function(id){
   const f = FICHAS.find(function(x){return x.id===id});
   if(!f) return;
   document.getElementById('mh').style.setProperty('--hc1', f.hc1);
@@ -313,7 +313,7 @@ window.open = function(id){
   document.body.style.overflow = 'hidden';
 };
 
-window.close = function(){
+window.closeFicha = function(){
   document.getElementById('modal').classList.remove('show');
   document.body.style.overflow = '';
 };

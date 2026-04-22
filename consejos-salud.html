@@ -118,12 +118,12 @@ table th{background:rgba(0,0,0,.04);font-weight:700}
   </div>
 </div>
 
-<div class="modal" id="modal" onclick="if(event.target===this)close()">
+<div class="modal" id="modal" onclick="if(event.target===this)closeConsejo()">
   <div class="mbox">
     <div class="mhead" id="mh">
       <span id="mi" style="font-size:1.8rem"></span>
       <h2 id="mt"></h2>
-      <button onclick="close()" aria-label="Cerrar">✕</button>
+      <button onclick="closeConsejo()" aria-label="Cerrar">✕</button>
     </div>
     <div class="mbody" id="mb"></div>
   </div>
@@ -508,7 +508,7 @@ function match(x){
 function renderGrid(){
   const list = CONSEJOS.filter(match);
   document.getElementById('grid').innerHTML = list.length ? list.map(function(c){
-    return '<button class="card '+c.cc+'" onclick="open(\''+c.id+'\')">'
+    return '<button class="card '+c.cc+'" onclick="openConsejo(\''+c.id+'\')">'
          + '<div class="icon">'+c.icon+'</div>'
          + '<div class="t">'+c.titulo+'</div>'
          + '<div class="s">'+c.resumen+'</div></button>';
@@ -536,7 +536,7 @@ function renderList(items){
   }).join('');
 }
 
-window.open = function(id){
+window.openConsejo = function(id){
   const c = CONSEJOS.find(function(x){return x.id===id});
   if(!c) return;
   document.getElementById('mh').style.setProperty('--hc1', c.hc1);
@@ -554,7 +554,7 @@ window.open = function(id){
   document.getElementById('modal').classList.add('show');
   document.body.style.overflow = 'hidden';
 };
-window.close = function(){ document.getElementById('modal').classList.remove('show'); document.body.style.overflow = ''; };
+window.closeConsejo = function(){ document.getElementById('modal').classList.remove('show'); document.body.style.overflow = ''; };
 
 renderChips(); renderGrid();
 </script>
