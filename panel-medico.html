@@ -1663,18 +1663,7 @@ window.showNotebooksModal=function(){
 <!-- ═══════ TELÉFONOS BUSCAS PAGE ═══════ -->
 <div class="page" id="pageTelefonos">
     <nav class="landing-nav"><div class="brand"><div class="logo">🏥</div><h1>Area II <span>Cartagena</span></h1></div><div class="nav-links"><button class="page-back" onclick="showPage('pageLanding')">← Inicio</button><button onclick="showLoginModal()" style="background:linear-gradient(135deg,#1a6b4a,#238c62);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;font-size:.85rem;font-family:var(--font-body);">🔐 Login</button></div></nav>
-    <!-- PASSWORD GATE BUSCAS -->
-    <div id="buscasGate" style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg-main);padding:40px 20px;">
-      <div style="text-align:center;max-width:380px;">
-        <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
-        <h2 style="font-family:var(--font-display);margin-bottom:8px;">Acceso restringido</h2>
-        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:20px;">Introduce la contraseña para acceder al directorio de buscas del Hospital Santa Lucía.</p>
-        <input type="password" id="buscasPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkBuscasPass()" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;font-family:var(--font-body);background:var(--bg-card);text-align:center;margin-bottom:12px;">
-        <button onclick="checkBuscasPass()" style="width:100%;padding:12px;background:linear-gradient(135deg,#d4a853,#b8912e);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:.95rem;cursor:pointer;font-family:var(--font-body);">Acceder</button>
-        <p id="buscasError" style="color:#e74c3c;font-size:.82rem;margin-top:10px;display:none;">❌ Contraseña incorrecta</p>
-      </div>
-    </div>
-    <div id="buscasContent" style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;display:none;">
+    <div id="buscasContent" style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;">
         <div style="max-width:800px;margin:0 auto;">
             <div style="background:linear-gradient(135deg,#d4a853,#b8912e);border-radius:var(--radius);padding:28px;color:#fff;margin-bottom:28px;position:relative;overflow:hidden;">
                 <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.15;">📞</div>
