@@ -909,12 +909,207 @@
         </details>
         <!-- ═════ /ACCORDION 2 ═════ -->
 
+        <!-- ═════ ACCORDION 3 · VENTILACIÓN ═════ -->
+        <details class="urg-accordion" id="urgAccVent" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;">
+          <summary style="cursor:pointer;padding:18px 22px;font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:12px;list-style:none;user-select:none;background:linear-gradient(90deg,rgba(14,165,233,.22),rgba(99,102,241,.14));">
+            <span style="font-size:1.5rem;line-height:1">🫁</span>
+            <span style="flex:1">Ventilación</span>
+            <span style="font-size:.72rem;font-weight:400;opacity:.75;background:rgba(255,255,255,.1);padding:3px 10px;border-radius:12px;white-space:nowrap">VMNI · IOT · VMI · Destete</span>
+            <span class="urg-chevron" aria-hidden="true" style="transition:transform .2s;font-size:.9rem;opacity:.7">▾</span>
+          </summary>
+          <div style="padding:22px;background:rgba(255,255,255,.03);color:#e6edf3;">
+
+            <div style="background:rgba(234,179,8,.12);border:1px solid rgba(234,179,8,.35);color:#fde68a;padding:10px 14px;border-radius:10px;margin-bottom:18px;font-size:.82rem;line-height:1.55;">
+              <strong>⚠️ Uso formativo.</strong> Dosis y parámetros siempre individualizados al paciente. Verifica con la guía local actualizada y consulta con adjunto/intensivista.
+            </div>
+
+            <!-- Navegación interna -->
+            <div style="display:flex;gap:6px;overflow-x:auto;padding:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;margin-bottom:18px;">
+              <button class="tab-btn vent-tab active" onclick="ventSwitch('vmni',this)" style="cursor:pointer;color:#fff;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;">🫁 VMNI</button>
+              <button class="tab-btn vent-tab" onclick="ventSwitch('iot',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;">💉 IOT / ISR</button>
+              <button class="tab-btn vent-tab" onclick="ventSwitch('vmi',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;">🖥️ VMI</button>
+              <button class="tab-btn vent-tab" onclick="ventSwitch('destete',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;">🌱 Destete</button>
+              <button class="tab-btn vent-tab" onclick="ventSwitch('alarmas',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;">🚨 Alarmas</button>
+            </div>
+
+            <!-- VMNI -->
+            <div class="vent-panel" id="vent-vmni" style="display:block;">
+              <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:10px;color:#bae6fd;">🫁 Ventilación Mecánica No Invasiva (VMNI)</h3>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px;">
+                <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:12px 14px;">
+                  <div style="font-weight:700;color:#86efac;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">✓ Indicaciones principales</div>
+                  <ul style="font-size:.86rem;line-height:1.6;padding-left:18px;margin:0;opacity:.92;">
+                    <li>Edema agudo de pulmón cardiogénico → CPAP</li>
+                    <li>EPOC agudizado con acidosis (pH 7,25–7,35) → BiPAP</li>
+                    <li>Insuficiencia respiratoria hipoxémica seleccionada</li>
+                    <li>Destete / post-extubación de alto riesgo</li>
+                    <li>Paciente con orden de no intubar como techo</li>
+                  </ul>
+                </div>
+                <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 14px;">
+                  <div style="font-weight:700;color:#fca5a5;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">✗ Contraindicaciones</div>
+                  <ul style="font-size:.86rem;line-height:1.6;padding-left:18px;margin:0;opacity:.92;">
+                    <li>Parada respiratoria o cardiaca</li>
+                    <li>Glasgow &lt;10 o agitación severa</li>
+                    <li>Incapacidad de proteger vía aérea / vómitos</li>
+                    <li>Inestabilidad hemodinámica refractaria</li>
+                    <li>Cirugía/trauma facial reciente · neumotórax no drenado</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#93c5fd;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Parámetros iniciales orientativos</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:.86rem;line-height:1.55;">
+                  <div>
+                    <strong style="color:#fde68a;">CPAP (EAP)</strong><br>
+                    PEEP 5–10 cmH₂O · FiO₂ para SatO₂ ≥92%<br>
+                    Reevaluar en 30–60 min
+                  </div>
+                  <div>
+                    <strong style="color:#fde68a;">BiPAP (EPOC)</strong><br>
+                    IPAP 10–14 · EPAP 4–6 cmH₂O<br>
+                    Subir IPAP 2 cmH₂O cada 5 min si persiste disnea
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:rgba(255,255,255,.04);border-left:3px solid #0ea5e9;padding:10px 14px;font-size:.82rem;line-height:1.55;opacity:.92;">
+                <strong>Monitorización (primera hora):</strong> FR, SatO₂, TA, FC cada 5 min; GSA a los 60 min. Si no mejora → <strong>considerar IOT</strong>.
+              </div>
+            </div>
+
+            <!-- IOT / ISR -->
+            <div class="vent-panel" id="vent-iot" style="display:none;">
+              <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:10px;color:#bae6fd;">💉 Intubación orotraqueal · Secuencia rápida (ISR)</h3>
+
+              <ol style="font-size:.9rem;line-height:1.7;padding-left:22px;margin:0 0 14px;counter-reset:paso;">
+                <li><strong>Preparación:</strong> monitor completo, 2 vías, SSF/cristaloide, aspirador, bolsa-válvula-mascarilla, laringoscopio, 2 tubos (habitual 7,0–7,5♀ / 7,5–8,5♂), guía, capnógrafo.</li>
+                <li><strong>Preoxigenación:</strong> O₂ alto flujo 3 min o FiO₂ 100% en ventimask con reservorio; en hipoxia severa considerar VMNI preoxigenatoria.</li>
+                <li><strong>Protección / pretratamiento:</strong> fentanilo 1–3 μg/kg si HTA/cardiópata; lidocaína opcional en HTIC.</li>
+                <li><strong>Inducción:</strong> hipnótico (p. ej. etomidato 0,3 mg/kg si inestable; propofol 1,5–2 mg/kg si estable; ketamina 1–2 mg/kg en broncoespasmo/shock).</li>
+                <li><strong>Parálisis:</strong> rocuronio 1–1,2 mg/kg (o succinilcolina 1–1,5 mg/kg si no contraindicada).</li>
+                <li><strong>Intubación y verificación:</strong> visión directa/videolaringoscopio → paso del tubo → inflar balón → <strong>capnografía</strong> (confirmación) + auscultación + Rx si disponible.</li>
+                <li><strong>Post-intubación:</strong> fijar tubo, iniciar sedoanalgesia, programar ventilador, GSA a los 20 min, SNG, sonda vesical.</li>
+              </ol>
+
+              <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 14px;font-size:.84rem;line-height:1.55;">
+                <strong style="color:#fca5a5;">Predicción de vía aérea difícil (LEMON):</strong> Look, Evaluate 3-3-2, Mallampati, Obstruction, Neck mobility. Si ≥2 positivos: planear videolaringoscopio + plan B/C (DSG, cricotiroidotomía).
+              </div>
+            </div>
+
+            <!-- VMI -->
+            <div class="vent-panel" id="vent-vmi" style="display:none;">
+              <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:10px;color:#bae6fd;">🖥️ Ventilación Mecánica Invasiva</h3>
+
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;margin-bottom:12px;font-size:.86rem;line-height:1.55;">
+                <div style="font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-size:.78rem;">Modos básicos</div>
+                <strong>CMV/AC</strong> (controlada): paciente pasivo · <strong>SIMV</strong>: apoyo parcial + ventilaciones mandatorias · <strong>PSV/PS</strong>: presión de soporte, destete.
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:12px;">
+                <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;">
+                  <strong style="color:#fde68a;">Parámetros iniciales (adulto):</strong>
+                  <ul style="font-size:.85rem;line-height:1.6;padding-left:18px;margin:6px 0 0;opacity:.92;">
+                    <li>VT 6–8 ml/kg peso ideal (protector)</li>
+                    <li>FR 12–16 rpm (ajustar según EtCO₂/pH)</li>
+                    <li>PEEP 5 cmH₂O · FiO₂ 100% → titular a SatO₂ ≥92%</li>
+                    <li>I:E 1:2 (1:3–4 en obstructivo)</li>
+                    <li>P<sub>plateau</sub> &lt; 30 cmH₂O · driving pressure &lt;15</li>
+                  </ul>
+                </div>
+                <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;">
+                  <strong style="color:#fde68a;">Ajustes por patología:</strong>
+                  <ul style="font-size:.85rem;line-height:1.6;padding-left:18px;margin:6px 0 0;opacity:.92;">
+                    <li><strong>SDRA:</strong> VT 4–6 ml/kg, PEEP elevada, decúbito prono si PaO₂/FiO₂ &lt;150</li>
+                    <li><strong>Obstructivo (EPOC/asma):</strong> FR baja 10–12, I:E 1:3–4, tolerar hipercapnia permisiva</li>
+                    <li><strong>TCE:</strong> normoventilar (PaCO₂ 35–40), evitar PEEP alta</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div style="background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.3);border-radius:10px;padding:12px 14px;font-size:.84rem;line-height:1.55;">
+                <strong style="color:#7dd3fc;">Sedoanalgesia tras IOT:</strong> analgesia primero (fentanilo/remifentanilo) + sedante (propofol o midazolam). Valorar bloqueo neuromuscular transitorio si asincronía o SDRA grave. Objetivo RASS −2 a 0 salvo excepciones.
+              </div>
+            </div>
+
+            <!-- Destete -->
+            <div class="vent-panel" id="vent-destete" style="display:none;">
+              <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:10px;color:#bae6fd;">🌱 Destete y extubación</h3>
+
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;margin-bottom:12px;font-size:.86rem;line-height:1.55;">
+                <strong style="color:#93c5fd;">Criterios para iniciar destete:</strong>
+                <ul style="padding-left:18px;margin:6px 0 0;opacity:.92;">
+                  <li>Causa de la insuficiencia respiratoria resuelta o controlada</li>
+                  <li>Estabilidad hemodinámica sin vasopresores a dosis altas</li>
+                  <li>PaO₂/FiO₂ &gt;200 con PEEP ≤8 y FiO₂ ≤0,4</li>
+                  <li>Paciente despierto, colaborador, tos efectiva</li>
+                </ul>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:12px;">
+                <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:12px 14px;font-size:.85rem;line-height:1.55;">
+                  <strong style="color:#86efac;">Prueba de respiración espontánea (PRE)</strong>
+                  <div>Tubo en T o PSV 5–8 / PEEP 0–5 durante <strong>30–120 min</strong>.</div>
+                  <div style="margin-top:4px;"><em>Supera la prueba:</em> FR &lt;35, SatO₂ ≥92%, FC sin cambios &gt;20%, sin signos de distrés.</div>
+                </div>
+                <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;font-size:.85rem;line-height:1.55;">
+                  <strong style="color:#fde68a;">Índice RSBI (Tobin)</strong>
+                  <div>FR / VT (L) &lt; <strong>105</strong> → alta probabilidad de éxito. &gt;105 → posponer.</div>
+                </div>
+              </div>
+
+              <div style="background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:#fde68a;border-radius:10px;padding:12px 14px;font-size:.84rem;line-height:1.55;">
+                <strong>Post-extubación de alto riesgo</strong> (≥65 a, IC, EPOC, &gt;24 h de VMI): considerar VMNI o O₂ de alto flujo profilácticos las primeras 24–48 h.
+              </div>
+            </div>
+
+            <!-- Alarmas -->
+            <div class="vent-panel" id="vent-alarmas" style="display:none;">
+              <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:10px;color:#bae6fd;">🚨 Alarmas del ventilador — enfoque inicial</h3>
+
+              <p style="font-size:.85rem;opacity:.85;margin-bottom:10px;">Regla mnemotécnica <strong>DOPES</strong> ante deterioro brusco en VMI:</p>
+
+              <ol style="font-size:.88rem;line-height:1.75;padding-left:22px;margin:0 0 14px;">
+                <li><strong>D · Displacement:</strong> tubo desplazado (intubación selectiva, extubación accidental). Auscultar, valorar profundidad.</li>
+                <li><strong>O · Obstruction:</strong> tapón mucoso, acodamiento, mordida. Aspirar, revisar tubuladuras.</li>
+                <li><strong>P · Pneumothorax:</strong> neumotórax a tensión. Clínica + eco pulmonar → toracocentesis si inestable.</li>
+                <li><strong>E · Equipment:</strong> fallo ventilador/circuito. Desconectar y ventilar con ambú con FiO₂ 100%.</li>
+                <li><strong>S · Stacking / broncoespasmo:</strong> atrapamiento aéreo → desconectar, espirar, revisar sedación/relajación.</li>
+              </ol>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;">
+                <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:.82rem;line-height:1.55;">
+                  <strong style="color:#fca5a5;">↑ Presión pico</strong><br>
+                  Obstrucción de vía aérea, broncoespasmo, tapón, tubo mordido. Revisar, aspirar, broncodilatadores.
+                </div>
+                <div style="background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);border-radius:10px;padding:10px 14px;font-size:.82rem;line-height:1.55;">
+                  <strong style="color:#fde68a;">↑ Presión plateau (meseta)</strong><br>
+                  ↓ compliance: SDRA, edema, atelectasia, neumotórax, distensión abdominal.
+                </div>
+                <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:10px 14px;font-size:.82rem;line-height:1.55;">
+                  <strong style="color:#93c5fd;">Baja presión / desconexión</strong><br>
+                  Fuga o desconexión de circuito. Revisar balón del TET, conexiones.
+                </div>
+              </div>
+            </div>
+
+            <!-- Fuentes -->
+            <div style="margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:.72rem;opacity:.65;line-height:1.5;">
+              <strong>Fuentes docentes:</strong> guías SEMICYUC · SEPAR · SEMES · manual de urgencias SEMES · consenso ERS/ATS sobre VMNI. Contenido resumido para uso formativo — verificar con las guías locales actualizadas del HGU Santa Lucía antes de aplicar.
+            </div>
+          </div>
+        </details>
+        <!-- ═════ /ACCORDION 3 ═════ -->
+
         <script>
           // Lazy-load del iframe + deep-link para abrir el accordion correcto
-          // según ?open=camas|proto en la URL.
+          // según ?open=camas|proto|vent en la URL. Tabs internos Ventilación.
           (function(){
             var accProto = document.getElementById('urgAccProto');
             var accCamas = document.getElementById('urgAccCamas');
+            var accVent  = document.getElementById('urgAccVent');
             var frame    = document.getElementById('urgCamasFrame');
 
             function loadFrame(){
@@ -927,17 +1122,48 @@
               });
             }
 
+            // Tabs del accordion de Ventilación.
+            window.ventSwitch = function(key, btn){
+              ['vmni','iot','vmi','destete','alarmas'].forEach(function(k){
+                var p = document.getElementById('vent-'+k);
+                if(p) p.style.display = (k===key) ? 'block' : 'none';
+              });
+              document.querySelectorAll('.vent-tab').forEach(function(b){
+                b.classList.remove('active');
+                b.style.color = 'rgba(255,255,255,.88)';
+                b.style.background = 'transparent';
+              });
+              if(btn){
+                btn.classList.add('active');
+                btn.style.color = '#fff';
+                btn.style.background = 'rgba(255,255,255,.14)';
+              }
+            };
+
             // Deep-link: abrir el accordion solicitado y scrollearlo a la vista.
             try{
-              var open = new URLSearchParams(location.search).get('open');
+              var params = new URLSearchParams(location.search);
+              var open   = params.get('open');
+              var ventTab= params.get('vent'); // opcional: ?vent=vmi, etc.
+
+              function scrollTo(el){ setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); }, 220); }
+
               if(open === 'camas' && accCamas){
                 if(accProto) accProto.open = false;
-                accCamas.open = true;
-                loadFrame();
-                setTimeout(function(){ accCamas.scrollIntoView({behavior:'smooth',block:'start'}); }, 220);
+                if(accVent)  accVent.open  = false;
+                accCamas.open = true; loadFrame(); scrollTo(accCamas);
+              } else if(open === 'vent' && accVent){
+                if(accProto) accProto.open = false;
+                if(accCamas) accCamas.open = false;
+                accVent.open = true; scrollTo(accVent);
+                if(ventTab){
+                  var btn = document.querySelector('.vent-tab[onclick*="\'' + ventTab + '\'"]');
+                  window.ventSwitch(ventTab, btn);
+                }
               } else if(open === 'proto' && accProto){
                 accProto.open = true;
                 if(accCamas) accCamas.open = false;
+                if(accVent)  accVent.open  = false;
               }
             }catch(e){}
           })();

@@ -94,6 +94,7 @@ main{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:34px 20px 50px;pos
 .tile[data-k="hospitalaria"]{--tile-color:#c4b5fd;--tile-bg:rgba(196,181,253,.14)}
 .tile[data-k="urgencias"]{--tile-color:#fca5a5;--tile-bg:rgba(252,165,165,.14)}
 .tile[data-k="camas"]{--tile-color:#5eead4;--tile-bg:rgba(13,148,136,.16)}
+.tile[data-k="ventilacion"]{--tile-color:#7dd3fc;--tile-bg:rgba(14,165,233,.16)}
 .tile[data-k="enfermeria"]{--tile-color:#5eead4;--tile-bg:rgba(94,234,212,.14)}
 .tile[data-k="herramientas"]{--tile-color:#93c5fd;--tile-bg:rgba(147,197,253,.14)}
 .tile[data-k="buscas"]{--tile-color:#fcd34d;--tile-bg:rgba(252,211,77,.14)}
@@ -224,6 +225,12 @@ footer a:hover{color:#ffd54f}
         <div class="tile-head"><span class="tile-icon">🚑</span><span class="tile-title">Camas &amp; Ambulancias</span></div>
         <div class="tile-desc">Vademécum + Paratus del Área II: dosis por peso, procedimientos y referencias.</div>
         <span class="tile-badge">Vademécum + Paratus</span>
+      </button>
+
+      <button type="button" class="tile" data-k="ventilacion" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias&open=vent'" aria-label="Ventilación">
+        <div class="tile-head"><span class="tile-icon">🫁</span><span class="tile-title">Ventilación</span></div>
+        <div class="tile-desc">VMNI, IOT/ISR, ventilación invasiva, destete y alarmas del ventilador.</div>
+        <span class="tile-badge">VMNI · VMI · Destete</span>
       </button>
 
       <button type="button" class="tile" data-k="enfermeria" onclick="location.href='panel-medico.html?page=pageEnfermeria'" aria-label="Enfermería">
