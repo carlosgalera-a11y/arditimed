@@ -93,6 +93,7 @@ main{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:34px 20px 50px;pos
 .tile[data-k="ap"]{--tile-color:#7dd3fc;--tile-bg:rgba(125,211,252,.14)}
 .tile[data-k="hospitalaria"]{--tile-color:#c4b5fd;--tile-bg:rgba(196,181,253,.14)}
 .tile[data-k="urgencias"]{--tile-color:#fca5a5;--tile-bg:rgba(252,165,165,.14)}
+.tile[data-k="camas"]{--tile-color:#5eead4;--tile-bg:rgba(13,148,136,.16)}
 .tile[data-k="enfermeria"]{--tile-color:#5eead4;--tile-bg:rgba(94,234,212,.14)}
 .tile[data-k="herramientas"]{--tile-color:#93c5fd;--tile-bg:rgba(147,197,253,.14)}
 .tile[data-k="buscas"]{--tile-color:#fcd34d;--tile-bg:rgba(252,211,77,.14)}
@@ -213,10 +214,16 @@ footer a:hover{color:#ffd54f}
         <span class="tile-badge">Cuaderno IA completo</span>
       </button>
 
-      <button type="button" class="tile" data-k="urgencias" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias'" aria-label="Urgencias">
+      <button type="button" class="tile" data-k="urgencias" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias&open=proto'" aria-label="Urgencias">
         <div class="tile-head"><span class="tile-icon">🚨</span><span class="tile-title">Urgencias</span></div>
-        <div class="tile-desc">Protocolos de urgencias + vista rápida de camas y ambulancias del área.</div>
-        <span class="tile-badge">Protocolos + Camas</span>
+        <div class="tile-desc">Protocolos de urgencias: 23 trípticos, 16 SEMFyC, 38 hospitalarios.</div>
+        <span class="tile-badge">Protocolos</span>
+      </button>
+
+      <button type="button" class="tile" data-k="camas" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias&open=camas'" aria-label="Camas y Ambulancias">
+        <div class="tile-head"><span class="tile-icon">🚑</span><span class="tile-title">Camas &amp; Ambulancias</span></div>
+        <div class="tile-desc">Vademécum + Paratus del Área II: dosis por peso, procedimientos y referencias.</div>
+        <span class="tile-badge">Vademécum + Paratus</span>
       </button>
 
       <button type="button" class="tile" data-k="enfermeria" onclick="location.href='panel-medico.html?page=pageEnfermeria'" aria-label="Enfermería">
