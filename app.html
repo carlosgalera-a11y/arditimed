@@ -14,11 +14,16 @@
   try{
     var search = location.search || '';
     var hash = location.hash || '';
-    // app.html?page=pageEnfermeria#foo  →  panel-medico.html?page=pageEnfermeria#foo
-    location.replace('panel-medico.html' + search + hash);
+    var qs = new URLSearchParams(search);
+    // Si hay ?page= o ?action= → panel-medico con parámetros (deep-link)
+    // Si no hay nada → landing nueva (index.html), evitando pageLanding vieja
+    if(qs.get('page') || qs.get('action')){
+      location.replace('panel-medico.html' + search + hash);
+    } else {
+      location.replace('index.html' + hash);
+    }
   }catch(e){
-    // Fallback si location.replace falla por algún motivo
-    location.href = 'panel-medico.html';
+    location.href = 'index.html';
   }
 })();
 </script>

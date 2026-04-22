@@ -2,6 +2,22 @@
 <html lang="es">
 <head>
 <script>
+// ═══ REDIRECT INMEDIATO: panel-medico sin ?page/?action → index.html ═══
+// Se ejecuta ANTES de cargar nada para que la vieja pageLanding no llegue
+// a pintarse. Si llega ?page=pageXxx o ?action=X, continúa normalmente.
+(function(){
+  try{
+    var qs = new URLSearchParams(location.search);
+    var p = qs.get('page');
+    var a = qs.get('action');
+    if(p && /^page[A-Za-z]+$/.test(p)) return;
+    if(a && /^[a-z-]+$/.test(a)) return;
+    if(!/\/panel-medico\.html?$/i.test(location.pathname)) return;
+    location.replace('index.html' + (location.hash || ''));
+  }catch(e){}
+})();
+</script>
+<script>
 // Auto-purge: if cached version is old, nuke everything
 (function(){
   var REQUIRED_V = 74;
