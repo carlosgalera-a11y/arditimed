@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Recursos cerca de ti · Prescripción Social · Área II Cartagena</title>
+<title>Recursos cerca de ti · Área II Cartagena</title>
 <meta name="description" content="Mapa de recursos comunitarios del Área II Cartagena: apoyo social, salud mental, adicciones, mayores, alimentación, discapacidad, infancia, migrantes.">
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
@@ -99,7 +99,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100
 
 <div class="wrap">
   <div class="note">
-    💚 <strong>Prescripción social:</strong> muchos problemas de salud mejoran con actividades y apoyos de la comunidad. Si eres profesional, usa el botón <em>🧾 Receta social</em> de cada recurso para compartirlo con tu paciente.
+    💚 <strong>¿Qué es esto?</strong> A veces lo que necesitamos para sentirnos mejor no es sólo una pastilla: compañía, hacer ejercicio, recibir apoyo… Aquí tienes una red de entidades del Área II Cartagena con <strong>teléfonos, horarios y dirección verificados</strong>. Pulsa en cualquier tarjeta para llamar, abrir la web o ver cómo llegar.
   </div>
 
   <div class="toolbar">
@@ -131,6 +131,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
+// Modo profesional con ?pro=1 → muestra el botón 🧾 Receta social en cada tarjeta.
+// Por defecto (pacientes) las tarjetas llevan solo llamar / web / cómo llegar.
+const PRO_MODE = new URLSearchParams(location.search).get('pro') === '1';
+
 const CATEGORIAS = [
   {id:'apoyo_social',   t:'Apoyo social', icon:'🤝', c:'#2563eb', tags:['ayuda','servicios sociales','dinero','vivienda','trabajo']},
   {id:'soledad',        t:'Compañía',     icon:'💞', c:'#f59e0b', tags:['solo','soledad','compañía','amigos','mayores']},
@@ -243,7 +247,7 @@ function render(){
         + '<a class="a-call" href="tel:'+r.tel+'" onclick="trackCall(\''+r.id+'\')">📞 '+r.tel+'</a>'
         + '<a class="a-web" href="'+r.web+'" target="_blank" rel="noopener" onclick="trackWeb(\''+r.id+'\')">🌐 Web</a>'
         + '<a class="a-map" href="https://www.google.com/maps/search/?api=1&query='+r.lat+','+r.lng+'" target="_blank" rel="noopener">🧭 Cómo llegar</a>'
-        + '<button class="a-receta" onclick="openReceta(\''+r.id+'\')">🧾 Receta social</button>'
+        + (PRO_MODE ? '<button class="a-receta" onclick="openReceta(\''+r.id+'\')">🧾 Receta social</button>' : '')
       + '</div>'
     + '</div>';
   }).join('') : '<p style="color:var(--t3);grid-column:1/-1;text-align:center;padding:20px">Sin resultados con ese filtro. Prueba con otra categoría o palabra.</p>';

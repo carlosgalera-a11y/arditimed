@@ -130,6 +130,7 @@ footer a{color:#64748b;text-decoration:underline}
 <div class="tabs" role="tablist">
   <button class="tab active" id="tabGen" onclick="switchTab('gen')" role="tab">🧪 Generador de casos</button>
   <button class="tab" id="tabMir" onclick="switchTab('mir')" role="tab">📚 Casos clínicos MIR</button>
+  <button class="tab" id="tabFuentes" onclick="switchTab('fuentes')" role="tab">📚 Fuentes y Recursos</button>
 </div>
 
 <main>
@@ -224,6 +225,21 @@ footer a{color:#64748b;text-decoration:underline}
       </div>
     </div>
   </section>
+
+  <!-- TAB 3: Fuentes y Recursos -->
+  <section id="panelFuentes" class="panel-content" style="display:none">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:1.5rem">📚</span>
+        <div style="flex:1;min-width:220px">
+          <div style="font-weight:700;font-size:1rem">Fuentes y Recursos</div>
+          <div style="font-size:.8rem;color:#64748b">Agencias evaluadoras, boletines independientes, guías, docencia, bases de datos y recursos locales de Murcia.</div>
+        </div>
+        <a href="fuentes-recursos.html" target="_blank" rel="noopener" style="padding:7px 14px;background:#0d9488;color:#fff;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none">↗ Abrir en pestaña</a>
+      </div>
+      <iframe id="fuentesFrame" src="about:blank" loading="lazy" title="Fuentes y Recursos" style="display:block;width:100%;height:min(78vh,920px);border:0;background:#0a1f14"></iframe>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -240,6 +256,7 @@ footer a{color:#64748b;text-decoration:underline}
     document.getElementById('loginGate').style.display = u ? 'none' : 'block';
     document.getElementById('panelGen').style.display = u ? (activeTab==='gen'?'block':'none') : 'none';
     document.getElementById('panelMir').style.display = u ? (activeTab==='mir'?'block':'none') : 'none';
+    document.getElementById('panelFuentes').style.display = u ? (activeTab==='fuentes'?'block':'none') : 'none';
     document.querySelector('.tabs').style.display = u ? 'flex' : 'none';
   });
 
@@ -257,8 +274,17 @@ footer a{color:#64748b;text-decoration:underline}
     activeTab = name;
     document.getElementById('tabGen').classList.toggle('active', name==='gen');
     document.getElementById('tabMir').classList.toggle('active', name==='mir');
+    var tf = document.getElementById('tabFuentes'); if(tf) tf.classList.toggle('active', name==='fuentes');
     document.getElementById('panelGen').style.display = name==='gen' ? 'block' : 'none';
     document.getElementById('panelMir').style.display = name==='mir' ? 'block' : 'none';
+    var pf = document.getElementById('panelFuentes');
+    if(pf){
+      pf.style.display = name==='fuentes' ? 'block' : 'none';
+      if(name==='fuentes'){
+        var ifr = document.getElementById('fuentesFrame');
+        if(ifr && (ifr.src==='about:blank' || ifr.src.indexOf('fuentes-recursos.html')<0)){ ifr.src = 'fuentes-recursos.html'; }
+      }
+    }
   }
 
   // ── Generador ───────────────────────────────────────
