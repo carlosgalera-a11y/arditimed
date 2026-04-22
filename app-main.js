@@ -636,17 +636,43 @@ function switchUrgTab(tabName, btnEl) {
     if(tabName==='urg-biblioteca'&&typeof urgUpLoadDocs==='function')urgUpLoadDocs();
 }
 
+function _ensureUrgProtoModal() {
+    if (document.getElementById('urgProtoModal')) return;
+    // El modal existe en page-urgencias.html pero puede no haberse renderizado
+    // todavía (pestaña lazy, o llamada desde otra página). Lo creamos on-demand.
+    var m = document.createElement('div');
+    m.id = 'urgProtoModal';
+    m.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10000;padding:16px;overflow-y:auto;';
+    m.innerHTML =
+      '<div style="background:#fff;color:#222;max-width:720px;width:100%;margin:24px auto;border-radius:14px;padding:22px 24px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.4);">'+
+        '<button onclick="urgCloseModal()" aria-label="Cerrar" style="position:absolute;top:10px;right:14px;background:none;border:0;font-size:1.4rem;cursor:pointer;color:#555;">✕</button>'+
+        '<div id="urgProtoModalCat" style="font-size:.82rem;opacity:.8;margin-bottom:4px;"></div>'+
+        '<h2 id="urgProtoModalTitle" style="font-family:var(--font-display,Georgia,serif);font-size:1.25rem;margin-bottom:6px;padding-right:30px;"></h2>'+
+        '<p id="urgProtoModalSummary" style="color:#555;font-size:.9rem;margin-bottom:14px;"></p>'+
+        '<div id="urgProtoModalBody" style="font-size:.92rem;line-height:1.7;"></div>'+
+        '<div id="urgProtoModalPdf" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0;">'+
+          '<a id="urgProtoModalPdfLink" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#1a6b4a;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.85rem;">📄 Abrir PDF</a>'+
+        '</div>'+
+      '</div>';
+    m.addEventListener('click', function(e){ if(e.target===m) urgCloseModal(); });
+    document.body.appendChild(m);
+}
+
 function urgViewProtocol(id) {
     var p = URG_PROTOCOLS[id];
     if (!p) return;
-    document.getElementById('urgProtoModalCat').textContent = p.category + (p.isTriptico ? ' · Tríptico' : ' · SEMFyC');
-    document.getElementById('urgProtoModalTitle').textContent = p.title;
-    document.getElementById('urgProtoModalSummary').textContent = p.summary || '';
-    
+    _ensureUrgProtoModal();
+    var $ = function(x){ return document.getElementById(x); };
+    if(!$('urgProtoModal')) return;
+
+    if($('urgProtoModalCat')) $('urgProtoModalCat').textContent = p.category + (p.isTriptico ? ' · Tríptico' : ' · SEMFyC');
+    if($('urgProtoModalTitle')) $('urgProtoModalTitle').textContent = p.title;
+    if($('urgProtoModalSummary')) $('urgProtoModalSummary').textContent = p.summary || '';
+
     var bodyHtml = '';
     if (p.indications) bodyHtml += '<div style="background:#fff3e0;padding:12px;border-radius:8px;margin-bottom:12px;border-left:4px solid #f57c00;"><strong style="color:#e65100;">📌 Indicaciones</strong><br>' + p.indications + '</div>';
-    
-    var textLines = p.text.split('\n');
+
+    var textLines = (p.text||'').split('\n');
     var formattedText = '';
     for (var i = 0; i < textLines.length; i++) {
         var line = textLines[i];
@@ -661,18 +687,21 @@ function urgViewProtocol(id) {
         }
     }
     bodyHtml += formattedText;
-    
-    document.getElementById('urgProtoModalBody').innerHTML = bodyHtml;
-    
-    var pdfDiv = document.getElementById('urgProtoModalPdf');
-    if (p.pdfUrl) {
-        pdfDiv.style.display = 'block';
-        document.getElementById('urgProtoModalPdfLink').href = p.pdfUrl.replace('/preview', '/view');
-    } else {
-        pdfDiv.style.display = 'none';
+
+    if($('urgProtoModalBody')) $('urgProtoModalBody').innerHTML = bodyHtml;
+
+    var pdfDiv = $('urgProtoModalPdf');
+    if (pdfDiv) {
+        if (p.pdfUrl) {
+            pdfDiv.style.display = 'block';
+            var pdfLink = $('urgProtoModalPdfLink');
+            if(pdfLink) pdfLink.href = p.pdfUrl.replace('/preview', '/view');
+        } else {
+            pdfDiv.style.display = 'none';
+        }
     }
-    
-    document.getElementById('urgProtoModal').style.display = 'block';
+
+    $('urgProtoModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
 }
 
@@ -3133,18 +3162,231 @@ async function enfAskAI(prompt){
     contentDiv.innerHTML=typeof fmtClinical==='function'?fmtClinical(r):r;
 }
 
+// ── Contenido pre-construido de protocolos de enfermería ──
+// Basado en proyectos nacionales de seguridad del paciente del Ministerio
+// de Sanidad (Bacteriemia Zero, Neumonía Zero, Resistencia Zero, ITU-Zero),
+// GNEAUPP y CAV-AEP. Enlaces a las fuentes oficiales al pie.
+var ENF_PROTOCOLS = {
+  curas: {
+    title:'🩹 Curas y Heridas',
+    subtitle:'Valoración y manejo de heridas agudas, crónicas y UPP en Atención Primaria',
+    banner:'linear-gradient(135deg,#c2185b,#880e4f)',
+    sections:[
+      {h:'🧰 Material',body:'<ul><li>Paño estéril, guantes estériles y no estériles, mascarilla.</li><li>Suero fisiológico 0,9% 100-250 mL para lavado por arrastre.</li><li>Gasas estériles, tijeras y pinzas estériles, bisturí si desbridamiento cortante.</li><li>Apósitos según fase: hidrocoloide (granulación), hidrofibra/alginato (exudativas), espuma (acolchado), plata (infección clínica), vaselinado (no adherente).</li><li>Tela o apósito adhesivo de fijación hipoalergénico.</li></ul>'},
+      {h:'📋 Procedimiento',body:'<ol><li>Higiene de manos con solución hidroalcohólica.</li><li>Informar al paciente y valorar dolor basal (EVA).</li><li>Colocar EPI (guantes no estériles para retirada del apósito sucio).</li><li>Retirar apósito humedeciendo si está adherido.</li><li>Cambio de guantes a estériles; lavado por arrastre con suero fisiológico tibio a baja presión.</li><li>Valorar lecho (TIME: Tejido, Infección/inflamación, Moisture, Epitelización), bordes y piel perilesional.</li><li>Desbridar si necrosis (cortante / enzimático / autolítico / osmótico).</li><li>Elegir apósito según tipo y exudado. Cobertura secundaria si precisa.</li><li>Fijación sin presión, datar el apósito.</li><li>Registrar: fecha, dimensiones, fotografía si procede, producto, evolución.</li></ol>'},
+      {h:'⚠️ Alertas',body:'<ul><li>Signos de infección: calor, rubor, dolor >6/10, exudado purulento, olor, retraso de cicatrización → valorar cultivo y ATB según foco, consultar con médico.</li><li>UPP grado III-IV, celulitis progresiva, fascitis, pie diabético Wagner &ge;2 → derivación.</li><li>Verificar profilaxis antitetánica en herida aguda.</li></ul>'},
+      {h:'📊 Valoración estructurada',body:'<ul><li>Riesgo UPP: <strong>Escala de Braden</strong> o <strong>Norton</strong> al ingreso y cada 7 días.</li><li>Clasificación UPP: I (eritema no blanqueable) · II (pérdida parcial epidermis/dermis) · III (pérdida tejido subcutáneo) · IV (músculo, tendón, hueso).</li><li>Pie diabético: clasificación de Wagner o Texas.</li></ul>'}
+    ],
+    sources:[
+      {t:'GNEAUPP · Guías de Práctica Clínica UPP',u:'https://gneaupp.info/'},
+      {t:'Plan de Calidad SNS · Seguridad del paciente',u:'https://seguridaddelpaciente.sanidad.gob.es/'}
+    ]
+  },
+  via_venosa: {
+    title:'💉 Vía Venosa Periférica',
+    subtitle:'Inserción, mantenimiento y retirada · Protocolo Bacteriemia Zero (2.ª ed. 2021)',
+    banner:'linear-gradient(135deg,#0d47a1,#1565c0)',
+    sections:[
+      {h:'🧰 Material',body:'<ul><li>Catéter periférico: <strong>22 G</strong> perfusión habitual, <strong>20 G</strong> transfusión, <strong>18 G</strong> urgencia / grandes volúmenes.</li><li>Compresor, clorhexidina alcohólica al 2%, gasas, apósito transparente estéril semipermeable.</li><li>Llave de 3 pasos con alargadera y tapón antirreflujo de sistema cerrado.</li><li>Suero fisiológico 10 mL para comprobación de permeabilidad y sellado.</li><li>Guantes no estériles, contenedor de objetos punzantes.</li></ul>'},
+      {h:'📋 Procedimiento (bundle Bacteriemia Zero)',body:'<ol><li><strong>Higiene de manos</strong> con solución hidroalcohólica antes y después (los 5 momentos OMS).</li><li>Colocar EPI (guantes no estériles).</li><li>Elegir vena: preferencia distal, miembro no dominante, evitar flexuras y zonas lesionadas.</li><li>Compresor 5-10 cm proximal al punto de punción (máximo 1-2 minutos).</li><li><strong>Antisepsia con clorhexidina alcohólica 2%</strong> en espiral del centro hacia fuera; dejar secar &ge;30 s.</li><li>No repalpar sobre zona aséptica sin nuevos guantes.</li><li>Puncionar bisel hacia arriba, 15-30°, avanzar catéter sobre aguja al ver reflujo, retirar fiador.</li><li>Conectar sistema cerrado, comprobar permeabilidad con SF, descartar extravasación.</li><li>Cubrir con apósito transparente estéril, fechar e identificar con iniciales del profesional.</li><li>Registrar: fecha, hora, calibre, localización, nº de intentos, motivo.</li></ol>'},
+      {h:'🩺 Mantenimiento',body:'<ul><li>Revisión cada turno (escala VIP/Maddox: flebitis 0-5).</li><li>Antisepsia con clorhexidina alcohólica antes de cada manipulación del puerto.</li><li>Cambio de apósito si está despegado, húmedo o sucio, o cada 7 días si es transparente.</li><li>Cambio de sistemas: perfusiones continuas 96 h; lipídicos/propofol cada 12-24 h; sangre al finalizar.</li><li>Sellado con 5-10 mL de SF tras cada fármaco intermitente.</li><li>Retirar al alta de la indicación, o antes si flebitis &ge;2, extravasación, obstrucción o sospecha de infección.</li></ul>'},
+      {h:'⚠️ Complicaciones y actuación',body:'<ul><li><strong>Flebitis</strong> (Maddox): grado 1 vigilar · grado 2 retirar · grado 3-4 retirar + valorar cultivo/ATB.</li><li><strong>Extravasación</strong>: parar, aspirar restos, retirar, elevar miembro, frío/calor según vesicante.</li><li><strong>Bacteriemia asociada a catéter</strong>: fiebre sin foco + signos locales → hemocultivos pareados, cultivo punta y retirada.</li><li>No usar vías con signos inflamatorios ni en miembros pléjicos/linfedema.</li></ul>'},
+      {h:'📐 Medidas obligatorias Bacteriemia Zero',body:'<ol><li>Higiene de manos adecuada.</li><li>Uso de clorhexidina alcohólica en asepsia cutánea.</li><li>Preferir vía subclavia o yugular frente a femoral (vías centrales).</li><li>Manejo higiénico de catéteres.</li><li>Retirada precoz de catéteres innecesarios.</li><li>Formación continuada y cultura de seguridad.</li></ol>'}
+    ],
+    sources:[
+      {t:'Bacteriemia Zero · Ministerio de Sanidad (2.ª ed. 2021)',u:'https://seguridaddelpaciente.sanidad.gob.es/proyectos/financiacionEstudios/proyectos/home.htm'},
+      {t:'SEMICYUC',u:'https://semicyuc.org/'},
+      {t:'SEEIUC',u:'https://seeiuc.org/'},
+      {t:'INS · Infusion Nurses Society Standards',u:'https://www.ins1.org/'}
+    ]
+  },
+  sondaje: {
+    title:'🔧 Sondajes: vesical, nasogástrico, rectal',
+    subtitle:'Inserción y mantenimiento · Protocolo ITU-Zero / Resistencia Zero',
+    banner:'linear-gradient(135deg,#2e7d32,#1b5e20)',
+    sections:[
+      {h:'🧰 Sondaje vesical — Material',body:'<ul><li>Sonda Foley de silicona <strong>14-16 Fr</strong> adulto (12 Fr mujer si uretra estrecha); látex solo si no hay alergia y corta duración.</li><li>Bolsa colectora con sistema cerrado y válvula antirreflujo.</li><li>Lubricante urológico (lidocaína 2% gel).</li><li>Paño estéril, guantes estériles, gasas, antiséptico (clorhexidina acuosa 0,05% o povidona).</li><li>Jeringa 10 mL con agua destilada para balón.</li></ul>'},
+      {h:'📋 Sondaje vesical — Procedimiento',body:'<ol><li>Informar, consentimiento verbal, intimidad.</li><li>Higiene de manos y EPI.</li><li>Posición: decúbito supino; mujer piernas flexionadas.</li><li>Higiene genital con agua y jabón, enjuague.</li><li>Preparación de campo estéril, antisepsia en un solo sentido.</li><li>Mujer: separar labios con mano no dominante. Varón: pene en ángulo 90° y lubricar uretra 10 mL.</li><li>Introducir sonda suavemente hasta salida de orina + 2-3 cm, inflar balón con 10 mL de agua destilada.</li><li>Conectar a sistema cerrado por debajo del nivel vesical.</li><li>Fijar al muslo sin tensión.</li><li>Si retención &gt; 400 mL, vaciado gradual de 300-400 mL con pinzado de 15 min para evitar hematuria ex vacuo.</li><li>Registrar calibre, fecha, cantidad y características de la orina.</li></ol>'},
+      {h:'🧰 SNG — Material y procedimiento',body:'<ul><li>Sonda de PVC (corto plazo) o poliuretano/silicona (prolongada). Calibre 12-16 Fr adulto.</li><li>Medición <strong>NEX</strong>: punta de la nariz → lóbulo oreja → apéndice xifoides.</li><li>Paciente semisentado 45°, flexión cervical al pasar faringe.</li><li>Comprobación en 3 pasos: aspirado de contenido + <strong>pH &lt; 5,5</strong> + auscultación (no concluyente).</li><li>Rx tórax-abdomen si duda, neurológico, riesgo de aspiración o sonda para nutrición enteral.</li><li>Fijar sin presión, rotar punto de apoyo.</li></ul>'},
+      {h:'⚠️ Alertas',body:'<ul><li>Contraindicaciones SNG: fractura de base de cráneo / maxilofacial, varices esofágicas, cirugía reciente vía aérea superior.</li><li>Signos de sonda en vía aérea: tos, cianosis, imposibilidad de hablar → retirar inmediatamente.</li><li>ITU asociada a sonda: retirada precoz, no irrigaciones sistemáticas, cambio solo si obstrucción o infección.</li><li>Hematuria franca tras sondaje vesical traumático → valorar lesión uretral.</li></ul>'}
+    ],
+    sources:[
+      {t:'ITU-Zero · Ministerio de Sanidad',u:'https://seguridaddelpaciente.sanidad.gob.es/'},
+      {t:'Resistencia Zero · Ministerio de Sanidad',u:'https://seguridaddelpaciente.sanidad.gob.es/'}
+    ]
+  },
+  vacunacion: {
+    title:'💉 Vacunación',
+    subtitle:'Calendario, técnica, conservación y manejo de reacciones adversas',
+    banner:'linear-gradient(135deg,#6a1b9a,#4a148c)',
+    sections:[
+      {h:'📋 Antes de administrar',body:'<ul><li>Comprobar identidad, historial vacunal y consentimiento.</li><li>Descartar contraindicaciones absolutas (anafilaxia previa a esa vacuna o componente) y valorar precauciones (enfermedad aguda moderada-grave, embarazo según ficha técnica, inmunosupresión para vacunas vivas).</li><li>Verificar integridad del vial, fecha de caducidad y aspecto (turbidez esperada/no esperada).</li><li>Respetar cadena de frío +2 a +8 °C (salvo vacunas específicas que requieren congelación).</li></ul>'},
+      {h:'💉 Técnica',body:'<ul><li><strong>IM</strong>: deltoides (&ge;3 años), vasto lateral (lactantes). Ángulo 90°. Aguja 25-38 mm según peso.</li><li><strong>SC</strong>: triceps, ángulo 45°. Preferida para vacunas vivas atenuadas (triple vírica, varicela).</li><li><strong>ID</strong>: cara anterior antebrazo, ángulo 5-15°, bisel arriba, pápula visible (BCG, tuberculina).</li><li><strong>Oral</strong>: rotavirus (no repetir dosis si regurgita).</li><li><strong>Intranasal</strong>: gripe atenuada pediátrica.</li><li>No mezclar vacunas en la misma jeringa salvo combinadas comerciales.</li><li>Separar al menos 2,5 cm si se administran varias en el mismo miembro.</li></ul>'},
+      {h:'❄️ Cadena de frío',body:'<ul><li>Nevera entre +2 y +8 °C, con termómetro de máximos y mínimos y registro diario.</li><li>Conservar en estantes centrales, nunca en puerta ni contra pared posterior.</li><li>Rotar stock (FEFO: first expired, first out).</li><li>Ante rotura de cadena de frío: aislar lotes, anotar temperatura/tiempo y consultar a referente antes de administrar o desechar.</li></ul>'},
+      {h:'⚠️ Reacciones adversas',body:'<ul><li>Locales: dolor, eritema, induración — autolimitadas.</li><li>Sistémicas leves: fiebre, malestar, mialgia — antitérmicos si molestan.</li><li><strong>Anafilaxia</strong>: adrenalina <strong>IM 0,01 mg/kg</strong> (máx 0,5 mg adulto) en vasto lateral, repetible cada 5-15 min. Activar emergencias, O₂, fluidos.</li><li>Vigilar 15-30 min tras la vacunación (30 min si antecedente alérgico).</li><li>Notificar eventos adversos a la tarjeta amarilla (AEMPS).</li></ul>'}
+    ],
+    sources:[
+      {t:'Ministerio de Sanidad · Calendario común de vacunación',u:'https://www.sanidad.gob.es/areas/promocionPrevencion/vacunaciones/calendario-y-coberturas/home.htm'},
+      {t:'CAV-AEP · Comité Asesor de Vacunas',u:'https://vacunasaep.org/'},
+      {t:'AEMPS · Notificación de RAM',u:'https://www.notificaram.es/'}
+    ]
+  },
+  inyectables: {
+    title:'💊 Administración de Inyectables',
+    subtitle:'IM · SC · IV · ID — técnica, zonas, ángulos y volúmenes',
+    banner:'linear-gradient(135deg,#00838f,#006064)',
+    sections:[
+      {h:'💉 Intramuscular (IM)',body:'<ul><li>Ángulo <strong>90°</strong>. Aspirar ya no se recomienda de rutina en deltoides y vasto lateral (ACIP).</li><li>Zonas: <strong>deltoides</strong> (&le;2 mL), <strong>vasto lateral</strong> lactantes y niños (&le;3 mL), <strong>ventroglúteo</strong> (preferido, &le;5 mL). <em>Dorsoglúteo</em> en desuso por riesgo de lesión ciática.</li><li>Aguja 25-38 mm según masa muscular.</li><li>Inyección lenta; tras retirar, presión seca sin masajear.</li></ul>'},
+      {h:'💉 Subcutánea (SC)',body:'<ul><li>Ángulo <strong>45-90°</strong> según pliegue.</li><li>Zonas: abdomen periumbilical (rotar), cara externa brazo, muslo anterior.</li><li>Volúmenes máximos 1-1,5 mL.</li><li>Insulina: rotar zonas para evitar lipodistrofia; no masajear.</li><li>HBPM: pellizco mantenido durante toda la inyección, no purgar la burbuja.</li></ul>'},
+      {h:'💉 Intravenosa (IV)',body:'<ul><li>Ángulo 15-30°. Verificar reflujo, descartar extravasación.</li><li>Bolo lento salvo indicación; compatibilidad farmacológica antes de mezclar.</li><li>Velocidades críticas: <strong>potasio</strong> &le;20 mEq/h periférica (hasta 40 central monitorizada), <strong>vancomicina</strong> &ge;60 min, <strong>fenitoína</strong> &le;50 mg/min monitorizada.</li><li>Tras cada fármaco intermitente: sellar con 5-10 mL de SF.</li></ul>'},
+      {h:'💉 Intradérmica (ID)',body:'<ul><li>Ángulo <strong>5-15°</strong>, bisel arriba, cara anterior antebrazo.</li><li>Volumen 0,1 mL. Debe formarse pápula visible (técnica correcta).</li><li>Usos: tuberculina (Mantoux), BCG, pruebas de hipersensibilidad.</li></ul>'},
+      {h:'🧯 Seguridad',body:'<ul><li>Identificación inequívoca del paciente y verificación de los <strong>5 correctos</strong>: paciente, fármaco, dosis, vía, hora.</li><li>Uso de contenedor de objetos punzantes; no reencapuchar agujas.</li><li>Observación 15-30 min tras administración de nuevos fármacos con riesgo alérgico.</li></ul>'}
+    ],
+    sources:[
+      {t:'AEMPS · Fichas técnicas (CIMA)',u:'https://cima.aemps.es/'},
+      {t:'ISMP España · Prácticas seguras',u:'https://www.ismp-espana.org/'}
+    ]
+  },
+  constantes: {
+    title:'📊 Constantes Vitales',
+    subtitle:'PA · FC · FR · Tª · SatO₂ · glucemia — toma correcta e interpretación',
+    banner:'linear-gradient(135deg,#bf360c,#e65100)',
+    sections:[
+      {h:'🩸 Presión arterial',body:'<ul><li>5 min reposo, sin café/tabaco 30 min antes, brazo apoyado a la altura del corazón.</li><li>Manguito adecuado (cubrir 80% del perímetro del brazo): medidas incorrectas son la causa más frecuente de error.</li><li>Dos tomas separadas 1-2 min; si difieren &gt; 5 mmHg, hacer una tercera.</li><li>HTA adulto: PA &ge;140/90 en consulta · &ge;135/85 en AMPA · &ge;130/80 MAPA 24 h.</li></ul>'},
+      {h:'💗 Frecuencia cardíaca y respiratoria',body:'<ul><li>FC: pulso radial 30 s × 2 en ritmo regular; 60 s completos si arrítmico.</li><li>FR: contar 30 s × 2 sin avisar al paciente.</li><li>Valores normales adulto: FC 60-100 lpm · FR 12-20 rpm.</li></ul>'},
+      {h:'🌡️ Temperatura',body:'<ul><li>Axilar: +0,5 °C respecto a central. Rectal/timpánica más próxima a central.</li><li>Fiebre adulto: &ge;38 °C axilar. Hipertermia &gt;40 °C urgente.</li><li>Hipotermia &lt;35 °C.</li></ul>'},
+      {h:'🫁 Saturación de oxígeno',body:'<ul><li>Pulsioxímetro en dedo sin esmalte ni gel; valorar perfusión distal.</li><li>Normal &ge;95%. En EPOC crónico objetivo 88-92%.</li><li>Artefactos: frío, temblor, CO-Hb (falsamente normal), vasoconstricción.</li></ul>'},
+      {h:'🩸 Glucemia capilar',body:'<ul><li>Punción en lateral de yema (menos dolorosa e inervada).</li><li>Descartar primera gota si húmeda/sucia; no exprimir.</li><li>Hipoglucemia sintomática: &lt;70 mg/dL → regla <strong>15-15</strong> (15 g HC → reevaluar en 15 min).</li></ul>'},
+      {h:'🚨 Escala NEWS (deterioro precoz)',body:'<p>Suma puntos de FR, SatO₂, necesidad de O₂, PAS, FC, nivel de conciencia y Tª. Activar aviso:</p><ul><li>0-4: control rutinario.</li><li>5-6 <em>o</em> 3 en un solo parámetro: valoración urgente.</li><li>&ge;7: aviso al equipo de emergencias.</li></ul>'}
+    ],
+    sources:[
+      {t:'NICE · Early warning scores',u:'https://www.nice.org.uk/'},
+      {t:'SEH-LELHA · Hipertensión',u:'https://www.seh-lelha.org/'}
+    ]
+  },
+  ecg: {
+    title:'💓 ECG de 12 derivaciones',
+    subtitle:'Realización técnica y lectura básica de enfermería',
+    banner:'linear-gradient(135deg,#ad1457,#880e4f)',
+    sections:[
+      {h:'📋 Colocación de electrodos',body:'<ul><li><strong>Miembros</strong> (regla RANAVERDE): RA rojo brazo der · LA amarillo brazo izq · LL verde pierna izq · RL negro pierna der.</li><li><strong>Precordiales</strong>: V1 4.º EIC paraesternal dcho · V2 4.º EIC paraesternal izq · V4 5.º EIC línea medioclavicular · V3 entre V2 y V4 · V5 línea axilar ant. al nivel de V4 · V6 línea axilar media al mismo nivel.</li><li>Limpiar piel con alcohol, rasurar si precisa para buen contacto.</li></ul>'},
+      {h:'⚙️ Ajustes estándar',body:'<ul><li>Velocidad 25 mm/s · Ganancia 10 mm/mV.</li><li>Derivaciones adicionales si infarto: V3R-V4R (VD), V7-V9 (posterior).</li><li>Calibración inicial visible.</li></ul>'},
+      {h:'🔎 Errores frecuentes',body:'<ul><li>Electrodos invertidos (RA-LA) → eje invertido, P negativa en I.</li><li>Ondas temblorosas por frío/parkinson/contracción → relajar al paciente.</li><li>Línea basal irregular por interferencia eléctrica (cable roto, mal contacto).</li></ul>'},
+      {h:'🚨 Hallazgos que debe alertar a enfermería',body:'<ul><li>Elevación del ST &ge;1 mm en dos derivaciones contiguas → activar código infarto.</li><li>Bloqueo AV avanzado, bradicardia &lt;40, TV/FV, QT prolongado severo.</li><li>Dolor torácico + cambios dinámicos del ST/T → no demorar aviso al médico.</li></ul>'}
+    ],
+    sources:[
+      {t:'ESC · Guías de ECG',u:'https://www.escardio.org/'},
+      {t:'Fundación Española del Corazón',u:'https://fundaciondelcorazon.com/'}
+    ]
+  },
+  rcp: {
+    title:'🚨 RCP y SVB / DEA',
+    subtitle:'Soporte Vital Básico adulto y desfibrilación externa — ERC 2021',
+    banner:'linear-gradient(135deg,#d32f2f,#b71c1c)',
+    sections:[
+      {h:'🔁 Secuencia SVB adulto',body:'<ol><li><strong>Seguridad</strong> de la escena.</li><li>Comprobar <strong>respuesta</strong> ("¿me oye?", sacudir hombros).</li><li>Si no responde, pedir ayuda y <strong>desfibrilador</strong>.</li><li>Abrir vía aérea (maniobra frente-mentón).</li><li>Comprobar <strong>respiración normal</strong> ≤ 10 s (ver, oír, sentir). Respiración agónica = paro.</li><li>Si no respira normalmente, iniciar <strong>30:2</strong>.</li><li>Compresiones: frecuencia 100-120/min, profundidad 5-6 cm, minimizar interrupciones.</li><li>Ventilaciones: boca-boca o bolsa-mascarilla, cada una 1 s, elevación torácica visible.</li></ol>'},
+      {h:'⚡ DEA',body:'<ul><li>Encender, seguir instrucciones verbales del aparato.</li><li>Secar tórax, rasurar si preciso, colocar parches (uno infraclavicular derecho y otro línea axilar media izquierda).</li><li>Separar a todos durante el análisis y la descarga.</li><li>Reanudar compresiones inmediatamente tras la descarga (no comprobar pulso).</li><li>Cambio de rescatador cada 2 minutos para evitar fatiga.</li></ul>'},
+      {h:'👶 Pediatría',body:'<ul><li>Secuencia ABC con 5 ventilaciones iniciales, relación 15:2 (reanimadores profesionales).</li><li>Profundidad 1/3 del diámetro antero-posterior del tórax (≈4 cm lactante, 5 cm niño).</li><li>Compresiones con 2 pulgares rodeando tórax (lactante con 2 reanimadores) o 2 dedos.</li></ul>'},
+      {h:'🛌 Posición lateral de seguridad',body:'<p>En inconsciente que respira normalmente sin trauma: decúbito lateral con brazo superior flexionado bajo la mejilla, pierna superior flexionada 90°. Vigilar vía aérea cada 1-2 min.</p>'}
+    ],
+    sources:[
+      {t:'European Resuscitation Council · Guidelines',u:'https://www.erc.edu/'},
+      {t:'CERCP · Consejo Español de RCP',u:'https://www.cercp.org/'}
+    ]
+  },
+  diabetico: {
+    title:'🩸 Paciente Diabético',
+    subtitle:'Insulinas, autocontrol, hipoglucemia y pie diabético',
+    banner:'linear-gradient(135deg,#1565c0,#0d47a1)',
+    sections:[
+      {h:'💉 Tipos de insulina',body:'<ul><li><strong>Rápidas / ultrarápidas</strong> (lispro, aspart, glulisina): inicio 10-20 min, pico 1-3 h, duración 3-5 h.</li><li><strong>Regular</strong>: inicio 30 min, pico 2-4 h, duración 6-8 h.</li><li><strong>Intermedia NPH</strong>: 1-2 h · 4-8 h · 10-16 h.</li><li><strong>Basal</strong> (glargina U100/U300, detemir, degludec): sin pico marcado, 18-42 h.</li><li>Conservar cerrada +2 a +8 °C; abierta a temperatura ambiente &le;28 días.</li></ul>'},
+      {h:'📊 Autocontrol y pautas',body:'<ul><li><strong>Basal-bolo</strong>: análogo basal 1-2/día + rápida antes de cada comida.</li><li><strong>Pauta móvil / correctora</strong>: ajuste según glucemia preprandial (1 UI por cada 50 mg/dL sobre 150, individualizar).</li><li>Objetivos generales: HbA1c &lt;7% · preprandial 80-130 · postprandial &lt;180.</li><li>Ancianos frágiles: objetivos más laxos (HbA1c &lt;8%).</li></ul>'},
+      {h:'⚠️ Hipoglucemia',body:'<ul><li>Síntomas: sudoración, temblor, palpitaciones, confusión, convulsión, coma.</li><li><strong>Regla 15-15</strong>: consciente con vía oral → 15 g HC de absorción rápida (zumo, glucosa gel) → reevaluar en 15 min → repetir si &lt;70.</li><li>Inconsciente o no deglute: <strong>glucagón IM/SC 1 mg</strong> o 0,5 mg en &lt;25 kg; vía IV si disponible con glucosa 10% 100-200 mL.</li><li>Tras recuperar: HC de absorción lenta y revisar causa (dosis, omisión de comida, ejercicio).</li></ul>'},
+      {h:'🦶 Pie diabético',body:'<ul><li>Inspección diaria, hidratación, calzado adecuado, corte de uñas recto.</li><li>Cribado anual: monofilamento 10 g, diapasón 128 Hz, pulsos, índice tobillo-brazo.</li><li>Clasificación de Wagner: 0 (sin lesión) · 1 (superficial) · 2 (profunda sin hueso) · 3 (con hueso/absceso) · 4 (gangrena localizada) · 5 (gangrena extensa).</li><li>Wagner ≥2 o celulitis → derivación a cirugía vascular/endocrinología.</li></ul>'}
+    ],
+    sources:[
+      {t:'RedGDPS · Grupo Diabetes AP',u:'https://www.redgdps.org/'},
+      {t:'ADA · Standards of Care',u:'https://diabetesjournals.org/care'},
+      {t:'SED · Sociedad Española de Diabetes',u:'https://www.sediabetes.org/'}
+    ]
+  },
+  triaje: {
+    title:'🏥 Triaje',
+    subtitle:'Manchester (MTS) y Sistema Español de Triaje (SET)',
+    banner:'linear-gradient(135deg,#ef6c00,#e65100)',
+    sections:[
+      {h:'🎯 Objetivo',body:'<p>Clasificar a los pacientes según gravedad clínica para priorizar la atención, garantizando tiempos de espera seguros y eficientes.</p>'},
+      {h:'🚦 Niveles y tiempos',body:'<ul><li><strong>Nivel 1 — Rojo</strong> (resucitación): atención <strong>inmediata</strong>. Paro, compromiso vital.</li><li><strong>Nivel 2 — Naranja</strong> (emergencia): &le;15 min. Dolor torácico sospechoso, ictus, crisis asmática grave.</li><li><strong>Nivel 3 — Amarillo</strong> (urgencia): &le;60 min. Dolor moderado-grave, fiebre alta no controlada.</li><li><strong>Nivel 4 — Verde</strong> (poco urgente): &le;2 h. Problema menor con algún síntoma.</li><li><strong>Nivel 5 — Azul</strong> (no urgente): &le;4 h. Consulta administrativa o de resolución AP.</li></ul>'},
+      {h:'🔄 Reevaluación',body:'<ul><li>Reevaluar a todo paciente cuyo tiempo se agote o haya cambio clínico.</li><li>Registrar motivo de consulta, constantes, nivel, hora y profesional.</li></ul>'},
+      {h:'⚠️ Banderas rojas que suben de nivel',body:'<ul><li>Dolor &ge;7/10, trauma alta energía, disnea, alteración aguda de conciencia, embarazo + sangrado, sepsis, quemadura &gt;10% SCT, dolor torácico sospechoso.</li><li>Pediatría: triángulo de evaluación pediátrico alterado.</li></ul>'}
+    ],
+    sources:[
+      {t:'Manchester Triage System',u:'https://www.triagenet.net/'},
+      {t:'SEMES · Triaje en urgencias',u:'https://www.semes.org/'}
+    ]
+  }
+};
+
+function _renderEnfProtocol(data){
+  var html = '<div style="background:'+data.banner+';color:#fff;padding:16px 20px;border-radius:12px;margin-bottom:14px;"><div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:2px;">'+data.title+'</div><div style="opacity:.85;font-size:.82rem;font-weight:300;">'+data.subtitle+'</div></div>';
+  data.sections.forEach(function(s){
+    html += '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;">'
+         +  '<h4 style="font-family:var(--font-display);color:var(--primary-dark);font-size:.98rem;margin-bottom:8px;">'+s.h+'</h4>'
+         +  '<div style="font-size:.9rem;line-height:1.65;">'+s.body+'</div>'
+         +  '</div>';
+  });
+  if(data.sources && data.sources.length){
+    html += '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:12px 16px;margin-top:14px;">'
+         +  '<h4 style="color:#0369a1;font-size:.88rem;margin-bottom:8px;">📚 Fuentes oficiales</h4>'
+         +  '<ul style="font-size:.84rem;line-height:1.7;padding-left:18px;">'
+         +  data.sources.map(function(s){return '<li><a href="'+s.u+'" target="_blank" rel="noopener" style="color:#0369a1;font-weight:600;">'+s.t+'</a></li>';}).join('')
+         +  '</ul></div>';
+  }
+  html += '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">'
+       +  '<button onclick="enfAmpliarIA(\''+(data.key||'')+'\')" style="padding:9px 16px;background:linear-gradient(135deg,#c2185b,#880e4f);color:#fff;border:0;border-radius:8px;font-weight:700;cursor:pointer;font-family:var(--font-body);font-size:.84rem;">🤖 Ampliar con IA</button>'
+       +  '<span style="font-size:.76rem;color:var(--text-muted);align-self:center;">Uso docente. Consulta siempre el protocolo vigente del Área II.</span>'
+       +  '</div>';
+  return html;
+}
+
 async function enfLoadProtocol(key){
-    var titles={curas:'Curas y Heridas',via_venosa:'Vía Venosa Periférica',sondaje:'Sondajes',vacunacion:'Vacunación',inyectables:'Administración de Inyectables',constantes:'Constantes Vitales',ecg:'ECG',rcp:'RCP / SVB',diabetico:'Paciente Diabético',triaje:'Triaje'};
     var resultDiv=document.getElementById('enfProtocolResult');
     var contentDiv=document.getElementById('enfProtocolContent');
     if(!resultDiv||!contentDiv)return;
+    var data = ENF_PROTOCOLS[key];
     resultDiv.style.display='block';
-    document.getElementById('enfProtocolTitle').textContent=titles[key]||key;
-    contentDiv.style.whiteSpace='normal';
-    contentDiv.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:16px;opacity:.6;"><div style="width:16px;height:16px;border:2px solid #c2185b;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Generando protocolo con DeepSeek V3...</div>';
-    var prompt='Genera un protocolo de enfermería completo y detallado sobre: '+(titles[key]||key)+'. Incluye: definición, material necesario, procedimiento paso a paso, cuidados posteriores, complicaciones frecuentes y criterios de derivación. Formato profesional para enfermería de Atención Primaria.';
-    var r=await llamarIA(prompt,enfSysPrompt);
-    contentDiv.innerHTML=typeof fmtClinical==='function'?fmtClinical(r):r;
+    var titleEl = document.getElementById('enfProtocolTitle');
+    if(data){
+      data.key = key;
+      if(titleEl) titleEl.textContent = data.title;
+      contentDiv.style.whiteSpace='normal';
+      contentDiv.innerHTML = _renderEnfProtocol(data);
+      resultDiv.scrollIntoView({behavior:'smooth',block:'start'});
+    } else {
+      var titles={curas:'Curas y Heridas',via_venosa:'Vía Venosa Periférica',sondaje:'Sondajes',vacunacion:'Vacunación',inyectables:'Administración de Inyectables',constantes:'Constantes Vitales',ecg:'ECG',rcp:'RCP / SVB',diabetico:'Paciente Diabético',triaje:'Triaje'};
+      if(titleEl) titleEl.textContent=titles[key]||key;
+      contentDiv.style.whiteSpace='normal';
+      contentDiv.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:16px;opacity:.6;"><div style="width:16px;height:16px;border:2px solid #c2185b;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Generando protocolo con IA...</div>';
+      var prompt='Genera un protocolo de enfermería completo y detallado sobre: '+(titles[key]||key)+'. Incluye: definición, material necesario, procedimiento paso a paso, cuidados posteriores, complicaciones frecuentes y criterios de derivación. Formato profesional para enfermería de Atención Primaria.';
+      var r=await llamarIA(prompt,enfSysPrompt);
+      contentDiv.innerHTML=typeof fmtClinical==='function'?fmtClinical(r):r;
+    }
+}
+
+async function enfAmpliarIA(key){
+    var data = ENF_PROTOCOLS[key];
+    if(!data) return;
+    var contentDiv=document.getElementById('enfProtocolContent');
+    if(!contentDiv) return;
+    var extra = document.createElement('div');
+    extra.style.cssText = 'margin-top:16px;padding:14px 16px;background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;';
+    extra.innerHTML = '<div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:#78350f;"><div style="width:14px;height:14px;border:2px solid #d97706;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Ampliando con IA clínica…</div>';
+    contentDiv.appendChild(extra);
+    var prompt = 'Amplía el protocolo de enfermería de "'+data.title+'" con: casos prácticos, particularidades en pediatría/geriatría, errores frecuentes, consejos avanzados para enfermería de Atención Primaria y últimos cambios de evidencia. No repitas el contenido básico. Formato markdown con ### y listas.';
+    var r = await llamarIA(prompt, enfSysPrompt);
+    extra.style.background = '#fff';
+    extra.style.borderColor = '#e2e8f0';
+    extra.innerHTML = '<h4 style="color:#c2185b;font-family:var(--font-display);font-size:1rem;margin-bottom:8px;">🤖 Ampliación con IA</h4>'+(typeof fmtClinical==='function'?fmtClinical(r):r);
 }
 
 async function enfBuscarFarmaco(){
