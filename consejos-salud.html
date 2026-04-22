@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Consejos de Salud · Área II Cartagena</title>
+<meta name="description" content="Consejos de salud sencillos para pacientes del Área II Cartagena: fiebre en niños, catarro, diarrea, dolor de espalda, heridas, ansiedad, medicación, pruebas y vacunas.">
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-light:#238c62;--primary-dark:#0a4d35;
+  --red:#dc2626;--amber:#d97706;--blue:#1e40af;--green:#16a34a;
+  --bg:#fffaf3;--card:#fff;--card2:#fefce8;
+  --border:#e5e1d8;--tx:#1f2937;--t2:#4b5563;--t3:#6b7280;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0f172a;--card:#1e293b;--card2:#0f2a1e;--border:#334155;--tx:#f1f5f9;--t2:#cbd5e1;--t3:#94a3b8}
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:40px}
+.nav{background:linear-gradient(135deg,#0a4d35,#1a6b4a);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;color:#fff}
+.nav a{color:#fff;text-decoration:none;font-size:.85rem;font-weight:600;opacity:.9}
+.nav h1{font-size:1rem;font-weight:700;flex:1;font-family:var(--display)}
+.hero{padding:26px 20px;background:linear-gradient(135deg,#0a4d35,#238c62);color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"💚";position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.14}
+.hero h2{font-family:var(--display);font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;margin-bottom:6px}
+.hero p{font-size:.95rem;font-weight:300;line-height:1.55;max-width:740px;opacity:.9}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 18px}
+
+.disclaimer{background:rgba(217,119,6,.14);border:1px solid rgba(217,119,6,.4);color:#92400e;padding:12px 16px;border-radius:10px;font-size:.88rem;margin-bottom:18px;line-height:1.55}
+@media(prefers-color-scheme:dark){.disclaimer{color:#fbbf24;background:rgba(217,119,6,.14)}}
+
+.search{width:100%;padding:14px 18px;background:var(--card);border:2px solid var(--border);color:var(--tx);border-radius:14px;font-family:var(--font);font-size:1rem;margin-bottom:16px}
+.search:focus{outline:none;border-color:var(--primary)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{padding:7px 14px;background:var(--card);border:1px solid var(--border);border-radius:18px;color:var(--t2);font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:.2s;border-left:5px solid var(--cc,var(--primary));text-align:left;font-family:var(--font);color:var(--tx);display:flex;flex-direction:column;gap:6px}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.08)}
+.card .icon{font-size:2rem}
+.card .t{font-weight:700;font-size:1rem}
+.card .s{font-size:.82rem;color:var(--t2);line-height:1.5}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;z-index:200;padding:20px;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal.show{display:block}
+.mbox{max-width:820px;margin:24px auto;background:var(--card);border-radius:18px;overflow:hidden;color:var(--tx);border:1px solid var(--border)}
+.mhead{padding:18px 22px;background:linear-gradient(135deg,var(--hc1,#0a4d35),var(--hc2,#238c62));display:flex;gap:10px;align-items:center;color:#fff;position:sticky;top:0;z-index:2}
+.mhead h2{font-family:var(--display);font-size:1.25rem;flex:1}
+.mhead button{background:rgba(255,255,255,.2);border:0;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1.1rem;font-weight:800}
+.mbody{padding:20px 22px;line-height:1.7}
+
+.bloque{border-radius:12px;padding:14px 16px;margin-bottom:12px;border-left:5px solid var(--bc)}
+.bloque h3{font-family:var(--display);font-size:1.05rem;margin-bottom:8px;color:var(--bc)}
+.bloque ul,.bloque ol{padding-left:20px;font-size:.92rem;color:var(--t2)}
+.bloque li{margin:4px 0}
+.bloque strong{color:var(--tx)}
+.bloque code{background:rgba(0,0,0,.06);padding:1px 7px;border-radius:5px;font-family:ui-monospace,monospace;color:#b45309;font-size:.86rem}
+@media(prefers-color-scheme:dark){.bloque code{background:rgba(0,0,0,.35);color:#fbbf24}}
+
+.b-que{--bc:#2563eb;background:rgba(37,99,235,.08)}
+.b-hacer{--bc:#16a34a;background:rgba(22,163,74,.08)}
+.b-cita{--bc:#d97706;background:rgba(217,119,6,.1)}
+.b-urg{--bc:#dc2626;background:rgba(220,38,38,.1)}
+.b-foot{--bc:#6b7280;background:rgba(107,114,128,.08);font-size:.82rem}
+
+table{width:100%;border-collapse:collapse;margin:6px 0;font-size:.86rem}
+table th,table td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border)}
+table th{background:rgba(0,0,0,.04);font-weight:700}
+@media(prefers-color-scheme:dark){table th{background:rgba(255,255,255,.06)}}
+
+.tel{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bc);color:#fff;border-radius:18px;text-decoration:none;font-weight:700;font-size:.88rem;margin:4px 4px 4px 0}
+.tel:hover{opacity:.9}
+
+.cc-fever{--cc:#dc2626}.cc-cold{--cc:#0891b2}.cc-gi{--cc:#a16207}
+.cc-back{--cc:#7c3aed}.cc-wound{--cc:#db2777}.cc-anx{--cc:#059669}
+.cc-med{--cc:#2563eb}.cc-test{--cc:#9333ea}.cc-vax{--cc:#16a34a}
+
+@media(max-width:640px){.hero{padding:22px 16px}.hero::after{font-size:3rem;right:12px}.mbox{margin:12px auto}.mhead,.mbody{padding:14px 16px}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="pacientes.html">← Pacientes</a>
+  <h1>💚 Consejos de Salud</h1>
+</nav>
+
+<div class="hero">
+  <h2>Consejos de Salud</h2>
+  <p>Información clara y sencilla sobre los problemas de salud más frecuentes. Escrita por profesionales sanitarios del Área II Cartagena. Pensada para ti, no para médicos.</p>
+</div>
+
+<div class="wrap">
+  <div class="disclaimer">
+    ⚠️ <strong>Aviso:</strong> los contenidos de esta sección han sido elaborados por profesionales sanitarios del Área II de Cartagena. <strong>No sustituyen</strong> la consulta con su médico o enfermera. Ante una emergencia, llame al <strong>112</strong>.
+  </div>
+
+  <input type="text" id="q" class="search" placeholder="🔎 ¿Qué te pasa? Ej: 'me duele la espalda', 'tiene fiebre', 'antibiótico'…" oninput="filter()">
+  <div class="chips" id="chips"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="bloque b-urg" style="margin-top:22px">
+    <h3>🚨 Cuándo llamar al 112</h3>
+    <ul>
+      <li>Dolor de pecho intenso que no se va.</li>
+      <li>Dificultad para respirar grave.</li>
+      <li>Pérdida de conciencia, convulsión, o deja de responder.</li>
+      <li>Desviación de la cara, no habla bien o no mueve un lado (ictus).</li>
+      <li>Sangrado que no para después de 10-15 minutos de presión.</li>
+      <li>Pensamientos de hacerse daño → teléfono <strong>024</strong>.</li>
+    </ul>
+    <p style="margin-top:8px"><a class="tel" href="tel:112" style="--bc:#dc2626">📞 Emergencias 112</a> <a class="tel" href="tel:024" style="--bc:#dc2626">💬 Atención al suicidio 024</a> <a class="tel" href="tel:968128600" style="--bc:#dc2626">🏥 Urgencias Santa Lucía · 968 12 86 00</a></p>
+  </div>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)close()">
+  <div class="mbox">
+    <div class="mhead" id="mh">
+      <span id="mi" style="font-size:1.8rem"></span>
+      <h2 id="mt"></h2>
+      <button onclick="close()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="mbody" id="mb"></div>
+  </div>
+</div>
+
+<script>
+const CATEGORIAS = [
+  {id:'all', t:'Todos'},
+  {id:'ninos', t:'Fiebre y niños'},
+  {id:'dolor', t:'Dolor'},
+  {id:'digest', t:'Digestivo'},
+  {id:'resp', t:'Respiratorio'},
+  {id:'med', t:'Medicación'},
+  {id:'prueb', t:'Pruebas'},
+  {id:'vac', t:'Vacunas'},
+  {id:'mental', t:'Salud mental'},
+  {id:'herida', t:'Heridas'}
+];
+
+const CONSEJOS = [
+  {
+    id:'fiebre-ninos', cat:['ninos','resp'], cc:'cc-fever', icon:'🌡️', hc1:'#991b1b', hc2:'#dc2626',
+    titulo:'Mi hijo tiene fiebre',
+    resumen:'Qué hacer, cuándo esperar y cuándo llamar al médico. Dosis por peso.',
+    que:'La fiebre es una respuesta normal del cuerpo a infecciones. No siempre hay que bajarla. Lo importante es cómo se encuentra el niño, no el número del termómetro. En menores de 3 meses, cualquier fiebre necesita valoración médica urgente.',
+    hacer:[
+      'Ofrécele agua, leche o suero con frecuencia, en pequeñas cantidades.',
+      'Viste ropa ligera, sin mantas gruesas.',
+      'Ambiente fresco (20-22 °C). NO uses paños fríos, hielo o alcohol.',
+      'Dale medicación si está molesto o duele algo, no solo por el número.',
+      '<strong>Paracetamol</strong>: <code>15 mg/kg cada 4-6 h</code> (por boca o supositorio). Máximo 4 dosis al día.',
+      '<strong>Ibuprofeno</strong> (a partir de 6 meses): <code>10 mg/kg cada 6-8 h</code>. No usar si vomita mucho o está deshidratado.',
+      'No alternes los dos medicamentos de forma rutinaria.',
+      'Si tiene varicela, evita ibuprofeno (usa solo paracetamol).',
+      '<strong>Tabla de dosis por peso</strong>:',
+      {tabla:[
+        ['Peso','Paracetamol (gotas 100 mg/ml)','Paracetamol (jarabe 2,4%)','Ibuprofeno (jarabe 2%)'],
+        ['6-8 kg','0,8-1,2 ml','4-6 ml','3-4 ml'],
+        ['9-12 kg','1,2-1,8 ml','6-9 ml','5-6 ml'],
+        ['13-18 kg','1,8-2,7 ml','9-14 ml','7-9 ml'],
+        ['19-25 kg','—','14-20 ml','10-13 ml'],
+        ['26-35 kg','—','20-28 ml','13-18 ml']
+      ]}
+    ],
+    cita:[
+      'Fiebre que dura más de 3 días.',
+      'Dolor de oído, orina que huele fuerte, tos con esputo.',
+      'Niño pequeño con menos apetito de lo habitual que persiste.',
+      'Dudas sobre medicación o sobre si es necesario antibiótico.'
+    ],
+    urgente:[
+      'Menor de 3 meses con cualquier fiebre (≥38 °C).',
+      'Manchas rojas que <strong>no desaparecen</strong> al presionar con un vaso de cristal (petequias).',
+      'Dificultad seria para respirar, quejido o respiración muy rápida.',
+      'Decaimiento grande, no reacciona, ojos hundidos, labios secos.',
+      'Convulsión (temblor que no controla).',
+      'Dolor de cabeza muy fuerte con rigidez en el cuello o vómitos.',
+      'Fiebre más de 5 días sin motivo claro.'
+    ],
+    fuentes:['NICE NG143 · Fiebre en menores de 5 años','Guía-ABE · Asociación Española de Pediatría','Escuela de Salud Región de Murcia'],
+    telefonos:[['🏥 Urgencias Pediátricas Santa Lucía','968128600'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'catarro-gripe', cat:['resp','med'], cc:'cc-cold', icon:'🤧', hc1:'#155e75', hc2:'#0891b2',
+    titulo:'Estoy resfriado, ¿necesito antibiótico?',
+    resumen:'Catarro, gripe y COVID se curan solos. Los antibióticos no sirven para virus.',
+    que:'El catarro, la gripe y la COVID están causados por <strong>virus</strong>. Los antibióticos <strong>no</strong> los curan ni acortan la enfermedad. Tomarlos cuando no hacen falta provoca efectos secundarios y favorece que en el futuro no funcionen cuando sí los necesites (resistencias).',
+    hacer:[
+      'Descansa. Bebe agua, caldos, infusiones.',
+      'Paracetamol o ibuprofeno si tienes fiebre o dolor de cabeza.',
+      'Lavados nasales con suero fisiológico.',
+      'Miel para la tos (solo mayores de 1 año).',
+      'Humidifica el ambiente si tienes congestión.',
+      'Tapa la boca al toser con el codo. Lávate las manos a menudo.',
+      'Si eres mayor de 60 o tienes enfermedades crónicas: pídete las vacunas anuales de gripe y COVID cuando se ofrecen en el centro.',
+      'Si has dado positivo en COVID: aíslate y evita contacto con personas vulnerables (embarazadas, mayores, inmunodeprimidos).'
+    ],
+    cita:[
+      'Fiebre alta que no baja después de 3-4 días.',
+      'Dolor de oído fuerte o supuración del oído.',
+      'Dolor al respirar o al tragar muy intenso.',
+      'Tos con flemas verdes espesas y fiebre más de una semana.',
+      'Síntomas que empeoran después de mejorar.'
+    ],
+    urgente:[
+      'Dificultad seria para respirar, labios morados.',
+      'Dolor en el pecho que aumenta al respirar.',
+      'Confusión, mucho sueño o no puedes despertar a alguien.',
+      'Convulsiones.',
+      'Signos de deshidratación grave (no orina, labios secos, mareo al levantarse).'
+    ],
+    fuentes:['semFYC · No Hacer en infecciones respiratorias','Choosing Wisely Spain','NICE CKS Common cold','Protocolo COVID-19 SMS'],
+    telefonos:[['🏥 Urgencias Santa Lucía','968128600'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'diarrea', cat:['digest'], cc:'cc-gi', icon:'💧', hc1:'#854d0e', hc2:'#a16207',
+    titulo:'Tengo diarrea y vómitos',
+    resumen:'Gastroenteritis: lo más importante es no deshidratarse. Receta del suero casero.',
+    que:'La gastroenteritis casi siempre está causada por virus y dura 3-5 días. El antibiótico casi nunca sirve. Lo importante es <strong>no perder líquidos</strong>.',
+    hacer:[
+      'Beber despacio, a sorbos pequeños y seguidos. Mejor suero de rehidratación oral que agua sola.',
+      '<strong>Suero casero (receta OMS)</strong>:',
+      '<code>1 litro de agua + 6 cucharaditas rasas de azúcar + ½ cucharadita de sal + zumo de 1 limón</code>.',
+      'En farmacia también venden sobres de suero de rehidratación (mejor).',
+      'Dieta blanda progresiva: pan tostado, arroz, pollo cocido, patata, manzana/plátano. Evita lácteos, grasas y picante los primeros días.',
+      'NO uses bebidas isotónicas para deportistas (tienen demasiado azúcar y poca sal).',
+      'NO tomes antibióticos salvo que lo indique tu médico.',
+      'Lávate las manos con frecuencia para no contagiar.',
+      'Los probióticos y el loperamida solo en adultos y casos seleccionados; pregúntale a tu farmacéutico o médico.'
+    ],
+    cita:[
+      'Diarrea de más de 5-7 días.',
+      'Sangre o moco llamativo en las deposiciones.',
+      'Fiebre alta (&gt;39 °C) que no baja.',
+      'Viajero reciente a zona de riesgo.',
+      'Embarazo.',
+      'Enfermedad crónica (diabetes, insuficiencia renal, inmunosupresión).'
+    ],
+    urgente:[
+      'Signos de deshidratación fuerte: mareo al levantarse, no orina, lengua y labios secos, confusión.',
+      'Bebés y niños pequeños con decaimiento, sin lágrimas al llorar o fontanela hundida.',
+      'Vómitos persistentes que no permiten beber nada en 12-24 horas.',
+      'Sangre oscura o negra en heces.',
+      'Dolor abdominal muy intenso y constante.'
+    ],
+    fuentes:['WGO · Acute diarrhea guidelines','Guía-ABE · Gastroenteritis','OMS · Rehidratación oral','Escuela de Salud Murcia'],
+    telefonos:[['🏥 Urgencias Santa Lucía','968128600']]
+  },
+
+  {
+    id:'espalda', cat:['dolor'], cc:'cc-back', icon:'🦴', hc1:'#5b21b6', hc2:'#7c3aed',
+    titulo:'Me duele la espalda',
+    resumen:'La mayoría se pasan solas. Quedarse en la cama empeora. Señales de alarma importantes.',
+    que:'El 85% de los dolores de espalda no tienen una causa grave. Son dolores musculares que mejoran solos en pocos días o semanas. Las radiografías y las resonancias <strong>no son necesarias</strong> al principio si no hay señales de alarma.',
+    hacer:[
+      'Mantén actividad suave. Evita el reposo absoluto más de 1-2 días.',
+      'Camina un poco, cambia de postura con frecuencia.',
+      'Calor local 15-20 minutos varias veces al día.',
+      'Paracetamol: <code>1 gramo (1 g) cada 8 horas</code>, máximo 3 g al día.',
+      'Ibuprofeno: <code>600 mg cada 8 horas</code> con comida, unos pocos días.',
+      'Cuando empieces a estar mejor, vuelve a tu actividad normal despacio.',
+      'A partir de las 2 semanas, ejercicios suaves (Pilates, natación, caminar) ayudan a prevenir recaídas.',
+      'Revisa tu puesto de trabajo: silla, altura de pantalla, pausas cada hora.'
+    ],
+    cita:[
+      'Dolor que no mejora en 2-4 semanas.',
+      'Dolor que se va a una pierna pasando la rodilla (ciática).',
+      'Hormigueos persistentes o pérdida de fuerza leve.',
+      'Dolor que te despierta por la noche sin moverte.',
+      'Has probado tratamientos y no te alivian.'
+    ],
+    urgente:[
+      '<strong>Pérdida de control al orinar o al hacer caca</strong> (urgencia grave: síndrome de cola de caballo).',
+      '<strong>Pérdida de sensibilidad en la zona de entre las piernas</strong> (silla de montar).',
+      'Pérdida de fuerza en una pierna que va a peor.',
+      'Fiebre con dolor de espalda intenso.',
+      'Dolor tras un golpe fuerte o caída.',
+      'Si tienes antecedente de cáncer y aparece un dolor de espalda nuevo persistente.',
+      'Pérdida de peso sin explicación con dolor de espalda.'
+    ],
+    fuentes:['NICE NG59 · Lumbalgia y ciática','GuíaSalud · Lumbalgia inespecífica','Cochrane · Ejercicio en dolor lumbar crónico','Escuela de Salud Murcia — Aula Dolor Crónico'],
+    telefonos:[['🏥 Urgencias Santa Lucía','968128600']]
+  },
+
+  {
+    id:'heridas', cat:['herida'], cc:'cc-wound', icon:'🩹', hc1:'#9d174d', hc2:'#db2777',
+    titulo:'Me he cortado o me he quemado',
+    resumen:'Cómo limpiar una herida o quemadura leve en casa y cuándo ir al médico.',
+    que:'La mayoría de heridas pequeñas y quemaduras leves se curan bien en casa con medidas simples. Lo clave es limpiar bien, proteger, y vigilar signos de infección.',
+    hacer:[
+      '<strong>Herida / corte</strong>:',
+      'Lava las manos antes de tocar la herida.',
+      'Lava la herida con agua y jabón suave durante 2-3 minutos. No uses alcohol ni agua oxigenada directamente dentro (irritan).',
+      'Presiona con una gasa limpia 5-10 minutos para parar el sangrado.',
+      'Seca y aplica antiséptico (clorhexidina o povidona). Cubre con apósito o tirita.',
+      'Revisa cada día. Cambia el apósito si se moja o se ensucia.',
+      '<strong>Quemadura leve (piel enrojecida, con o sin ampolla pequeña)</strong>:',
+      'Agua fría (no helada) 15-20 minutos.',
+      'No revientes las ampollas.',
+      'Cubre con gasa estéril o apósito para quemaduras.',
+      'Evita pasta de dientes, aceite, o remedios caseros.',
+      'Paracetamol o ibuprofeno si duele.',
+      '<strong>Vacuna del tétanos</strong>: si hace más de 10 años (o más de 5 si la herida está sucia o profunda), pide cita para que te la pongan.'
+    ],
+    cita:[
+      'Herida que parece necesitar puntos (mejor <strong>antes de 6 horas</strong>).',
+      'Herida profunda, irregular, o con tierra / suciedad.',
+      'Mordedura de animal o persona.',
+      'Quemadura con ampolla grande o en zona delicada (cara, manos, pies, genitales).',
+      'Pinchazo con objeto oxidado.',
+      'Signos de infección: enrojecimiento creciente, calor, pus, hinchazón, dolor que aumenta.',
+      'No recuerdas si estás al día del tétanos.'
+    ],
+    urgente:[
+      'Sangrado que no para con 10-15 minutos de presión firme.',
+      'Herida muy grande, profunda o con hueso/músculo visible.',
+      'Amputación de dedo o parte del cuerpo (guarda la parte en una bolsa con hielo NO en contacto directo).',
+      'Quemadura grande, circular alrededor de un miembro, o en cara / vías respiratorias.',
+      'Quemadura eléctrica o química.',
+      'Niño con quemaduras &gt;5% de la superficie corporal (la palma de su mano = 1%).'
+    ],
+    fuentes:['UpToDate · Manejo de heridas menores','Calendario vacunal antitetánico SMS','semFYC · Guía de curas en AP'],
+    telefonos:[['🏥 Urgencias Santa Lucía','968128600'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'ansiedad', cat:['mental'], cc:'cc-anx', icon:'💆', hc1:'#065f46', hc2:'#059669',
+    titulo:'Me falta el aire y el corazón me va muy rápido',
+    resumen:'¿Es el corazón o son los nervios? Diferencias y qué hacer con una crisis de ansiedad.',
+    que:'Las crisis de ansiedad y los ataques de pánico son muy frecuentes y asustan mucho. Por suerte, aunque lo parezca, <strong>no son peligrosos</strong>. Aun así, la primera vez es importante descartar que no sea un problema del corazón.',
+    hacer:[
+      '<strong>Diferencias orientativas (no es un diagnóstico)</strong>:',
+      {tabla:[
+        ['Síntoma','Crisis de ansiedad','Posible infarto'],
+        ['Dolor en pecho','Opresivo, cambia de sitio, se pasa al respirar','Muy fuerte, aplastante, en el centro o a la izquierda'],
+        ['Duración','10-30 min, va y viene','Dura y va a peor'],
+        ['Hormigueos','Cara, manos, pies, sensación irreal','No habituales'],
+        ['Sudoración','Frío, en manos','Fría y mucha, generalizada'],
+        ['Lo provoca','Estrés, pensamiento, lugares','Ejercicio, esfuerzo, reposo (si es infarto)']
+      ]},
+      '<strong>Técnica de respiración 4-7-8</strong>:',
+      'Inspira por la nariz contando hasta 4.',
+      'Aguanta la respiración contando hasta 7.',
+      'Exhala despacio por la boca contando hasta 8. Repite 4-5 veces.',
+      'Siéntate en un sitio tranquilo, bebe agua fresca.',
+      'Recuérdate: "Esto es una crisis de ansiedad. Pasa. No me va a pasar nada".',
+      'Reduce cafeína, tabaco, alcohol, bebidas energéticas.',
+      'Haz ejercicio suave regular (caminar 30 min/día).',
+      'Duerme entre 7 y 8 horas. Horarios regulares.',
+      'Si se repiten, pide cita; hay tratamientos eficaces (terapia y/o medicación).'
+    ],
+    cita:[
+      'Crisis de ansiedad que se repiten y te limitan.',
+      'Tristeza mantenida más de 2 semanas, pérdida de interés.',
+      'No puedes dormir, no descansas.',
+      'Consumo de alcohol u otras sustancias para calmarte.',
+      'Tienes pensamientos negativos recurrentes.'
+    ],
+    urgente:[
+      'Dolor en el pecho fuerte que no se va o empeora con esfuerzo.',
+      'Desviación de la cara, no habla bien o no mueve un lado.',
+      'Dificultad seria para respirar, labios morados.',
+      '<strong>Pensamientos de hacerte daño</strong>: llama al teléfono <strong>024</strong> (24 h, gratuito, confidencial). O al <strong>112</strong>.',
+      'Desorientación o confusión muy marcada.'
+    ],
+    fuentes:['NICE CKS · Trastorno de ansiedad generalizada','GuíaSalud · Ansiedad en AP','Escuela de Salud Murcia — Aula Salud Mental'],
+    telefonos:[['💬 Atención al suicidio 024','024'],['🌷 Teléfono de la Esperanza Murcia','968340640'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'olvido-medicacion', cat:['med'], cc:'cc-med', icon:'💊', hc1:'#1e3a8a', hc2:'#2563eb',
+    titulo:'Se me ha olvidado tomar la pastilla',
+    resumen:'Qué hacer si olvidas una dosis. Reglas por grupo de medicamento.',
+    que:'Olvidar una dosis ocurre de vez en cuando. Lo importante es saber qué hacer <strong>sin duplicar</strong>. La regla general: si recuerdas poco después, tómala; si ya toca la siguiente, sáltala y sigue la pauta normal.',
+    hacer:[
+      '<strong>Regla general</strong>:',
+      'Recuerdo a las pocas horas → tómala ya.',
+      'Casi toca la siguiente → sáltala y sigue con la siguiente dosis.',
+      '<strong>Nunca duplicar</strong> para "compensar" salvo que tu médico/a lo indique.',
+      '<strong>Antihipertensivos</strong>: tómala si es antes del mediodía. Si es casi la hora de la siguiente, sáltala.',
+      '<strong>Anticoagulantes (Sintrom o DOACs)</strong>:',
+      '- Sintrom (acenocumarol): si lo recuerdas el mismo día, tómalo. Al día siguiente, no duplicar. Apúntalo y dilo en el siguiente control.',
+      '- DOACs (apixaban, rivaroxaban, dabigatrán, edoxaban): consulta ficha o pregunta en farmacia; normalmente tómalo si faltan más de 6 h para la siguiente.',
+      '<strong>Antidiabéticos orales</strong>: si olvidas una toma, no dobles. Vigila la glucemia.',
+      '<strong>Insulina</strong>: consulta con tu equipo. Nunca dobles la dosis.',
+      '<strong>Estatinas</strong> (por la noche): si recuerdas por la mañana, puedes tomarla. Si es casi de noche otra vez, sigue pauta normal.',
+      '<strong>Anticonceptivos orales combinados</strong>: &lt;24 h → tómala ya; &gt;24 h → usa método barrera 7 días y consulta la pauta de tu preparado.',
+      '<strong>Levotiroxina (Eutirox)</strong>: tómala en cuanto lo recuerdes en ayunas. Si es casi de noche, sáltala.',
+      '<strong>Antiparkinsonianos o antiepilépticos</strong>: consulta a tu médico; NO los retires por tu cuenta.',
+      'Consejos prácticos: pastillero semanal, alarma en el móvil, vincularlo a un hábito fijo (lavarse los dientes).'
+    ],
+    cita:[
+      'Si olvidas tomas con frecuencia: revisa pauta, posibilidad de dosis única diaria o pastillero.',
+      'Si los medicamentos te sientan mal.',
+      'Si estás tomando algo que crees que ya no necesitas.'
+    ],
+    urgente:[
+      'Si has tomado una dosis mucho más alta de lo indicado (especialmente anticoagulantes, insulina o antidiabéticos).',
+      'Signos de hipoglucemia (sudor frío, temblor, mareo) por doblar antidiabéticos.',
+      'Sangrado importante si tomas anticoagulantes.'
+    ],
+    fuentes:['BNF · Missed doses','CADIME · Adherencia en crónicos','Portal del Medicamento SACYL'],
+    telefonos:[['📞 Información Toxicológica','915620420'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'pruebas', cat:['prueb'], cc:'cc-test', icon:'🧪', hc1:'#6b21a8', hc2:'#9333ea',
+    titulo:'Me han mandado una analítica o prueba',
+    resumen:'Cómo prepararte: ayuno, medicación habitual, colonoscopia, orina.',
+    que:'Prepararse bien hace que los resultados sean fiables y no tengas que repetir la prueba. Cada prueba tiene sus normas; aquí están las más frecuentes.',
+    hacer:[
+      '<strong>Analítica de sangre</strong>:',
+      'Ayuno de 8-12 h. El <strong>agua</strong> se puede beber. El <strong>café solo sin azúcar</strong> es aceptable en la mayoría de casos (pregunta si tienes dudas).',
+      'La medicación habitual suele tomarse normal con un poco de agua, SALVO antidiabéticos orales o insulina de la mañana (pregunta a tu médico).',
+      'No hacer ejercicio intenso el día anterior.',
+      'Evita alcohol las 24-48 h previas.',
+      '<strong>Orina</strong>:',
+      'Primera orina de la mañana.',
+      'Lavado de la zona genital con agua.',
+      'Desecha el primer chorrito y recoge el resto (chorro medio).',
+      '<strong>Colonoscopia</strong> (preparación aproximada, sigue SIEMPRE la hoja del hospital):',
+      '3 días antes: dieta pobre en fibra y residuos (pan blanco, pasta, pollo, pescado, sin frutas ni verduras ni legumbres).',
+      'Día anterior: solo líquidos claros (caldo, zumos colados, té, agua).',
+      'Prepara el laxante según la hora indicada, en 2 tomas separadas.',
+      'La última toma debe ser 4-5 horas antes de la prueba (<strong>split dose</strong> mejora la calidad).',
+      'Nada sólido desde la noche anterior.',
+      '<strong>Heces</strong>:',
+      'Recoge muestra en frasco estéril de farmacia. Si es sangre oculta, evita carne roja 3 días antes.',
+      '<strong>Esputo</strong>:',
+      'Primera hora de la mañana, enjuágate la boca, tose fuerte desde el pecho.'
+    ],
+    cita:[
+      'Tienes dudas sobre si tomar tu medicación antes de la prueba.',
+      'Has comido / bebido por error cuando debías estar en ayunas.',
+      'No entiendes bien la hoja de preparación.',
+      'Has tenido molestias importantes con un laxante (vómitos, dolor).',
+      'Después de las pruebas: espera la llamada o cita. Si fuera urgente, te llamarán.'
+    ],
+    urgente:[
+      'Tras una colonoscopia: dolor abdominal muy intenso, fiebre, mareo, sangrado abundante por el ano → Urgencias.',
+      'Reacción alérgica (hinchazón cara/labios, dificultad respirar) tras contrastes → 112.'
+    ],
+    fuentes:['Protocolo de extracción Área II SMS','Guía preparación colonoscopia H.G.U. Santa Lucía','Murciasalud · Información al paciente'],
+    telefonos:[['🏥 Urgencias Santa Lucía','968128600']]
+  },
+
+  {
+    id:'vacunas', cat:['vac'], cc:'cc-vax', icon:'💉', hc1:'#14532d', hc2:'#16a34a',
+    titulo:'¿Qué vacunas me tocan?',
+    resumen:'Calendario del adulto: gripe, COVID, tétanos, neumococo, zóster.',
+    que:'Vacunarse no es solo para niños. Hay vacunas que se ponen en momentos concretos de la vida o cada pocos años. Mantenerse al día es una de las formas más eficaces de proteger la salud.',
+    hacer:[
+      '<strong>Gripe (anual)</strong>:',
+      'Mayores de 60 años.',
+      'Personas con enfermedades crónicas (cardíacas, respiratorias, diabetes, renales, hepáticas, inmunodeficiencia).',
+      'Embarazadas.',
+      'Personal sanitario y sociosanitario.',
+      'Convivientes con personas de alto riesgo.',
+      '<strong>COVID-19</strong>: según recomendaciones vigentes (anual para grupos de riesgo).',
+      '<strong>Tétanos-difteria (Td)</strong>: una dosis cada 10 años tras la primovacunación. Si no la tienes completa, pídela.',
+      '<strong>Neumococo</strong>: mayores de 60-65 años y personas con enfermedades crónicas.',
+      '<strong>Herpes zóster</strong> (culebrilla): a partir de 65 años y en grupos de riesgo desde los 18 (inmunodeprimidos).',
+      '<strong>VRS (virus respiratorio sincitial)</strong>: recomendada en embarazadas y adultos mayores según calendario actual.',
+      '<strong>Triple vírica (sarampión, rubéola, parotiditis)</strong>: adultos nacidos después de 1966 que no hayan pasado las enfermedades y no estén vacunados con 2 dosis.',
+      'Pregunta en tu centro de salud: a veces hay recuerdos específicos por profesión, viajes o embarazo.'
+    ],
+    cita:[
+      'Pide cita con enfermería para ver tu historia de vacunación.',
+      'Si vas a viajar a zona tropical: consulta en Sanidad Exterior con antelación.',
+      'Embarazo: gripe, tosferina (dTpa) y otras según semana.',
+      'Si te vas a operar o empezar inmunosupresores: revisa estado antes.'
+    ],
+    urgente:[
+      'Reacción alérgica fuerte tras una vacuna (hinchazón cara/labios, dificultad respirar) en las primeras horas → 112.',
+      'Fiebre muy alta o signos generales graves en las 72 h siguientes (muy raros).',
+      'En general, las reacciones locales (dolor, enrojecimiento, fiebre baja) son normales 1-2 días.'
+    ],
+    fuentes:['Calendario vacunal Región de Murcia 2025','Ministerio de Sanidad · Calendario común','CAV-AEP','AEV · vacunas.org'],
+    telefonos:[['🏥 Tu centro de salud (pide cita)','012'],['🚨 Emergencias','112']]
+  }
+];
+
+let currentCat = 'all';
+let currentQ = '';
+
+function renderChips(){
+  document.getElementById('chips').innerHTML = CATEGORIAS.map(function(c){
+    return '<button class="chip'+(c.id===currentCat?' active':'')+'" onclick="setCat(\''+c.id+'\')">'+c.t+'</button>';
+  }).join('');
+}
+function setCat(c){ currentCat = c; renderChips(); renderGrid(); }
+
+function match(x){
+  if(currentCat !== 'all' && !(x.cat||[]).includes(currentCat)) return false;
+  if(!currentQ) return true;
+  const q = currentQ.toLowerCase();
+  return x.titulo.toLowerCase().includes(q) || x.resumen.toLowerCase().includes(q);
+}
+
+function renderGrid(){
+  const list = CONSEJOS.filter(match);
+  document.getElementById('grid').innerHTML = list.length ? list.map(function(c){
+    return '<button class="card '+c.cc+'" onclick="open(\''+c.id+'\')">'
+         + '<div class="icon">'+c.icon+'</div>'
+         + '<div class="t">'+c.titulo+'</div>'
+         + '<div class="s">'+c.resumen+'</div></button>';
+  }).join('') : '<p style="color:var(--t3)">Sin resultados. Prueba otra palabra.</p>';
+}
+
+function filter(){ currentQ = document.getElementById('q').value.trim(); renderGrid(); }
+
+function renderItem(x){
+  if(typeof x === 'string') return '<li>'+x+'</li>';
+  if(x.tabla){
+    const t = x.tabla;
+    return '<table><thead><tr>'+t[0].map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'
+         + t.slice(1).map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('')
+         + '</tbody></table>';
+  }
+  return '';
+}
+
+function renderList(items){
+  return items.map(function(x){
+    if(typeof x === 'string') return '<li>'+x+'</li>';
+    if(x.tabla) return '</ul>'+renderItem(x)+'<ul>';
+    return '';
+  }).join('');
+}
+
+window.open = function(id){
+  const c = CONSEJOS.find(function(x){return x.id===id});
+  if(!c) return;
+  document.getElementById('mh').style.setProperty('--hc1', c.hc1);
+  document.getElementById('mh').style.setProperty('--hc2', c.hc2);
+  document.getElementById('mi').textContent = c.icon;
+  document.getElementById('mt').textContent = c.titulo;
+  let html = '';
+  html += '<div class="bloque b-que"><h3>🧐 ¿Qué te está pasando?</h3><p>'+c.que+'</p></div>';
+  html += '<div class="bloque b-hacer"><h3>✅ ¿Qué puedes hacer tú?</h3><ul>'+renderList(c.hacer)+'</ul></div>';
+  html += '<div class="bloque b-cita"><h3>📅 ¿Cuándo pedir cita?</h3><ul>'+c.cita.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div>';
+  html += '<div class="bloque b-urg"><h3>🚨 ¿Cuándo ir a Urgencias o llamar al 112?</h3><ul>'+c.urgente.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>';
+  html += '<p style="margin-top:8px">'+c.telefonos.map(function(t){return '<a class="tel" style="--bc:'+c.hc2+'" href="tel:'+t[1]+'">'+t[0]+'</a>'}).join(' ')+'</p></div>';
+  html += '<div class="bloque b-foot"><h3>📚 Fuentes</h3><ul>'+c.fuentes.map(function(f){return '<li>'+f+'</li>'}).join('')+'</ul><p style="margin-top:6px">Revisado: 2026-04 · Área II Cartagena · Uso exclusivamente docente.</p></div>';
+  document.getElementById('mb').innerHTML = html;
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+};
+window.close = function(){ document.getElementById('modal').classList.remove('show'); document.body.style.overflow = ''; };
+
+renderChips(); renderGrid();
+</script>
+</body>
+</html>

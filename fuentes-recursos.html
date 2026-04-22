@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fuentes y Recursos · Cartagenaeste</title>
+<meta name="description" content="Agencias evaluadoras, boletines farmacoterapéuticos, guías clínicas y blogs docentes de referencia para profesionales del Área II Cartagena.">
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-light:#238c62;--primary-dark:#0a4d35;
+  --accent:#d4a853;--amber:#d97706;--red:#dc2626;--blue:#1e40af;--purple:#7c3aed;--teal:#0d9488;
+  --bg:#0a1f14;--bg2:#0f2e20;--card:#0f2a1e;--card2:#13342a;
+  --border:rgba(255,255,255,.14);--border2:rgba(255,255,255,.25);
+  --tx:#e9f5ee;--t2:#b4c8bc;--t3:#7f9089;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:40px;position:relative}
+body::after{content:"";position:fixed;inset:-20px;z-index:-1;pointer-events:none;background:url('hero-bg.jpg') center/cover no-repeat;filter:blur(5px) brightness(.35)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(6,20,12,.78),rgba(10,31,20,.88))}
+.nav{background:rgba(6,15,10,.9);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav a{color:#7dd3bb;text-decoration:none;font-size:.85rem;font-weight:600}
+.nav h1{font-size:1rem;font-weight:800;flex:1;font-family:var(--display)}
+.hero{position:relative;z-index:1;padding:32px 20px 24px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(15,107,74,.28),rgba(10,77,53,.08));overflow:hidden}
+.hero::after{content:"📚";position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.12}
+.hero h2{font-family:var(--display);font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;color:#fff;margin-bottom:6px}
+.hero p{color:rgba(255,255,255,.82);font-size:.9rem;font-weight:300;line-height:1.55;max-width:820px}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 18px;position:relative;z-index:1}
+
+.search{width:100%;padding:13px 18px;background:rgba(255,255,255,.08);border:1px solid var(--border2);color:#fff;border-radius:14px;font-family:var(--font);font-size:.95rem;margin-bottom:18px}
+.search::placeholder{color:rgba(255,255,255,.5)}
+.search:focus{outline:none;border-color:#7dd3bb;background:rgba(255,255,255,.12)}
+
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{padding:7px 14px;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:18px;color:var(--t2);font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;font-family:var(--font)}
+.chip:hover{background:rgba(255,255,255,.14);color:#fff}
+.chip.active{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border-color:transparent}
+
+.section{margin-bottom:28px}
+.section-title{font-family:var(--display);font-size:1.15rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-title .count{background:rgba(255,255,255,.1);color:var(--t2);font-family:var(--font);font-size:.7rem;padding:2px 10px;border-radius:12px;margin-left:auto;font-weight:600}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:.2s;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--tx);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--c);transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.card:hover{background:var(--card2);border-color:var(--border2);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.4)}
+.card:hover::before{transform:scaleX(1)}
+.card .t{font-weight:700;font-size:.95rem;color:#fff;display:flex;align-items:center;gap:8px}
+.card .meta{font-size:.72rem;color:var(--t3);font-family:ui-monospace,monospace;word-break:break-all}
+.card .d{font-size:.82rem;color:var(--t2);line-height:1.5}
+.card .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.66rem;font-weight:700;background:var(--b,rgba(255,255,255,.08));color:var(--c,var(--t2));align-self:flex-start;margin-top:2px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--br,transparent)}
+
+/* Category color themes */
+.c-eval{--c:#93c5fd;--b:rgba(147,197,253,.14);--br:rgba(147,197,253,.3)}
+.c-boletin{--c:#fbbf24;--b:rgba(251,191,36,.14);--br:rgba(251,191,36,.3)}
+.c-guia{--c:#86efac;--b:rgba(134,239,172,.14);--br:rgba(134,239,172,.3)}
+.c-docencia{--c:#c4b5fd;--b:rgba(196,181,253,.14);--br:rgba(196,181,253,.3)}
+.c-bd{--c:#67e8f9;--b:rgba(103,232,249,.14);--br:rgba(103,232,249,.3)}
+.c-calc{--c:#fca5a5;--b:rgba(252,165,165,.14);--br:rgba(252,165,165,.3)}
+.c-salud{--c:#5eead4;--b:rgba(94,234,212,.14);--br:rgba(94,234,212,.3)}
+.c-local{--c:#f0abfc;--b:rgba(240,171,252,.14);--br:rgba(240,171,252,.3)}
+.c-farma{--c:#fdba74;--b:rgba(253,186,116,.14);--br:rgba(253,186,116,.3)}
+
+.hidden{display:none!important}
+.empty{text-align:center;padding:40px 20px;color:var(--t3);font-size:.9rem}
+
+.note{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.35);color:#fcd34d;padding:12px 16px;border-radius:10px;font-size:.84rem;margin-bottom:18px;line-height:1.55}
+
+@media (max-width:640px){
+  .hero{padding:22px 16px 18px}
+  .hero::after{font-size:3rem;right:10px}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="panel-medico.html">← Panel médico</a>
+  <h1>📚 Fuentes y Recursos</h1>
+</nav>
+
+<div class="hero">
+  <h2>Fuentes y Recursos clínicos</h2>
+  <p>Directorio curado de agencias evaluadoras de medicamentos, boletines farmacoterapéuticos independientes, guías de práctica clínica, blogs docentes y bases de datos de referencia. Todos los enlaces han sido verificados.</p>
+</div>
+
+<div class="wrap">
+  <div class="note">
+    💡 <strong>Uso recomendado:</strong> este directorio reúne fuentes de consulta rápida para AP y Urgencias. Prioriza siempre agencias públicas independientes. Los boletines autonómicos españoles son especialmente útiles porque hacen revisión crítica de nuevos fármacos.
+  </div>
+
+  <input type="text" id="q" class="search" placeholder="🔎 Buscar por nombre, país, especialidad o palabra clave…" oninput="filterAll()">
+
+  <div class="filters" id="filters"></div>
+
+  <div id="content"></div>
+
+  <p style="font-size:.76rem;color:var(--t3);text-align:center;margin-top:26px">
+    ¿Echas en falta un recurso? Usa el botón <strong>💡 Sugerencias</strong> desde el panel médico.
+  </p>
+</div>
+
+<script>
+const DATA = [
+  // ═══ AGENCIAS EVALUADORAS / HTA (públicas, independientes) ═══
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'AEMPS — Agencia Española de Medicamentos', url:'https://www.aemps.gob.es/', meta:'aemps.gob.es', desc:'Agencia reguladora nacional: fichas técnicas (CIMA), notificación RAM, alertas de seguridad.', tags:['aemps','ram','cima','fichas técnicas','españa','nacional']},
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'CIMA · AEMPS', url:'https://cima.aemps.es/', meta:'cima.aemps.es', desc:'Centro de información online de medicamentos autorizados en España. Fichas técnicas, prospectos, ATC, equivalentes.', tags:['cima','ficha técnica','prospecto']},
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'GENESIS · Informes SEFH', url:'https://gruposdetrabajo.sefh.es/genesis/', meta:'gruposdetrabajo.sefh.es/genesis', desc:'Informes de evaluación de nuevos medicamentos hospitalarios (SEFH). Posicionamiento coste-efectividad.', tags:['sefh','hospitalario','evaluación','genesis']},
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'REvalMed SNS', url:'https://www.sanidad.gob.es/areas/farmacia/infoMedicamentos/valtermedicamentos/home.htm', meta:'sanidad.gob.es/valtermedicamentos', desc:'Red de evaluación del Ministerio: informes de posicionamiento terapéutico (IPT) oficiales.', tags:['ipt','posicionamiento','ministerio']},
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'Osteba · País Vasco', url:'https://www.euskadi.eus/osteba/', meta:'euskadi.eus/osteba', desc:'Agencia vasca de evaluación de tecnologías sanitarias.', tags:['osteba','euskadi','evaluación','tecnologías']},
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'AETSA · Andalucía', url:'https://www.aetsa.org/', meta:'aetsa.org', desc:'Agencia andaluza de evaluación de tecnologías sanitarias.', tags:['aetsa','andalucía','evaluación']},
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'AQuAS · Cataluña', url:'https://aquas.gencat.cat/', meta:'aquas.gencat.cat', desc:'Agencia de calidad y evaluación sanitarias de Cataluña.', tags:['aquas','cataluña']},
+  {g:'eval', sec:'🇪🇸 Agencias evaluadoras públicas · España', name:'Avalia-T · Galicia', url:'https://avalia-t.sergas.gal/', meta:'avalia-t.sergas.gal', desc:'Unidad de asesoramiento científico-técnico del SERGAS.', tags:['avalia-t','galicia']},
+
+  // ═══ BOLETINES FARMACOTERAPÉUTICOS ═══
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos independientes', name:'CADIME · Andalucía', url:'https://cadime.es/', meta:'cadime.es', desc:'Centro Andaluz de Documentación e Información de Medicamentos. Boletín terapéutico de referencia en España.', tags:['cadime','andalucía','boletín','referencia']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos independientes', name:'CEVIME / INFAC · País Vasco', url:'https://www.euskadi.eus/informacion/infac-y-publicaciones-del-cevime/web01-a2cevime/es/', meta:'euskadi.eus/cevime', desc:'Boletín INFAC y publicaciones del Centro Vasco de Información de Medicamentos. Revisión crítica excelente.', tags:['cevime','infac','euskadi','boletín']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos independientes', name:'BOLCAN · Canarias', url:'https://www3.gobiernodecanarias.org/sanidad/scs/', meta:'gobiernodecanarias.org', desc:'Boletín Canario de Uso Racional del Medicamento del SCS.', tags:['bolcan','canarias','boletín','urm']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos independientes', name:'Sacyl · Portal del Medicamento Castilla y León', url:'https://www.saludcastillayleon.es/portalmedicamento/', meta:'saludcastillayleon.es', desc:'Fichas de evaluación, boletín Ojo de Markov, deprescripción y adherencia.', tags:['sacyl','cyl','castilla y león','deprescripción']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos independientes', name:'Hemos Leído · CAM', url:'https://www.hemosleido.es/', meta:'hemosleido.es', desc:'Boletín farmacoterapéutico independiente, muy ágil. Editado por farmacéuticos de la Comunidad Valenciana.', tags:['hemos leído','valencia','independiente']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos independientes', name:'Infarma · Aragón', url:'https://www.aragon.es/-/boletines-farmacoterapeuticos', meta:'aragon.es', desc:'Boletín farmacoterapéutico de la Dirección General de Asistencia Sanitaria de Aragón.', tags:['infarma','aragón','boletín']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos independientes', name:'BOTPlus · CGCOF', url:'https://botplusweb.portalfarma.com/', meta:'botplusweb.portalfarma.com', desc:'Base de datos del medicamento del Consejo General de Colegios Oficiales de Farmacéuticos.', tags:['botplus','cgcof','base datos']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos internacionales', name:'Australian Prescriber', url:'https://australianprescriber.tg.org.au/', meta:'australianprescriber.tg.org.au', desc:'Boletín australiano independiente, open access. Excelente para revisiones de clases terapéuticas.', tags:['australian prescriber','australia','independiente','open access']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos internacionales', name:'BPAC NZ · Best Practice Advocacy Centre', url:'https://bpac.org.nz/', meta:'bpac.org.nz', desc:'Boletín neozelandés orientado a Atención Primaria. Artículos prácticos y algoritmos.', tags:['bpac','nueva zelanda','atención primaria']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos internacionales', name:'Prescrire International', url:'https://english.prescrire.org/', meta:'english.prescrire.org', desc:'Revista francesa independiente de referencia mundial en evaluación crítica de medicamentos.', tags:['prescrire','francia','independiente','crítica']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos internacionales', name:'DTB · Drug and Therapeutics Bulletin (BMJ)', url:'https://dtb.bmj.com/', meta:'dtb.bmj.com', desc:'Boletín del BMJ para Atención Primaria. Revisiones de nuevos fármacos.', tags:['dtb','bmj','reino unido','ap']},
+  {g:'boletin', sec:'📰 Boletines farmacoterapéuticos internacionales', name:'The Medical Letter', url:'https://secure.medicalletter.org/', meta:'medicalletter.org', desc:'Boletín norteamericano independiente desde 1959. Recomendaciones concisas.', tags:['medical letter','eeuu','independiente']},
+
+  // ═══ GUÍAS CLÍNICAS NACIONALES E INTERNACIONALES ═══
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'GuíaSalud · Catálogo GPC del SNS', url:'https://portal.guiasalud.es/', meta:'portal.guiasalud.es', desc:'Catálogo nacional de guías de práctica clínica basadas en evidencia. Referencia oficial del SNS.', tags:['guíasalud','gpc','sns','españa']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'NICE Guidelines · Reino Unido', url:'https://www.nice.org.uk/guidance', meta:'nice.org.uk/guidance', desc:'National Institute for Health and Care Excellence: guías y CKS (Clinical Knowledge Summaries).', tags:['nice','reino unido','uk','gpc','cks']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'NICE CKS · Clinical Knowledge Summaries', url:'https://cks.nice.org.uk/', meta:'cks.nice.org.uk', desc:'Resúmenes prácticos NICE por síndrome. Ideal para consulta rápida.', tags:['cks','nice','consulta rápida']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'SIGN · Scottish Intercollegiate Guidelines Network', url:'https://www.sign.ac.uk/', meta:'sign.ac.uk', desc:'Guías escocesas de alta calidad.', tags:['sign','escocia','gpc']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'Fisterra · Guías clínicas', url:'https://www.fisterra.com/', meta:'fisterra.com', desc:'Portal médico español orientado a Atención Primaria. Guías breves y prácticas.', tags:['fisterra','ap','españa']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'semFYC · Documentos No Hacer', url:'https://www.semfyc.es/profesionales/publicaciones/no-hacer/', meta:'semfyc.es/no-hacer', desc:'Lista de recomendaciones de prácticas a evitar en AP.', tags:['semfyc','no hacer','choosing wisely']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'Choosing Wisely Spain', url:'https://www.choosingwisely.es/', meta:'choosingwisely.es', desc:'Movimiento de desinversión: pruebas y tratamientos sin valor añadido.', tags:['choosing wisely','desinversión']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'Guía-ABE · Infecciones pediátricas', url:'https://www.guia-abe.es/', meta:'guia-abe.es', desc:'Protocolos de la AEP para el manejo de infecciones en pediatría.', tags:['guía abe','aep','pediatría','infecciones']},
+  {g:'guia', sec:'📋 Guías de práctica clínica', name:'AEPap · Algoritmos', url:'https://www.aepap.org/', meta:'aepap.org', desc:'Asociación Española de Pediatría de AP. Algoritmos y documentos técnicos.', tags:['aepap','pediatría','ap']},
+
+  // ═══ DOCENCIA Y BLOGS ═══
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Docencia Rafalafena', url:'https://rafalafena.wordpress.com/', meta:'rafalafena.wordpress.com', desc:'Sesiones docentes del CS Rafalafena (Castellón). Referencia en docencia de AP.', tags:['rafalafena','ap','docencia','sesiones']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Sesiones San Blas', url:'https://sesionessanblas.blogspot.com/', meta:'sesionessanblas.blogspot.com', desc:'Sesiones clínicas del CS San Blas (Madrid). Resúmenes concisos.', tags:['san blas','sesiones','ap','madrid']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Dermapixel · Dermatología práctica', url:'https://www.dermapixel.com/', meta:'dermapixel.com', desc:'Blog de dermatología de la Dra. Rosa Taberner. Casos clínicos semanales con imagen.', tags:['dermapixel','dermatología','casos']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Primum Non Nocere · Rafa Bravo', url:'https://rafabravo.blog/', meta:'rafabravo.blog', desc:'Blog crítico sobre medicina, sobrediagnóstico y prevención cuaternaria.', tags:['primum non nocere','sobrediagnóstico','rafa bravo']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'El rincón de Sísifo', url:'https://elrincondesisifo.org/', meta:'elrincondesisifo.org', desc:'Blog farmacoterapéutico con revisiones críticas. Carlos Fernández Oropesa.', tags:['sísifo','farmacoterapia','crítica']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Hijos de Rudolf Virchow', url:'https://hijosderudolfvirchow.com/', meta:'hijosderudolfvirchow.com', desc:'Blog de medicina interna con enfoque clínico.', tags:['interna','medicina','rudolf']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Gestión Clínica Varela', url:'https://gestionclinicavarela.blogspot.com/', meta:'gestionclinicavarela.blogspot.com', desc:'Gestión sanitaria, evaluación y política sanitaria.', tags:['gestión','varela','política sanitaria']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Médico Crítico', url:'https://medicocritico.blogspot.com/', meta:'medicocritico.blogspot.com', desc:'Salud comunitaria, determinantes sociales y salud global.', tags:['crítico','comunitaria','determinantes']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'LITFL · Life in the Fast Lane', url:'https://litfl.com/', meta:'litfl.com', desc:'Recurso FOAMed de referencia para urgencias y cuidados críticos. ECG, imagen, casos.', tags:['litfl','urgencias','foamed','ecg']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'REBEL EM', url:'https://rebelem.com/', meta:'rebelem.com', desc:'Emergency Medicine FOAMed. Revisiones críticas de papers de urgencias.', tags:['rebel em','urgencias','foamed']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'First10EM', url:'https://first10em.com/', meta:'first10em.com', desc:'Blog de urgencias enfocado en los primeros 10 minutos de cada caso.', tags:['first10em','urgencias']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Dr. Smith ECG Blog', url:'http://hqmeded-ecg.blogspot.com/', meta:'hqmeded-ecg.blogspot.com', desc:'Casos de ECG con interpretación experta. Referencia en SCACEST sutiles.', tags:['smith','ecg','scacest']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'emDocs', url:'https://www.emdocs.net/', meta:'emdocs.net', desc:'Blog colaborativo de urgencias con pearls y casos clínicos.', tags:['emdocs','urgencias']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'The Bottom Line', url:'https://www.thebottomline.org.uk/', meta:'thebottomline.org.uk', desc:'Revisiones críticas de RCTs relevantes en medicina intensiva y urgencias.', tags:['bottom line','uci','rct']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'Don\'t Forget The Bubbles', url:'https://dontforgetthebubbles.com/', meta:'dontforgetthebubbles.com', desc:'Pediatría FOAMed. Casos clínicos, simulación y docencia.', tags:['bubbles','pediatría','foamed']},
+  {g:'docencia', sec:'🎓 Blogs docentes y recursos FOAMed', name:'ECG Wave-Maven · Harvard', url:'https://ecg.bidmc.harvard.edu/maven/mavenmain.asp', meta:'ecg.bidmc.harvard.edu', desc:'Banco de ECG con explicación de Beth Israel Deaconess (Harvard).', tags:['ecg','harvard','wave-maven','banco']},
+
+  // ═══ BASES DE DATOS CLÍNICAS ═══
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'PubMed · NLM', url:'https://pubmed.ncbi.nlm.nih.gov/', meta:'pubmed.ncbi.nlm.nih.gov', desc:'Base de datos biomédica de referencia mundial. NCBI/NIH.', tags:['pubmed','nlm','biomédica']},
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'Cochrane Library', url:'https://www.cochranelibrary.com/', meta:'cochranelibrary.com', desc:'Revisiones sistemáticas de referencia. Acceso abierto a resúmenes.', tags:['cochrane','revisiones','sistemáticas']},
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'Epistemonikos', url:'https://www.epistemonikos.org/', meta:'epistemonikos.org', desc:'Base global de revisiones sistemáticas gratuita.', tags:['epistemonikos','revisiones']},
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'TRIP Database', url:'https://www.tripdatabase.com/', meta:'tripdatabase.com', desc:'Buscador clínico basado en evidencia, jerarquiza por tipo de estudio.', tags:['trip','mbe']},
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'Murciasalud — Preevid', url:'https://www.murciasalud.es/preevid', meta:'murciasalud.es/preevid', desc:'Banco regional de preguntas clínicas basadas en evidencia. Local y fiable.', tags:['preevid','murcia','mbe','local']},
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'BMJ Best Practice', url:'https://bestpractice.bmj.com/', meta:'bestpractice.bmj.com', desc:'Sumarios clínicos actualizados del BMJ. Requiere suscripción.', tags:['bmj','best practice']},
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'UpToDate', url:'https://www.uptodate.com/', meta:'uptodate.com', desc:'Sumarios clínicos de referencia. Requiere suscripción (institucional SMS en algunos centros).', tags:['uptodate','sumarios']},
+  {g:'bd', sec:'🗄️ Bases de datos clínicas y biomédicas', name:'Dynamed', url:'https://www.dynamed.com/', meta:'dynamed.com', desc:'Sumarios clínicos orientados a práctica, basados en evidencia graduada.', tags:['dynamed','sumarios']},
+
+  // ═══ CALCULADORAS ═══
+  {g:'calc', sec:'🧮 Calculadoras y scores externos', name:'MDCalc', url:'https://www.mdcalc.com/', meta:'mdcalc.com', desc:'Gran repositorio de calculadoras clínicas validadas en inglés.', tags:['mdcalc','scores']},
+  {g:'calc', sec:'🧮 Calculadoras y scores externos', name:'SAMIUC · UCI', url:'https://www.samiuc.es/calculadores/', meta:'samiuc.es', desc:'Calculadores de la Sociedad Andaluza de Medicina Intensiva.', tags:['samiuc','uci','calculadoras']},
+  {g:'calc', sec:'🧮 Calculadoras y scores externos', name:'QxMD · Calculate', url:'https://qxmd.com/calculate', meta:'qxmd.com', desc:'Calculadoras clínicas validadas con referencias bibliográficas.', tags:['qxmd','calculate']},
+
+  // ═══ SEGURIDAD Y FARMACOVIGILANCIA ═══
+  {g:'farma', sec:'💊 Seguridad del medicamento y farmacovigilancia', name:'AEMPS · Alertas de seguridad', url:'https://www.aemps.gob.es/informa/notas-informativas/', meta:'aemps.gob.es/informa', desc:'Notas informativas oficiales sobre seguridad de medicamentos.', tags:['alertas','farmacovigilancia','aemps']},
+  {g:'farma', sec:'💊 Seguridad del medicamento y farmacovigilancia', name:'Notific@RAM · Tarjeta Amarilla', url:'https://www.notificaram.es/', meta:'notificaram.es', desc:'Notificación oficial de reacciones adversas a medicamentos.', tags:['ram','tarjeta amarilla','notificar']},
+  {g:'farma', sec:'💊 Seguridad del medicamento y farmacovigilancia', name:'ISMP-España', url:'https://www.ismp-espana.org/', meta:'ismp-espana.org', desc:'Institute for Safe Medication Practices España. Alertas y prácticas seguras.', tags:['ismp','seguridad','errores']},
+  {g:'farma', sec:'💊 Seguridad del medicamento y farmacovigilancia', name:'Deprescribing.org', url:'https://deprescribing.org/', meta:'deprescribing.org', desc:'Algoritmos canadienses de deprescripción por grupos farmacológicos.', tags:['deprescribing','canadá','polimedicación']},
+  {g:'farma', sec:'💊 Seguridad del medicamento y farmacovigilancia', name:'STOPP/START · SIEMPP', url:'https://www.siempp.com/stopp-start/', meta:'siempp.com', desc:'Criterios STOPP/START de prescripción inadecuada en mayores.', tags:['stopp','start','mayores']},
+  {g:'farma', sec:'💊 Seguridad del medicamento y farmacovigilancia', name:'e-Lactancia', url:'https://www.e-lactancia.org/', meta:'e-lactancia.org', desc:'Compatibilidad de fármacos con la lactancia materna. Hospital de Denia.', tags:['lactancia','fármacos','denia']},
+  {g:'farma', sec:'💊 Seguridad del medicamento y farmacovigilancia', name:'Reprotox · Embarazo', url:'https://www.reprotox.org/', meta:'reprotox.org', desc:'Base de datos sobre teratogenicidad y exposiciones en embarazo.', tags:['reprotox','teratogénesis','embarazo']},
+
+  // ═══ SALUD PÚBLICA ═══
+  {g:'salud', sec:'🌍 Salud pública y vigilancia epidemiológica', name:'Ministerio de Sanidad · España', url:'https://www.sanidad.gob.es/', meta:'sanidad.gob.es', desc:'Portal oficial: planes estratégicos, calendarios vacunales, Estrategia de Salud Digital.', tags:['sanidad','ministerio','nacional']},
+  {g:'salud', sec:'🌍 Salud pública y vigilancia epidemiológica', name:'ECDC · Europa', url:'https://www.ecdc.europa.eu/', meta:'ecdc.europa.eu', desc:'Centro Europeo para la Prevención y Control de Enfermedades.', tags:['ecdc','europa','vigilancia']},
+  {g:'salud', sec:'🌍 Salud pública y vigilancia epidemiológica', name:'OMS · WHO', url:'https://www.who.int/', meta:'who.int', desc:'Organización Mundial de la Salud. Guías, alertas, estrategias globales.', tags:['oms','who','global']},
+  {g:'salud', sec:'🌍 Salud pública y vigilancia epidemiológica', name:'CDC · Estados Unidos', url:'https://www.cdc.gov/', meta:'cdc.gov', desc:'Centers for Disease Control and Prevention. Referencia en enfermedades infecciosas.', tags:['cdc','eeuu','infecciosas']},
+  {g:'salud', sec:'🌍 Salud pública y vigilancia epidemiológica', name:'CAV-AEP · Comité Asesor de Vacunas', url:'https://vacunasaep.org/', meta:'vacunasaep.org', desc:'Referente en vacunación pediátrica en España.', tags:['cav','aep','vacunas']},
+  {g:'salud', sec:'🌍 Salud pública y vigilancia epidemiológica', name:'AEV · Asociación Española de Vacunología', url:'https://www.vacunas.org/', meta:'vacunas.org', desc:'Sociedad científica de vacunología en adultos y pediatría.', tags:['aev','vacunas']},
+
+  // ═══ REGIÓN DE MURCIA ═══
+  {g:'local', sec:'🏥 Región de Murcia · Área II', name:'Murciasalud — Portal sanitario', url:'https://www.murciasalud.es/', meta:'murciasalud.es', desc:'Portal oficial del SMS. Preevid, vacunas, alertas, protocolos regionales.', tags:['murciasalud','sms','regional']},
+  {g:'local', sec:'🏥 Región de Murcia · Área II', name:'Escuela de Salud de la Región de Murcia', url:'https://www.escueladesaludmurcia.es/', meta:'escueladesaludmurcia.es', desc:'Aulas de Pacientes (diabetes, asma, salud mental, CV, dolor crónico).', tags:['escuela salud','aulas','murcia','educación']},
+  {g:'local', sec:'🏥 Región de Murcia · Área II', name:'Calendario vacunal · Región de Murcia', url:'https://www.murciasalud.es/vacunas', meta:'murciasalud.es/vacunas', desc:'Calendario vacunal oficial del SMS a lo largo de toda la vida.', tags:['calendario','vacunas','murcia']},
+  {g:'local', sec:'🏥 Región de Murcia · Área II', name:'SMS · Información profesional', url:'https://www.murciasalud.es/pagina?id=180211', meta:'murciasalud.es', desc:'Información clínica dirigida a profesionales del Servicio Murciano de Salud.', tags:['sms','profesionales']},
+  {g:'local', sec:'🏥 Región de Murcia · Área II', name:'Servicios Sociales Cartagena', url:'https://serviciossociales.cartagena.es/', meta:'serviciossociales.cartagena.es', desc:'Recursos sociales, red de entidades y puntos de acceso a Servicios Sociales.', tags:['servicios sociales','cartagena']},
+  {g:'local', sec:'🏥 Región de Murcia · Área II', name:'CARM · Datos Abiertos', url:'https://datosabiertos.regiondemurcia.es/', meta:'datosabiertos.regiondemurcia.es', desc:'Portal de datos abiertos del Gobierno regional.', tags:['datos abiertos','carm']}
+];
+
+const GROUPS = [
+  {id:'all',    t:'Todos',                  cls:''},
+  {id:'eval',   t:'🇪🇸 Agencias evaluadoras', cls:'c-eval'},
+  {id:'boletin',t:'📰 Boletines',             cls:'c-boletin'},
+  {id:'guia',   t:'📋 Guías clínicas',        cls:'c-guia'},
+  {id:'docencia',t:'🎓 Docencia / FOAMed',    cls:'c-docencia'},
+  {id:'bd',     t:'🗄️ Bases de datos',        cls:'c-bd'},
+  {id:'calc',   t:'🧮 Calculadoras',          cls:'c-calc'},
+  {id:'farma',  t:'💊 Seguridad fármacos',    cls:'c-farma'},
+  {id:'salud',  t:'🌍 Salud pública',         cls:'c-salud'},
+  {id:'local',  t:'🏥 Región de Murcia',      cls:'c-local'}
+];
+
+let currentGroup = 'all';
+let currentQuery = '';
+
+function renderFilters(){
+  const el = document.getElementById('filters');
+  el.innerHTML = GROUPS.map(function(g){
+    const count = g.id==='all' ? DATA.length : DATA.filter(function(d){return d.g===g.id}).length;
+    return '<button class="chip'+(g.id===currentGroup?' active':'')+'" data-g="'+g.id+'" onclick="setGroup(\''+g.id+'\')">'+g.t+' <span style="opacity:.6">'+count+'</span></button>';
+  }).join('');
+}
+
+function setGroup(g){ currentGroup = g; renderFilters(); renderContent(); }
+
+function match(d){
+  if(currentGroup !== 'all' && d.g !== currentGroup) return false;
+  if(!currentQuery) return true;
+  const q = currentQuery.toLowerCase();
+  if(d.name.toLowerCase().includes(q)) return true;
+  if(d.desc.toLowerCase().includes(q)) return true;
+  if(d.meta.toLowerCase().includes(q)) return true;
+  if((d.tags||[]).some(function(t){return t.toLowerCase().includes(q)})) return true;
+  return false;
+}
+
+function renderContent(){
+  const out = document.getElementById('content');
+  const groupsVisible = {};
+  DATA.forEach(function(d){ if(match(d)){ if(!groupsVisible[d.sec]) groupsVisible[d.sec] = []; groupsVisible[d.sec].push(d); }});
+  const keys = Object.keys(groupsVisible);
+  if(keys.length === 0){ out.innerHTML = '<div class="empty">Sin resultados. Prueba con otra palabra clave.</div>'; return; }
+  out.innerHTML = keys.map(function(sec){
+    const items = groupsVisible[sec];
+    const cls = (GROUPS.find(function(g){return items[0] && g.id===items[0].g})||{}).cls||'';
+    return '<div class="section">'
+         + '<div class="section-title">'+sec+'<span class="count">'+items.length+'</span></div>'
+         + '<div class="grid">'
+         + items.map(function(d){
+             return '<a class="card '+(GROUPS.find(function(g){return g.id===d.g})||{}).cls+'" href="'+d.url+'" target="_blank" rel="noopener">'
+                  + '<div class="t">'+d.name+'</div>'
+                  + '<div class="meta">'+d.meta+'</div>'
+                  + '<div class="d">'+d.desc+'</div>'
+                  + '</a>';
+           }).join('')
+         + '</div></div>';
+  }).join('');
+}
+
+function filterAll(){ currentQuery = document.getElementById('q').value.trim(); renderContent(); }
+
+renderFilters();
+renderContent();
+</script>
+</body>
+</html>

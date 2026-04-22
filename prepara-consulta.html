@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prepara tu consulta · Área II Cartagena</title>
+<meta name="description" content="Guías pre-consulta y post-consulta con checklist, registro de tensiones, mapa de dolor y asistente IA.">
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-light:#238c62;--primary-dark:#0a4d35;
+  --blue:#1e40af;--amber:#d97706;--red:#dc2626;
+  --bg:#fffaf3;--card:#fff;--border:#e5e1d8;
+  --tx:#1f2937;--t2:#4b5563;--t3:#6b7280;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0f172a;--card:#1e293b;--border:#334155;--tx:#f1f5f9;--t2:#cbd5e1;--t3:#94a3b8}
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:40px}
+.nav{background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;color:#fff}
+.nav a{color:#fff;text-decoration:none;font-size:.85rem;font-weight:600;opacity:.9}
+.nav h1{font-size:1rem;font-weight:700;flex:1;font-family:var(--display)}
+.hero{padding:26px 20px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"📋";position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.14}
+.hero h2{font-family:var(--display);font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;margin-bottom:6px}
+.hero p{font-size:.95rem;font-weight:300;line-height:1.55;max-width:740px;opacity:.9}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 18px}
+
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.choice button{padding:26px 20px;border:2px solid var(--border);background:var(--card);color:var(--tx);border-radius:16px;cursor:pointer;font-family:var(--font);text-align:left;transition:.2s}
+.choice button:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.choice button.pre{border-left:6px solid #3b82f6}
+.choice button.post{border-left:6px solid #16a34a}
+.choice button .ic{font-size:2.3rem;display:block;margin-bottom:4px}
+.choice button .t{font-family:var(--display);font-size:1.15rem;font-weight:700;margin-bottom:4px}
+.choice button .s{font-size:.85rem;color:var(--t2);line-height:1.5}
+@media(max-width:640px){.choice{grid-template-columns:1fr}}
+
+.section{display:none}
+.section.show{display:block}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:var(--font);color:var(--tx);text-align:left;border-left:5px solid var(--c,var(--primary))}
+.tile:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.tile .ic{font-size:1.7rem;display:block;margin-bottom:4px}
+.tile .t{font-weight:700;font-size:1rem;margin-bottom:2px}
+.tile .s{font-size:.8rem;color:var(--t2);line-height:1.5}
+
+.back{background:transparent;border:0;color:var(--blue);font-weight:600;cursor:pointer;margin-bottom:10px;font-family:var(--font);font-size:.88rem;padding:6px 0}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px}
+.panel h2{font-family:var(--display);font-size:1.3rem;margin-bottom:8px}
+.panel .desc{color:var(--t2);font-size:.92rem;margin-bottom:14px;line-height:1.55}
+
+.check{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(0,0,0,.03);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:.15s;user-select:none}
+@media(prefers-color-scheme:dark){.check{background:rgba(255,255,255,.04)}}
+.check:hover{background:rgba(0,0,0,.06)}
+@media(prefers-color-scheme:dark){.check:hover{background:rgba(255,255,255,.08)}}
+.check input{margin-top:3px;width:18px;height:18px;cursor:pointer;accent-color:var(--primary)}
+.check .txt{flex:1;font-size:.92rem;line-height:1.55}
+.check.done{background:rgba(22,163,74,.1);border-color:rgba(22,163,74,.3)}
+.check.done .txt{color:var(--t3);text-decoration:line-through}
+
+.progress{background:var(--border);height:10px;border-radius:5px;overflow:hidden;margin-bottom:12px}
+.progress div{background:linear-gradient(90deg,#16a34a,#22c55e);height:100%;transition:width .3s}
+
+.input-row{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:4px}
+.input-row input{padding:7px 8px;border:1px solid var(--border);border-radius:6px;font-family:var(--font);font-size:.85rem;text-align:center;background:var(--card);color:var(--tx);min-width:0}
+@media(max-width:640px){.input-row{grid-template-columns:1fr 1fr 1fr}.input-row input{font-size:.8rem}}
+
+.body-map{display:flex;justify-content:center;margin:10px 0}
+.body-map svg{width:100%;max-width:420px;height:auto}
+.body-part{fill:rgba(59,130,246,.15);stroke:#64748b;stroke-width:1;cursor:pointer;transition:.2s}
+.body-part:hover{fill:rgba(220,38,38,.35)}
+.body-part.selected{fill:rgba(220,38,38,.8)}
+
+.eva-scale{display:flex;align-items:center;gap:6px;margin:10px 0;flex-wrap:wrap}
+.eva-scale input[type=range]{flex:1;min-width:180px;accent-color:var(--red)}
+.eva-val{font-family:var(--display);font-size:1.6rem;font-weight:700;color:var(--red);min-width:40px;text-align:center}
+.eva-faces{display:flex;justify-content:space-between;width:100%;font-size:1.4rem}
+
+.btn{padding:11px 20px;background:var(--primary);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.9rem}
+.btn:hover{opacity:.9}
+.btn.sec{background:var(--card);color:var(--tx);border:1px solid var(--border)}
+.btn.ia{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}
+.btn.ia:disabled{opacity:.4;cursor:not-allowed}
+
+textarea{width:100%;min-height:140px;padding:12px;border:2px solid var(--border);border-radius:10px;background:var(--card);color:var(--tx);font-family:var(--font);font-size:.92rem;resize:vertical;line-height:1.55}
+textarea:focus{outline:none;border-color:var(--primary)}
+
+.ia-out{background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(37,99,235,.06));border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:14px 18px;margin-top:12px;white-space:pre-wrap;font-size:.92rem;line-height:1.65;display:none}
+.ia-out.show{display:block}
+
+.note{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.3);color:#92400e;padding:10px 14px;border-radius:8px;font-size:.82rem;margin:10px 0;line-height:1.55}
+@media(prefers-color-scheme:dark){.note{color:#fbbf24}}
+
+.history{margin-top:14px}
+.history .item{padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:.85rem}
+.history .date{color:var(--t3);font-size:.76rem;margin-bottom:4px}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
+</head>
+<body>
+<nav class="nav">
+  <a href="pacientes.html">← Pacientes</a>
+  <h1>📋 Prepara tu consulta</h1>
+</nav>
+
+<div class="hero">
+  <h2>Prepara tu consulta</h2>
+  <p>Te ayudamos a aprovechar mejor el tiempo con tu médico o enfermera: checklists para antes de la cita y un asistente que ordena lo que te ha dicho el médico tras la consulta.</p>
+</div>
+
+<div class="wrap">
+
+  <div id="main" class="section show">
+    <div class="choice">
+      <button class="pre" onclick="go('pre')">
+        <span class="ic">📅</span>
+        <div class="t">Voy a ir al médico</div>
+        <div class="s">Checklist y registro de datos antes de tu cita: tensión, azúcar, dolor, medicación…</div>
+      </button>
+      <button class="post" onclick="go('post')">
+        <span class="ic">✅</span>
+        <div class="t">Ya he ido al médico</div>
+        <div class="s">Organiza con IA lo que te ha dicho el médico: dieta, medicación, pruebas y próxima cita.</div>
+      </button>
+    </div>
+    <div class="note">💡 Esta sección <strong>no guarda tus datos en servidores</strong>: los checklists y resúmenes se guardan solo en tu móvil / navegador (localStorage).</div>
+  </div>
+
+  <div id="pre" class="section">
+    <button class="back" onclick="go('main')">← Volver</button>
+    <div class="panel">
+      <h2>📅 Elige el motivo de tu cita</h2>
+      <p class="desc">Para cada motivo te preparamos un checklist y, cuando aplica, una herramienta para registrar datos.</p>
+      <div class="grid" id="preGrid"></div>
+    </div>
+  </div>
+
+  <div id="pre-detail" class="section">
+    <button class="back" onclick="go('pre')">← Volver a motivos</button>
+    <div class="panel" id="preBox"></div>
+  </div>
+
+  <div id="post" class="section">
+    <button class="back" onclick="go('main')">← Volver</button>
+    <div class="panel">
+      <h2>✅ ¿De qué era tu consulta?</h2>
+      <p class="desc">Elige el tema para recibir recordatorios y usa el asistente IA para ordenar lo que te ha dicho el médico.</p>
+      <div class="grid" id="postGrid"></div>
+    </div>
+
+    <div class="panel">
+      <h2>🤖 Resumen inteligente con IA</h2>
+      <p class="desc">Cuéntanos con tus palabras lo que te ha dicho el médico. La IA lo organizará en secciones: dieta, medicación, pruebas, próxima cita y cosas a vigilar. <strong>No inventa nada</strong>: solo ordena lo que tú escribas.</p>
+      <textarea id="iaIn" placeholder="Ejemplo: Me ha dicho que me baje la sal, que tome la pastilla de la tensión por la noche en vez de por la mañana y que vuelva en tres meses con una analítica. También ha dicho que vigile si tengo mareos…"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn ia" id="iaBtn" onclick="ask()">✨ Organizar con IA</button>
+        <button class="btn sec" onclick="document.getElementById('iaIn').value='';document.getElementById('iaOut').classList.remove('show')">Limpiar</button>
+      </div>
+      <div class="ia-out" id="iaOut"></div>
+      <div class="history" id="hist"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PRE = [
+  {id:'hta', icon:'❤️', t:'Control de tensión', s:'Revisión de HTA: registro 7 días',
+   checks:['Me he medido la tensión 7 días seguidos, mañana y noche.','He apuntado todos los valores (tabla abajo).','Llevo la lista de TODA mi medicación, incluida la que compro sin receta.','He anotado si he tenido mareos, dolor de cabeza, visión borrosa o hinchazón de tobillos.'],
+   tool:'tensiones',
+   tips:'<strong>Cómo medirte bien la tensión:</strong> sentado, espalda apoyada, piernas sin cruzar, 5 min de reposo. Manguito en el brazo izquierdo a la altura del corazón, no hables. Haz 2 medidas con 1 min entre ellas y apunta la segunda.'
+  },
+  {id:'dm', icon:'🩸', t:'Control de diabetes', s:'Revisión de azúcar',
+   checks:['Llevo el glucómetro o el lector (Libre) con los datos descargados.','Si uso cuaderno de glucemias, lo llevo.','Me he puesto calzado fácil de quitar (el médico necesita verme los pies).','Si me toca analítica: he ido en AYUNAS (mínimo 8 h; agua sí puedo beber).','Llevo mi lista de medicación actualizada.','He anotado si he tenido hipoglucemias (temblor, sudor frío, mareo).'],
+   tips:'<strong>Consejo:</strong> los últimos 14 días del glucómetro/Libre son los que más le interesan a tu equipo.'
+  },
+  {id:'poli', icon:'💊', t:'Revisión de mis medicamentos', s:'Polimedicación',
+   checks:['Llevo TODOS los medicamentos que tomo (incluidos colirios, inhaladores, parches, cremas, suplementos y "naturales").','Los llevo en una bolsa o foto (la "bolsa de medicamentos").','Si algún medicamento me sienta mal, lo he apuntado: cuál y qué me hace.','Si otro médico me ha cambiado algo, traigo el informe.','Si he dejado de tomar algo por mi cuenta, lo digo sin miedo.'],
+   tips:'<strong>Haz una foto</strong> de cada caja y prospecto. Es la forma más fácil de no olvidar nada.'
+  },
+  {id:'dolor', icon:'🦴', t:'Voy al médico por mi dolor', s:'Dolor crónico · mapa + EVA',
+   checks:['He anotado durante la semana: dónde me duele, cuánto (0-10), qué lo empeora y mejora.','He apuntado qué calmantes he tomado y si me han hecho efecto.','He anotado cómo afecta el dolor a mi sueño y mi día a día.','Puedo marcar en el mapa corporal las zonas que me duelen.'],
+   tool:'dolor',
+   tips:'<strong>Valora tu dolor</strong> de 0 (nada) a 10 (el peor imaginable) y anota si mejora o empeora a lo largo del día.'
+  },
+  {id:'pruebas', icon:'🧪', t:'Me han dado resultados de pruebas', s:'Revisión de analítica / prueba',
+   checks:['NO necesito imprimir los resultados: mi médico los tiene en su ordenador.','Si tengo dudas sobre algún resultado, las he apuntado.','Si me han hecho pruebas en clínica privada o fuera del SMS, SÍ llevo esos informes.','He apuntado si tengo síntomas nuevos desde que me hicieron las pruebas.'],
+   tips:'<strong>Tranquilidad:</strong> si los resultados fueran urgentes, el médico ya te habría llamado.'
+  },
+  {id:'peds', icon:'👶', t:'Llevo a mi hijo/a al pediatra', s:'Revisión del niño sano',
+   checks:['Llevo la cartilla de vacunación.','Si algo me preocupa (sueño, alimentación, desarrollo, comportamiento), lo he apuntado.','Le he puesto ropa fácil de quitar.','Si toma medicación o vitaminas, lo llevo apuntado.','Si va a guardería/colegio y han notado algo, traigo esa información.'],
+   tips:'<strong>Anota 1-2 preguntas prioritarias</strong> para no irte con dudas.'
+  },
+  {id:'espec', icon:'🏥', t:'Me han derivado al especialista', s:'Primera consulta',
+   checks:['Llevo el volante de derivación (si es en papel).','Llevo informes previos: analíticas, radiografías, ecografías, informes de urgencias.','He hecho una lista de síntomas con fecha de inicio.','He apuntado los tratamientos que ya he probado y si funcionaron.','Llevo mi lista de medicación actual.','He escrito mis preguntas principales (máximo 3) para no olvidarlas.'],
+   tips:'Si te piden <strong>pruebas previas</strong> (analítica, ecografía), hazlas con antelación para que los resultados estén disponibles.'
+  },
+  {id:'mental', icon:'💆', t:'No me encuentro bien emocionalmente', s:'Salud mental',
+   checks:['He anotado desde cuándo me siento así.','He pensado en cómo afecta a mi día a día (trabajo, relaciones, sueño, apetito).','Si tomo medicación para dormir, ansiedad o depresión, llevo la lista.','Si he tenido pensamientos de hacerme daño, lo digo (no juzgará nadie).','Si quiero, llevo a alguien de confianza que me acompañe.'],
+   tips:'<strong>Hablar de salud mental con tu médico es un acto de valentía</strong>, no de debilidad. Todo lo que digas es confidencial.'
+  }
+];
+
+const POST_TIPS = {
+  hta:{titulo:'Control de tensión · recordatorio',obj:'Objetivo general: &lt;140/90 mmHg en consulta o &lt;135/85 en casa. Menor si hay diabetes o riesgo alto (tu médico te lo indicará).',link:'consejos-salud.html'},
+  dm:{titulo:'Control de diabetes · recordatorio',obj:'Objetivos habituales: HbA1c &lt;7% (más flexible en ancianos frágiles), glucemia 80-130 antes de comer, &lt;180 a las 2 h de comer.',link:'consejos-salud.html'},
+  poli:{titulo:'Revisión de medicación',obj:'Si te cambiaron algo: anota cuándo empezar/parar y si notas efectos nuevos.',link:'consejos-salud.html#olvido-medicacion'},
+  dolor:{titulo:'Dolor crónico',obj:'Sigue el tratamiento 2-4 semanas y evalúa. No suspendas por tu cuenta los tratamientos pautados sin decírselo.',link:'consejos-salud.html#espalda'},
+  pruebas:{titulo:'Resultados de pruebas',obj:'Si te dan nuevas pruebas, apúntalas y hazlas con antelación.',link:'consejos-salud.html'},
+  peds:{titulo:'Revisión pediátrica',obj:'Apunta la siguiente revisión y vacunas previstas. Si surge algo entre revisiones, pide cita.',link:'consejos-salud.html#fiebre-ninos'},
+  espec:{titulo:'Visita al especialista',obj:'Anota los tratamientos y próxima cita. Si te derivan a otra prueba, hazla cuanto antes.',link:'consejos-salud.html'},
+  mental:{titulo:'Salud mental',obj:'Los tratamientos emocionales necesitan semanas para hacer efecto. No los abandones sin decírselo a tu médico. Si empeoras o tienes pensamientos de hacerte daño, llama al 024.',link:'consejos-salud.html#ansiedad'}
+};
+
+function go(x){
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('show')});
+  document.getElementById(x).classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(x==='pre') renderPreGrid();
+  if(x==='post'){ renderPostGrid(); renderHistory(); }
+}
+
+function renderPreGrid(){
+  document.getElementById('preGrid').innerHTML = PRE.map(function(p){
+    return '<button class="tile" onclick="openPre(\''+p.id+'\')"><span class="ic">'+p.icon+'</span><div class="t">'+p.t+'</div><div class="s">'+p.s+'</div></button>';
+  }).join('');
+}
+
+function renderPostGrid(){
+  document.getElementById('postGrid').innerHTML = PRE.map(function(p){
+    const tip = POST_TIPS[p.id];
+    return '<button class="tile" onclick="openPostTip(\''+p.id+'\')"><span class="ic">'+p.icon+'</span><div class="t">'+(tip?tip.titulo:p.t)+'</div><div class="s">'+p.s+'</div></button>';
+  }).join('');
+}
+
+function openPostTip(id){
+  const tip = POST_TIPS[id];
+  if(!tip) return;
+  alert(tip.titulo + '\n\n' + tip.obj.replace(/<[^>]+>/g,''));
+  try{ if(typeof gtag==='function') gtag('event','postconsulta_tip_viewed',{tipo_consulta:id}); }catch(e){}
+}
+
+function openPre(id){
+  const p = PRE.find(function(x){return x.id===id});
+  if(!p) return;
+  go('pre-detail');
+  const key = 'ptc_'+id;
+  let state = {};
+  try{ state = JSON.parse(localStorage.getItem(key) || '{}'); }catch(e){}
+  let html = '<h2>'+p.icon+' '+p.t+'</h2><p class="desc">Marca cada punto cuando lo tengas listo.</p>';
+  html += '<div class="progress"><div id="pg" style="width:0%"></div></div>';
+  html += p.checks.map(function(c,i){
+    const checked = state['c'+i] ? 'checked' : '';
+    return '<label class="check'+(state['c'+i]?' done':'')+'" data-i="'+i+'"><input type="checkbox" '+checked+'><div class="txt">'+c+'</div></label>';
+  }).join('');
+  if(p.tool==='tensiones') html += renderTensiones(state);
+  if(p.tool==='dolor') html += renderDolor(state);
+  if(p.tips) html += '<div class="note">'+p.tips+'</div>';
+  html += '<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn sec" onclick="copyPre(\''+id+'\')">📋 Copiar para enviar a mi médico</button></div>';
+  document.getElementById('preBox').innerHTML = html;
+
+  document.getElementById('preBox').querySelectorAll('.check').forEach(function(el){
+    el.querySelector('input').addEventListener('change', function(){
+      const i = el.dataset.i;
+      state['c'+i] = this.checked;
+      el.classList.toggle('done', this.checked);
+      localStorage.setItem(key, JSON.stringify(state));
+      updateProgress(p, state);
+    });
+  });
+  updateProgress(p, state);
+
+  if(p.tool==='tensiones') bindTensiones(id, state);
+  if(p.tool==='dolor') bindDolor(id, state);
+
+  try{ if(typeof gtag==='function') gtag('event','preconsulta_opened',{motivo:id}); }catch(e){}
+}
+
+function updateProgress(p, state){
+  const done = p.checks.filter(function(_,i){return state['c'+i]}).length;
+  const pct = p.checks.length ? Math.round(done*100/p.checks.length) : 0;
+  const el = document.getElementById('pg');
+  if(el) el.style.width = pct+'%';
+  if(pct===100){
+    try{ if(typeof gtag==='function') gtag('event','preconsulta_checklist_completed',{motivo:p.id,completion_rate:1}); }catch(e){}
+  }
+}
+
+function renderTensiones(state){
+  const data = state.tensiones || [];
+  let html = '<h3 style="margin-top:16px;font-family:var(--display);font-size:1.05rem">📊 Registro de 7 días · mañana y noche</h3>';
+  html += '<p class="desc">Sistólica / Diastólica / Pulso. Mañana y noche. Apunta la 2ª medida de cada tanda.</p>';
+  html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.82rem"><thead><tr><th>Día</th><th>SIS M</th><th>DIA M</th><th>SIS N</th><th>DIA N</th><th>Notas</th></tr></thead><tbody>';
+  for(let i=0;i<7;i++){
+    const row = data[i] || {};
+    html += '<tr><td style="padding:4px">D'+(i+1)+'</td>';
+    ['sm','dm','sn','dn'].forEach(function(f){
+      html += '<td style="padding:2px"><input data-i="'+i+'" data-f="'+f+'" class="tin" value="'+(row[f]||'')+'" inputmode="numeric" style="width:100%;padding:5px;border:1px solid var(--border);border-radius:5px;background:var(--card);color:var(--tx);font-family:ui-monospace,monospace;font-size:.82rem;text-align:center"></td>';
+    });
+    html += '<td style="padding:2px"><input data-i="'+i+'" data-f="notas" class="tin" value="'+(row.notas||'')+'" style="width:100%;padding:5px;border:1px solid var(--border);border-radius:5px;background:var(--card);color:var(--tx);font-size:.82rem"></td></tr>';
+  }
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function bindTensiones(id, state){
+  const key = 'ptc_'+id;
+  if(!state.tensiones) state.tensiones = [];
+  document.getElementById('preBox').querySelectorAll('.tin').forEach(function(el){
+    el.addEventListener('input', function(){
+      const i = parseInt(el.dataset.i,10), f = el.dataset.f;
+      if(!state.tensiones[i]) state.tensiones[i] = {};
+      state.tensiones[i][f] = el.value;
+      localStorage.setItem(key, JSON.stringify(state));
+    });
+  });
+}
+
+function renderDolor(state){
+  const sel = state.zonas || [];
+  let html = '<h3 style="margin-top:16px;font-family:var(--display);font-size:1.05rem">🗺️ Mapa del dolor</h3><p class="desc">Toca las zonas que te duelen.</p>';
+  html += '<div class="body-map"><svg viewBox="0 0 200 400">';
+  const parts = [
+    ['cabeza',100,35,20],['cuello',100,65,10],['hombro-i',75,85,12],['hombro-d',125,85,12],
+    ['pecho',100,115,18],['abdomen',100,150,18],['brazo-i',65,130,10],['brazo-d',135,130,10],
+    ['mano-i',55,180,8],['mano-d',145,180,8],['espalda',100,230,22],['cadera-i',85,250,10],['cadera-d',115,250,10],
+    ['rodilla-i',85,310,10],['rodilla-d',115,310,10],['pie-i',85,370,10],['pie-d',115,370,10]
+  ];
+  parts.forEach(function(p){
+    const selected = sel.includes(p[0]) ? ' selected' : '';
+    html += '<circle class="body-part'+selected+'" data-p="'+p[0]+'" cx="'+p[1]+'" cy="'+p[2]+'" r="'+p[3]+'"><title>'+p[0]+'</title></circle>';
+  });
+  html += '</svg></div>';
+  const eva = state.eva || 0;
+  html += '<div style="margin-top:10px"><strong>¿Cuánto te duele? (0 nada · 10 el peor imaginable)</strong></div>';
+  html += '<div class="eva-faces"><span>😊</span><span>🙂</span><span>😐</span><span>😟</span><span>😖</span><span>😭</span></div>';
+  html += '<div class="eva-scale"><input type="range" id="eva" min="0" max="10" value="'+eva+'"><span class="eva-val" id="evav">'+eva+'</span></div>';
+  return html;
+}
+
+function bindDolor(id, state){
+  const key = 'ptc_'+id;
+  if(!state.zonas) state.zonas = [];
+  document.getElementById('preBox').querySelectorAll('.body-part').forEach(function(el){
+    el.addEventListener('click', function(){
+      const p = el.dataset.p;
+      const idx = state.zonas.indexOf(p);
+      if(idx>=0){ state.zonas.splice(idx,1); el.classList.remove('selected'); }
+      else{ state.zonas.push(p); el.classList.add('selected'); }
+      localStorage.setItem(key, JSON.stringify(state));
+    });
+  });
+  const eva = document.getElementById('eva');
+  if(eva){
+    eva.addEventListener('input', function(){
+      document.getElementById('evav').textContent = this.value;
+      state.eva = parseInt(this.value,10);
+      localStorage.setItem(key, JSON.stringify(state));
+    });
+  }
+}
+
+function copyPre(id){
+  const key = 'ptc_'+id;
+  const p = PRE.find(function(x){return x.id===id});
+  let state = {};
+  try{ state = JSON.parse(localStorage.getItem(key) || '{}'); }catch(e){}
+  let txt = '📋 '+p.t+'\n\n';
+  p.checks.forEach(function(c,i){
+    txt += (state['c'+i]?'✅':'⬜')+' '+c.replace(/<[^>]+>/g,'')+'\n';
+  });
+  if(state.tensiones){
+    txt += '\n📊 Tensiones:\n';
+    state.tensiones.forEach(function(r,i){
+      if(r && (r.sm||r.sn||r.dm||r.dn)) txt += 'D'+(i+1)+': M '+(r.sm||'-')+'/'+(r.dm||'-')+' · N '+(r.sn||'-')+'/'+(r.dn||'-')+(r.notas?' · '+r.notas:'')+'\n';
+    });
+  }
+  if(state.zonas && state.zonas.length){ txt += '\n🗺️ Dolor en: '+state.zonas.join(', ')+'\n'; }
+  if(typeof state.eva === 'number'){ txt += '😣 Intensidad dolor (EVA): '+state.eva+'/10\n'; }
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){ alert('Copiado. Puedes pegarlo en un mensaje a tu médico.'); });
+  else { prompt('Copia este texto:', txt); }
+}
+
+async function ask(){
+  const txt = document.getElementById('iaIn').value.trim();
+  if(!txt){ alert('Escribe primero lo que recuerdas de la consulta.'); return; }
+  const out = document.getElementById('iaOut');
+  const btn = document.getElementById('iaBtn');
+  btn.disabled = true; btn.textContent = '⏳ Organizando…';
+  out.classList.add('show');
+  out.textContent = 'Consultando la IA clínica…';
+  const sys = 'Eres un asistente que AYUDA A PACIENTES a organizar la información de su consulta médica. El paciente te cuenta lo que recuerda que le dijo su médico. Tu trabajo es ESTRUCTURAR esa información, NO añadir nada nuevo. NUNCA diagnostiques ni des consejos médicos nuevos. NUNCA inventes fármacos, dosis ni pruebas. Responde SIEMPRE en español, en este formato (omite las secciones no mencionadas):\n\n🍎 DIETA / HÁBITOS:\n[solo si menciona cambios en alimentación o hábitos]\n\n💊 MEDICACIÓN:\n[solo si menciona cambios en fármacos, dosis u horarios]\n\n🧪 PRUEBAS PENDIENTES:\n[solo si menciona analíticas, radiografías u otras pruebas]\n\n📅 PRÓXIMA CITA:\n[solo si menciona cuándo volver]\n\n⚠️ COSAS A VIGILAR:\n[solo si menciona síntomas a los que prestar atención]\n\nAl final añade SIEMPRE:\n\n"⚠️ Este resumen refleja lo que usted recuerda. Si tiene dudas, consulte con su médico."';
+  try{
+    if(typeof window.askAi !== 'function') throw new Error('IA no disponible. Comprueba tu conexión.');
+    const r = await window.askAi({ type:'educational', systemPrompt:sys, prompt:txt });
+    const text = (r && r.text) ? r.text : '(sin respuesta)';
+    out.textContent = text;
+    saveHistory(txt, text);
+    try{ if(typeof gtag==='function'){ gtag('event','postconsulta_ia_used'); gtag('event','postconsulta_resumen_saved'); } }catch(e){}
+  }catch(e){
+    out.textContent = '❌ '+(e && e.message || e);
+  }
+  btn.disabled = false; btn.textContent = '✨ Organizar con IA';
+}
+
+function saveHistory(input, output){
+  let h = [];
+  try{ h = JSON.parse(localStorage.getItem('ptc_post_hist') || '[]'); }catch(e){}
+  h.unshift({ fecha:new Date().toLocaleString('es-ES'), input, output });
+  if(h.length > 20) h = h.slice(0,20);
+  localStorage.setItem('ptc_post_hist', JSON.stringify(h));
+  renderHistory();
+}
+
+function renderHistory(){
+  const el = document.getElementById('hist');
+  if(!el) return;
+  let h = [];
+  try{ h = JSON.parse(localStorage.getItem('ptc_post_hist') || '[]'); }catch(e){}
+  if(!h.length){ el.innerHTML = ''; return; }
+  el.innerHTML = '<h3 style="margin-top:14px;font-family:var(--display);font-size:1rem">🗂️ Mis resúmenes recientes</h3>' + h.slice(0,5).map(function(x){
+    return '<div class="item"><div class="date">'+x.fecha+'</div><details><summary>Ver resumen</summary><pre style="white-space:pre-wrap;font-family:var(--font);font-size:.88rem;margin-top:6px">'+x.output+'</pre></details></div>';
+  }).join('');
+}
+</script>
+</body>
+</html>

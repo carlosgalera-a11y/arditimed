@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fichas de Consulta Rápida · Cartagenaeste</title>
+<meta name="description" content="Fichas clínicas interactivas estandarizadas: motivo → diagnóstico diferencial → manejo → derivación → fármacos.">
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-light:#238c62;--primary-dark:#0a4d35;
+  --amber:#d97706;--red:#dc2626;--blue:#1e40af;--purple:#7c3aed;--teal:#0d9488;--indigo:#4f46e5;
+  --bg:#0a1f14;--card:#0f2a1e;--card2:#13342a;
+  --border:rgba(255,255,255,.14);--border2:rgba(255,255,255,.25);
+  --tx:#e9f5ee;--t2:#b4c8bc;--t3:#7f9089;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:50px;position:relative}
+body::after{content:"";position:fixed;inset:-20px;z-index:-1;pointer-events:none;background:url('hero-bg.jpg') center/cover no-repeat;filter:blur(5px) brightness(.35)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(6,20,12,.78),rgba(10,31,20,.88))}
+.nav{background:rgba(6,15,10,.9);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav a{color:#7dd3bb;text-decoration:none;font-size:.85rem;font-weight:600}
+.nav h1{font-size:1rem;font-weight:800;flex:1;font-family:var(--display)}
+.hero{position:relative;z-index:1;padding:32px 20px 22px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(124,58,237,.28),rgba(30,64,175,.1));overflow:hidden}
+.hero::after{content:"📑";position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.12}
+.hero h2{font-family:var(--display);font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;color:#fff;margin-bottom:6px}
+.hero p{color:rgba(255,255,255,.82);font-size:.9rem;font-weight:300;line-height:1.55;max-width:820px}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 18px;position:relative;z-index:1}
+
+.search{width:100%;padding:13px 18px;background:rgba(255,255,255,.08);border:1px solid var(--border2);color:#fff;border-radius:14px;font-family:var(--font);font-size:.95rem;margin-bottom:16px}
+.search::placeholder{color:rgba(255,255,255,.5)}
+.search:focus{outline:none;border-color:#c4b5fd;background:rgba(255,255,255,.12)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:22px}
+.tile{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:.2s;text-align:left;font-family:var(--font);color:var(--tx);position:relative;overflow:hidden;border-left:4px solid var(--c,#c4b5fd)}
+.tile:hover{background:var(--card2);transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.4);border-color:var(--border2)}
+.tile .icon{font-size:1.8rem;margin-bottom:6px;display:block}
+.tile .t{font-weight:700;font-size:1rem;color:#fff;margin-bottom:2px}
+.tile .s{font-size:.78rem;color:var(--t2);line-height:1.5}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;z-index:200;padding:20px;overflow-y:auto;backdrop-filter:blur(6px)}
+.modal.show{display:block}
+.modal-inner{max-width:880px;margin:24px auto;background:var(--card);border:1px solid var(--border2);border-radius:16px;color:var(--tx);overflow:hidden}
+.modal-head{padding:18px 22px;background:linear-gradient(135deg,var(--hc1,var(--primary-dark)),var(--hc2,var(--primary)));display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:2}
+.modal-head h2{font-family:var(--display);font-size:1.2rem;flex:1;color:#fff}
+.modal-head .close{background:rgba(255,255,255,.15);border:0;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;font-weight:800}
+.modal-body{padding:18px 22px}
+
+.block{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px;border-left:4px solid var(--bc,var(--primary))}
+.block h3{font-family:var(--display);font-size:1rem;color:var(--bc,#fff);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.block ul,.block ol{padding-left:22px;line-height:1.75;font-size:.88rem;color:var(--t2)}
+.block li{margin:3px 0}
+.block strong{color:#fff}
+.block code{background:rgba(0,0,0,.4);padding:1px 7px;border-radius:4px;font-family:ui-monospace,monospace;color:#fbbf24;font-size:.82rem}
+.block .note{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.3);color:#fcd34d;padding:9px 12px;border-radius:8px;font-size:.82rem;margin-top:8px;line-height:1.5}
+.block.b-motivo{--bc:#93c5fd}
+.block.b-ddx{--bc:#c4b5fd}
+.block.b-manejo{--bc:#86efac}
+.block.b-farma{--bc:#fbbf24}
+.block.b-alerta{--bc:#fca5a5}
+.block.b-derivar{--bc:#f0abfc}
+.block.b-calc{--bc:#67e8f9}
+.block.b-fuentes{--bc:#a7b3c9}
+
+.calc-links{display:flex;flex-wrap:wrap;gap:6px}
+.calc-chip{padding:6px 12px;background:rgba(103,232,249,.14);border:1px solid rgba(103,232,249,.35);color:#67e8f9;border-radius:20px;font-size:.78rem;font-weight:600;text-decoration:none;transition:.2s}
+.calc-chip:hover{background:rgba(103,232,249,.25);color:#fff}
+
+table{width:100%;border-collapse:collapse;margin:6px 0;font-size:.82rem}
+table th,table td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border)}
+table th{color:var(--bc,#fff);font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+table td{color:var(--t2)}
+
+.hidden{display:none!important}
+.tile-color-a{--c:#fca5a5}
+.tile-color-b{--c:#86efac}
+.tile-color-c{--c:#93c5fd}
+.tile-color-d{--c:#fbbf24}
+.tile-color-e{--c:#c4b5fd}
+.tile-color-f{--c:#67e8f9}
+.tile-color-g{--c:#f0abfc}
+.tile-color-h{--c:#5eead4}
+
+@media (max-width:640px){
+  .hero{padding:22px 16px 18px}
+  .hero::after{font-size:3rem;right:10px}
+  .modal-inner{margin:12px auto}
+  .modal-head{padding:14px 16px}
+  .modal-body{padding:14px 16px}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="panel-medico.html">← Panel médico</a>
+  <h1>📑 Fichas de Consulta Rápida</h1>
+</nav>
+
+<div class="hero">
+  <h2>Fichas clínicas de bolsillo</h2>
+  <p>Fichas interactivas por motivo de consulta en formato estandarizado: <strong>motivo → diagnóstico diferencial → manejo → criterios de derivación → fármacos</strong>. Con enlaces a las calculadoras de la propia app. Diseño para consulta rápida en la visita.</p>
+</div>
+
+<div class="wrap">
+  <input type="text" id="q" class="search" placeholder="🔎 Buscar: epistaxis, faringoamigdalitis, lumbalgia, cefalea…" oninput="filter()">
+  <div class="grid" id="grid"></div>
+
+  <div class="block b-fuentes" style="margin-top:14px">
+    <h3>ℹ️ Sobre estas fichas</h3>
+    <ul style="padding-left:18px">
+      <li>Adaptación docente basada en NICE, semFYC, Fisterra, Guía-ABE, AEP y protocolos Área II.</li>
+      <li><strong>No sustituyen</strong> el juicio clínico ni los protocolos vigentes del centro.</li>
+      <li>Los fármacos se indican por <em>clase terapéutica + principio activo</em> (sin marcas).</li>
+      <li>Se actualizan cuando cambia la evidencia. Revisar fecha al final de cada ficha.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)close()">
+  <div class="modal-inner">
+    <div class="modal-head" id="mh">
+      <span id="micon" style="font-size:1.8rem"></span>
+      <h2 id="mtitle"></h2>
+      <button class="close" onclick="close()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body" id="mbody"></div>
+  </div>
+</div>
+
+<script>
+const FICHAS = [
+  {
+    id:'epistaxis', icon:'🩸', cls:'tile-color-a', hc1:'#991b1b', hc2:'#dc2626',
+    title:'Epistaxis', sub:'Hemorragia nasal — anterior vs posterior',
+    motivo:'Sangrado por fosas nasales. 90% anteriores (plexo de Kiesselbach). 10% posteriores (más graves, suelen afectar a mayores con HTA o anticoagulados).',
+    ddx:['Epistaxis anterior idiopática (la mayoría).','Epistaxis posterior (sangre por la faringe, más intensa, mayor edad, comorbilidad).','HTA descompensada como factor desencadenante.','Causas locales: rinitis, cuerpo extraño, tumor nasosinusal, perforación septal.','Alteraciones de la coagulación: antiagregantes, anticoagulantes, hepatopatía, trombocitopenia.','Telangiectasia hemorrágica hereditaria (Rendu-Osler).'],
+    manejo:['Paciente sentado, ligera inclinación hacia delante (evita deglución de sangre).','Compresión digital bimanual del ala nasal sobre el tabique durante <strong>10-15 min</strong> sin soltar.','Spray de descongestionante + anestésico tópico (oximetazolina / lidocaína) para vasoconstricción.','Si persiste: cauterización con nitrato de plata (solo si se visualiza el punto, NO bilateral).','Si fracasa: <strong>taponamiento anterior</strong> con gasa orillada / esponja hemostática / balón nasal.','Si sangra por faringe tras taponamiento anterior → posterior, valorar ingreso ORL.','Control de TA y reversión de anticoagulación según riesgo/beneficio.'],
+    farma:[['Oximetazolina 0,05%','1-2 puff/fosa','Vasoconstrictor tópico, corto plazo'],['Lidocaína 4% / tetracaína','Aplicación tópica','Anestésico previo a cauterización'],['Nitrato de plata','Varilla','Cauterización química limitada'],['Ácido tranexámico','500-1000 mg VO o tópico','Coadyuvante en sangrado refractario o anticoagulados']],
+    derivar:['Epistaxis posterior (sangre por faringe, shock).','Fracaso de taponamiento anterior.','Repetición frecuente en zona no visible.','Sospecha de tumor o cuerpo extraño.','Coagulopatía grave no corregible en AP.','Inestabilidad hemodinámica → Urgencias hospitalarias.'],
+    alertas:['Sangrado &gt;30 min pese a medidas, shock, disnea, hematemesis de sangre deglutida, síncope.','Niño con epistaxis recurrente unilateral + obstrucción nasal → valorar angiofibroma.','Bilateralidad masiva → descartar hipertensión maligna.'],
+    calcs:['Charlson · comorbilidad','CHA₂DS₂-VASc (si FA)','HAS-BLED (si ACO)'],
+    fuentes:['NICE CKS · Epistaxis (2024)','Fisterra · Epistaxis en AP','Protocolo Área II (ORL Santa Lucía)'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'faringoamigdalitis', icon:'😷', cls:'tile-color-b', hc1:'#166534', hc2:'#16a34a',
+    title:'Faringoamigdalitis aguda', sub:'Viral vs bacteriana — Centor/McIsaac',
+    motivo:'Odinofagia aguda con o sin fiebre. 70-80% son virales. El objetivo es identificar la minoría de bacterianas por <em>Streptococcus pyogenes</em> (EBHGA) que se benefician de antibiótico.',
+    ddx:['Faringitis viral (adenovirus, rinovirus, EBV, coronavirus).','Faringoamigdalitis estreptocócica (EBHGA).','Mononucleosis infecciosa (EBV) — linfadenopatía posterior, esplenomegalia.','Candidiasis orofaríngea (inmunosupresión, corticoides inhalados).','Absceso periamigdalino (trismus, voz gangosa, úvula desplazada).','Epiglotitis / faringitis gonocócica / difteria (raras).'],
+    manejo:['Score clínico: <strong>Centor modificado (McIsaac)</strong>.<ul><li>Fiebre &gt;38: 1 · Exudado amigdalar: 1 · Adenopatía cervical anterior dolorosa: 1 · Ausencia de tos: 1 · Edad 3-14: +1 · 15-44: 0 · ≥45: −1.</li><li>0-1 punto: sin test, sin ATB.</li><li>2-3: test rápido antigénico; ATB solo si positivo.</li><li>4-5: ATB empírico razonable (aún así preferible test rápido).</li></ul>','Hidratación, analgesia, paracetamol o ibuprofeno, anestésico local tópico si tolera.','Reposo relativo, aislar en mononucleosis hasta afebril 3 días.'],
+    farma:[['Fenoximetilpenicilina (Penicilina V)','500 mg / 12 h VO · 10 días','1ª línea EBHGA'],['Amoxicilina','500 mg / 12 h VO · 10 días (niños 50 mg/kg/día)','Alternativa más cómoda'],['Cefadroxilo','500 mg / 12 h · 10 días','Alergia penicilina no anafiláctica'],['Clindamicina','300 mg / 8 h · 10 días','Alergia tipo I a β-lactámicos'],['Paracetamol','500-1000 mg / 8 h','Analgésico-antitérmico 1ª línea'],['Ibuprofeno','400-600 mg / 8 h','AINE, útil por inflamación']],
+    derivar:['Trismus, voz gangosa, úvula desplazada → absceso periamigdalino.','Estridor, sialorrea, postura en trípode → epiglotitis: 112.','Petequias en paladar + esplenomegalia + astenia → mononucleosis; valorar analítica.','Fracaso de tratamiento a 48-72 h.','Sospecha de fiebre reumática o glomerulonefritis post-estreptocócica.'],
+    alertas:['NO prescribir amoxicilina si sospecha de mononucleosis (exantema en 90-100%).','Duración de ATB EBHGA: 10 días completos para erradicación y prevención de fiebre reumática.','No recomendado uso rutinario de corticoides orales.'],
+    calcs:['Centor/McIsaac · disponible en Calculadoras','qSOFA · si sepsis'],
+    fuentes:['semFYC · Infecciones respiratorias','NICE NG84 · Sore throat (2018)','Guía-ABE · Faringoamigdalitis (AEP)','Choosing Wisely Spain · "No prescribir ATB en faringitis viral"'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'lumbalgia', icon:'🦴', cls:'tile-color-c', hc1:'#1e40af', hc2:'#3b82f6',
+    title:'Lumbalgia aguda', sub:'Red flags · Start Back · manejo conservador',
+    motivo:'Dolor lumbar &lt;6 semanas. El 85% son inespecíficas y se resuelven con tratamiento conservador. Lo clave es descartar las "banderas rojas" que requieren derivación o pruebas urgentes.',
+    ddx:['Lumbalgia mecánica inespecífica (mayoría).','Radiculopatía (ciática, cruralgia) — dolor irradiado metamérico.','Síndrome de cola de caballo (urgencia).','Fractura vertebral (osteoporosis, trauma, corticoides).','Espondiloartritis (inflamatoria, joven, rigidez matutina).','Metástasis / mieloma (antecedente neoplásico, dolor nocturno).','Infección: espondilodiscitis, absceso epidural (fiebre, UDVP).','Aneurisma aórtico abdominal (&gt;60 años, dolor atípico).'],
+    manejo:['<strong>Banderas rojas</strong>: trauma grave, &lt;20 o &gt;55 años inicio, dolor no mecánico / nocturno, fiebre, pérdida de peso, anestesia en silla de montar, retención / incontinencia, déficit motor progresivo, antecedente oncológico, inmunosupresión, corticoides.','Sin banderas: tranquilizar, evitar reposo, mantener actividad según tolerancia.','Calor local, fisioterapia si &gt;2-4 semanas, Pilates/ejercicio terapéutico.','Educación en neurofisiología del dolor (modelo bio-psico-social).','<strong>NO imagen</strong> si no hay banderas rojas (NICE, Choosing Wisely).','Re-evaluar a las 4-6 semanas si persiste.'],
+    farma:[['Paracetamol','500-1000 mg / 8 h','Base analgésica, poca evidencia en lumbalgia pero buen perfil'],['Ibuprofeno / naproxeno','600 mg / 8 h · 400 mg / 12 h','AINE de elección en fase aguda, corto plazo'],['Metamizol','575 mg / 8 h','Alternativa en dolor nociceptivo'],['Ciclobenzaprina / tizanidina','Miorrelajantes corto plazo (5-7 días)','Si contractura asociada; evitar en ancianos'],['Tramadol','50-100 mg / 6-8 h','Dolor intenso refractario, corto plazo']],
+    derivar:['<strong>Urgente</strong>: sospecha cola de caballo (anestesia silla montar, retención urinaria, déficit motor bilateral).','Déficit neurológico progresivo.','Red flags de neoplasia / infección / fractura.','Radiculopatía refractaria &gt;6 semanas → Rehabilitación / Traumatología.','Sospecha espondiloartritis → Reumatología.'],
+    alertas:['NO usar opioides mayores ni benzodiacepinas crónicas en lumbalgia inespecífica.','Reposo en cama &gt;2 días empeora el pronóstico.','Pregabalina/gabapentina SIN evidencia en lumbalgia ni ciática.','StarT Back Tool para estratificar riesgo de cronificación.'],
+    calcs:['StarT Back Tool · riesgo cronificación','FRAX · fractura osteoporótica','EVA · intensidad dolor'],
+    fuentes:['NICE NG59 · Low back pain and sciatica (2024)','GuíaSalud · Lumbalgia inespecífica','Cochrane · Ejercicio en dolor lumbar crónico'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'fiebre-ninos', icon:'🌡️', cls:'tile-color-d', hc1:'#9a3412', hc2:'#ea580c',
+    title:'Fiebre en niños', sub:'Semáforo NICE · dosis por peso',
+    motivo:'Temperatura &gt;38 °C. En &lt;3 meses cualquier fiebre es potencialmente grave. Valorar aspecto general (traffic-light NICE) por encima del valor absoluto.',
+    ddx:['Viral autolimitada (mayoría).','Infección bacteriana focal: otitis, faringitis estreptocócica, neumonía, ITU.','Bacteriemia oculta / sepsis.','Infección urinaria (en lactante, fiebre sin foco).','Enfermedad de Kawasaki (&gt;5 días, conjuntivitis, lengua aframbuesada, exantema).','Meningitis, encefalitis.','Fiebre post-vacunal.'],
+    manejo:['<strong>&lt;3 meses</strong>: derivación hospitalaria siempre.','<strong>3-6 meses</strong> con T &gt;39 o mal estado: derivar.','Triángulo de evaluación pediátrica (aspecto, respiración, circulación).','Semáforo NICE:<ul><li><strong>Verde</strong>: piel normal, activo, sonríe.</li><li><strong>Ámbar</strong>: palidez, menor respuesta, taquipnea leve, deshidratación leve.</li><li><strong>Rojo</strong>: moteado/cianótico, no despierta, llanto débil, quejido, taquipnea / signos dificultad respiratoria, bradicardia, petequias.</li></ul>','Hidratación abundante, desabrigar, ambiente fresco, NO alcohol ni paños fríos.','Tira reactiva orina en fiebre sin foco &gt;24 h en &lt;2 años.'],
+    farma:[['Paracetamol','15 mg/kg / 4-6 h VO o rectal (máx 60 mg/kg/día)','1ª línea'],['Ibuprofeno','10 mg/kg / 6-8 h VO (&gt;6 meses)','Alternativa; evitar en deshidratación/varicela']],
+    derivar:['<strong>Urgente 112 / Urgencias pediátricas Santa Lucía</strong>: cualquier signo rojo NICE, petequias que no blanquean, fontanela abombada, convulsión, letargia marcada.','&lt;3 meses con fiebre.','Fiebre &gt;5 días sin foco (Kawasaki).','Mal estado general, deshidratación, mala perfusión.','Enfermedad crónica / inmunodeficiencia.'],
+    alertas:['Petequias = urgencia. Prueba del vaso: si no blanquean al presionar, 112.','No alternar paracetamol e ibuprofeno de rutina (NICE).','Fiebre NO es perjudicial en sí misma; el objetivo es el confort, no la apirexia.','Antibióticos no se indican solo por fiebre.'],
+    calcs:['Dosis pediátricas por peso · Calculadoras','Peso estimado (edad × 2 + 8) · Broselow'],
+    fuentes:['NICE NG143 · Fever in under 5s (2024)','Guía-ABE · Fiebre sin foco (AEP)','AEPap · Programa del niño sano','Escuela de Salud Murcia'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'cefalea', icon:'🧠', cls:'tile-color-e', hc1:'#6b21a8', hc2:'#9333ea',
+    title:'Cefalea en AP', sub:'Primaria vs secundaria · red flags SNOOP',
+    motivo:'Dolor de cabeza. La gran mayoría son primarias (tensional, migraña). Identificar secundarias peligrosas con el acrónimo <strong>SNOOP</strong>.',
+    ddx:['Cefalea tensional episódica o crónica.','Migraña (con/sin aura).','Cefalea en racimos (Horton).','Cefalea por abuso de analgésicos (≥15 d/mes).','Hemorragia subaracnoidea (inicio en trueno).','Meningitis / encefalitis (fiebre, rigidez, alteración conciencia).','Arteritis de la temporal (&gt;50 años, claudicación mandibular, VSG elevada).','Hipertensión intracraneal idiopática.','Tumor / trombosis venosa / disección carotídea.'],
+    manejo:['<strong>SNOOP — banderas rojas</strong>:<ul><li><strong>S</strong>ystemic: fiebre, pérdida peso, cáncer, HIV.</li><li><strong>N</strong>eurológico: focalidad, alteración conciencia, papiledema.</li><li><strong>O</strong>nset: trueno (&lt;1 min al pico).</li><li><strong>O</strong>lder: nuevo a &gt;50 años.</li><li><strong>P</strong>revio: cambio de patrón, postural, tras Valsalva, en embarazo.</li></ul>','Diario cefaleas 4 semanas para diagnóstico y tratamiento profiláctico.','Higiene del sueño, ejercicio aeróbico, evitar desencadenantes conocidos.','Educación en medicación de rescate y profilaxis.'],
+    farma:[['Paracetamol','1 g / 8 h','Cefalea tensional leve-moderada'],['Ibuprofeno / naproxeno','600 mg / 8 h · 500 mg / 12 h','Tensional o migraña'],['Sumatriptán','50-100 mg VO / 6-20 mg SC / 20 mg nasal','Migraña moderada-grave'],['Metoclopramida','10 mg VO/IM','Antiemético coadyuvante'],['Propranolol','40-160 mg/día','Profiláctico migraña'],['Topiramato','25 → 100 mg/día','Profiláctico migraña refractaria'],['Amitriptilina','10-50 mg noche','Tensional crónica / migraña profilaxis']],
+    derivar:['Red flags SNOOP → Urgencias / Neurología urgente.','Cefalea en trueno → 112 (HSA).','Status migrañoso &gt;72 h.','Cefalea que no responde a tratamiento escalonado.','Arteritis temporal sospechada → Reumatología urgente + corticoide.'],
+    alertas:['NO TC sistemática en cefalea primaria típica (Choosing Wisely).','Evitar abuso de analgésicos (cefalea rebote): &lt;10-15 días/mes.','Los triptanes se contraindican en cardiopatía isquémica y HTA no controlada.'],
+    calcs:['MIDAS · impacto migraña','HIT-6 · calidad de vida'],
+    fuentes:['SEN · Guía oficial de Cefaleas 2020','NICE CG150 · Headaches (update 2024)','Fisterra · Cefaleas en AP'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'otitis', icon:'👂', cls:'tile-color-f', hc1:'#0369a1', hc2:'#0284c7',
+    title:'Otitis media aguda', sub:'Pediatría · watchful waiting vs ATB',
+    motivo:'Inflamación aguda del oído medio. Causa más frecuente de ATB inapropiado en pediatría. Evidencia sólida para la observación en la mayoría de casos.',
+    ddx:['Otitis media aguda (OMA) supurada o no.','Otitis externa (dolor a la tracción del pabellón).','Otitis media serosa / crónica.','Mastoiditis (dolor retroauricular, pabellón desplazado, fiebre).','Disfunción tubárica post-catarro.'],
+    manejo:['Otoscopia: tímpano abombado, opaco, eritematoso, pérdida de movilidad.','Analgesia y antitérmicos siempre; la mayoría se resuelve en 48-72 h.','<strong>Observación activa 48-72 h</strong> si:<ul><li>&gt;2 años, OMA leve unilateral sin otorrea.</li><li>No inmunodeficiencia ni anomalías craneofaciales.</li><li>Acceso a reevaluación garantizado.</li></ul>','<strong>ATB inmediato</strong>: &lt;6 meses · &lt;2 años con OMA bilateral o grave · cualquier edad con otorrea · síntomas &gt;48 h intensos · aspecto tóxico.','Revisar si no mejora en 48-72 h o empeora.'],
+    farma:[['Amoxicilina','80-90 mg/kg/día / 8 h (niños), 500-1000 mg / 8 h adultos','1ª línea · 7-10 días según edad'],['Amoxicilina-clavulánico','80-90/10 mg/kg/día','Si fracaso amoxi, otorrea, ATB previo en 30 días, conjuntivitis asociada'],['Cefuroxima axetilo','30 mg/kg/día','Alergia penicilina no anafiláctica'],['Azitromicina','10 mg/kg día 1 + 5 mg/kg 4 días','Alergia tipo I a β-lactámicos'],['Paracetamol / ibuprofeno','Dosis por peso','Analgesia']],
+    derivar:['Sospecha de mastoiditis → ORL urgente.','Otorrea que no cede &gt;10 días con tratamiento.','OMA recurrente (≥3 episodios/6m o ≥4/año) → ORL.','Sordera o retraso del lenguaje asociados.','Parálisis facial, vértigo, ataxia.'],
+    alertas:['NO usar gotas óticas con aminoglucósidos si perforación timpánica.','Los descongestionantes y antihistamínicos NO aceleran la resolución.','Duración ATB: 10 días en &lt;2 años; 5-7 días en &gt;2 años no grave.'],
+    calcs:['Dosis pediátrica por peso · Calculadoras','Criterios clínicos estrictos OMA'],
+    fuentes:['Guía-ABE · OMA (AEP)','AAP 2013 · Otitis media (update 2023)','NICE NG91 · Otitis media (2022)','semFYC · Infecciones respiratorias'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'ictus', icon:'🧠', cls:'tile-color-a', hc1:'#991b1b', hc2:'#dc2626',
+    title:'Código Ictus', sub:'Activación precoz · ventana terapéutica',
+    motivo:'Déficit neurológico focal agudo. Tiempo = cerebro. La activación rápida del código ictus permite trombolisis (&lt;4,5 h) o trombectomía (&lt;24 h en casos seleccionados).',
+    ddx:['Ictus isquémico (85%).','Hemorragia cerebral (15%).','AIT (&lt;24 h resolución, alto riesgo recurrencia).','Stroke mimics: hipoglucemia, crisis comicial con parálisis Todd, migraña con aura, síncope, encefalopatía, trastorno funcional.','Disección carotídea en jóvenes.'],
+    manejo:['Escala <strong>FAST / CINCINNATI</strong> prehospitalaria: Face (asimetría), Arms (caída), Speech (disartria), Time.','<strong>Código Ictus</strong>: activar 112 si &lt;24 h desde inicio con déficit focal y sin contraindicación mayor.','Glucemia capilar inmediata (&lt;60 mg/dL → glucosa IV).','NIHSS en urgencias (valora gravedad).','TC sin contraste urgente + angio-TC.','<strong>Ventana trombolisis</strong>: ≤4,5 h con alteplasa/tenecteplasa, valorando criterios.','<strong>Trombectomía mecánica</strong>: hasta 6-24 h en oclusión de gran vaso con mismatch.','Control TA (&lt;185/110 antes de trombolisis; permisivo después).','NO reducir TA agresivamente en isquémico no candidato.','NO AAS hasta descartar hemorragia.','Profilaxis TVP al estabilizar.'],
+    farma:[['Alteplasa','0,9 mg/kg (máx 90) IV 10% bolo + 90% en 1 h','Trombolisis &lt;4,5 h'],['Tenecteplasa','0,25 mg/kg bolo único','Alternativa eficaz'],['Labetalol','10-20 mg IV bolo','Control TA en ictus'],['AAS','300 mg carga, luego 100 mg/día','Isquémico no candidato a trombolisis, ≥24 h si se hizo'],['Enoxaparina profiláctica','40 mg/24 h SC','Profilaxis TVP al estabilizar']],
+    derivar:['Todo déficit focal agudo &lt;24 h → 112 y código ictus.','Cefalea "en trueno" → sospecha HSA → TC urgente.','Déficit transitorio resuelto (AIT) → ingreso o consulta urgente &lt;24 h.'],
+    alertas:['Hipoglucemia puede simular ictus: glucemia SIEMPRE primero.','No retrasar traslado esperando resultado de analítica.','Stroke mimic no contraindica activación inicial; se aclara en centro de ictus.','Educación en FAST para población y familia de pacientes de alto riesgo.'],
+    calcs:['NIHSS · gravedad ictus','ABCD² · riesgo recurrencia AIT','CHA₂DS₂-VASc · FA y riesgo embólico','HAS-BLED · sangrado'],
+    fuentes:['ESO 2021 · Acute ischaemic stroke','GECVS-SEN · Código Ictus España','Plan del Ictus Región de Murcia'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'itu-no-complicada', icon:'💧', cls:'tile-color-g', hc1:'#86198f', hc2:'#c026d3',
+    title:'ITU no complicada en mujer', sub:'Cistitis · criterios y tratamiento',
+    motivo:'Mujer no embarazada, no anciana institucionalizada, sin alteración anatómica, con síntomas de infección urinaria baja (disuria, polaquiuria, tenesmo, dolor suprapúbico).',
+    ddx:['Cistitis aguda no complicada.','Pielonefritis aguda (fiebre, dolor lumbar, afectación sistémica).','Uretritis de transmisión sexual (Chlamydia, gonococo).','Vaginitis / vulvovaginitis (flujo, prurito).','Síndrome uretral / vejiga hiperactiva.','ITU recurrente (≥3/año o ≥2/6m).'],
+    manejo:['Diagnóstico clínico + tira reactiva. Urocultivo NO rutinario en cistitis no complicada.','Hidratación abundante, anti-inflamatorio, evitar espermicidas.','Educar: higiene postcoital, postmiccional, no demorar micción.','Urocultivo si: fracaso terapéutico 48-72 h, recurrencia, sospecha resistencia, gestación, varón.','Para cistitis recurrente: profilaxis postcoital o continua baja dosis, D-manosa, vacunas (Uromune).'],
+    farma:[['Fosfomicina trometamol','3 g monodosis VO','1ª línea si resistencia E. coli a fluoroquinolonas &gt;10%'],['Nitrofurantoína','100 mg / 8 h · 5 días','1ª línea, evitar si ClCr &lt;45'],['Pivmecilinam','400 mg / 8 h · 3-5 días','Alternativa'],['Cefuroxima axetilo','250-500 mg / 12 h · 5 días','Si resistencia fosfomicina/nitro'],['Ciprofloxacino','250-500 mg / 12 h · 3 días','Reservar: resistencias altas']],
+    derivar:['Fiebre, dolor lumbar, vómitos → pielonefritis, valorar ingreso.','Fracaso de 2 líneas de ATB.','Sospecha de ITU complicada (anomalía urológica, cálculo, sonda).','ITU en embarazo → derivar a ginecología.','ITU recurrente refractaria → Urología.'],
+    alertas:['NO prescribir amoxicilina/amoxi-clavulánico en empírico por alta resistencia.','Cotrimoxazol solo si resistencia E. coli &lt;20% (no suele ser el caso).','Bacteriuria asintomática SOLO se trata en embarazadas y pre-cirugía urológica.'],
+    calcs:['qSOFA · sepsis','ClCr / MDRD (ajuste fármaco)'],
+    fuentes:['Protocolo ITU-Zero · Ministerio Sanidad','PROA Área II','NICE NG109 · UTI lower (2018, rev 2023)','semFYC · Guía ITU'],
+    fecha:'2026-04'
+  },
+
+  {
+    id:'copd-exacerbacion', icon:'🫁', cls:'tile-color-h', hc1:'#134e4a', hc2:'#0d9488',
+    title:'Agudización EPOC', sub:'Leve · moderada · grave — Anthonisen',
+    motivo:'Empeoramiento mantenido de síntomas respiratorios (disnea, tos, expectoración) más allá de la variabilidad diaria. Triada de Anthonisen: disnea, volumen y purulencia del esputo.',
+    ddx:['Reagudización EPOC infecciosa.','Insuficiencia cardíaca descompensada.','Tromboembolismo pulmonar.','Neumotórax espontáneo.','Neumonía.','Arritmia (FA rápida).'],
+    manejo:['<strong>Clasificación de gravedad</strong>:<ul><li><strong>Leve</strong>: sólo broncodilatadores adicionales.</li><li><strong>Moderada</strong>: BD + corticoide sistémico + ATB.</li><li><strong>Grave</strong>: hospitalización.</li></ul>','Oxigenoterapia controlada: SatO₂ objetivo 88-92%.','Broncodilatadores de acción rápida a demanda (salbutamol ± ipratropio).','Ventilación no invasiva si acidosis respiratoria (pH 7,25-7,35).','Fisioterapia, hidratación, tratamiento de la causa desencadenante.','Plan de acción escrito tras el alta + revisión en 2-4 semanas.'],
+    farma:[['Salbutamol + ipratropio','2-4 puffs / 4-6 h o nebulización','Broncodilatadores de rescate'],['Prednisona','30-40 mg/día · 5 días','Corticoide sistémico, pauta corta'],['Amoxicilina-clavulánico','875/125 mg / 8 h · 5-7 días','1ª línea si Anthonisen ≥2 criterios'],['Azitromicina','500 mg/día · 3-5 días','Alternativa / alérgicos'],['Levofloxacino','500 mg / 24 h','Reservar: bronquiectasias, ingreso previo, Pseudomonas probable']],
+    derivar:['Hospitalización: disnea grave en reposo, cianosis, edemas, SatO₂ &lt;88%, acidosis, comorbilidad descompensada, imposibilidad de autocuidado.','Valorar UCI: FR &gt;25 con uso de accesorios, pH &lt;7,25, inestabilidad hemodinámica, deterioro consciencia.'],
+    alertas:['No mantener corticoide sistémico &gt;14 días.','Retirar tabaco es la única medida que modifica la evolución.','Revisar técnica inhalatoria y adherencia al tratamiento de base.','Vacunación antigripal, neumocócica, VRS según indicación.'],
+    calcs:['CURB-65 · si neumonía','BAP-65 · mortalidad','NEWS · deterioro clínico','mMRC / CAT · disnea crónica'],
+    fuentes:['GOLD 2025','GesEPOC 2021 (SEPAR-semFYC)','NICE NG115 · COPD (update 2023)'],
+    fecha:'2026-04'
+  }
+];
+
+function renderGrid(list){
+  document.getElementById('grid').innerHTML = list.map(function(f){
+    return '<button class="tile '+f.cls+'" onclick="open(\''+f.id+'\')">'
+         + '<span class="icon">'+f.icon+'</span>'
+         + '<div class="t">'+f.title+'</div>'
+         + '<div class="s">'+f.sub+'</div>'
+         + '</button>';
+  }).join('');
+}
+
+function filter(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  if(!q){ renderGrid(FICHAS); return; }
+  const filtered = FICHAS.filter(function(f){
+    return f.title.toLowerCase().includes(q)
+        || f.sub.toLowerCase().includes(q)
+        || f.motivo.toLowerCase().includes(q)
+        || (f.ddx||[]).some(function(x){return x.toLowerCase().includes(q)});
+  });
+  renderGrid(filtered);
+}
+
+window.open = function(id){
+  const f = FICHAS.find(function(x){return x.id===id});
+  if(!f) return;
+  document.getElementById('mh').style.setProperty('--hc1', f.hc1);
+  document.getElementById('mh').style.setProperty('--hc2', f.hc2);
+  document.getElementById('micon').textContent = f.icon;
+  document.getElementById('mtitle').textContent = f.title;
+
+  const body = document.getElementById('mbody');
+  let html = '';
+  html += '<div class="block b-motivo"><h3>🎯 Motivo y contexto</h3><p style="color:var(--t2);line-height:1.65">'+f.motivo+'</p></div>';
+  html += '<div class="block b-ddx"><h3>🔎 Diagnóstico diferencial</h3><ul>'+f.ddx.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div>';
+  html += '<div class="block b-manejo"><h3>📋 Manejo en consulta</h3><ol>'+f.manejo.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ol></div>';
+  if(f.farma && f.farma.length){
+    html += '<div class="block b-farma"><h3>💊 Fármacos (clase + principio activo)</h3>'
+         + '<table><thead><tr><th>Fármaco</th><th>Dosis</th><th>Nota</th></tr></thead><tbody>'
+         + f.farma.map(function(row){return '<tr><td><strong>'+row[0]+'</strong></td><td><code>'+row[1]+'</code></td><td>'+row[2]+'</td></tr>'}).join('')
+         + '</tbody></table></div>';
+  }
+  html += '<div class="block b-derivar"><h3>🚑 Criterios de derivación</h3><ul>'+f.derivar.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div>';
+  html += '<div class="block b-alerta"><h3>⚠️ Alertas y pitfalls</h3><ul>'+f.alertas.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div>';
+  if(f.calcs && f.calcs.length){
+    html += '<div class="block b-calc"><h3>🧮 Calculadoras en la app</h3><div class="calc-links">'
+         + f.calcs.map(function(c){return '<a class="calc-chip" href="panel-medico.html?page=pageScanIA" target="_blank" rel="noopener">'+c+'</a>'}).join('')
+         + '</div><div class="note">Pulsa para abrir Herramientas → Calculadoras.</div></div>';
+  }
+  html += '<div class="block b-fuentes"><h3>📚 Fuentes</h3><ul>'+f.fuentes.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'
+       + '<p style="font-size:.78rem;color:var(--t3);margin-top:8px">Revisada: '+f.fecha+'. Uso docente · no sustituye juicio clínico.</p></div>';
+  body.innerHTML = html;
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+};
+
+window.close = function(){
+  document.getElementById('modal').classList.remove('show');
+  document.body.style.overflow = '';
+};
+
+renderGrid(FICHAS);
+</script>
+</body>
+</html>

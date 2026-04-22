@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recursos cerca de ti · Prescripción Social · Área II Cartagena</title>
+<meta name="description" content="Mapa de recursos comunitarios del Área II Cartagena: apoyo social, salud mental, adicciones, mayores, alimentación, discapacidad, infancia, migrantes.">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-light:#238c62;--primary-dark:#0a4d35;
+  --amber:#d97706;--red:#dc2626;--blue:#1e40af;--purple:#7c3aed;
+  --bg:#fffaf3;--card:#fff;--border:#e5e1d8;
+  --tx:#1f2937;--t2:#4b5563;--t3:#6b7280;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0f172a;--card:#1e293b;--border:#334155;--tx:#f1f5f9;--t2:#cbd5e1;--t3:#94a3b8}
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:40px}
+.nav{background:linear-gradient(135deg,#0a4d35,#1a6b4a);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:1000;color:#fff}
+.nav a{color:#fff;text-decoration:none;font-size:.85rem;font-weight:600;opacity:.9}
+.nav h1{font-size:1rem;font-weight:700;flex:1;font-family:var(--display)}
+.hero{padding:26px 20px;background:linear-gradient(135deg,#0a4d35,#238c62);color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"🗺️";position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.16}
+.hero h2{font-family:var(--display);font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;margin-bottom:6px}
+.hero p{font-size:.95rem;font-weight:300;line-height:1.55;max-width:740px;opacity:.92}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 18px}
+
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search{flex:1;min-width:220px;padding:12px 16px;background:var(--card);border:2px solid var(--border);color:var(--tx);border-radius:12px;font-family:var(--font);font-size:.95rem}
+.search:focus{outline:none;border-color:var(--primary)}
+.btn{padding:11px 18px;background:var(--primary);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.88rem;display:inline-flex;align-items:center;gap:6px}
+.btn.sec{background:var(--card);color:var(--tx);border:1px solid var(--border)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{padding:7px 14px;background:var(--card);border:1px solid var(--border);border-radius:18px;color:var(--t2);font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.chip:hover{transform:translateY(-1px)}
+.chip.active{color:#fff;border-color:transparent;background:var(--c,var(--primary))}
+
+#mapa{height:420px;border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px;z-index:1}
+.leaflet-popup-content{font-family:var(--font);font-size:.9rem;line-height:1.5}
+.leaflet-popup-content b{font-family:var(--display);font-size:1rem}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;border-left:5px solid var(--c,var(--primary));display:flex;flex-direction:column;gap:6px}
+.card .t{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:6px}
+.card .d{font-size:.86rem;color:var(--t2);line-height:1.5}
+.card .info{font-size:.82rem;color:var(--t2);display:flex;flex-direction:column;gap:3px}
+.card .info span{display:flex;align-items:center;gap:6px}
+.card .access{display:inline-block;padding:3px 10px;font-size:.72rem;border-radius:10px;font-weight:700;align-self:flex-start;background:var(--ac-bg,rgba(0,0,0,.05));color:var(--ac-c,var(--tx));border:1px solid var(--ac-br,var(--border));margin-top:4px}
+@media(prefers-color-scheme:dark){.card .access{--ac-bg:rgba(255,255,255,.08)}}
+.card .actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.card .actions a,.card .actions button{padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:5px;cursor:pointer;border:0;font-family:var(--font)}
+.card .actions .a-call{background:var(--primary);color:#fff}
+.card .actions .a-web{background:var(--card);color:var(--tx);border:1px solid var(--border)}
+.card .actions .a-map{background:#2563eb;color:#fff}
+.card .actions .a-receta{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
+
+.note{background:rgba(30,64,175,.08);border:1px solid rgba(30,64,175,.3);color:var(--tx);padding:12px 16px;border-radius:10px;font-size:.86rem;margin-bottom:16px;line-height:1.55}
+@media(prefers-color-scheme:dark){.note{background:rgba(59,130,246,.14);color:#e0f2fe}}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;z-index:2000;padding:20px;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal.show{display:block}
+.mbox{max-width:520px;margin:32px auto;background:var(--card);border-radius:16px;overflow:hidden;color:var(--tx);border:1px solid var(--border)}
+.mhead{padding:16px 20px;background:linear-gradient(135deg,#d97706,#b45309);color:#fff;display:flex;align-items:center;gap:10px}
+.mhead h2{flex:1;font-family:var(--display);font-size:1.15rem}
+.mhead button{background:rgba(255,255,255,.2);border:0;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer}
+.mbody{padding:18px 20px}
+.receta{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px dashed #92400e;border-radius:12px;padding:18px;color:#451a03;font-family:ui-sans-serif,sans-serif;margin:10px 0;line-height:1.7}
+.receta .r-head{font-family:var(--display);font-weight:800;font-size:1.05rem;margin-bottom:10px;text-align:center;border-bottom:1px solid rgba(146,64,14,.3);padding-bottom:6px}
+.receta .r-name{font-family:var(--display);font-weight:800;font-size:1.15rem;margin-bottom:6px}
+.receta .r-sub{font-size:.82rem;margin-top:10px;padding-top:8px;border-top:1px dashed rgba(146,64,14,.3);font-style:italic}
+
+.ca-actividad{--c:#16a34a}.ca-salud_mental{--c:#9333ea}.ca-soledad{--c:#f59e0b}
+.ca-adicciones{--c:#dc2626}.ca-alimentacion{--c:#78350f}.ca-apoyo_social{--c:#2563eb}
+.ca-discapacidad{--c:#475569}.ca-migrantes{--c:#0891b2}.ca-mayores{--c:#84cc16}
+.ca-infancia{--c:#ec4899}
+
+@media(max-width:640px){
+  .hero{padding:22px 16px}.hero::after{font-size:3rem;right:12px}
+  #mapa{height:320px}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="pacientes.html">← Pacientes</a>
+  <h1>🗺️ Recursos cerca de ti</h1>
+</nav>
+
+<div class="hero">
+  <h2>Recursos cerca de ti</h2>
+  <p>Red de asociaciones, servicios sociales y entidades del Área II de Cartagena para cuando necesitas más que un tratamiento médico: compañía, apoyo social, ejercicio, alimentación, salud mental, cuidados…</p>
+</div>
+
+<div class="wrap">
+  <div class="note">
+    💚 <strong>Prescripción social:</strong> muchos problemas de salud mejoran con actividades y apoyos de la comunidad. Si eres profesional, usa el botón <em>🧾 Receta social</em> de cada recurso para compartirlo con tu paciente.
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="q" class="search" placeholder="🔎 ¿En qué puedo ayudarte? Ej: 'me siento solo', 'necesito comida', 'dejar de fumar'…" oninput="filter()">
+    <button class="btn sec" onclick="locate()" aria-label="Cerca de mí">📍 Cerca de mí</button>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div id="mapa"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <p style="font-size:.76rem;color:var(--t3);text-align:center;margin-top:22px">
+    Datos verificados abril 2026. Reportar cambios desde el botón 💡 Sugerencias del panel médico.
+  </p>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closem()">
+  <div class="mbox">
+    <div class="mhead">
+      <span style="font-size:1.5rem">🧾</span>
+      <h2>Receta social</h2>
+      <button onclick="closem()">✕</button>
+    </div>
+    <div class="mbody" id="mbody"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const CATEGORIAS = [
+  {id:'apoyo_social',   t:'Apoyo social', icon:'🤝', c:'#2563eb', tags:['ayuda','servicios sociales','dinero','vivienda','trabajo']},
+  {id:'soledad',        t:'Compañía',     icon:'💞', c:'#f59e0b', tags:['solo','soledad','compañía','amigos','mayores']},
+  {id:'salud_mental',   t:'Salud mental', icon:'🧠', c:'#9333ea', tags:['ansiedad','depresión','psicólogo','nervios','dormir']},
+  {id:'adicciones',     t:'Adicciones',   icon:'🚭', c:'#dc2626', tags:['alcohol','drogas','tabaco','ludopatía','adicción']},
+  {id:'alimentacion',   t:'Alimentación', icon:'🍎', c:'#78350f', tags:['comida','alimentos','hambre','banco alimentos']},
+  {id:'actividad_fisica',t:'Ejercicio',   icon:'🚶', c:'#16a34a', tags:['ejercicio','caminar','piscina','deporte','yoga']},
+  {id:'discapacidad',   t:'Discapacidad', icon:'♿', c:'#475569', tags:['discapacidad','dependencia','minusvalía']},
+  {id:'migrantes',      t:'Migrantes',    icon:'🌍', c:'#0891b2', tags:['extranjería','papeles','refugiado','asilo']},
+  {id:'mayores',        t:'Mayores',      icon:'👵', c:'#84cc16', tags:['mayor','jubilado','residencia','centro de día','cuidador']},
+  {id:'infancia',       t:'Infancia',     icon:'👶', c:'#ec4899', tags:['niño','familia','violencia','custodia']}
+];
+
+const RECURSOS = [
+  {id:'cruzroja', cat:'apoyo_social', nombre:'Cruz Roja Cartagena', desc:'Acompañamiento a mayores, ayuda alimentaria, intervención social, empleo.', dir:'C/ Gisbert, 6, 30202 Cartagena', tel:'968503697', web:'https://cruzrojamurcia.es', horario:'L-V 9:00-14:00', lat:37.6005, lng:-0.9863, acceso:'directo', pob:['mayores','familias','migrantes','general']},
+  {id:'caritas', cat:'apoyo_social', nombre:'Cáritas Diócesis de Cartagena', desc:'Acogida, acompañamiento en exclusión social, empleo y formación.', dir:'C/ San Fernando, 24, 30202 Cartagena', tel:'968124100', web:'https://www.caritas.es/cartagena/', horario:'L-V 9:00-13:30', lat:37.6021, lng:-0.9858, acceso:'directo', pob:['general','familias','migrantes']},
+  {id:'huertecica', cat:'adicciones', nombre:'Colectivo La Huertecica', desc:'Rehabilitación e inserción en adicciones. Proyectos socio-sanitarios con el SMS.', dir:'Ctra Santa Ana-La Palma, Finca La Huertecica, Santa Ana 30319', tel:'968524656', web:'https://lahuertecica.com', horario:'L-V 8:00-15:00', lat:37.6778, lng:-0.9541, acceso:'derivacion', pob:['adicciones']},
+  {id:'rascasa', cat:'apoyo_social', nombre:'RASCASA', desc:'Barrios de alto riesgo social: acompañamiento, empleo, infancia.', dir:'C/ Sol, 16, 30202 Los Mateos, Cartagena', tel:'968120304', web:'https://asociacionrascasa.es', horario:'L-V 9:00-14:00', lat:37.6038, lng:-0.9703, acceso:'directo', pob:['familias','infancia']},
+  {id:'columbares', cat:'apoyo_social', nombre:'Columbares', desc:'Inclusión social, atención a migrantes, medioambiente.', dir:'Paseo Alfonso XIII, 51, 30203 Cartagena', tel:'968166064', web:'https://columbares.org', horario:'L-V 9:00-14:00', lat:37.6052, lng:-0.9878, acceso:'directo', pob:['migrantes','general']},
+  {id:'samaritano', cat:'alimentacion', nombre:'Hogar El Buen Samaritano', desc:'Reparto de alimentos, ropa, apoyo al empleo.', dir:'Camino a Los Dolores 33, Los Molinos Marfagones, Cartagena', tel:'968168644', web:'https://ongsamaritano.com', horario:'L-V 9:00-13:00', lat:37.6212, lng:-1.0291, acceso:'directo', pob:['general','familias']},
+  {id:'jesus-abandonado', cat:'apoyo_social', nombre:'Jesús Abandonado · Cartagena', desc:'Personas sin hogar: acogida, alimentación, higiene, acompañamiento.', dir:'C/ Alameda de San Antón, Cartagena (verificar)', tel:'968238297', web:'https://jesusabandonado.org', horario:'L-V 9:00-14:00', lat:37.6067, lng:-0.9861, acceso:'directo', pob:['sin hogar']},
+  {id:'hogarsi', cat:'apoyo_social', nombre:'Hogar Sí (Fundación RAIS)', desc:'Sinhogarismo: acompañamiento, Housing First, apoyo psicosocial.', dir:'C/ Sor Francisca Armendáriz s/n, Edif. La Milagrosa, Cartagena', tel:'968128929', web:'https://hogarsi.org', horario:'L-V 9:00-14:00', lat:37.6035, lng:-0.9872, acceso:'derivacion', pob:['sin hogar']},
+  {id:'fisat', cat:'infancia', nombre:'FISAT-ALRASO', desc:'Apoyo a infancia, familia y juventud en barrios vulnerables.', dir:'Barrio de Los Dolores, Cartagena', tel:'968517030', web:'https://fisat.es', horario:'L-V 9:00-14:00', lat:37.6152, lng:-0.9962, acceso:'derivacion', pob:['infancia','familias']},
+  {id:'css-zona2', cat:'apoyo_social', nombre:'Centro Servicios Sociales Cartagena Zona 2', desc:'Trabajador/a social de referencia, ayudas, dependencia, menores.', dir:'Plaza España 2, Edif. 2001, 1ª planta, Cartagena', tel:'968128910', web:'https://serviciossociales.cartagena.es', horario:'L-V 8:30-14:00 (cita previa)', lat:37.6048, lng:-0.9821, acceso:'cita_previa', pob:['general']},
+  {id:'pass', cat:'apoyo_social', nombre:'PASS · Punto de Acceso a Servicios Sociales', desc:'Primer contacto telefónico gratuito para orientar sobre ayudas sociales.', dir:'Atención telefónica regional', tel:'900923491', web:'https://serviciossociales.cartagena.es', horario:'L-V 9:00-14:00', lat:37.6005, lng:-0.9863, acceso:'directo', pob:['general']},
+  {id:'entra', cat:'apoyo_social', nombre:'Servicio ENTRA', desc:'Ayuda con trámites digitales (citas, certificados, Cl@ve PIN).', dir:'Edif. La Milagrosa, C/ Sor Francisca Armendáriz 6, Cartagena', tel:'699982517', web:'https://serviciossociales.cartagena.es', horario:'L-V 9:00-13:30', lat:37.6035, lng:-0.9872, acceso:'directo', pob:['mayores','general']},
+  {id:'apices', cat:'salud_mental', nombre:'APICES · Asociación salud mental Cartagena y Comarca', desc:'Apoyo a personas con problemas de salud mental y sus familias.', dir:'Cartagena (consultar)', tel:'968505012', web:'https://apices-cartagena.com', horario:'L-V 9:00-14:00', lat:37.6021, lng:-0.9895, acceso:'directo', pob:['salud mental','familias']},
+  {id:'024', cat:'salud_mental', nombre:'024 · Atención a la conducta suicida', desc:'Teléfono 24h gratuito y confidencial del Ministerio de Sanidad.', dir:'Atención telefónica', tel:'024', web:'https://www.sanidad.gob.es/linea024', horario:'24h/365 días', lat:37.6005, lng:-0.9863, acceso:'directo', pob:['general']},
+  {id:'esperanza', cat:'salud_mental', nombre:'Teléfono de la Esperanza Murcia', desc:'Ayuda emocional por teléfono. Voluntariado profesionalizado.', dir:'Teléfono regional', tel:'968340640', web:'https://telefonodelaesperanza.org', horario:'24h', lat:37.6005, lng:-0.9863, acceso:'directo', pob:['general']},
+  {id:'uca', cat:'adicciones', nombre:'Unidad de Conductas Adictivas (UCA) Área II', desc:'Atención clínica especializada en adicciones del SMS.', dir:'C/ Real, 7, Cartagena (verificar)', tel:'968326666', web:'https://www.murciasalud.es', horario:'L-V 8:00-15:00', lat:37.6027, lng:-0.9828, acceso:'derivacion', pob:['adicciones']},
+  {id:'murcia-acoge', cat:'migrantes', nombre:'Murcia Acoge · Cartagena', desc:'Acogida, asesoría jurídica y social a personas migrantes.', dir:'Cartagena (consultar sede actual)', tel:'968291400', web:'https://murcia-acoge.org', horario:'L-V 9:00-14:00', lat:37.6042, lng:-0.9857, acceso:'directo', pob:['migrantes']},
+  {id:'inmigracion', cat:'migrantes', nombre:'Servicio Municipal de Inmigración · Ayto. Cartagena', desc:'Asesoría jurídica, mediación intercultural, informes sociales.', dir:'Ayto. Cartagena', tel:'968128800', web:'https://www.cartagena.es', horario:'L-V 9:00-14:00 (cita previa)', lat:37.6042, lng:-0.9864, acceso:'cita_previa', pob:['migrantes']},
+  {id:'apanda', cat:'discapacidad', nombre:'APANDA · Discapacidad auditiva', desc:'Asociación de padres de niños con discapacidad auditiva.', dir:'Cartagena', tel:'968523030', web:'https://apanda.org', horario:'L-V 9:00-14:00', lat:37.6065, lng:-0.9856, acceso:'directo', pob:['discapacidad','familias']},
+  {id:'once-portalento', cat:'discapacidad', nombre:'Fundación ONCE · Por Talento', desc:'Empleo para personas con discapacidad.', dir:'Plaza San Agustín 1A, 2ª planta, 30005 Murcia', tel:'968286288', web:'https://portalento.es', horario:'L-V 9:00-14:00', lat:37.9922, lng:-1.1307, acceso:'directo', pob:['discapacidad']},
+  {id:'ceom', cat:'discapacidad', nombre:'CEOM · Discapacidad intelectual', desc:'Integración de personas con discapacidad intelectual.', dir:'Murcia / Cartagena', tel:'968278100', web:'https://ceomrm.com', horario:'L-V 9:00-14:00', lat:37.9922, lng:-1.1307, acceso:'derivacion', pob:['discapacidad']},
+  {id:'piscinas', cat:'actividad_fisica', nombre:'Piscinas municipales Cartagena', desc:'Natación y actividades acuáticas. Tarifas reducidas para crónicos/mayores.', dir:'Centro Mundial · Camino Subida Atalaya s/n', tel:'968502050', web:'https://www.cartagena.es/deportes/', horario:'L-V 7:00-22:00 · S-D 9:00-14:00', lat:37.6108, lng:-0.9875, acceso:'directo', pob:['general','mayores']},
+  {id:'centros-mayores', cat:'mayores', nombre:'Centros de mayores municipales', desc:'Actividades culturales, gimnasia, talleres. Red municipal del Ayto.', dir:'Red municipal · consultar centro más cercano', tel:'968128800', web:'https://www.cartagena.es', horario:'L-V 9:00-20:00', lat:37.6048, lng:-0.9841, acceso:'directo', pob:['mayores']},
+  {id:'ruta-saludable', cat:'actividad_fisica', nombre:'Rutas saludables · Ayto. Cartagena', desc:'Rutas señalizadas por la ciudad para caminar a distintos niveles.', dir:'Espacios públicos de Cartagena', tel:'968128800', web:'https://www.cartagena.es', horario:'Acceso libre', lat:37.6055, lng:-0.9891, acceso:'directo', pob:['general','mayores']},
+  {id:'banco-alimentos', cat:'alimentacion', nombre:'Banco de Alimentos Región de Murcia', desc:'Reparte alimentos a través de entidades sociales acreditadas.', dir:'Región de Murcia · derivación por entidad social', tel:'968263131', web:'https://bancodealimentosmurcia.es', horario:'L-V 9:00-14:00', lat:37.6053, lng:-0.9834, acceso:'derivacion', pob:['general','familias']},
+  {id:'afal', cat:'mayores', nombre:'AFAL Cartagena · Familiares de personas con Alzheimer', desc:'Grupos de apoyo, terapia ocupacional, respiro familiar.', dir:'Cartagena', tel:'968524124', web:'https://afalcartagena.org', horario:'L-V 9:00-14:00', lat:37.6078, lng:-0.9854, acceso:'directo', pob:['mayores','familias']},
+  {id:'aelip', cat:'infancia', nombre:'AELIP · Enfermedades raras pediátricas', desc:'Apoyo a familias con enfermedades minoritarias (lipodistrofias y otras).', dir:'Cartagena · sede AELIP', tel:'968320810', web:'https://aelip.es', horario:'L-V 9:00-14:00', lat:37.6019, lng:-0.9871, acceso:'directo', pob:['infancia','familias']}
+];
+
+let currentCat = 'all';
+let currentQ = '';
+let map, markers = [];
+
+function initMap(){
+  map = L.map('mapa').setView([37.6045, -0.9858], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap', maxZoom:19 }).addTo(map);
+}
+
+function iconFor(cat){
+  const c = CATEGORIAS.find(function(x){return x.id===cat}) || {};
+  return L.divIcon({
+    className:'res-pin',
+    html:'<div style="background:'+c.c+';color:#fff;border:2px solid #fff;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 10px rgba(0,0,0,.35)">'+c.icon+'</div>',
+    iconSize:[34,34], iconAnchor:[17,17], popupAnchor:[0,-14]
+  });
+}
+
+function accessLabel(a){
+  if(a==='directo') return {t:'Puedes ir directamente', bg:'rgba(22,163,74,.14)', c:'#166534', br:'rgba(22,163,74,.35)'};
+  if(a==='cita_previa') return {t:'Necesitas cita previa', bg:'rgba(217,119,6,.14)', c:'#92400e', br:'rgba(217,119,6,.35)'};
+  return {t:'Deriva tu trabajador social', bg:'rgba(124,58,237,.14)', c:'#6d28d9', br:'rgba(124,58,237,.35)'};
+}
+
+function renderChips(){
+  const el = document.getElementById('chips');
+  el.innerHTML = '<button class="chip'+(currentCat==='all'?' active':'')+'" onclick="setCat(\'all\')">Todos</button>'
+    + CATEGORIAS.map(function(c){
+        return '<button class="chip'+(currentCat===c.id?' active':'')+'" style="--c:'+c.c+'" onclick="setCat(\''+c.id+'\')">'+c.icon+' '+c.t+'</button>';
+      }).join('');
+}
+
+function setCat(c){ currentCat = c; renderChips(); render(); }
+
+function match(r){
+  if(currentCat !== 'all' && r.cat !== currentCat) return false;
+  if(!currentQ) return true;
+  const q = currentQ.toLowerCase();
+  if(r.nombre.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q)) return true;
+  const cat = CATEGORIAS.find(function(c){return c.id===r.cat});
+  if(cat && (cat.tags||[]).some(function(t){return t.includes(q)})) return true;
+  return false;
+}
+
+function render(){
+  markers.forEach(function(m){ map.removeLayer(m) }); markers = [];
+  const list = RECURSOS.filter(match);
+  list.forEach(function(r){
+    const mk = L.marker([r.lat, r.lng], {icon:iconFor(r.cat)}).addTo(map);
+    mk.bindPopup('<b>'+r.nombre+'</b><br>'+r.desc+'<br>📍 '+r.dir+'<br>📞 <a href="tel:'+r.tel+'">'+r.tel+'</a>');
+    markers.push(mk);
+  });
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = list.length ? list.map(function(r){
+    const cat = CATEGORIAS.find(function(c){return c.id===r.cat});
+    const al = accessLabel(r.acceso);
+    return '<div class="card ca-'+r.cat+'">'
+      + '<div class="t">'+cat.icon+' '+r.nombre+'</div>'
+      + '<div class="d">'+r.desc+'</div>'
+      + '<div class="info">'
+        + '<span>📍 '+r.dir+'</span>'
+        + '<span>🕐 '+r.horario+'</span>'
+      + '</div>'
+      + '<span class="access" style="background:'+al.bg+';color:'+al.c+';border-color:'+al.br+'">'+al.t+'</span>'
+      + '<div class="actions">'
+        + '<a class="a-call" href="tel:'+r.tel+'" onclick="trackCall(\''+r.id+'\')">📞 '+r.tel+'</a>'
+        + '<a class="a-web" href="'+r.web+'" target="_blank" rel="noopener" onclick="trackWeb(\''+r.id+'\')">🌐 Web</a>'
+        + '<a class="a-map" href="https://www.google.com/maps/search/?api=1&query='+r.lat+','+r.lng+'" target="_blank" rel="noopener">🧭 Cómo llegar</a>'
+        + '<button class="a-receta" onclick="openReceta(\''+r.id+'\')">🧾 Receta social</button>'
+      + '</div>'
+    + '</div>';
+  }).join('') : '<p style="color:var(--t3);grid-column:1/-1;text-align:center;padding:20px">Sin resultados con ese filtro. Prueba con otra categoría o palabra.</p>';
+
+  try{ if(typeof gtag==='function') gtag('event','recursos_seccion_opened'); }catch(e){}
+}
+
+function filter(){
+  currentQ = document.getElementById('q').value.trim();
+  render();
+}
+
+function locate(){
+  if(!navigator.geolocation){ alert('Tu navegador no permite geolocalización.'); return; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    map.setView([pos.coords.latitude, pos.coords.longitude], 14);
+    L.circleMarker([pos.coords.latitude, pos.coords.longitude], {radius:10, color:'#2563eb', fillColor:'#60a5fa', fillOpacity:.6}).addTo(map).bindPopup('Estás aquí').openPopup();
+  }, function(){ alert('No se pudo obtener tu ubicación.'); });
+}
+
+function openReceta(id){
+  const r = RECURSOS.find(function(x){return x.id===id});
+  if(!r) return;
+  const cat = CATEGORIAS.find(function(c){return c.id===r.cat});
+  const al = accessLabel(r.acceso);
+  const hoy = new Date().toLocaleDateString('es-ES', {year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('mbody').innerHTML =
+    '<p style="font-size:.84rem;color:var(--t2);margin-bottom:8px">Imprime, comparte por WhatsApp o copia al portapapeles. Para uso profesional.</p>'
+    + '<div class="receta" id="rcard">'
+    +   '<div class="r-head">🏥 RECURSO COMUNITARIO RECOMENDADO<br><span style="font-size:.78rem;font-weight:500">Área II Cartagena · Servicio Murciano de Salud</span></div>'
+    +   '<div class="r-name">'+cat.icon+' '+r.nombre+'</div>'
+    +   '<div>📍 '+r.dir+'</div>'
+    +   '<div>📞 '+r.tel+'</div>'
+    +   '<div>🌐 '+r.web.replace(/^https?:\/\//,'')+'</div>'
+    +   '<div>🕐 '+r.horario+'</div>'
+    +   '<div style="margin-top:6px">🎯 '+al.t+'</div>'
+    +   '<div style="margin-top:10px;font-size:.84rem">Fecha: '+hoy+'</div>'
+    +   '<div class="r-sub">⚠️ Esto no es una receta médica. Es una recomendación de un recurso comunitario para su bienestar.</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +   '<button class="btn" onclick="shareReceta(\''+id+'\')">📲 Compartir por WhatsApp</button>'
+    +   '<button class="btn sec" onclick="copyReceta(\''+id+'\')">📋 Copiar texto</button>'
+    +   '<button class="btn sec" onclick="window.print()">🖨️ Imprimir</button>'
+    + '</div>';
+  document.getElementById('modal').classList.add('show');
+  try{ if(typeof gtag==='function') gtag('event','prescripcion_social_generada',{recurso_id:id,categoria:r.cat}); }catch(e){}
+}
+
+function closem(){ document.getElementById('modal').classList.remove('show'); }
+
+function buildText(id){
+  const r = RECURSOS.find(function(x){return x.id===id});
+  if(!r) return '';
+  const al = accessLabel(r.acceso);
+  return '🏥 RECURSO COMUNITARIO RECOMENDADO\nÁrea II Cartagena · SMS\n\n'
+    + '🎯 '+r.nombre+'\n'
+    + '📍 '+r.dir+'\n'
+    + '📞 '+r.tel+'\n'
+    + '🌐 '+r.web+'\n'
+    + '🕐 '+r.horario+'\n'
+    + '✅ '+al.t+'\n\n'
+    + '⚠️ Esto no es una receta médica. Es una recomendación de un recurso comunitario para su bienestar.';
+}
+
+function shareReceta(id){
+  const txt = buildText(id);
+  const url = 'https://wa.me/?text='+encodeURIComponent(txt);
+  window.open(url, '_blank');
+}
+
+function copyReceta(id){
+  const txt = buildText(id);
+  if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ alert('Copiado al portapapeles.'); }); }
+  else { prompt('Copia este texto:', txt); }
+}
+
+function trackCall(id){ try{ if(typeof gtag==='function') gtag('event','recurso_llamada',{recurso_id:id}); }catch(e){} }
+function trackWeb(id){ try{ if(typeof gtag==='function') gtag('event','recurso_web_opened',{recurso_id:id}); }catch(e){} }
+
+initMap(); renderChips(); render();
+</script>
+</body>
+</html>

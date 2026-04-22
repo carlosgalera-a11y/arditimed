@@ -183,7 +183,7 @@ footer a:hover{color:#ffd54f}
       </div>
     </div>
     <div class="hero-title">Área de Profesionales</div>
-    <div class="hero-sub">Protocolos, IA clínica, docencia y herramientas.</div>
+    <div class="hero-sub">Protocolos, docencia y herramientas clínicas.</div>
     <!-- Toolbar: Mi Guardia / Proponer / Sugerencias / Moderación (solo autenticados; Moderación solo admin) -->
     <div id="proToolbar" class="pro-toolbar" style="display:none">
       <button type="button" class="pro-tbtn tbtn-guardia" onclick="location.href='panel-medico.html?action=mi-guardia'">
@@ -239,8 +239,8 @@ footer a:hover{color:#ffd54f}
 
       <button type="button" class="tile" data-k="herramientas" onclick="location.href='panel-medico.html?page=pageScanIA'" aria-label="Herramientas">
         <div class="tile-head"><span class="tile-icon">🔬</span><span class="tile-title">Herramientas</span></div>
-        <div class="tile-desc">Scan IA (Rx, ECG, derma, eco), ECG-GPT integrado, Quiz NIH Chest X-Ray, FileHub.</div>
-        <span class="tile-badge">IA clínica</span>
+        <div class="tile-desc">Scan (Rx, ECG, derma, eco), ECG integrado, Quiz NIH Chest X-Ray, FileHub.</div>
+        <span class="tile-badge">Clínica</span>
       </button>
 
       <button type="button" class="tile" data-k="buscas" onclick="location.href='panel-medico.html?page=pageTelefonos'" aria-label="Buscas">
@@ -251,8 +251,26 @@ footer a:hover{color:#ffd54f}
 
       <button type="button" class="tile" data-k="docencia" onclick="location.href='docencia.html'" aria-label="Docencia">
         <div class="tile-head"><span class="tile-icon">🎓</span><span class="tile-title">Docencia</span></div>
-        <div class="tile-desc">Generador de casos clínicos tipo test (con IA) + casos MIR por especialidad.</div>
+        <div class="tile-desc">Generador de casos clínicos tipo test + casos MIR por especialidad.</div>
         <span class="tile-badge">Casos + MIR</span>
+      </button>
+
+      <button type="button" class="tile" data-k="fichas" onclick="location.href='fichas-consulta-rapida.html'" aria-label="Fichas de consulta rápida" style="--tile-color:#c4b5fd;--tile-bg:rgba(196,181,253,.14)">
+        <div class="tile-head"><span class="tile-icon">📑</span><span class="tile-title">Fichas de consulta rápida</span></div>
+        <div class="tile-desc">Motivo → DDx → manejo → derivación → fármacos. Algoritmos visuales enlazados a las calculadoras.</div>
+        <span class="tile-badge">9 fichas</span>
+      </button>
+
+      <button type="button" class="tile" data-k="fuentes" onclick="location.href='fuentes-recursos.html'" aria-label="Fuentes y Recursos" style="--tile-color:#67e8f9;--tile-bg:rgba(103,232,249,.14)">
+        <div class="tile-head"><span class="tile-icon">📚</span><span class="tile-title">Fuentes y Recursos</span></div>
+        <div class="tile-desc">Agencias evaluadoras, boletines (CADIME, INFAC, BOLCAN, Australian Prescriber, BPAC NZ…), blogs docentes y bases de datos.</div>
+        <span class="tile-badge">60+ enlaces</span>
+      </button>
+
+      <button type="button" class="tile" data-k="prescripcion" onclick="location.href='recursos-comunitarios.html'" aria-label="Prescripción social" style="--tile-color:#f0abfc;--tile-bg:rgba(240,171,252,.14)">
+        <div class="tile-head"><span class="tile-icon">🗺️</span><span class="tile-title">Prescripción Social</span></div>
+        <div class="tile-desc">Mapa de recursos comunitarios del Área II. Genera recetas sociales para compartir con el paciente.</div>
+        <span class="tile-badge">27 recursos</span>
       </button>
     </div>
   </main>
