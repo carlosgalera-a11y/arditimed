@@ -7,20 +7,13 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Redirigiendo…</title>
 <script>
-// Preservar el gate de sesión: solo redirige si ya pasó la contraseña en profesionales.html
+// Sin gate de password: si hay sesión Firebase redirige al directorio;
+// si no, al hub de profesionales para iniciar login.
 (function(){
-  try{
-    if(sessionStorage.getItem('buscas_ok') === '1'){
-      location.replace('panel-medico.html?page=pageTelefonos');
-    } else {
-      location.replace('profesionales.html');
-    }
-  }catch(e){
-    location.replace('profesionales.html');
-  }
+  location.replace('panel-medico.html?page=pageTelefonos');
 })();
 </script>
-<meta http-equiv="refresh" content="0; url=profesionales.html">
+<meta http-equiv="refresh" content="0; url=panel-medico.html?page=pageTelefonos">
 <style>body{font-family:sans-serif;background:#0d3d26;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:24px;text-align:center}a{color:#ffd54f}</style>
 </head>
 <body>

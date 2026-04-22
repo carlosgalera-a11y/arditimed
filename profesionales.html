@@ -120,6 +120,16 @@ footer a:hover{color:#ffd54f}
 .modal .cancel:hover{background:#cbd5e1}
 .modal .err{color:#dc2626;font-size:.8rem;margin-top:4px;min-height:1em}
 
+/* ── Menú desplegable Urgencias ── */
+.urg-menu-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fff;border:2px solid #e2e8f0;border-radius:12px;color:#0f172a;text-decoration:none;transition:.15s;cursor:pointer}
+.urg-menu-item:hover{border-color:#1a6b4a;background:#f8fafc;transform:translateX(2px)}
+.urg-menu-icon{width:40px;height:40px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:1.2rem;border-radius:10px}
+.urg-menu-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.urg-menu-text strong{font-size:.96rem;color:#0f172a;font-weight:700}
+.urg-menu-text span{font-size:.78rem;color:#64748b;line-height:1.4}
+.urg-menu-arrow{color:#94a3b8;font-size:1.1rem;flex-shrink:0;transition:.15s}
+.urg-menu-item:hover .urg-menu-arrow{color:#1a6b4a;transform:translateX(2px)}
+
 /* ── Toolbar: Proponer / Sugerencias / Moderación ── */
 .pro-toolbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:14px auto 0;max-width:900px;padding:0 4px}
 .pro-tbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:none;border-radius:18px;color:#fff;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:transform .15s ease, box-shadow .15s ease, filter .15s}
@@ -215,22 +225,10 @@ footer a:hover{color:#ffd54f}
         <span class="tile-badge">Cuaderno IA completo</span>
       </button>
 
-      <button type="button" class="tile" data-k="urgencias" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias&open=proto'" aria-label="Urgencias">
+      <button type="button" class="tile" data-k="urgencias" onclick="openUrgenciasMenu()" aria-haspopup="dialog" aria-label="Urgencias — abre menú con Protocolos, Camas y Ventilación">
         <div class="tile-head"><span class="tile-icon">🚨</span><span class="tile-title">Urgencias</span></div>
-        <div class="tile-desc">Protocolos de urgencias: 23 trípticos, 16 SEMFyC, 38 hospitalarios.</div>
-        <span class="tile-badge">Protocolos</span>
-      </button>
-
-      <button type="button" class="tile" data-k="camas" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias&open=camas'" aria-label="Camas y Ambulancias">
-        <div class="tile-head"><span class="tile-icon">🚑</span><span class="tile-title">Camas &amp; Ambulancias</span></div>
-        <div class="tile-desc">Vademécum + Paratus del Área II: dosis por peso, procedimientos y referencias.</div>
-        <span class="tile-badge">Vademécum + Paratus</span>
-      </button>
-
-      <button type="button" class="tile" data-k="ventilacion" onclick="location.href='panel-medico.html?page=pageProtocolosUrgencias&open=vent'" aria-label="Ventilación">
-        <div class="tile-head"><span class="tile-icon">🫁</span><span class="tile-title">Ventilación</span></div>
-        <div class="tile-desc">VMNI, IOT/ISR, ventilación invasiva, destete y alarmas del ventilador.</div>
-        <span class="tile-badge">VMNI · VMI · Destete</span>
+        <div class="tile-desc">Protocolos (trípticos · SEMFyC · hospitalarios) · Camas &amp; Ambulancias · Ventilación.</div>
+        <span class="tile-badge">3 apartados ▾</span>
       </button>
 
       <button type="button" class="tile" data-k="enfermeria" onclick="location.href='panel-medico.html?page=pageEnfermeria'" aria-label="Enfermería">
@@ -245,10 +243,10 @@ footer a:hover{color:#ffd54f}
         <span class="tile-badge">IA clínica</span>
       </button>
 
-      <button type="button" class="tile" data-k="buscas" onclick="openBuscasGate()" aria-label="Buscas">
+      <button type="button" class="tile" data-k="buscas" onclick="location.href='panel-medico.html?page=pageTelefonos'" aria-label="Buscas">
         <div class="tile-head"><span class="tile-icon">📟</span><span class="tile-title">Buscas</span></div>
-        <div class="tile-desc">Directorio de buscas del área. Requiere contraseña adicional.</div>
-        <span class="tile-badge">🔒 Protegido</span>
+        <div class="tile-desc">Directorio de buscas del Hospital Santa Lucía y centros del Área II.</div>
+        <span class="tile-badge">Directorio</span>
       </button>
 
       <button type="button" class="tile" data-k="docencia" onclick="location.href='docencia.html'" aria-label="Docencia">
@@ -268,15 +266,40 @@ footer a:hover{color:#ffd54f}
     </div>
   </footer>
 
-  <div class="modal-backdrop" id="buscasModal" role="dialog" aria-modal="true">
-    <div class="modal">
-      <h3>📟 Acceso a Buscas</h3>
-      <p>Introduce la contraseña compartida del directorio.</p>
-      <input type="password" id="buscasPwd" placeholder="Contraseña" autocomplete="off" onkeydown="if(event.key==='Enter')checkBuscasPassword()">
-      <div class="err" id="buscasErr"></div>
-      <div class="actions">
-        <button class="cancel" onclick="closeBuscasGate()">Cancelar</button>
-        <button class="ok" onclick="checkBuscasPassword()">Entrar</button>
+  <!-- Modal desplegable de Urgencias: 3 sub-apartados -->
+  <div class="modal-backdrop" id="urgenciasMenu" role="dialog" aria-modal="true" aria-labelledby="urgMenuTitle" onclick="if(event.target===this)closeUrgenciasMenu()">
+    <div class="modal urg-menu" style="max-width:560px;padding:26px 24px;text-align:left;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <span style="font-size:1.6rem;line-height:1;">🚨</span>
+        <h3 id="urgMenuTitle" style="margin:0;font-size:1.15rem;">Urgencias</h3>
+        <button type="button" onclick="closeUrgenciasMenu()" aria-label="Cerrar" style="margin-left:auto;border:none;background:transparent;color:#64748b;font-size:1.3rem;cursor:pointer;padding:4px 8px;line-height:1;">✕</button>
+      </div>
+      <p style="margin:0 0 16px;font-size:.88rem;color:#64748b;line-height:1.55;">Elige el apartado al que quieres acceder.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a class="urg-menu-item" href="panel-medico.html?page=pageProtocolosUrgencias&amp;open=proto">
+          <span class="urg-menu-icon" style="background:rgba(220,38,38,.12);color:#dc2626;">📋</span>
+          <span class="urg-menu-text">
+            <strong>Protocolos de Urgencias</strong>
+            <span>23 trípticos · 16 SEMFyC · 38 hospitalarios</span>
+          </span>
+          <span class="urg-menu-arrow">→</span>
+        </a>
+        <a class="urg-menu-item" href="panel-medico.html?page=pageProtocolosUrgencias&amp;open=camas">
+          <span class="urg-menu-icon" style="background:rgba(13,148,136,.14);color:#0d9488;">🚑</span>
+          <span class="urg-menu-text">
+            <strong>Camas &amp; Ambulancias</strong>
+            <span>Vademécum + Paratus · dosis por peso, procedimientos</span>
+          </span>
+          <span class="urg-menu-arrow">→</span>
+        </a>
+        <a class="urg-menu-item" href="panel-medico.html?page=pageProtocolosUrgencias&amp;open=vent">
+          <span class="urg-menu-icon" style="background:rgba(14,165,233,.14);color:#0284c7;">🫁</span>
+          <span class="urg-menu-text">
+            <strong>Ventilación</strong>
+            <span>VMNI · IOT/ISR · VMI · Destete · Alarmas</span>
+          </span>
+          <span class="urg-menu-arrow">→</span>
+        </a>
       </div>
     </div>
   </div>
@@ -347,40 +370,22 @@ footer a:hover{color:#ffd54f}
       });
     }
 
-    // Buscas: SHA-256 hash de la contraseña original "caridad" del PR viejo.
-    var BUSCAS_PWD_HASH = '9ffe80cde00f4ae81a2b38ef5f75b4cb770f3e7a0a59daf22a86f88a1e8cf3cb';
-
-    function openBuscasGate(){
-      document.getElementById('buscasErr').textContent = '';
-      document.getElementById('buscasPwd').value = '';
-      document.getElementById('buscasModal').classList.add('show');
-      setTimeout(function(){ document.getElementById('buscasPwd').focus(); }, 100);
+    // Menú desplegable de Urgencias: 3 sub-apartados.
+    function openUrgenciasMenu(){
+      var m = document.getElementById('urgenciasMenu');
+      if(!m) return;
+      m.classList.add('show');
+      var firstItem = m.querySelector('.urg-menu-item');
+      if(firstItem) setTimeout(function(){ firstItem.focus(); }, 50);
     }
-    function closeBuscasGate(){ document.getElementById('buscasModal').classList.remove('show'); }
-
-    async function sha256(str){
-      var enc = new TextEncoder().encode(str);
-      var buf = await crypto.subtle.digest('SHA-256', enc);
-      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    function closeUrgenciasMenu(){
+      var m = document.getElementById('urgenciasMenu');
+      if(m) m.classList.remove('show');
     }
 
-    async function checkBuscasPassword(){
-      var pwd = document.getElementById('buscasPwd').value.trim();
-      if(!pwd){ document.getElementById('buscasErr').textContent = 'Introduce la contraseña'; return; }
-      try{
-        var h = await sha256(pwd);
-        if(h === BUSCAS_PWD_HASH){
-          sessionStorage.setItem('buscas_ok', '1');
-          location.href = 'panel-medico.html?page=pageTelefonos';
-        } else {
-          document.getElementById('buscasErr').textContent = '❌ Contraseña incorrecta';
-        }
-      }catch(e){
-        document.getElementById('buscasErr').textContent = 'Error interno';
-      }
-    }
-
-    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeBuscasGate(); });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeUrgenciasMenu();
+    });
 
     if('serviceWorker' in navigator){
       window.addEventListener('load', function(){
