@@ -982,20 +982,112 @@
 
             <!-- IOT / ISR -->
             <div class="vent-panel" id="vent-iot" style="display:none;">
-              <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:10px;color:#bae6fd;">💉 Intubación orotraqueal · Secuencia rápida (ISR)</h3>
+              <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:10px;color:#bae6fd;">💉 Checklist de intubación (ISR)</h3>
+              <p style="font-size:.82rem;opacity:.78;margin-bottom:14px;line-height:1.55;">Checklist docente basado en guías públicas: <strong>SEMICYUC</strong>, <strong>ERC-ALS</strong>, <strong>DAS</strong> (Difficult Airway Society 2015) y <strong>NAP4</strong>. Adulto sano 70–80 kg como referencia; individualizar siempre.</p>
 
-              <ol style="font-size:.9rem;line-height:1.7;padding-left:22px;margin:0 0 14px;counter-reset:paso;">
-                <li><strong>Preparación:</strong> monitor completo, 2 vías, SSF/cristaloide, aspirador, bolsa-válvula-mascarilla, laringoscopio, 2 tubos (habitual 7,0–7,5♀ / 7,5–8,5♂), guía, capnógrafo.</li>
-                <li><strong>Preoxigenación:</strong> O₂ alto flujo 3 min o FiO₂ 100% en ventimask con reservorio; en hipoxia severa considerar VMNI preoxigenatoria.</li>
-                <li><strong>Protección / pretratamiento:</strong> fentanilo 1–3 μg/kg si HTA/cardiópata; lidocaína opcional en HTIC.</li>
-                <li><strong>Inducción:</strong> hipnótico (p. ej. etomidato 0,3 mg/kg si inestable; propofol 1,5–2 mg/kg si estable; ketamina 1–2 mg/kg en broncoespasmo/shock).</li>
-                <li><strong>Parálisis:</strong> rocuronio 1–1,2 mg/kg (o succinilcolina 1–1,5 mg/kg si no contraindicada).</li>
-                <li><strong>Intubación y verificación:</strong> visión directa/videolaringoscopio → paso del tubo → inflar balón → <strong>capnografía</strong> (confirmación) + auscultación + Rx si disponible.</li>
-                <li><strong>Post-intubación:</strong> fijar tubo, iniciar sedoanalgesia, programar ventilador, GSA a los 20 min, SNG, sonda vesical.</li>
-              </ol>
+              <!-- ─── Bloque 1 · Paciente ─── -->
+              <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#86efac;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">👤 Paciente — optimización previa</div>
+                <ul style="font-size:.86rem;line-height:1.65;padding-left:20px;margin:0;opacity:.95;">
+                  <li><strong>Resucitar antes de intubar:</strong> corregir hipotensión (vasopresor preparado) y reserva fisiológica cuando sea posible.</li>
+                  <li><strong>Posición:</strong> olfateo, alineación oído-horquilla esternal; cabecera 20–30° si no hay contraindicación.</li>
+                  <li><strong>Preoxigenación 3 min</strong> con mascarilla reservorio a ≥15 L/min (objetivo FiO₂≈1); si hipoxia severa, VMNI u O₂ alto flujo preoxigenatoria.</li>
+                  <li><strong>Oxigenación apneica:</strong> cánula nasal 15 L/min bajo la mascarilla durante laringoscopia.</li>
+                  <li><strong>Evaluación de vía aérea difícil</strong> (LEMON, MACOCHA): ≥2 puntos positivos → planificar videolaringoscopio + plan B/C.</li>
+                </ul>
+              </div>
 
+              <!-- ─── Bloque 2 · Equipo ─── -->
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#93c5fd;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🔧 Equipo (comprobar antes de inducir)</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;font-size:.84rem;line-height:1.55;">
+                  <div><strong style="color:#fde68a;">Plan A — laringoscopia:</strong><br>Laringoscopio Macintosh 3–4, tubo 7,0–7,5 mm (mujer) / 7,5–8,0 mm (hombre), fiador, jeringa 10 mL, lubricante.</div>
+                  <div><strong style="color:#fde68a;">Plan B — rescate supraglótico:</strong><br>Bougie, dispositivo supraglótico de 2ª generación (i-gel #3–5 según peso), videolaringoscopio.</div>
+                  <div><strong style="color:#fde68a;">Plan C — vía aérea quirúrgica:</strong><br>Set de cricotiroidotomía <em>scalpel-bougie-tubo 6.0</em>; recomendado dispositivo empaquetado y simulado previamente.</div>
+                  <div><strong style="color:#fde68a;">Monitorización imprescindible:</strong><br>SpO₂, TA automática, ECG, <strong>capnografía continua</strong> desde preoxigenación (recomendación NAP4), temperatura.</div>
+                  <div><strong style="color:#fde68a;">Ventilación y aspiración:</strong><br>Bolsa autoinflable 1500 mL con reservorio y O₂ ≥15 L/min, aspirador Yankauer operativo, fuente de O₂ redundante.</div>
+                  <div><strong style="color:#fde68a;">Accesos y sujeción:</strong><br>2 vías periféricas funcionantes, venda/cinta para fijar TET, sonda nasogástrica y sonda vesical preparadas.</div>
+                </div>
+              </div>
+
+              <!-- ─── Bloque 3 · Fármacos ─── -->
+              <div style="background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#fde68a;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">💊 Fármacos preparados y etiquetados (ref. 80 kg)</div>
+
+                <div style="font-size:.78rem;font-weight:700;margin:6px 0 4px;color:#fde68a;">Inducción — elegir según hemodinámica</div>
+                <table style="width:100%;border-collapse:collapse;font-size:.82rem;line-height:1.45;">
+                  <thead><tr style="background:rgba(255,255,255,.08);"><th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.1);">Fármaco</th><th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.1);">Dosis</th><th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.1);">Indicación preferente</th></tr></thead>
+                  <tbody>
+                    <tr><td style="padding:5px 8px;">Etomidato</td><td style="padding:5px 8px;">0,2–0,3 mg/kg IV</td><td style="padding:5px 8px;">Shock / inestable (neutro hemodinámico)</td></tr>
+                    <tr><td style="padding:5px 8px;">Ketamina</td><td style="padding:5px 8px;">1–2 mg/kg IV (0,5–1 en shock)</td><td style="padding:5px 8px;">Broncoespasmo, asma, shock, TCE sin HTIC</td></tr>
+                    <tr><td style="padding:5px 8px;">Propofol</td><td style="padding:5px 8px;">1,5–2 mg/kg IV</td><td style="padding:5px 8px;">Paciente estable, status epiléptico</td></tr>
+                    <tr><td style="padding:5px 8px;">Midazolam</td><td style="padding:5px 8px;">0,1–0,3 mg/kg IV</td><td style="padding:5px 8px;">Alternativa si no disponibles los anteriores</td></tr>
+                  </tbody>
+                </table>
+
+                <div style="font-size:.78rem;font-weight:700;margin:14px 0 4px;color:#fde68a;">Bloqueo neuromuscular</div>
+                <table style="width:100%;border-collapse:collapse;font-size:.82rem;line-height:1.45;">
+                  <thead><tr style="background:rgba(255,255,255,.08);"><th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.1);">Fármaco</th><th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.1);">Dosis</th><th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.1);">Notas</th></tr></thead>
+                  <tbody>
+                    <tr><td style="padding:5px 8px;">Rocuronio</td><td style="padding:5px 8px;">1,0–1,2 mg/kg IV</td><td style="padding:5px 8px;">Inicio 60 s, duración 45–60 min. Reversible con sugammadex.</td></tr>
+                    <tr><td style="padding:5px 8px;">Succinilcolina</td><td style="padding:5px 8px;">1,0–1,5 mg/kg IV</td><td style="padding:5px 8px;">Inicio 45 s. Evitar en hiperpotasemia, quemados &gt;48 h, lesión medular.</td></tr>
+                    <tr><td style="padding:5px 8px;">Sugammadex</td><td style="padding:5px 8px;">16 mg/kg IV (rescate)</td><td style="padding:5px 8px;">Reversión inmediata del bloqueo por rocuronio.</td></tr>
+                  </tbody>
+                </table>
+
+                <div style="font-size:.78rem;font-weight:700;margin:14px 0 4px;color:#fde68a;">Soporte hemodinámico (tener preparado si shock)</div>
+                <ul style="font-size:.84rem;line-height:1.55;padding-left:20px;margin:0;opacity:.95;">
+                  <li><strong>Noradrenalina</strong> perfusión 0,01–2 μg/kg/min (4 mg en 250 mL SG5%, preferente por vía central; periférica corta si preciso).</li>
+                  <li><strong>Push-dose:</strong> fenilefrina 100 μg IV bolos cada 1–2 min; adrenalina 10–20 μg bolos (preparar 1 mg en 100 mL SSF).</li>
+                </ul>
+
+                <div style="font-size:.78rem;font-weight:700;margin:14px 0 4px;color:#fde68a;">Sedoanalgesia post-intubación</div>
+                <ul style="font-size:.84rem;line-height:1.55;padding-left:20px;margin:0;opacity:.95;">
+                  <li><strong>Analgesia primero:</strong> fentanilo 1–3 μg/kg/h (ajustar) o remifentanilo 0,05–0,2 μg/kg/min.</li>
+                  <li><strong>Sedación:</strong> propofol 1–4 mg/kg/h o midazolam 0,02–0,2 mg/kg/h. Valorar dexmedetomidina 0,2–1,4 μg/kg/h si objetivo ligera.</li>
+                  <li><strong>Objetivo:</strong> RASS −2 a 0 salvo excepciones; reevaluar cada turno.</li>
+                </ul>
+              </div>
+
+              <!-- ─── Bloque 4 · Ventilador inicial ─── -->
+              <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#93c5fd;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🖥️ Programación inicial del ventilador</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;font-size:.84rem;line-height:1.55;">
+                  <div>
+                    <strong style="color:#fde68a;">Protector estándar:</strong><br>
+                    VC-AC · VT 6–8 mL/kg PBW · FR 14–18 · PEEP 5 · FiO₂ 1,0 → titular a SatO₂ ≥92% · I:E 1:2 · P<sub>plateau</sub> &lt;30, driving P &lt;15.
+                  </div>
+                  <div>
+                    <strong style="color:#fde68a;">SDRA:</strong><br>
+                    VT 4–6 mL/kg PBW, PEEP alta según tabla, considerar decúbito prono si PaO₂/FiO₂ &lt;150, bloqueo neuromuscular 24–48 h si severo.
+                  </div>
+                  <div>
+                    <strong style="color:#fde68a;">Obstructivo (asma/EPOC):</strong><br>
+                    VT 6–8 mL/kg PBW, FR 10–12, I:E 1:3–4, PEEP 0–5, hipercapnia permisiva (pH ≥7,20).
+                  </div>
+                  <div>
+                    <strong style="color:#fde68a;">TCE:</strong><br>
+                    Normoventilación (PaCO₂ 35–40 mmHg), FiO₂ para SatO₂ &gt;94%, evitar PEEP alta si HTIC no controlada.
+                  </div>
+                </div>
+              </div>
+
+              <!-- ─── Bloque 5 · Verificación y post ─── -->
+              <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="font-weight:700;color:#d8b4fe;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">✅ Confirmación y post-intubación</div>
+                <ol style="font-size:.86rem;line-height:1.65;padding-left:20px;margin:0;opacity:.95;">
+                  <li><strong>Confirmar intubación traqueal:</strong> capnografía (6 curvas), auscultación bilateral y epigastrio, elevación torácica simétrica.</li>
+                  <li>Fijar TET y registrar profundidad (varón ~22–23 cm, mujer ~20–22 cm a comisura).</li>
+                  <li>Rx tórax de control; punta del TET 3–5 cm sobre la carina.</li>
+                  <li>GSA a los 20 min; ajustar ventilación y FiO₂ según resultados.</li>
+                  <li>SNG y sonda vesical si procede; profilaxis LPP y úlceras de estrés.</li>
+                  <li>Comunicación estructurada (SBAR / MIST) al equipo receptor (UCI, reanimación, traslado).</li>
+                </ol>
+              </div>
+
+              <!-- ─── Plan B/C · Vía aérea difícil ─── -->
               <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 14px;font-size:.84rem;line-height:1.55;">
-                <strong style="color:#fca5a5;">Predicción de vía aérea difícil (LEMON):</strong> Look, Evaluate 3-3-2, Mallampati, Obstruction, Neck mobility. Si ≥2 positivos: planear videolaringoscopio + plan B/C (DSG, cricotiroidotomía).
+                <strong style="color:#fca5a5;">Algoritmo DAS 2015 ante intubación fallida:</strong> 2 intentos con laringoscopia + 1 intento con dispositivo alternativo (bougie/videolaringoscopio) máximo antes de declarar fallo. Si <em>cannot intubate cannot oxygenate</em> tras rescate supraglótico → <strong>cricotiroidotomía scalpel-bougie-tubo 6.0</strong>.
               </div>
             </div>
 
