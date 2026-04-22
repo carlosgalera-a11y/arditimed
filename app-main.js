@@ -2004,6 +2004,9 @@ function switchScanTab(tab){
     if(tab==="turnos")turnoCalc();
     var rsEl=document.getElementById("panelResumen");if(rsEl)rsEl.style.display=tab==="resumen"?"block":"none";
     var rsBtn=document.getElementById("tabResumen");if(rsBtn){rsBtn.style.background=tab==="resumen"?"linear-gradient(135deg,#0d47a1,#1565c0)":"var(--bg-subtle)";rsBtn.style.color=tab==="resumen"?"#fff":"var(--text)";}
+    var paEl=document.getElementById("panelProa");if(paEl)paEl.style.display=tab==="proa"?"block":"none";
+    var paBtn=document.getElementById("tabProa");if(paBtn){paBtn.style.background=tab==="proa"?"linear-gradient(135deg,#0a4d35,#1a6b4a)":"var(--bg-subtle)";paBtn.style.color=tab==="proa"?"#fff":"var(--text)";}
+    if(tab==="proa"){var pf=document.getElementById("proaFrame");if(pf && (pf.src==="about:blank"||!pf.src||pf.src.indexOf("proa.html")<0)){pf.src="proa.html";}}
 }
 
 // ═══════ RESÚMENES RÁPIDOS ═══════

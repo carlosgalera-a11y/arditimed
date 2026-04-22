@@ -25,6 +25,7 @@
                 <button id="tabTriaje" onclick="switchScanTab('triaje')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🚨 Triaje IA</button>
                 <button id="tabTurnos" onclick="switchScanTab('turnos')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">⏰ Turnos</button>
                 <button id="tabResumen" onclick="switchScanTab('resumen')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📝 Resúmenes rápidos</button>
+                <button id="tabProa" onclick="switchScanTab('proa')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🛡️ PROA</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -1638,6 +1639,24 @@
                     <div id="interOut" style="margin-top:14px;"></div>
                 </div>
             </div><!-- end panelResumen -->
+
+            <!-- TAB: PROA · Uso racional de antibióticos -->
+            <div id="panelProa" style="display:none;">
+                <div style="background:linear-gradient(135deg,#0a4d35,#1a6b4a);border-radius:var(--radius);padding:22px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden;">
+                    <div style="position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:3.2rem;opacity:.18;">🛡️</div>
+                    <h3 style="font-family:var(--font-display);font-size:1.35rem;margin-bottom:6px;">PROA · Programa de Optimización del Uso de Antibióticos</h3>
+                    <p style="opacity:.85;font-size:.88rem;font-weight:300;line-height:1.5;max-width:680px;">Herramienta docente para prescripción antibiótica empírica basada en el <strong>Plan Nacional Resistencia Antibióticos (PRAN)</strong>, SEIMC-GEIRAS e IDSA. Acertar empírico → desescalar a 48-72 h → duración mínima eficaz.</p>
+                    <a href="proa.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 14px;background:rgba(255,255,255,.18);color:#fff;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700;">↗ Abrir en vista completa</a>
+                </div>
+
+                <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:var(--radius);padding:12px 16px;font-size:.82rem;color:#78350f;margin-bottom:16px;line-height:1.55;">
+                    ⚠️ <strong>Uso docente.</strong> Consulta siempre el antibiograma local, al microbiólogo de guardia y el protocolo vigente del centro. La política antibiótica de Área II se actualiza semestralmente.
+                </div>
+
+                <iframe id="proaFrame" src="about:blank" loading="lazy" style="width:100%;height:min(75vh,900px);border:1px solid var(--border);border-radius:var(--radius);background:#0f172a;display:block;" title="PROA · Uso racional de antibióticos"></iframe>
+
+                <p style="margin-top:10px;font-size:.76rem;color:var(--text-muted);text-align:center;">Fuentes: PRAN · SEIMC · IDSA · WHO AWaRe 2023 · ESCMID · Protocolo Área II Cartagena</p>
+            </div><!-- end panelProa -->
 
 
         </div>
