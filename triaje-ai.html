@@ -144,8 +144,8 @@ footer p{font-size:.72rem;color:var(--slate)}
                 <div style="display:flex;align-items:center;gap:16px;">
                     <div class="card-icon" style="background:#0f172a;flex-shrink:0;">📋</div>
                     <div style="flex:1;">
-                        <h3>Cuestionario Manual SET</h3>
-                        <p>19 motivos de consulta con discriminadores clínicos y escala de dolor.</p>
+                        <h3>Cuestionario Manual SET-Bis</h3>
+                        <p>Protocolo SMS Murcia: 29 motivos · discriminadores · constantes vitales · AVPU · EVA.</p>
                     </div>
                     <div class="card-link" style="color:#0f172a;white-space:nowrap;">Iniciar →</div>
                 </div>
@@ -164,7 +164,7 @@ footer p{font-size:.72rem;color:var(--slate)}
     <div class="view" id="vManual">
         <button class="back-btn" onclick="goHome()">← Volver al inicio</button>
         <div class="triage-box">
-            <div class="triage-header"><h2>Triaje Manual SET</h2><span class="step-badge" id="manualStep">Paso 1 de 3</span></div>
+            <div class="triage-header"><h2>Triaje Manual SET-Bis · SMS</h2><span class="step-badge" id="manualStep">Paso 1 de 5</span></div>
             <div class="triage-body" id="manualBody"></div>
             <div class="triage-footer" id="manualFooter"></div>
         </div>
@@ -220,90 +220,302 @@ var LEVELS={
     5:{name:'Nivel 5: No Urgente',color:'#059669',bg:'#ecfdf5',wait:'240 minutos',action:'Pida cita con su médico de cabecera.',desc:'Problemas no urgentes o administrativos.'}
 };
 
+// Motivos de consulta (SET-Bis SMS Murcia) agrupados por sistema.
+// `pri` = nivel por defecto antes de aplicar discriminadores/vitales.
 var CATS=[
-    {id:'dolor_toracico',es:'Dolor torácico',pri:2},{id:'disnea',es:'Dificultad respiratoria',pri:2},
-    {id:'dolor_abdominal',es:'Dolor abdominal',pri:3},{id:'cefalea',es:'Dolor de cabeza',pri:3},
-    {id:'fiebre',es:'Fiebre',pri:4},{id:'traumatismo_ext',es:'Traumatismo extremidades',pri:4},
-    {id:'dolor_lumbar',es:'Dolor de espalda',pri:5},{id:'mareo_vertigo',es:'Mareo / Vértigo',pri:3},
-    {id:'odinofagia',es:'Dolor de garganta',pri:5},{id:'disuria',es:'Molestias al orinar',pri:5},
-    {id:'erupcion_cutanea',es:'Problemas en la piel',pri:5},{id:'vomitos',es:'Náuseas / Vómitos',pri:4},
-    {id:'ojo_rojo',es:'Problema ocular',pri:5},{id:'ansiedad',es:'Ansiedad / Crisis',pri:4},
-    {id:'herida',es:'Herida / Corte',pri:4},{id:'sincope',es:'Desmayo',pri:2},
-    {id:'palpitaciones',es:'Palpitaciones',pri:3},{id:'tos',es:'Tos persistente',pri:5},
-    {id:'otros',es:'Otro motivo',pri:5}
+    // — Cardio-respiratorio —
+    {id:'dolor_toracico',   es:'Dolor torácico',           grp:'Cardio-Resp', pri:2},
+    {id:'disnea',           es:'Dificultad respiratoria',  grp:'Cardio-Resp', pri:2},
+    {id:'palpitaciones',    es:'Palpitaciones',            grp:'Cardio-Resp', pri:3},
+    {id:'sincope',          es:'Síncope / desmayo',        grp:'Cardio-Resp', pri:2},
+    {id:'tos',              es:'Tos persistente',          grp:'Cardio-Resp', pri:5},
+    {id:'hemoptisis',       es:'Hemoptisis (sangre al toser)',grp:'Cardio-Resp',pri:2},
+    // — Neurológico —
+    {id:'cefalea',          es:'Dolor de cabeza',          grp:'Neuro',       pri:3},
+    {id:'focalidad',        es:'Pérdida fuerza/habla',     grp:'Neuro',       pri:1},
+    {id:'convulsion',       es:'Convulsión',               grp:'Neuro',       pri:1},
+    {id:'mareo_vertigo',    es:'Mareo / vértigo',          grp:'Neuro',       pri:3},
+    // — Digestivo —
+    {id:'dolor_abdominal',  es:'Dolor abdominal',          grp:'Digestivo',   pri:3},
+    {id:'vomitos',          es:'Náuseas / vómitos',        grp:'Digestivo',   pri:4},
+    {id:'hda',              es:'Vómitos/heces con sangre', grp:'Digestivo',   pri:2},
+    {id:'diarrea',          es:'Diarrea',                  grp:'Digestivo',   pri:4},
+    // — Trauma —
+    {id:'traumatismo_ext',  es:'Traumatismo extremidad',   grp:'Trauma',      pri:4},
+    {id:'tce',              es:'Traumatismo craneal',      grp:'Trauma',      pri:3},
+    {id:'herida',           es:'Herida / corte',           grp:'Trauma',      pri:4},
+    {id:'quemadura',        es:'Quemadura',                grp:'Trauma',      pri:3},
+    // — Infeccioso —
+    {id:'fiebre',           es:'Fiebre',                   grp:'Infeccioso',  pri:4},
+    {id:'odinofagia',       es:'Dolor de garganta',        grp:'Infeccioso',  pri:5},
+    // — Urología / Ginecología —
+    {id:'disuria',          es:'Molestias al orinar',      grp:'Urología',    pri:5},
+    {id:'dolor_lumbar',     es:'Dolor lumbar',             grp:'Urología',    pri:5},
+    {id:'sangrado_ginec',   es:'Sangrado ginecológico',    grp:'Ginecología', pri:3},
+    {id:'dolor_gestante',   es:'Dolor durante embarazo',   grp:'Ginecología', pri:2},
+    // — Dermato / ORL / Oftalmo —
+    {id:'erupcion_cutanea', es:'Erupción / alergia piel',  grp:'Dermato',     pri:4},
+    {id:'ojo_rojo',         es:'Problema ocular',          grp:'Oftalmo',     pri:4},
+    // — Psiquiátrico —
+    {id:'ansiedad',         es:'Ansiedad / crisis',        grp:'Psiquiátrico',pri:4},
+    {id:'ideacion_suicida', es:'Ideación suicida',         grp:'Psiquiátrico',pri:2},
+    // — Otros —
+    {id:'otros',            es:'Otro motivo',              grp:'Otros',       pri:5}
 ];
 
+// Discriminadores de alarma — cada "sí" marca un punto de escalada.
 var DISC={
-    dolor_toracico:['¿Dolor opresivo que irradia a brazo/mandíbula?','¿Sudoración fría o sensación de muerte?','¿Aparición súbita (minutos)?','¿Antecedentes cardíacos?'],
-    disnea:['¿Labios/dedos azulados?','¿No puede hablar frases completas?','¿Aparición brusca?','¿Sibilancias intensas?'],
-    dolor_abdominal:['¿Abdomen en tabla (muy duro)?','¿Vómitos con sangre o heces negras?','¿Dolor insoportable que no cede?','¿Embarazo conocido o posible?'],
-    cefalea:['¿Peor dolor de cabeza de su vida, súbito?','¿Rigidez de nuca o fiebre alta?','¿Confusión o dificultad para hablar?','¿Pérdida de fuerza en un lado?'],
-    fiebre:['¿Manchas rojas que no desaparecen al presionar?','¿Confusión o desorientación?','¿Dificultad para respirar?','¿Rigidez de nuca?'],
-    sincope:['¿Pérdida de conciencia prolongada?','¿Dolor torácico previo al desmayo?','¿Palpitaciones antes del episodio?','¿Antecedentes cardíacos?']
+    dolor_toracico:['¿Dolor opresivo irradiado a brazo/mandíbula/espalda?','¿Sudoración fría o sensación de muerte?','¿Aparición súbita en minutos?','¿Antecedentes cardíacos o anticoagulante?'],
+    disnea:['¿Labios/uñas azulados (cianosis)?','¿No puede hablar frases completas?','¿Aparición brusca o postesfuerzo?','¿Antecedentes EPOC/asma con inhalador de rescate?'],
+    palpitaciones:['¿Con mareo o pérdida de conciencia?','¿Dolor torácico asociado?','¿Antecedentes de arritmia?','¿Duración >30 min sin parar?'],
+    sincope:['¿Pérdida de conciencia prolongada (>1 min)?','¿Dolor torácico previo?','¿Durante esfuerzo o al acostarse?','¿Traumatismo craneal asociado?'],
+    hemoptisis:['¿Sangre roja en cantidad moderada-abundante?','¿Disnea asociada?','¿Dolor torácico?','¿Fiebre o pérdida de peso?'],
+    cefalea:['¿Peor dolor de su vida, súbito ("en trueno")?','¿Rigidez de nuca o fiebre alta?','¿Confusión o alteración del habla?','¿Pérdida de fuerza en un lado o visión?'],
+    focalidad:['¿Aparición brusca hace <4,5 horas?','¿Alteración del habla?','¿Desviación de la comisura bucal?','¿Pérdida de fuerza en brazo/pierna?'],
+    convulsion:['¿Primera convulsión de su vida?','¿Duración >5 min o convulsión repetida?','¿No recuperó la conciencia?','¿Traumatismo craneal asociado?'],
+    mareo_vertigo:['¿Con pérdida de visión o habla?','¿Pérdida de fuerza en un lado?','¿Dolor torácico o palpitaciones?','¿Caída con traumatismo?'],
+    dolor_abdominal:['¿Abdomen muy duro (en tabla)?','¿Vómitos persistentes o con sangre?','¿Dolor insoportable que no cede?','¿Embarazo conocido o posible?'],
+    hda:['¿Vómito con sangre fresca o "posos de café"?','¿Heces negras malolientes (melenas)?','¿Mareo o sudoración fría?','¿Tratamiento con anticoagulante/AINEs?'],
+    vomitos:['¿>24h sin tolerar líquidos?','¿Con sangre o "posos de café"?','¿Dolor abdominal intenso?','¿Somnolencia o confusión?'],
+    diarrea:['¿Heces con sangre o negras?','¿>6 deposiciones al día?','¿Signos de deshidratación (boca seca, mareo)?','¿Niño <3 meses o anciano frágil?'],
+    traumatismo_ext:['¿Deformidad visible / hueso expuesto?','¿Imposibilidad total de mover?','¿Palidez o frialdad distal?','¿Pérdida de sensibilidad?'],
+    tce:['¿Pérdida de conciencia aunque breve?','¿Vómitos repetidos o amnesia?','¿Anticoagulación actual?','¿Convulsión o somnolencia?'],
+    herida:['¿Sangrado que no cede con presión?','¿Herida profunda / pérdida de movilidad?','¿Mordedura humana/animal?','¿No vacunado de tétanos en 10 años?'],
+    quemadura:['¿Afecta cara, manos, genitales o articulaciones?','¿Superficie >1 palma del paciente?','¿Circular a una extremidad?','¿Inhalación de humo o voz ronca?'],
+    fiebre:['¿Manchas rojas que no blanquean (petequias)?','¿Confusión u obnubilación?','¿Rigidez de nuca?','¿Niño <3 meses o inmunodeprimido?'],
+    odinofagia:['¿Babeo o dificultad para tragar saliva?','¿Voz apagada ("patata caliente")?','¿Estridor o dificultad respiratoria?','¿Fiebre >39 °C con mal estado?'],
+    disuria:['¿Fiebre asociada (>38 °C)?','¿Dolor lumbar intenso?','¿Sangre en la orina?','¿Gestante o portador de sonda?'],
+    dolor_lumbar:['¿Incontinencia reciente o anestesia "en silla de montar"?','¿Pérdida de fuerza en pierna?','¿Fiebre o antecedente oncológico?','¿Dolor tras traumatismo importante?'],
+    sangrado_ginec:['¿Gestante con sangrado?','¿Sangrado abundante >1 compresa/hora?','¿Mareo o palidez?','¿Dolor abdominal intenso?'],
+    dolor_gestante:['¿Sangrado vaginal asociado?','¿Movimientos fetales disminuidos?','¿Contracciones regulares <37 sem?','¿Cefalea intensa o visión borrosa?'],
+    erupcion_cutanea:['¿Hinchazón labios/lengua o dificultad para respirar?','¿Mareo o palidez (shock)?','¿Petequias que no blanquean?','¿Picadura/medicamento reciente?'],
+    ojo_rojo:['¿Pérdida brusca de visión?','¿Traumatismo/cuerpo extraño?','¿Dolor intenso con náuseas?','¿Uso de lentes de contacto?'],
+    ansiedad:['¿Dolor torácico asociado?','¿Disnea o hiperventilación intensa?','¿Ideación suicida?','¿Consumo reciente de tóxicos?'],
+    ideacion_suicida:['¿Plan concreto o intento previo?','¿Acceso a medicación/armas?','¿Sin red de apoyo disponible?','¿Consumo tóxicos activo?']
 };
+
+// Rangos fisiológicos adultos (SET-Bis). `null` = sin datos.
+function vitalsSetLevel(vitals){
+    // Retorna nivel sugerido por constantes vitales. 5 = sin riesgo, 1 = crítico.
+    if(!vitals) return 5;
+    var lvl = 5;
+    var fc = vitals.fc, tas = vitals.tas, sat = vitals.sat, temp = vitals.temp, fr = vitals.fr;
+    if(fc != null){
+        if(fc < 40 || fc > 150) lvl = Math.min(lvl, 2);
+        else if(fc < 50 || fc > 120) lvl = Math.min(lvl, 3);
+    }
+    if(tas != null){
+        if(tas < 90 || tas > 220) lvl = Math.min(lvl, 2);
+        else if(tas < 100 || tas > 180) lvl = Math.min(lvl, 3);
+    }
+    if(sat != null){
+        if(sat < 90) lvl = Math.min(lvl, 2);
+        else if(sat < 94) lvl = Math.min(lvl, 3);
+    }
+    if(temp != null){
+        if(temp < 35 || temp >= 40) lvl = Math.min(lvl, 2);
+        else if(temp >= 38.5) lvl = Math.min(lvl, 3);
+    }
+    if(fr != null){
+        if(fr > 30 || fr < 8) lvl = Math.min(lvl, 2);
+        else if(fr > 22) lvl = Math.min(lvl, 3);
+    }
+    return lvl;
+}
 
 /* ═══ NAVIGATION ═══ */
 function showView(id){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 function goHome(){showView('vHome');}
 
-/* ═══ MANUAL TRIAGE (from ManualTriage.tsx) ═══ */
-var mStep=1,mCat=null,mPain=0,mDiscYes=0;
+/* ═══ MANUAL TRIAGE · SET-Bis SMS (5 pasos) ═══ */
+var M_TOTAL_STEPS = 5;
+var mStep=1, mCat=null, mDiscCount=0, mDiscMarks=[], mPain=0;
+var mVitals = { fc:null, tas:null, sat:null, temp:null, fr:null };
+var mAvpu = 'A'; // A=Alert, V=Voice, P=Pain, U=Unresponsive
+var mAge = null, mPreg = false;
 
-function startManual(){mStep=1;mCat=null;mPain=0;mDiscYes=0;renderManual();showView('vManual');}
+function startManual(){
+    mStep=1; mCat=null; mDiscCount=0; mDiscMarks=[]; mPain=0;
+    mVitals={fc:null,tas:null,sat:null,temp:null,fr:null};
+    mAvpu='A'; mAge=null; mPreg=false;
+    renderManual(); showView('vManual');
+}
+
+function _num(v){ var n=parseFloat(String(v).replace(',','.')); return isFinite(n)?n:null; }
+
+function _groupCats(){
+    var groups={};
+    CATS.forEach(function(c){ (groups[c.grp]=groups[c.grp]||[]).push(c); });
+    return groups;
+}
 
 function renderManual(){
     var body=document.getElementById('manualBody');
     var footer=document.getElementById('manualFooter');
-    document.getElementById('manualStep').textContent='Paso '+mStep+' de 3';
+    document.getElementById('manualStep').textContent='Paso '+mStep+' de '+M_TOTAL_STEPS;
 
     if(mStep===1){
-        var h='<div style="display:flex;gap:8px;padding:12px;background:#eff6ff;border-radius:14px;margin-bottom:14px;font-size:.85rem;color:#1e40af;align-items:flex-start;"><span style="flex-shrink:0;">ℹ️</span>Seleccione el motivo de consulta que mejor describa su problema principal.</div>';
-        h+='<div class="cat-grid">';
-        CATS.forEach(function(c){
-            h+='<button class="cat-btn'+(mCat===c.id?' sel':'')+'" onclick="mCat=\''+c.id+'\';renderManual()">'+c.es+(mCat===c.id?' ✓':'')+'</button>';
+        // ── Paso 1 · Motivo de consulta agrupado por sistema ──
+        var groups = _groupCats();
+        var h = '<div style="display:flex;gap:8px;padding:12px;background:#eff6ff;border-radius:14px;margin-bottom:14px;font-size:.85rem;color:#1e40af;align-items:flex-start;"><span style="flex-shrink:0;">ℹ️</span>Seleccione el motivo de consulta principal. Protocolo <strong>SET-Bis</strong> · Servicio Murciano de Salud.</div>';
+        Object.keys(groups).forEach(function(g){
+            h+='<div style="font-size:.7rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;">'+g+'</div>';
+            h+='<div class="cat-grid">';
+            groups[g].forEach(function(c){
+                h+='<button class="cat-btn'+(mCat===c.id?' sel':'')+'" onclick="mCat=\''+c.id+'\';renderManual()">'+c.es+(mCat===c.id?' ✓':'')+'</button>';
+            });
+            h+='</div>';
+        });
+        body.innerHTML=h;
+        footer.innerHTML='<button class="btn btn-primary" onclick="mStep=2;renderManual()"'+(mCat?'':' disabled')+'>Siguiente →</button>';
+        return;
+    }
+
+    if(mStep===2){
+        // ── Paso 2 · Discriminadores clínicos (multiselección) ──
+        var disc=DISC[mCat]||[];
+        var h='<h3 style="font-size:1rem;font-weight:600;margin-bottom:4px;">🚨 Señales de alarma</h3>';
+        h+='<p style="font-size:.8rem;color:var(--slate);margin-bottom:12px;">Marque TODAS las que presente ahora mismo. Cada una eleva el nivel de urgencia.</p>';
+        if(disc.length===0){
+            h+='<p style="color:var(--slate);font-size:.88rem;margin-bottom:16px;">No hay discriminadores específicos para este motivo. Pase a las constantes vitales.</p>';
+        } else {
+            if(mDiscMarks.length !== disc.length){ mDiscMarks = disc.map(function(){return false;}); }
+            disc.forEach(function(d,i){
+                var on = !!mDiscMarks[i];
+                h+='<label class="disc-q" style="cursor:pointer;'+(on?'background:#fee2e2;border-color:#f87171;':'')+'">'
+                  +'<input type="checkbox" '+(on?'checked':'')+' onchange="mDiscMarks['+i+']=this.checked;renderManual()" style="width:18px;height:18px;accent-color:#dc2626;flex-shrink:0;">'
+                  +'<span>'+d+'</span></label>';
+            });
+            mDiscCount = mDiscMarks.filter(Boolean).length;
+            h+='<div style="margin-top:10px;font-size:.8rem;color:var(--slate);">Marcadas: <strong style="color:#dc2626;">'+mDiscCount+' de '+disc.length+'</strong></div>';
+        }
+        body.innerHTML=h;
+        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=1;renderManual()">← Atrás</button>'
+                       +'<button class="btn btn-primary" style="flex:2" onclick="mStep=3;renderManual()">Siguiente →</button>';
+        return;
+    }
+
+    if(mStep===3){
+        // ── Paso 3 · Constantes vitales (opcionales pero recomendadas) ──
+        var v = mVitals;
+        var h='<h3 style="font-size:1rem;font-weight:600;margin-bottom:4px;">📊 Constantes vitales</h3>';
+        h+='<p style="font-size:.8rem;color:var(--slate);margin-bottom:14px;">Rellene lo que pueda medir (pulsioxímetro, tensiómetro). Déjelo en blanco si no dispone.</p>';
+        function field(id,lbl,ph,unit,val){
+            return '<div style="display:flex;flex-direction:column;gap:4px;">'
+                  +'<label style="font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;">'+lbl+'</label>'
+                  +'<div style="display:flex;align-items:center;gap:6px;border:2px solid #e2e8f0;border-radius:12px;padding:6px 10px;background:#fff;">'
+                  +'<input id="v_'+id+'" type="number" inputmode="decimal" step="0.1" placeholder="'+ph+'" value="'+(val!=null?val:'')+'" oninput="mVitals.'+id+'=_num(this.value)" style="flex:1;border:0;outline:0;font-size:1rem;font-family:var(--font);">'
+                  +'<span style="font-size:.78rem;color:#94a3b8;">'+unit+'</span>'
+                  +'</div></div>';
+        }
+        h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">';
+        h+=field('fc','Frec. cardíaca','60-100','lpm',v.fc);
+        h+=field('tas','Tensión sistólica','100-140','mmHg',v.tas);
+        h+=field('sat','SatO₂','95-100','%',v.sat);
+        h+=field('temp','Temperatura','36-37','°C',v.temp);
+        h+=field('fr','Frec. respiratoria','12-20','rpm',v.fr);
+        h+='</div>';
+        // Edad
+        h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">';
+        h+='<div style="display:flex;flex-direction:column;gap:4px;">'
+          +'<label style="font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;">Edad</label>'
+          +'<div style="display:flex;align-items:center;gap:6px;border:2px solid #e2e8f0;border-radius:12px;padding:6px 10px;background:#fff;">'
+          +'<input type="number" min="0" max="120" placeholder="Años" value="'+(mAge!=null?mAge:'')+'" oninput="mAge=_num(this.value)" style="flex:1;border:0;outline:0;font-size:1rem;font-family:var(--font);">'
+          +'<span style="font-size:.78rem;color:#94a3b8;">años</span></div></div>';
+        h+='<label style="display:flex;align-items:center;gap:8px;padding:10px;border:2px solid #e2e8f0;border-radius:12px;background:#fff;font-size:.86rem;cursor:pointer;">'
+          +'<input type="checkbox" '+(mPreg?'checked':'')+' onchange="mPreg=this.checked" style="width:18px;height:18px;accent-color:#2563eb;">'
+          +'Embarazo conocido o posible</label>';
+        h+='</div>';
+        body.innerHTML=h;
+        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=2;renderManual()">← Atrás</button>'
+                       +'<button class="btn btn-primary" style="flex:2" onclick="mStep=4;renderManual()">Siguiente →</button>';
+        return;
+    }
+
+    if(mStep===4){
+        // ── Paso 4 · Nivel de conciencia AVPU ──
+        var opts = [
+            {id:'A',lbl:'Alerta',    desc:'Responde y está orientado.',   color:'#059669'},
+            {id:'V',lbl:'Voz',       desc:'Solo responde si se le habla.',color:'#ca8a04'},
+            {id:'P',lbl:'Dolor',     desc:'Solo responde a estímulo doloroso.',color:'#ea580c'},
+            {id:'U',lbl:'No responde',desc:'Inconsciente.',color:'#dc2626'}
+        ];
+        var h='<h3 style="font-size:1rem;font-weight:600;margin-bottom:4px;">🧠 Nivel de conciencia (AVPU)</h3>';
+        h+='<p style="font-size:.8rem;color:var(--slate);margin-bottom:14px;">Seleccione el estado actual del paciente.</p>';
+        h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
+        opts.forEach(function(o){
+            var on = mAvpu===o.id;
+            h+='<button class="cat-btn'+(on?' sel':'')+'" style="'+(on?'background:'+o.color+';border-color:'+o.color+';color:#fff;':'')+'flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px;text-align:left;" onclick="mAvpu=\''+o.id+'\';renderManual()">'
+              +'<span style="font-weight:700;font-size:.95rem;">'+o.id+' · '+o.lbl+'</span>'
+              +'<span style="font-size:.78rem;opacity:'+(on?'.9':'.7')+';">'+o.desc+'</span></button>';
         });
         h+='</div>';
         body.innerHTML=h;
-        footer.innerHTML='<button class="btn btn-primary" onclick="mStep=2;renderManual()"'+(mCat?'':' disabled')+'>Siguiente →</button>';
-    } else if(mStep===2){
-        var disc=DISC[mCat]||[];
-        var h='<h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;">🚨 Señales de alarma — ¿Tiene alguna de estas?</h3>';
-        if(disc.length>0){
-            disc.forEach(function(d){h+='<div class="disc-q"><span>⚠️</span>'+d+'</div>';});
-            h+='<div style="display:flex;gap:10px;margin-top:16px;">';
-            h+='<button class="btn btn-danger" style="flex:1;" onclick="mDiscYes=1;mStep=3;renderManual()">🚨 SÍ, tengo alguna</button>';
-            h+='<button class="btn btn-secondary" style="flex:1;" onclick="mDiscYes=0;mStep=3;renderManual()">✅ NO, ninguna</button>';
-            h+='</div>';
-        } else {
-            h+='<p style="color:var(--slate);font-size:.88rem;margin-bottom:16px;">No hay discriminadores específicos para este motivo. Pase a la escala de dolor.</p>';
-            h+='<button class="btn btn-primary" onclick="mStep=3;renderManual()">Siguiente →</button>';
+        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=3;renderManual()">← Atrás</button>'
+                       +'<button class="btn btn-primary" style="flex:2" onclick="mStep=5;renderManual()">Siguiente →</button>';
+        return;
+    }
+
+    if(mStep===5){
+        // ── Paso 5 · EVA de dolor + finalizar ──
+        var h='<div style="text-align:center;margin-bottom:10px;"><h3 style="font-size:1.05rem;">🩹 Escala visual analógica (EVA) de dolor</h3><p style="font-size:.82rem;color:var(--slate);">0 = sin dolor, 10 = insoportable</p></div>';
+        h+='<div style="text-align:center;font-size:3rem;font-weight:800;color:#2563eb;line-height:1;margin:6px 0 4px;" id="painVal">'+mPain+'</div>';
+        h+='<input type="range" class="pain-slider" min="0" max="10" value="'+mPain+'" oninput="mPain=+this.value;var e=document.getElementById(\'painVal\');if(e)e.textContent=this.value">';
+        h+='<div style="display:flex;justify-content:space-between;font-size:.65rem;text-transform:uppercase;font-weight:700;color:var(--slate);letter-spacing:1px;padding:0 2px;"><span>Sin dolor</span><span>Moderado</span><span>Insoportable</span></div>';
+        if(mCat==='dolor_toracico'||mCat==='disnea'||mCat==='focalidad'||mCat==='convulsion'){
+            h+='<div style="display:flex;gap:8px;padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:14px;margin-top:16px;font-size:.78rem;color:#991b1b;align-items:flex-start;"><span>⚠️</span>Ante signos de emergencia vital (dolor opresivo irradiado, focalidad neurológica, convulsión activa) llame al <strong>112</strong> ahora.</div>';
         }
         body.innerHTML=h;
-        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=1;renderManual()">← Atrás</button>';
-    } else if(mStep===3){
-        var h='<div style="text-align:center;margin-bottom:16px;"><h3 style="font-size:1.05rem;">¿Cuál es su nivel de dolor?</h3><p style="font-size:.82rem;color:var(--slate);">0 = sin dolor, 10 = insoportable</p></div>';
-        h+='<div style="display:flex;justify-content:space-between;font-size:1.4rem;font-weight:800;padding:0 8px;"><span style="color:'+(mPain===0?'#0f172a':'#cbd5e1')+'">0</span><span style="color:#2563eb;font-size:2rem;">'+mPain+'</span><span style="color:'+(mPain===10?'#dc2626':'#cbd5e1')+'">10</span></div>';
-        h+='<input type="range" class="pain-slider" min="0" max="10" value="'+mPain+'" oninput="mPain=+this.value;document.getElementById(\'painVal\').textContent=this.value">';
-        h+='<div style="display:flex;justify-content:space-between;font-size:.65rem;text-transform:uppercase;font-weight:700;color:var(--slate);letter-spacing:1px;"><span>Sin dolor</span><span>Moderado</span><span>Insoportable</span></div>';
-        h+='<div id="painVal" style="display:none;"></div>';
-        if(mCat==='dolor_toracico'||mCat==='disnea'){
-            h+='<div style="display:flex;gap:8px;padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:14px;margin-top:16px;font-size:.78rem;color:#991b1b;align-items:flex-start;"><span>⚠️</span>Si siente dolor opresivo en el pecho irradiado al brazo o mandíbula, llame al 112 ahora.</div>';
-        }
-        body.innerHTML=h;
-        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=2;renderManual()">← Atrás</button><button class="btn btn-primary" style="flex:2;" onclick="calcManualResult()">Finalizar Triaje →</button>';
+        footer.innerHTML='<button class="btn btn-secondary" onclick="mStep=4;renderManual()">← Atrás</button>'
+                       +'<button class="btn btn-primary" style="flex:2" onclick="calcManualResult()">Finalizar Triaje →</button>';
+        return;
     }
 }
 
 function calcManualResult(){
     var cat=CATS.find(function(c){return c.id===mCat});
     var level=cat?cat.pri:4;
-    var reason='Motivo: '+(cat?cat.es:'Desconocido')+'. Dolor: '+mPain+'/10.';
+    var reasons=[];
+    reasons.push('Motivo: '+(cat?cat.es:'Desconocido'));
 
-    if(mDiscYes){level=Math.min(level,2);reason+=' Discriminador de alarma positivo.';}
-    if(mPain>=9){level=Math.min(level,2);reason+=' Dolor extremo.';}
-    else if(mPain>=7){level=Math.min(level,3);reason+=' Dolor severo.';}
+    // 1) Discriminadores: cada "sí" acerca al nivel I-II.
+    if(mDiscCount >= 2){ level = Math.min(level, 1); reasons.push(mDiscCount+' discriminadores de alarma → Nivel I'); }
+    else if(mDiscCount === 1){ level = Math.min(level, 2); reasons.push('1 discriminador de alarma → Nivel II'); }
 
-    showResult(level,reason,'SET Manual');
+    // 2) Constantes vitales (SET-Bis): fuerza nivel si hay valores críticos.
+    var vitLevel = vitalsSetLevel(mVitals);
+    if(vitLevel < 5){
+        level = Math.min(level, vitLevel);
+        reasons.push('Constantes vitales en rango de nivel '+vitLevel);
+    }
+
+    // 3) AVPU: no alerta → mínimo Nivel II; U → Nivel I.
+    if(mAvpu==='U'){ level = Math.min(level, 1); reasons.push('Paciente no responde (AVPU=U) → Nivel I'); }
+    else if(mAvpu==='P'){ level = Math.min(level, 2); reasons.push('Sólo responde al dolor (AVPU=P) → Nivel II'); }
+    else if(mAvpu==='V'){ level = Math.min(level, 3); reasons.push('Responde sólo a la voz (AVPU=V) → Nivel III'); }
+
+    // 4) EVA del dolor.
+    if(mPain >= 9){ level = Math.min(level, 2); reasons.push('Dolor extremo (EVA '+mPain+') → Nivel II'); }
+    else if(mPain >= 7){ level = Math.min(level, 3); reasons.push('Dolor severo (EVA '+mPain+') → Nivel III'); }
+    else if(mPain >= 4){ reasons.push('Dolor moderado (EVA '+mPain+')'); }
+
+    // 5) Factores especiales SET-Bis.
+    if(mAge != null){
+        if(mAge < 0.25 && (mCat==='fiebre' || mCat==='vomitos' || mCat==='disnea')){
+            level = Math.min(level, 2);
+            reasons.push('Lactante <3 meses con síntoma grave → Nivel II');
+        } else if(mAge >= 75 && level > 3){
+            level = Math.min(level, 3);
+            reasons.push('Anciano frágil (≥75 años) → mínimo Nivel III');
+        }
+    }
+    if(mPreg && (mCat==='dolor_abdominal' || mCat==='sangrado_ginec' || mCat==='dolor_gestante' || mCat==='cefalea')){
+        level = Math.min(level, 2);
+        reasons.push('Embarazo + síntoma ginecológico/cefalea → Nivel II');
+    }
+
+    var reason = reasons.join(' · ');
+    showResult(level, reason, 'SET-Bis · SMS Murcia');
 }
 
 /* ═══ VOICE TRIAGE (from VoiceTriage.tsx) ═══ */
