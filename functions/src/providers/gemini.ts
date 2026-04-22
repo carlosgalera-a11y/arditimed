@@ -27,7 +27,7 @@ export async function callGemini(opts: GeminiOpts): Promise<ProviderResult> {
     const body = {
       system_instruction: opts.systemPrompt ? { parts: [{ text: opts.systemPrompt }] } : undefined,
       contents: [{ role: 'user', parts }],
-      generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
+      generationConfig: { temperature: 0.3, maxOutputTokens: 4096 },
     };
     const url = `${BASE}/models/${encodeURIComponent(opts.model)}:generateContent?key=${opts.apiKey}`;
     const r = await fetch(url, {
