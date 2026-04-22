@@ -34,6 +34,19 @@
           }
         });
       });
+
+      // Fuerza chequeo de nueva versión cuando:
+      //   • el usuario vuelve a la pestaña (visibilitychange → visible)
+      //   • el navegador recupera conexión (online)
+      //   • cada 30 minutos mientras la pestaña esté abierta
+      // Crítico para PWAs instaladas que pueden quedarse semanas sin
+      // cerrarse y por tanto sin detectar versiones nuevas.
+      function checkUpdate(){ try{ reg.update(); }catch(e){} }
+      document.addEventListener('visibilitychange', function(){
+        if (document.visibilityState === 'visible') checkUpdate();
+      });
+      window.addEventListener('online', checkUpdate);
+      setInterval(checkUpdate, 30 * 60 * 1000);
     }).catch(function(){});
 
     // Recarga automática cuando el nuevo SW toma control.
