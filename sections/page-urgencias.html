@@ -910,16 +910,36 @@
         <!-- ═════ /ACCORDION 2 ═════ -->
 
         <script>
-          // Lazy-load del iframe: solo carga cuando abres el desplegable por
-          // primera vez, para no impactar el tiempo de pintado inicial.
+          // Lazy-load del iframe + deep-link para abrir el accordion correcto
+          // según ?open=camas|proto en la URL.
           (function(){
-            var det = document.getElementById('urgAccCamas');
-            if(!det) return;
-            det.addEventListener('toggle', function(){
-              if(!det.open) return;
-              var fr = document.getElementById('urgCamasFrame');
-              if(fr && !fr.src && fr.dataset.src){ fr.src = fr.dataset.src; }
-            });
+            var accProto = document.getElementById('urgAccProto');
+            var accCamas = document.getElementById('urgAccCamas');
+            var frame    = document.getElementById('urgCamasFrame');
+
+            function loadFrame(){
+              if(frame && !frame.src && frame.dataset.src){ frame.src = frame.dataset.src; }
+            }
+
+            if(accCamas){
+              accCamas.addEventListener('toggle', function(){
+                if(accCamas.open) loadFrame();
+              });
+            }
+
+            // Deep-link: abrir el accordion solicitado y scrollearlo a la vista.
+            try{
+              var open = new URLSearchParams(location.search).get('open');
+              if(open === 'camas' && accCamas){
+                if(accProto) accProto.open = false;
+                accCamas.open = true;
+                loadFrame();
+                setTimeout(function(){ accCamas.scrollIntoView({behavior:'smooth',block:'start'}); }, 220);
+              } else if(open === 'proto' && accProto){
+                accProto.open = true;
+                if(accCamas) accCamas.open = false;
+              }
+            }catch(e){}
           })();
         </script>
 
