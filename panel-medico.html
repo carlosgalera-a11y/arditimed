@@ -278,7 +278,6 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
             <div class="hero-bg"></div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
-                <div class="hero-badge">Centro de Salud Virgen de la Caridad</div>
                 <h2>Tu salud, nuestra prioridad</h2>
                 <p>Salud y formación para tu comunidad. Accede a recursos para pacientes o herramientas de docencia clínica para profesionales.</p>
                 <!-- ── GRID PRINCIPAL DE SECCIONES ── -->
@@ -5194,51 +5193,74 @@ document.addEventListener('click', function(){
   try{
     var action = new URLSearchParams(location.search).get('action');
     if(!action) return;
-    var attempts = 0;
-    var iv = setInterval(function(){
-      attempts++;
-      if(attempts > 60){ clearInterval(iv); return; }
-      if(typeof firebase === 'undefined' || !firebase.auth) return;
-      // Espera a que el user esté resuelto (puede ser null si no logged)
-      var u = firebase.auth().currentUser;
-      // Primer tick después de auth init
-      var authReady = firebase.auth()._initialized === true || attempts > 6;
-      if(!authReady) return;
+    if(typeof firebase === 'undefined' || !firebase.auth){
+      console.warn('[deep-link] firebase no cargado todavía');
+      return;
+    }
 
-      var call = function(fn, arg){
-        try{
-          if(typeof window[fn] === 'function'){
-            if(arg !== undefined) window[fn](arg);
-            else window[fn]();
-            return true;
-          }
-        }catch(e){ console.warn('[deep-link]', fn, e); }
-        return false;
-      };
+    var fired = false;
+    function callByName(fn, arg){
+      try{
+        if(typeof window[fn] === 'function'){
+          if(arg !== undefined) window[fn](arg); else window[fn]();
+          return true;
+        }
+      }catch(e){ console.warn('[deep-link]', fn, e); }
+      return false;
+    }
 
-      var done = false;
-      if(!u){
-        // Sin login → abrir modal login antes. Preservar action en el sessionStorage.
+    function dispatch(user){
+      if(fired) return;
+      // Si la acción requiere login y no hay user, preservar y abrir login
+      if(!user){
         try{ sessionStorage.setItem('pending_action', action); }catch(e){}
-        if(call('showLoginModal','Profesionales')){ done = true; }
-      } else {
-        if(action === 'propose')      done = call('abrirModalSubir','');
-        else if(action === 'moderate') done = call('abrirPanelModeracion');
-        else if(action === 'sugerencias') done = call('abrirSugerencias');
-        else if(action === 'mi-guardia') done = call('openGuardiaNotas');
-        else if(action === 'buscar')   done = call('abrirBuscador');
-        else if(action === 'favoritos') done = call('abrirFavoritos');
+        // Reintentar cuando showLoginModal exista (app-main.js carga después)
+        var tries = 0;
+        var iv = setInterval(function(){
+          tries++;
+          if(typeof window.showLoginModal === 'function'){
+            clearInterval(iv);
+            window.showLoginModal('Profesionales');
+          } else if(tries > 40){
+            clearInterval(iv);
+          }
+        }, 150);
+        return;
       }
-      if(done || attempts > 20){
-        clearInterval(iv);
-        // Limpia la URL para que no se redispare al recargar
-        try{
-          var url = new URL(location.href);
-          url.searchParams.delete('action');
-          history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
-        }catch(e){}
-      }
-    }, 120);
+
+      // Con user: esperar a que la función objetivo exista (scripts pueden cargarse después)
+      var targetFn = null, targetArg;
+      if(action === 'propose'){ targetFn = 'abrirModalSubir'; targetArg = ''; }
+      else if(action === 'moderate'){ targetFn = 'abrirPanelModeracion'; }
+      else if(action === 'sugerencias'){ targetFn = 'abrirSugerencias'; }
+      else if(action === 'mi-guardia'){ targetFn = 'openGuardiaNotas'; }
+      else if(action === 'buscar'){ targetFn = 'abrirBuscador'; }
+      else if(action === 'favoritos'){ targetFn = 'abrirFavoritos'; }
+      if(!targetFn) return;
+
+      var tries = 0;
+      var iv = setInterval(function(){
+        tries++;
+        if(callByName(targetFn, targetArg)){
+          fired = true;
+          clearInterval(iv);
+          try{
+            var url = new URL(location.href);
+            url.searchParams.delete('action');
+            history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+          }catch(e){}
+        } else if(tries > 60){ // 60 × 150 = 9 s máx
+          clearInterval(iv);
+          console.warn('[deep-link] función '+targetFn+' no disponible tras esperar');
+        }
+      }, 150);
+    }
+
+    // Arranque: el primer evento de onAuthStateChanged siempre dispara tras auth init
+    var unsub = firebase.auth().onAuthStateChanged(function(u){
+      if(typeof unsub === 'function') try{ unsub(); }catch(e){}
+      dispatch(u);
+    });
 
     // Cuando vuelve del login, relanza la acción pendiente
     if(typeof firebase !== 'undefined' && firebase.auth){
@@ -5261,14 +5283,17 @@ document.addEventListener('click', function(){
   }catch(e){ console.warn('[deep-link] init error:', e); }
 })();
 
-// Redirect: si se abre panel-medico.html SIN ?page=X, volver a la landing
-// nueva (index.html). Así nunca se ve la pageLanding vieja aunque alguien
-// navegue a /panel-medico.html directamente, pulse Actualizar tras haber
-// entrado, o siga un bookmark antiguo.
+// Redirect: si se abre panel-medico.html SIN ?page=X y SIN ?action=X, volver
+// a la landing nueva (index.html). Preservamos ?action= para que los botones
+// de Mi Guardia / Proponer / Sugerencias / Moderación funcionen desde
+// profesionales.html sin perder la intención.
 (function(){
   try{
-    var p = new URLSearchParams(location.search).get('page');
+    var qs = new URLSearchParams(location.search);
+    var p = qs.get('page');
+    var a = qs.get('action');
     if(p && /^page[A-Za-z]+$/.test(p)) return;
+    if(a && /^[a-z-]+$/.test(a)) return; // preserva acciones deep-link
     // Sólo redirigir si estamos realmente en panel-medico.html.
     if(!/\/panel-medico\.html?$/i.test(location.pathname)) return;
     location.replace('index.html' + (location.hash || ''));
