@@ -19,11 +19,6 @@ service cloud.firestore {
         && !text.matches('.*[0-9]{8}[A-HJ-NP-TV-Zа-я].*')
         && !text.matches('.*[XYZ][0-9]{7}[A-HJ-NP-TV-Z].*');
     }
-    function docSizeOk(data) {
-      // Firestore tiene límite de 1MB. 100KB es un sanity check.
-      return debug(data).size() <= 100;
-    }
-
     // ══ Usuarios ════════════════════════════════════════════════════
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();

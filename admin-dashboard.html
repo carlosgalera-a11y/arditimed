@@ -3,6 +3,11 @@
 <head>
   <script src="/console-guard.js"></script>
 <meta charset="UTF-8">
+  <meta name="author" content="Carlos Galera Román, MFyC">
+  <meta name="medical-organization" content="H.G.U. Santa Lucía · Área II · Servicio Murciano de Salud">
+  <meta name="compliance" content="RGPD · EU AI Act 2024/1689 · LPI Art. 51">
+  <meta name="last-reviewed" content="2026-04-23">
+  <meta name="generator" content="Cartagenaeste PWA">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel de administración · Área II Cartagena</title>
@@ -169,6 +174,12 @@ td.num{text-align:right;font-family:var(--mono)}
   <div class="section">
     <h3>🔍 Últimas 50 llamadas</h3>
     <div id="recent"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section">
+    <h3>⏱️ SLA IA por proveedor <span class="meta">últimos 30 snapshots diarios</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:10px">Datos agregados por la Cloud Function <code style="font-family:var(--mono)">aggregateDailyMetrics</code> (02:30 Madrid). Muestra p50/p95/p99 de latencia, tasa de error y coste por proveedor.</div>
+    <div id="slaPanel"><div class="loading"><span class="spin"></span>Cargando snapshots…</div></div>
   </div>
 
   <div class="section">
@@ -502,6 +513,108 @@ async function loadDashboard(days){
     }, {merge:true});
   }catch(e){ /* silencioso si no hay permisos */ }
   renderCentros();
+  loadSlaPanel();
+}
+
+// ── Panel SLA IA por proveedor (metrics_snapshots daily) ──────────
+async function loadSlaPanel(){
+  const box = document.getElementById('slaPanel');
+  if(!box) return;
+  try{
+    const db = firebase.firestore();
+    // Últimos 30 snapshots diarios. El id es daily-YYYY-MM-DD → orden natural.
+    const snap = await db.collection('metrics_snapshots')
+      .where('kind', '==', 'daily')
+      .orderBy('day', 'desc')
+      .limit(30)
+      .get();
+    if(snap.empty){
+      box.innerHTML = '<div class="empty">Aún no hay snapshots diarios. La primera ejecución del cron es a las 02:30 Madrid.</div>';
+      return;
+    }
+    const docs = [];
+    snap.forEach(function(d){ docs.push(d.data()); });
+    // Agregar byProvider a lo largo de los N días para una vista consolidada.
+    const agg = {};
+    let total = 0, cacheHits = 0, totalCost = 0;
+    const uniqueUserDays = [];
+    docs.forEach(function(s){
+      total += s.total || 0;
+      cacheHits += Math.round((s.cacheHitRate||0) * (s.total||0));
+      totalCost += s.totalCostEur || 0;
+      if(typeof s.uniqueUsers === 'number') uniqueUserDays.push(s.uniqueUsers);
+      const bp = s.byProvider || {};
+      Object.keys(bp).forEach(function(name){
+        const p = bp[name];
+        if(!agg[name]) agg[name] = { count:0, errorCount:0, cacheHits:0, p50Sum:0, p95Max:0, p99Max:0, cost:0, days:0 };
+        agg[name].count += p.count || 0;
+        agg[name].errorCount += Math.round((p.errorRate||0) * (p.count||0));
+        agg[name].cacheHits += p.cacheHits || 0;
+        agg[name].p50Sum += (p.p50Ms || 0) * (p.count || 0);
+        agg[name].p95Max = Math.max(agg[name].p95Max, p.p95Ms || 0);
+        agg[name].p99Max = Math.max(agg[name].p99Max, p.p99Ms || 0);
+        agg[name].cost += p.costEur || 0;
+        agg[name].days++;
+      });
+    });
+    const rows = Object.keys(agg).map(function(name){
+      const p = agg[name];
+      return {
+        name: name,
+        count: p.count,
+        errorRate: p.count ? (p.errorCount * 100 / p.count) : 0,
+        cacheHits: p.cacheHits,
+        p50Avg: p.count ? Math.round(p.p50Sum / p.count) : 0,
+        p95Max: p.p95Max,
+        p99Max: p.p99Max,
+        cost: p.cost,
+        days: p.days
+      };
+    }).sort(function(a,b){ return b.count - a.count; });
+
+    const avgUsers = uniqueUserDays.length ? (uniqueUserDays.reduce(function(a,b){return a+b;},0) / uniqueUserDays.length) : 0;
+    const lastDay = docs[0].day || '—';
+    const firstDay = docs[docs.length-1].day || '—';
+
+    const header =
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">' +
+        '<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div class="small" style="text-transform:uppercase;letter-spacing:.04em;color:var(--t3)">Rango</div><div style="font-family:var(--mono);font-size:.9rem;font-weight:700">'+firstDay+' → '+lastDay+'</div></div>' +
+        '<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div class="small" style="text-transform:uppercase;letter-spacing:.04em;color:var(--t3)">Total llamadas</div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:800">'+fmtNum(total)+'</div></div>' +
+        '<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div class="small" style="text-transform:uppercase;letter-spacing:.04em;color:var(--t3)">Cache hit global</div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:800">'+(total?(cacheHits*100/total).toFixed(1):'0')+'%</div></div>' +
+        '<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div class="small" style="text-transform:uppercase;letter-spacing:.04em;color:var(--t3)">Coste acumulado</div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:800">'+fmtEur(totalCost)+'</div></div>' +
+        '<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div class="small" style="text-transform:uppercase;letter-spacing:.04em;color:var(--t3)">Usuarios únicos/día</div><div style="font-family:var(--mono);font-size:1.2rem;font-weight:800">'+avgUsers.toFixed(1)+'</div></div>' +
+      '</div>';
+
+    const table = rows.length ? (
+      '<div style="overflow-x:auto"><table><thead><tr>' +
+        '<th>Proveedor</th>' +
+        '<th class="num">Llamadas</th>' +
+        '<th class="num">Cache hits</th>' +
+        '<th class="num">Error rate</th>' +
+        '<th class="num">p50 latencia</th>' +
+        '<th class="num">p95</th>' +
+        '<th class="num">p99</th>' +
+        '<th class="num">Coste</th>' +
+      '</tr></thead><tbody>' +
+      rows.map(function(r){
+        const errCls = r.errorRate < 1 ? 'tag-ok' : (r.errorRate < 5 ? 'tag-cache' : 'tag-err');
+        const provLabel = r.name === 'none' ? '<span class="tag tag-err">none</span>' : '<span class="tag tag-ok">'+r.name+'</span>';
+        return '<tr><td>'+provLabel+'</td>' +
+               '<td class="num">'+fmtNum(r.count)+'</td>' +
+               '<td class="num">'+fmtNum(r.cacheHits)+'</td>' +
+               '<td class="num"><span class="tag '+errCls+'">'+r.errorRate.toFixed(2)+'%</span></td>' +
+               '<td class="num">'+fmtNum(r.p50Avg)+' ms</td>' +
+               '<td class="num">'+fmtNum(r.p95Max)+' ms</td>' +
+               '<td class="num">'+fmtNum(r.p99Max)+' ms</td>' +
+               '<td class="num"><strong>'+fmtEur(r.cost)+'</strong></td></tr>';
+      }).join('') +
+      '</tbody></table></div>'
+    ) : '<div class="empty">Sin datos por proveedor.</div>';
+
+    box.innerHTML = header + table;
+  }catch(e){
+    box.innerHTML = '<div class="err small">No se pudo cargar el panel SLA: '+(e && e.message || e)+'</div>';
+  }
 }
 
 // ── Centros (multi-tenancy) ────────────────────────────────────────
