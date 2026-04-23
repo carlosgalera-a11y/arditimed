@@ -427,4 +427,67 @@ Ver `docs/plan-continuidad-mudanza.md` para el procedimiento concreto de traspas
 
 ---
 
+---
+
+## 10 · TTL policies en Firestore (retención automática)
+
+EU AI Act art. 12 exige retención de logs ≥ 6 meses. RGPD principio de minimización empuja hacia ≤ 24 meses. El balance acordado:
+
+| Colección | TTL | Campo | Justificación |
+|---|---|---|---|
+| `users/{uid}/aiRequests` | **180 días (6 meses)** | `expiresAt` | AI Act art. 12 mínimo |
+| `scan_uploads` | **365 días (12 meses)** | `expiresAt` | Decisión clínica art. 14, evidencia ampliada |
+| `aiCache` | 7 días | `expiresAt` | Cache funcional |
+| `healthchecks` | 90 días | `expiresAt` (si se añade) | Opcional |
+
+El campo `expiresAt` se calcula y escribe desde las Cloud Functions. La política TTL la activa Firestore automáticamente **después de habilitarla con gcloud**.
+
+### 10.1 Activar TTL (una vez por colección)
+
+```bash
+# Requiere gcloud auth login con cuenta admin del proyecto.
+gcloud config set project docenciacartagenaeste
+
+# users/{uid}/aiRequests (collection-group porque está bajo users)
+gcloud firestore fields ttls update expiresAt \
+  --collection-group=aiRequests --enable-ttl
+
+# scan_uploads
+gcloud firestore fields ttls update expiresAt \
+  --collection-group=scan_uploads --enable-ttl
+
+# aiCache (si no estaba activo)
+gcloud firestore fields ttls update expiresAt \
+  --collection-group=aiCache --enable-ttl
+
+# Verificar
+gcloud firestore fields ttls list
+```
+
+### 10.2 Desactivar TTL temporal (operaciones especiales)
+
+Ante una migración o auditoría regulatoria, se puede desactivar la TTL durante un periodo corto:
+
+```bash
+gcloud firestore fields ttls update expiresAt \
+  --collection-group=aiRequests --disable-ttl
+```
+
+**IMPORTANTE**: reactivar en <48 h. Documentar motivo en `docs/post-mortems/` si ocurre.
+
+### 10.3 Verificar retención efectiva
+
+```bash
+# Cuenta docs con createdAt > 180 días (deberían estar eliminados ya si TTL activa).
+gcloud firestore query --collection-group=aiRequests \
+  --where "createdAt<$(date -u -v-180d +%Y-%m-%dT%H:%M:%SZ)" \
+  --limit 5
+```
+
+### 10.4 Backup previo a cambios de retención
+
+Antes de habilitar/cambiar TTL por primera vez, ejecutar un backup manual (§9.2) y guardar la referencia del snapshot en caso de borrado prematuro no planeado.
+
+---
+
 _Mantener este runbook al día cada vez que se toque functions o Firestore. Referenciar desde CLAUDE.md._

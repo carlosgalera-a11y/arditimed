@@ -240,6 +240,12 @@ async function writeAuditLog(
   promptHash: string,
 ): Promise<void> {
   try {
+    // TTL: 180 días desde creación (EU AI Act art. 12 mínimo 6 meses).
+    // Requiere TTL policy activa en Firestore sobre el campo `expiresAt`:
+    //   gcloud firestore fields ttls update expiresAt \
+    //     --collection-group=aiRequests --enable-ttl
+    // Ver docs/runbook.md §10.
+    const expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000);
     await db.collection('users').doc(uid).collection('aiRequests').add({
       type,
       provider,
@@ -251,6 +257,7 @@ async function writeAuditLog(
       costEstimateEur: estimateCostEur(model, tokensIn, tokensOut),
       promptHash,
       createdAt: FieldValue.serverTimestamp(),
+      expiresAt,
     });
   } catch {
     // Auditoría best-effort: si Firestore falla, no rompemos la respuesta.
