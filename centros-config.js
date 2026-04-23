@@ -120,6 +120,27 @@
     });
   }
 
+  // ── stamp(): añade centroId a cualquier payload de escritura ──
+  // Uso: db.collection('informes_ia').add(Centros.stamp({ titulo:'…', … }))
+  // Retrocompatible: si alguien pasa undefined/null, devuelve {}.
+  // Si ya hay centroId, no lo sobreescribe.
+  function stamp(data){
+    var d = Object.assign({}, data || {});
+    if(!d.centroId) d.centroId = currentId();
+    return d;
+  }
+
+  // ── where(): filtro de lectura por centro activo ──
+  // Uso: Centros.where(db.collection('informes_ia')).get()
+  // Si la colección no tiene todavía el campo centroId en todos los docs,
+  // pasa {strict:false} y devuelve la query sin filtrar (modo gradual).
+  function where(query, opts){
+    opts = opts || {};
+    if(opts.strict === false) return query;
+    try{ return query.where('centroId', '==', currentId()); }
+    catch(e){ return query; }
+  }
+
   window.Centros = {
     getCurrentId: currentId,
     setCurrentId: setCurrentId,
@@ -127,6 +148,8 @@
     list: list,
     onChange: onChange,
     renderSelector: renderSelector,
+    stamp: stamp,
+    where: where,
     DEFAULT_ID: DEFAULT_ID,
     FALLBACK: FALLBACK
   };

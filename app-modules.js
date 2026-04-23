@@ -642,6 +642,7 @@ function trCalcularResultado(){
 
 function trMostrarResultado(nivel){
   var n=TR_NIVELES[nivel]||TR_NIVELES[3];
+  try{ if(window.cartEvents) window.cartEvents.triajeCompletado('nivel-'+nivel); }catch(e){}
   var el=document.getElementById('trResultado');
   var telBtn=n.telefono?'<a href="tel:'+n.telefono+'" style="display:block;width:100%;text-align:center;padding:13px;background:'+n.color+';color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;text-decoration:none;margin-bottom:10px;">📞 '+n.tel_label+'</a>':'';
   el.innerHTML='<div style="background:'+n.bg+';border:2px solid '+n.color+';border-radius:14px;padding:22px 18px;margin-bottom:14px;">'

@@ -19,22 +19,9 @@
 })();
 </script>
 <!-- Google Analytics 4 — Área II Cartagena PWA -->
-<!-- ⚠️ Reemplazar GA_MEASUREMENT_ID con tu ID real (G-XXXXXXXXXX) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-<script>
-window.dataLayer=window.dataLayer||[];
-function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());
-gtag('config','GA_MEASUREMENT_ID',{
-  page_title:'Área II Cartagena PWA',
-  cookie_flags:'SameSite=None;Secure'
-});
-
-// ═══ CUSTOM EVENTS — Tracking de uso clínico ═══
-window.gaTrack=function(event,params){
-  try{gtag('event',event,params||{});}catch(e){}
-};
-</script>
+<!-- GA4 configurado en analytics-config.js -->
+<script src="centros-config.js"></script>
+<script src="analytics-config.js"></script>
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
 (function(){
@@ -4246,14 +4233,14 @@ function enviarSugerencia(){
   var tipo=document.getElementById('sugTipo').value;
   var texto=document.getElementById('sugTexto').value.trim();
   if(!texto){alert('Escribe tu sugerencia');return;}
-  db.collection('sugerencias').add({
+  db.collection('sugerencias').add((window.Centros?window.Centros.stamp:function(x){return x;})({
     tipo:tipo,
     texto:texto,
     email:user.email,
     nombre:user.displayName||user.email,
     leido:false,
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
-  }).then(function(){
+  })).then(function(){
     document.getElementById('sugForm').style.display='none';
     document.getElementById('sugGracias').style.display='block';
   }).catch(function(e){alert('Error: '+e.message);});

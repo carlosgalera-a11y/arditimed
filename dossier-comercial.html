@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Cartagenaeste · Dossier para Servicio de Urgencias HSL</title>
+<meta name="author" content="Carlos Galera Román, MFyC">
+<meta name="description" content="Dossier comercial para el Servicio de Urgencias del H.G.U. Santa Lucía (Área II · SMS).">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@300;400;500;600;700;800&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-dark:#0a4d35;--accent:#d4a853;
+  --red:#dc2626;--blue:#1e40af;--amber:#d97706;
+  --ink:#1a202c;--ink2:#2d3748;--soft:#4a5568;--muted:#718096;
+  --paper:#ffffff;--cream:#fdfaf2;--line:#e2e8f0;--subtle:#f8fafc;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:#e5e7eb;color:var(--ink);line-height:1.55;padding:20px 0}
+.page{background:var(--paper);max-width:860px;margin:0 auto 22px;box-shadow:0 4px 22px rgba(0,0,0,.08);padding:50px 55px;position:relative;min-height:1100px;page-break-after:always}
+.page:last-child{page-break-after:auto}
+@page{size:A4;margin:18mm}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;margin:0;padding:22mm 20mm;max-width:unset}.no-print{display:none!important}}
+.brand{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:3px solid var(--primary);margin-bottom:22px}
+.brand .logo{width:54px;height:54px;background:linear-gradient(135deg,var(--primary-dark),var(--primary));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff}
+.brand h1{font-family:var(--display);font-size:1.55rem;font-weight:800;color:var(--primary-dark);line-height:1.1}
+.brand .sub{font-size:.88rem;color:var(--muted);margin-top:2px}
+
+h2{font-family:var(--display);font-size:1.45rem;font-weight:800;color:var(--primary-dark);margin:22px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+h3{font-family:var(--display);font-size:1.08rem;font-weight:700;color:var(--ink2);margin:16px 0 8px}
+p{margin-bottom:10px;color:var(--ink2);font-size:.96rem}
+.lead{font-size:1.05rem;color:var(--soft);font-weight:300;margin-bottom:14px}
+strong{color:var(--ink)}
+ul,ol{padding-left:22px;margin-bottom:10px}
+li{margin-bottom:5px;color:var(--ink2);font-size:.94rem}
+
+.cover{background:linear-gradient(160deg,var(--primary-dark) 0%,var(--primary) 60%,var(--accent) 160%);color:#fff;padding:90px 55px;min-height:1100px;position:relative;overflow:hidden}
+.cover::after{content:"⚕";position:absolute;right:-60px;bottom:-40px;font-size:380px;opacity:.07}
+.cover .tag{display:inline-block;padding:6px 16px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);border-radius:20px;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:26px}
+.cover h1{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1.05;letter-spacing:-.02em;margin-bottom:14px;color:#fff}
+.cover h1 span{color:var(--accent)}
+.cover .sub2{font-size:1.28rem;font-weight:300;opacity:.9;max-width:540px;margin-bottom:56px}
+.cover .meta{display:grid;grid-template-columns:max-content 1fr;gap:10px 24px;font-size:.92rem;max-width:440px;position:relative;z-index:1}
+.cover .meta dt{color:rgba(255,255,255,.65);font-weight:300}
+.cover .meta dd{color:#fff;font-weight:600}
+.cover .foot{position:absolute;bottom:50px;left:55px;right:55px;display:flex;justify-content:space-between;font-size:.78rem;color:rgba(255,255,255,.75);z-index:1}
+
+.pill{display:inline-block;padding:3px 10px;border-radius:10px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.pill.ok{background:rgba(22,163,74,.14);color:#15803d;border:1px solid rgba(22,163,74,.3)}
+.pill.on{background:rgba(217,119,6,.14);color:#92400e;border:1px solid rgba(217,119,6,.3)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.card{background:var(--subtle);border:1px solid var(--line);border-left:4px solid var(--c,var(--primary));border-radius:10px;padding:14px 16px}
+.card .t{font-family:var(--display);font-weight:700;color:var(--ink);font-size:1rem;margin-bottom:4px}
+.card .d{font-size:.86rem;color:var(--soft);line-height:1.5}
+
+.kpi{background:linear-gradient(135deg,var(--cream),#fff);border:1px solid var(--line);border-left:5px solid var(--primary);border-radius:12px;padding:18px 20px;text-align:center}
+.kpi .v{font-family:var(--display);font-size:2.1rem;font-weight:800;color:var(--primary-dark);line-height:1}
+.kpi .l{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-top:6px}
+
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--subtle);color:var(--primary-dark);font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+tfoot td{font-weight:800;color:var(--ink);background:var(--cream);border-top:2px solid var(--primary)}
+
+.hl{background:linear-gradient(120deg,rgba(212,168,83,.22) 0%,rgba(212,168,83,.22) 100%);padding:1px 5px;border-radius:3px;color:var(--ink)}
+.note{background:var(--cream);border-left:4px solid var(--accent);padding:11px 15px;border-radius:6px;font-size:.88rem;color:var(--ink2);margin:12px 0}
+.alert{background:#fff5f5;border-left:4px solid var(--red);padding:11px 15px;border-radius:6px;font-size:.88rem;color:#742a2a;margin:12px 0}
+
+.page-num{position:absolute;bottom:22px;right:30px;font-size:.74rem;color:var(--muted)}
+.footer-brand{position:absolute;bottom:22px;left:30px;font-size:.74rem;color:var(--muted)}
+
+.print-btn{position:fixed;right:20px;top:20px;z-index:100;padding:11px 20px;background:var(--primary-dark);color:#fff;border:0;border-radius:10px;cursor:pointer;font-family:var(--font);font-weight:700;font-size:.88rem;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.print-btn:hover{background:var(--primary)}
+</style>
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+
+<!-- ══════════ PORTADA ══════════ -->
+<div class="page cover">
+  <div class="tag">Propuesta confidencial · 23 de abril de 2026</div>
+  <h1>Cartagenaeste<br><span>Urgencias H.G.U. Santa Lucía</span></h1>
+  <div class="sub2">Plataforma formativa y de apoyo a la consulta para el Servicio de Urgencias del Área II Cartagena.</div>
+  <dl class="meta">
+    <dt>Destinatario</dt><dd>Jefatura de Servicio de Urgencias · H.G.U. Santa Lucía</dd>
+    <dt>Propuesta</dt><dd>Licencia anual + mantenimiento + módulo específico</dd>
+    <dt>Periodo</dt><dd>12 meses · 2026-2027</dd>
+    <dt>Importe</dt><dd>14.000 € · IVA no incluido</dd>
+    <dt>Modalidad</dt><dd>Contrato menor de servicios</dd>
+    <dt>Autor</dt><dd>Carlos Galera Román · R4 MFyC</dd>
+  </dl>
+  <div class="foot">
+    <span>Cartagenaeste · Reg. PI 00765-03096622</span>
+    <span>v1.0 · 23 / 04 / 2026</span>
+  </div>
+</div>
+
+<!-- ══════════ PÁGINA 1 · RESUMEN EJECUTIVO ══════════ -->
+<div class="page">
+  <div class="brand">
+    <div class="logo">🏥</div>
+    <div><h1>Cartagenaeste</h1><div class="sub">Área II Cartagena · Servicio Murciano de Salud</div></div>
+  </div>
+
+  <h2>1. Resumen ejecutivo</h2>
+
+  <p class="lead">Cartagenaeste es una <strong>plataforma formativa y organizador personal de guardia</strong> diseñada en el Área II de Cartagena, en uso activo por residentes y adjuntos del H.G.U. Santa Lucía. Esta propuesta formaliza la licencia al Servicio de Urgencias por un primer periodo anual, incluyendo el desarrollo de un módulo específico de <strong>fármacos de urgencia</strong>.</p>
+
+  <div class="grid3">
+    <div class="kpi"><div class="v">132</div><div class="l">documentos clínicos embebidos</div></div>
+    <div class="kpi"><div class="v">29</div><div class="l">calculadoras clínicas</div></div>
+    <div class="kpi"><div class="v">9</div><div class="l">fichas de consulta rápida</div></div>
+  </div>
+
+  <h3>Qué aporta al Servicio de Urgencias</h3>
+  <ul>
+    <li><strong>Acceso unificado</strong> a protocolos del Área II, guías SEMES, SEMFyC, ATLS 11.ª ed., PROA y Camas &amp; Ambulancias.</li>
+    <li><strong>Fichas de bolsillo</strong> por motivo de consulta (epistaxis, ictus, ITU, lumbalgia, cefalea, EPOC…) con el formato estándar motivo→DDx→manejo→derivación→fármacos.</li>
+    <li><strong>Organizador de guardia</strong>: pacientes pseudonimizados, pendientes, constantes, exportable.</li>
+    <li><strong>Vademécum de urgencia</strong> (51 fármacos en ampolla/bolus/perfusión), base para el módulo ampliado.</li>
+    <li><strong>Asistente IA clínica</strong> sobre los protocolos para consulta rápida durante la guardia.</li>
+    <li><strong>Panel de métricas de uso</strong> para el Servicio con reporting trimestral contractual.</li>
+  </ul>
+
+  <h3>Qué está resuelto ya (reduce el riesgo regulatorio)</h3>
+  <div class="grid2">
+    <div class="card" style="--c:#0f6b4a">
+      <div class="t">✅ Registro Propiedad Intelectual</div>
+      <div class="d">Inscripción 00765-03096622 a nombre del autor. IP blindada conforme al Art. 51 LPI.</div>
+    </div>
+    <div class="card" style="--c:#1e40af">
+      <div class="t">✅ RGPD + DPIA</div>
+      <div class="d">Datos en UE (Firebase europe-west1). Seudonimización por defecto: iniciales, no cama, edad. Validación servidor-side contra DNI/NIE/NHC.</div>
+    </div>
+    <div class="card" style="--c:#7c3aed">
+      <div class="t">✅ EU AI Act 2024/1689</div>
+      <div class="d">Etiqueta de transparencia en cada respuesta de IA (Art. 52). Auditoría sin almacenar prompts ni respuestas.</div>
+    </div>
+    <div class="card" style="--c:#d97706">
+      <div class="t">✅ MDR 2017/745</div>
+      <div class="d">No es producto sanitario: uso exclusivamente formativo. Revisado por abogado especializado.</div>
+    </div>
+  </div>
+
+  <div class="note">💡 <strong>Diferenciador:</strong> a diferencia de portales genéricos, Cartagenaeste está co-construida con profesionales del Área II y contiene los protocolos locales del Servicio. No es una herramienta externa que se impone: es la digitalización del conocimiento que ya tenéis.</div>
+
+  <div class="footer-brand">Cartagenaeste · Dossier confidencial</div>
+  <div class="page-num">1 / 6</div>
+</div>
+
+<!-- ══════════ PÁGINA 2 · PROBLEMA Y SOLUCIÓN ══════════ -->
+<div class="page">
+  <div class="brand"><div class="logo">🏥</div><div><h1>Cartagenaeste</h1><div class="sub">Área II Cartagena · SMS</div></div></div>
+
+  <h2>2. Problema que resuelve</h2>
+
+  <p class="lead">En una guardia cualquiera de Urgencias, el profesional navega entre el intranet del hospital, su teléfono personal con PDFs, apps comerciales heterogéneas y llamadas de consulta. <strong>La información existe pero está dispersa</strong>, y cada residente empieza desde cero.</p>
+
+  <div class="grid2">
+    <div class="card" style="--c:#dc2626">
+      <div class="t">⏱️ Tiempo perdido buscando</div>
+      <div class="d">Acceder a un protocolo ATLS puede requerir 3-5 minutos y varias pestañas. En una reanimación no hay margen.</div>
+    </div>
+    <div class="card" style="--c:#dc2626">
+      <div class="t">📋 Dispersión de información</div>
+      <div class="d">Vademécum en papel, protocolos en Drive, guías SEMES en email, calculadoras en apps comerciales con costes heterogéneos.</div>
+    </div>
+    <div class="card" style="--c:#dc2626">
+      <div class="t">🎓 Curva de aprendizaje del R1</div>
+      <div class="d">Cada promoción aprende los protocolos locales de forma oral, con alta variabilidad en la práctica.</div>
+    </div>
+    <div class="card" style="--c:#dc2626">
+      <div class="t">📊 Sin datos de uso</div>
+      <div class="d">El Servicio no dispone de indicadores objetivos de qué protocolos se consultan, cuáles se usan o cuáles faltan.</div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:30px">3. Solución · Cartagenaeste en Urgencias</h2>
+
+  <table>
+    <thead><tr><th>Necesidad</th><th>Funcionalidad</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Consulta rápida en guardia</td><td>Fichas de bolsillo por motivo con enlace a calculadoras</td><td><span class="pill ok">Listo</span></td></tr>
+      <tr><td>Protocolos ATLS 11.ª edición</td><td>Sección ATLS con 13 capítulos + algoritmo A-B-C-D-E</td><td><span class="pill ok">Listo</span></td></tr>
+      <tr><td>Vademécum de urgencia</td><td>51 fármacos · ampolla, bolus, perfusión</td><td><span class="pill ok">Listo</span></td></tr>
+      <tr><td>Vademécum ampliado propio del Servicio</td><td>Módulo de <strong>Fármacos de Urgencia ampliado</strong></td><td><span class="pill on">Incluido en contrato</span></td></tr>
+      <tr><td>Camas &amp; Ambulancias (Paratus)</td><td>Integrado dentro de Urgencias · dosis por peso</td><td><span class="pill ok">Listo</span></td></tr>
+      <tr><td>Vías, VMNI, IOT</td><td>Sección de Ventilación integrada</td><td><span class="pill ok">Listo</span></td></tr>
+      <tr><td>PROA (uso racional de antibióticos)</td><td>12 síndromes, duraciones y consulta IA</td><td><span class="pill ok">Listo</span></td></tr>
+      <tr><td>Organizador personal de guardia</td><td>Mi Guardia · pacientes pseudonimizados, exportable</td><td><span class="pill ok">Listo</span></td></tr>
+      <tr><td>Reporting mensual al Servicio</td><td>PDF automático con KPIs de uso</td><td><span class="pill on">Parte del contrato</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">💡 <strong>Modelo de trabajo:</strong> el Servicio designa 1-2 profesionales de referencia. Juntos fijamos el alcance del módulo específico, reviso el contenido del vademécum con vosotros y publico. Lo que no os sirve, se retira.</div>
+
+  <div class="footer-brand">Cartagenaeste · Dossier confidencial</div>
+  <div class="page-num">2 / 6</div>
+</div>
+
+<!-- ══════════ PÁGINA 3 · ARQUITECTURA + COMPLIANCE ══════════ -->
+<div class="page">
+  <div class="brand"><div class="logo">🏥</div><div><h1>Cartagenaeste</h1><div class="sub">Área II Cartagena · SMS</div></div></div>
+
+  <h2>4. Arquitectura técnica</h2>
+
+  <h3>Stack y garantías</h3>
+  <div class="grid2">
+    <div class="card"><div class="t">🌍 Ubicación de datos</div><div class="d">Google Cloud · Firebase · <strong>europe-west1</strong>. Datos dentro de la Unión Europea conforme RGPD.</div></div>
+    <div class="card"><div class="t">🔐 Autenticación</div><div class="d">Firebase Auth con SSO corporativo opcional. Custom claims por rol (enfermería, facultativo, residente, admin).</div></div>
+    <div class="card"><div class="t">🤖 IA clínica</div><div class="d">Cadena con fallback: Qwen 2.5-VL-72B (visión) · Gemini · DeepSeek. SLA contractual disponible para flujo crítico.</div></div>
+    <div class="card"><div class="t">⚡ PWA</div><div class="d">Funciona offline. Instalable en iOS/Android/escritorio sin pasar por App Store.</div></div>
+    <div class="card"><div class="t">🔒 App Check</div><div class="d">Protección anti-abuso activada en Firestore, Cloud Functions y Storage.</div></div>
+    <div class="card"><div class="t">🧪 Test suite</div><div class="d">63 tests automáticos (validación, cuotas, routing, rate-limit). CI verde en cada despliegue.</div></div>
+  </div>
+
+  <h3>Seudonimización sanitaria</h3>
+  <ul>
+    <li>Datos de paciente limitados a <strong>iniciales ≤ 4 caracteres + número de cama + edad</strong>.</li>
+    <li>Validación servidor-side que <strong>rechaza automáticamente</strong> prompts con DNI, NIE o NHC antes de enviarlos a la IA.</li>
+    <li>Log de auditoría de llamadas de IA <strong>sin almacenar</strong> el contenido de prompts ni respuestas.</li>
+    <li>Derechos ARCO operativos vía contacto con el autor.</li>
+  </ul>
+
+  <h2 style="margin-top:24px">5. Cumplimiento normativo</h2>
+
+  <table>
+    <thead><tr><th>Norma</th><th>Alcance</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>RGPD · UE 2016/679</td><td>DPIA realizada · Datos en UE · Encargo de tratamiento disponible</td><td><span class="pill ok">Activo</span></td></tr>
+      <tr><td>LOPDGDD · LO 3/2018</td><td>Privacidad, transparencia, derechos ARCO</td><td><span class="pill ok">Activo</span></td></tr>
+      <tr><td>EU AI Act · UE 2024/1689</td><td>Transparencia IA Art. 52 · etiqueta visible en cada respuesta</td><td><span class="pill ok">Activo</span></td></tr>
+      <tr><td>Ley 41/2002 autonomía paciente</td><td>Disclaimers formativos, sin uso diagnóstico</td><td><span class="pill ok">Activo</span></td></tr>
+      <tr><td>MDR 2017/745</td><td>No producto sanitario · validado por abogado especializado</td><td><span class="pill ok">Activo</span></td></tr>
+      <tr><td>LSSI-CE + LPI Art. 51</td><td>Aviso legal, propiedad intelectual registrada</td><td><span class="pill ok">Activo</span></td></tr>
+      <tr><td>Verificación Colegio Médicos Murcia</td><td>Respaldo local de autoría responsable</td><td><span class="pill on">En trámite</span></td></tr>
+      <tr><td>HONcode (internacional)</td><td>8 principios éticos web sanitaria</td><td><span class="pill on">En trámite</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert">⚠️ <strong>Uso formativo exclusivo.</strong> Cartagenaeste no diagnostica, no prescribe y no sustituye el juicio clínico profesional. Todas las sugerencias de la IA van acompañadas de disclaimer permanente.</div>
+
+  <div class="footer-brand">Cartagenaeste · Dossier confidencial</div>
+  <div class="page-num">3 / 6</div>
+</div>
+
+<!-- ══════════ PÁGINA 4 · CAPTURAS Y NÚMEROS ══════════ -->
+<div class="page">
+  <div class="brand"><div class="logo">🏥</div><div><h1>Cartagenaeste</h1><div class="sub">Área II Cartagena · SMS</div></div></div>
+
+  <h2>6. Lo que usará el Servicio</h2>
+
+  <div class="grid2">
+    <div class="card" style="--c:#dc2626"><div class="t">🚨 Urgencias hospitalarias</div><div class="d">12 protocolos xABCDE · Primary y secondary survey · Escalas de shock · CT rules TCE · Capítulos ATLS enlazados.</div></div>
+    <div class="card" style="--c:#8b5cf6"><div class="t">📑 Fichas de consulta rápida</div><div class="d">9 fichas iniciales (epistaxis, faringoamigdalitis, lumbalgia, cefalea, otitis, ictus, ITU, EPOC, fiebre niños) ampliables a demanda.</div></div>
+    <div class="card" style="--c:#f59e0b"><div class="t">💊 Vademécum + PROA</div><div class="d">51 fármacos de urgencia · PROA con 12 síndromes, duraciones y asistente IA para pauta empírica.</div></div>
+    <div class="card" style="--c:#0ea5e9"><div class="t">🫁 Ventilación</div><div class="d">VMNI · IOT · VMI · Destete · Alarmas. Parámetros individualizados, referencias SEPAR 2021 y GOLD 2025.</div></div>
+    <div class="card" style="--c:#14b8a6"><div class="t">🚑 Camas &amp; Ambulancias</div><div class="d">Vademécum pediátrico y adulto · Dosis por peso · Procedimientos · Paratus integrado.</div></div>
+    <div class="card" style="--c:#2563eb"><div class="t">🔬 Scan IA</div><div class="d">Rx tórax (Qwen 2.5-VL) · Derma · ECG · Ecografía. Formato docente con probabilidades CheXpert.</div></div>
+  </div>
+
+  <h3>Reporting contractual mensual</h3>
+  <p>Se entregará al Servicio, en PDF y vía email, un informe mensual con los siguientes indicadores:</p>
+  <ul>
+    <li>Usuarios únicos activos por rol (DAU / MAU).</li>
+    <li>Top-10 protocolos y fichas consultadas.</li>
+    <li>Número de informes IA generados, con distribución por especialidad.</li>
+    <li>Cache hit-rate (ahorro de coste IA).</li>
+    <li>Incidencias operativas y tiempo de resolución.</li>
+  </ul>
+  <div class="note">💡 Estos indicadores permiten a la Jefatura de Servicio <strong>justificar presupuesto</strong> ante Dirección Médica y documentar el impacto formativo en memoria anual.</div>
+
+  <h3>Onboarding y acompañamiento</h3>
+  <ul>
+    <li><strong>Sesión inicial</strong> al personal (duración 45-60 min) sobre funcionalidades clave.</li>
+    <li><strong>Sesión específica</strong> para residentes sobre organizador de guardia y fichas de bolsillo.</li>
+    <li><strong>Bolsa de soporte</strong> de 40 h/año con SLA de respuesta de 24 h laborables.</li>
+    <li><strong>Canal directo</strong> de incidencias por WhatsApp / email con el autor.</li>
+    <li><strong>Actualización continua</strong> de protocolos sin coste adicional durante la vigencia.</li>
+  </ul>
+
+  <div class="footer-brand">Cartagenaeste · Dossier confidencial</div>
+  <div class="page-num">4 / 6</div>
+</div>
+
+<!-- ══════════ PÁGINA 5 · ECONÓMICO ══════════ -->
+<div class="page">
+  <div class="brand"><div class="logo">🏥</div><div><h1>Cartagenaeste</h1><div class="sub">Área II Cartagena · SMS</div></div></div>
+
+  <h2>7. Propuesta económica</h2>
+
+  <p class="lead">Estructura de <span class="hl">contrato menor de servicios</span> conforme a la Ley 9/2017 de Contratos del Sector Público. Importe anual por debajo del límite de 15.000 € IVA excluido para servicios.</p>
+
+  <h3>Desglose año 1</h3>
+  <table>
+    <thead><tr><th>Concepto</th><th>Unidad</th><th style="text-align:right">Importe</th></tr></thead>
+    <tbody>
+      <tr><td>Licencia anual de uso · Servicio de Urgencias (80 profesionales aprox.)</td><td>1 servicio</td><td style="text-align:right">3.500 €</td></tr>
+      <tr><td>Mantenimiento correctivo y evolutivo (incluye actualizaciones menores)</td><td>12 meses</td><td style="text-align:right">2.400 €</td></tr>
+      <tr><td>Hosting, infraestructura cloud e IA pagada con SLA</td><td>12 meses</td><td style="text-align:right">1.200 €</td></tr>
+      <tr><td>Bolsa de soporte técnico (40 h con SLA 24 h laborables)</td><td>40 h</td><td style="text-align:right">2.000 €</td></tr>
+      <tr><td>Desarrollo del módulo &laquo;Fármacos de Urgencia ampliado&raquo; · específico Servicio</td><td>1 módulo</td><td style="text-align:right">2.500 €</td></tr>
+      <tr><td>Formación inicial y onboarding · 2 sesiones</td><td>2 sesiones</td><td style="text-align:right">1.200 €</td></tr>
+      <tr><td>Reporting trimestral de uso e impacto</td><td>4 trimestres</td><td style="text-align:right">1.200 €</td></tr>
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2"><strong>TOTAL año 1 · IVA no incluido</strong></td><td style="text-align:right"><strong>14.000 €</strong></td></tr>
+      <tr><td colspan="2">IVA 21 %</td><td style="text-align:right">2.940 €</td></tr>
+      <tr><td colspan="2"><strong>TOTAL con IVA</strong></td><td style="text-align:right"><strong>16.940 €</strong></td></tr>
+    </tfoot>
+  </table>
+
+  <h3>Calendario de facturación</h3>
+  <table>
+    <thead><tr><th>Hito</th><th>% del total</th><th style="text-align:right">Importe + IVA</th></tr></thead>
+    <tbody>
+      <tr><td>Firma y kickoff</td><td>30 %</td><td style="text-align:right">5.082 €</td></tr>
+      <tr><td>Entrega módulo específico + onboarding</td><td>40 %</td><td style="text-align:right">6.776 €</td></tr>
+      <tr><td>Cierre anual con informe final</td><td>30 %</td><td style="text-align:right">5.082 €</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Parte recurrente en año 2</h3>
+  <p>La parte recurrente (licencia + mantenimiento + hosting + soporte + reporting) suma <strong>10.300 € + IVA</strong> al año. Para renovar como contrato menor en el ejercicio siguiente, el Servicio puede variar el objeto del módulo específico anual (p. ej. protocolo de sepsis, checklist de código ictus, etc.). Para escalar a contrato plurianual con Dirección Médica, se partiría de la tracción y resultados obtenidos el primer año.</p>
+
+  <div class="note">💡 <strong>Garantía:</strong> si tras los primeros 90 días el Servicio considera que la herramienta no aporta valor, la relación se interrumpe sin penalización y se emite únicamente la factura correspondiente a los servicios efectivamente entregados.</div>
+
+  <div class="footer-brand">Cartagenaeste · Dossier confidencial</div>
+  <div class="page-num">5 / 6</div>
+</div>
+
+<!-- ══════════ PÁGINA 6 · CRONOGRAMA + CIERRE ══════════ -->
+<div class="page">
+  <div class="brand"><div class="logo">🏥</div><div><h1>Cartagenaeste</h1><div class="sub">Área II Cartagena · SMS</div></div></div>
+
+  <h2>8. Cronograma</h2>
+
+  <table>
+    <thead><tr><th>Semana</th><th>Hito</th><th>Responsable</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>Reunión de alineamiento, confirmación de alcance</td><td>Jefatura Urgencias + autor</td></tr>
+      <tr><td>1-2</td><td>Expediente de contrato menor en contratación HSL</td><td>Unidad de contratación HSL</td></tr>
+      <tr><td>3</td><td>Firma de contrato y emisión de primera factura</td><td>Ambas partes</td></tr>
+      <tr><td>3-4</td><td>Kickoff técnico y onboarding general al personal</td><td>Autor</td></tr>
+      <tr><td>5-9</td><td>Desarrollo del módulo específico &laquo;Fármacos de Urgencia ampliado&raquo;</td><td>Autor + referente clínico Servicio</td></tr>
+      <tr><td>10</td><td>Entrega del módulo + sesión formativa específica</td><td>Autor</td></tr>
+      <tr><td>13, 26, 39, 52</td><td>Informes trimestrales de uso e impacto</td><td>Autor</td></tr>
+      <tr><td>48-52</td><td>Revisión anual conjunta y preparación de renovación</td><td>Ambas partes</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin-top:24px">9. Próximos pasos</h2>
+  <ol>
+    <li><strong>Reunión presencial</strong> con la Jefatura de Servicio para revisar este dossier (30-45 min).</li>
+    <li><strong>Confirmación del alcance</strong> y ajustes al módulo específico si proceden.</li>
+    <li><strong>Inicio de expediente</strong> de contrato menor en la unidad de contratación del hospital.</li>
+    <li><strong>Firma y kickoff</strong> en un plazo objetivo de 6-10 semanas desde esta reunión.</li>
+  </ol>
+
+  <h2 style="margin-top:24px">10. Contacto</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="t">👤 Autor y responsable</div>
+      <div class="d"><strong>Carlos Galera Román</strong><br>Residente de Medicina Familiar y Comunitaria · R4<br>H.G.U. Santa Lucía · Área II Cartagena<br>Colegiado en el Colegio Oficial de Médicos de Murcia</div>
+    </div>
+    <div class="card">
+      <div class="t">📧 Vías de contacto</div>
+      <div class="d">Email: <strong>carlosgalera2roman@gmail.com</strong><br>Web: <strong>area2cartagena.es</strong><br>Reg. Propiedad Intelectual: 00765-03096622<br>Disponible para reunión presencial en el HSL o videoconferencia.</div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:20px">🤝 <strong>Compromiso.</strong> Cartagenaeste ha nacido del día a día en las guardias del Área II. Esta propuesta es la forma de hacer sostenible un recurso que ya usamos, con el Servicio como primer aliado formal. No es una venta: es una invitación a co-construir.</div>
+
+  <p style="text-align:center;margin-top:26px;font-size:.84rem;color:var(--muted)">
+    Cartagenaeste · Área II Cartagena · Servicio Murciano de Salud<br>
+    Documento confidencial preparado a petición del destinatario · 23 de abril de 2026<br>
+    Reg. PI 00765-03096622 · <a href="https://area2cartagena.es" style="color:var(--primary)">area2cartagena.es</a>
+  </p>
+
+  <div class="footer-brand">Cartagenaeste · Dossier confidencial</div>
+  <div class="page-num">6 / 6</div>
+</div>
+
+</body>
+</html>

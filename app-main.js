@@ -661,6 +661,7 @@ function _ensureUrgProtoModal() {
 function urgViewProtocol(id) {
     var p = URG_PROTOCOLS[id];
     if (!p) return;
+    try{ if(window.cartEvents) window.cartEvents.protocoloConsultado(id); }catch(e){}
     _ensureUrgProtoModal();
     var $ = function(x){ return document.getElementById(x); };
     if(!$('urgProtoModal')) return;
@@ -777,6 +778,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ═══ PAGE NAVIGATION ═══
 var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
 function showPage(id){
+    try{ if(window.cartEvents) window.cartEvents.seccionAbierta(id); }catch(e){}
     // Páginas que requieren login (NO incluye pagePatients ni pageTriaje)
     var PAGES_REQUIRE_LOGIN=["pageProtocolosAP","pageProtocolosUrgencias","pageProfessionals","pageFilehub","pageEnfermeria","pageScanIA"];
     var PAGE_NAMES={
@@ -1999,7 +2001,9 @@ async function scanAnalyze(){
         scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         secureStore.set("scan_hist_v2",JSON.stringify(scanHist),24);scanRenderHist();
+        try{ if(window.cartEvents){ window.cartEvents.scanImagenAnalizada(scanType, usedModel, true); window.cartEvents.informeIaGenerado('scan-'+scanType, usedModel, 0, true); } }catch(e){}
     }else{
+        try{ if(window.cartEvents){ window.cartEvents.scanImagenAnalizada(scanType, '', false); } }catch(e){}
         res.innerHTML='<div style="background:var(--bg-card);border:1px solid #dc2626;border-left:4px solid #dc2626;border-radius:var(--radius);padding:20px;"><div style="color:#dc2626;font-weight:700;margin-bottom:8px;">❌ Error</div><div style="color:var(--text);font-size:.9rem;">No se pudo analizar la imagen.</div><div style="margin-top:8px;padding:8px;background:var(--bg-subtle);border-radius:6px;font-size:.78rem;color:var(--text-muted);font-family:monospace;word-break:break-all;">'+escMod(errors.join(" | "))+'</div></div>';
     }
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
@@ -3350,6 +3354,7 @@ function _renderEnfProtocol(data){
 }
 
 async function enfLoadProtocol(key){
+    try{ if(window.cartEvents) window.cartEvents.protocoloConsultado('enf-'+key); }catch(e){}
     var resultDiv=document.getElementById('enfProtocolResult');
     var contentDiv=document.getElementById('enfProtocolContent');
     if(!resultDiv||!contentDiv)return;
@@ -3396,6 +3401,7 @@ async function enfBuscarFarmaco(){
 }
 
 async function enfBuscarFarmacoDir(nombre){
+    try{ if(window.cartEvents) window.cartEvents.busquedaFarmaco(nombre, true); }catch(e){}
     var resultDiv=document.getElementById('enfFarmacoResult');
     var contentDiv=document.getElementById('enfFarmacoContent');
     if(!resultDiv||!contentDiv)return;

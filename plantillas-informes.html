@@ -80,6 +80,8 @@ var db = firebase.firestore();
 <script>window.SENTRY_DSN='https://397ff22b9f93f5ed251ec81c68806546@o4511258495090688.ingest.de.sentry.io/4511258543784016';/* ← pega aquí el DSN cuando esté: 'https://...@...ingest.de.sentry.io/...' */</script>
 <script src="sentry-init.js" defer></script>
 <script src="update-button.js" defer></script>
+<script src="centros-config.js"></script>
+<script src="analytics-config.js"></script>
 </head>
 <body>
 
@@ -666,14 +668,14 @@ async function iaGuardar(){
   btn.disabled=true; btn.textContent='Guardando...';
   var tipo = document.getElementById('iaType').value || 'Informe';
   try {
-    await db.collection('informes_ia').add({
+    await db.collection('informes_ia').add((window.Centros?window.Centros.stamp:function(x){return x;})({
       uid: user.uid,
       email: user.email,
       tipo: tipo,
       texto: window._iaLastText,
       medico: (document.getElementById('drInput') || {}).value || '',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    }));
     btn.textContent='✅ Guardado';
     document.getElementById('iaSaveMsg').textContent='Informe guardado correctamente';
     setTimeout(function(){btn.textContent='💾 Guardar informe';btn.disabled=false;document.getElementById('iaSaveMsg').textContent='';},2000);

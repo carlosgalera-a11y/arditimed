@@ -123,12 +123,12 @@
     var user = firebase.auth().currentUser;
     if (!user) { alert('Inicia sesión primero'); return; }
     var db = firebase.firestore();
-    db.collection(COLLECTION).add({
+    db.collection(COLLECTION).add((window.Centros?window.Centros.stamp:function(x){return x;})({
       nombre: '', nhc: '', motivo: '', diagnostico: '',
       pruebas: '', tratamiento: '', pendiente: '',
       created: firebase.firestore.FieldValue.serverTimestamp(),
       uid: user.uid
-    }).then(function() {
+    })).then(function() {
       // onSnapshot will auto-render
       setTimeout(function() {
         var c = document.querySelector('#guardiaBody tr:first-child td[contenteditable]');
