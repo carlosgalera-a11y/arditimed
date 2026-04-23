@@ -1,4 +1,20 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://carlosgalera-a11y.github.io/Cartagenaeste/sitemap.xml
+# No indexar paneles privados / endpoints admin
+Disallow: /admin-dashboard.html
+Disallow: /panel-medico.html
+Disallow: /notebook-local.html
+Disallow: /plantillas-informes.html
+Disallow: /pacientes.html
+Disallow: /citas.html
+Disallow: /agenda-guardia.html
+Disallow: /subir-pdfs.html
+Disallow: /scan-upload.html
+Disallow: /upload-mobile.html
+Disallow: /triaje-ficha.html
+Disallow: /preview-claude-design.html
+Disallow: /embed-google-sites.html
+Disallow: /embed.html
+
+Sitemap: https://area2cartagena.es/sitemap.xml

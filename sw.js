@@ -1,11 +1,11 @@
-// Service Worker - Área II Cartagena PWA v119
+// Service Worker - Área II Cartagena PWA v120
 // Estrategias:
 // - Network-first con timeout 3s para HTML/navegación (caché como fallback).
 // - Stale-while-revalidate para assets estáticos versionados.
 // - Bypass de Firebase Firestore/Auth/Functions/Storage (siempre online).
 // - skipWaiting + clients.claim para update inmediato.
 
-const CACHE_NAME = 'area2-v119';
+const CACHE_NAME = 'area2-v120';
 const HTML_TIMEOUT_MS = 3000;
 
 const PRECACHE = [
@@ -41,6 +41,7 @@ const PRECACHE = [
   '/centros-config.js',
   '/analytics-config.js',
   '/dossier-comercial.html',
+  '/footer-global.js',
   '/offline.html',
 ];
 

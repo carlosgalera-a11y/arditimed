@@ -1,22 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/notebook-local.html</loc><lastmod>2026-03-05</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/protocolos-atencion.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/categorias.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/recursos-sociales.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/vacunas.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/dietas.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/ejercicios.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/factores-riesgo.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/dejar-fumar.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/dentista.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/violencia-genero.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/podcast.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/publicador-blog.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/enlaces-interes.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/informacion.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/descargar.html</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/privacidad.html</loc><lastmod>2026-03-05</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
-    <url><loc>https://carlosgalera-a11y.github.io/Cartagenaeste/eliminar-cuenta.html</loc><lastmod>2026-03-05</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://area2cartagena.es/</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://area2cartagena.es/index.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+
+  <url><loc>https://area2cartagena.es/about.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://area2cartagena.es/financiacion.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://area2cartagena.es/acreditaciones.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://area2cartagena.es/aviso-legal.html</loc><lastmod>2026-04-23</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/privacidad.html</loc><lastmod>2026-04-23</lastmod><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/eliminar-cuenta.html</loc><lastmod>2026-04-23</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
+  <url><loc>https://area2cartagena.es/profesionales.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://area2cartagena.es/pacientes.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://area2cartagena.es/docencia.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://area2cartagena.es/urgencias.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+
+  <url><loc>https://area2cartagena.es/panel-medico.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/notebook-local.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/plantillas-informes.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/protocolos-atencion.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/fichas-consulta-rapida.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/fuentes-recursos.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/proa.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/camas-y-ambulancias.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/triaje-ai.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/calculadoras.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/casos-clinicos.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/vademecum.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/scan-upload.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/corrector-clinico.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/agenda-guardia.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/chatbot-medicacion.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <url><loc>https://area2cartagena.es/consejos-salud.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/recursos-comunitarios.html</loc><lastmod>2026-04-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://area2cartagena.es/recursos-sociales.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/prepara-consulta.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/preparacion-consulta.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/vacunas.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://area2cartagena.es/dietas.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/ejercicios.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/factores-riesgo.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/enfermedades-cronicas.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/salud-infantil.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/embarazo-postparto.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/dejar-fumar.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/dentista.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/violencia-genero.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/guia-cuidador.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://area2cartagena.es/instrucciones-paciente.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <url><loc>https://area2cartagena.es/dossier-comercial.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://area2cartagena.es/producto.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://area2cartagena.es/podcast.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://area2cartagena.es/descargar.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://area2cartagena.es/enlaces-interes.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://area2cartagena.es/informacion.html</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>
