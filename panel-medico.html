@@ -11,7 +11,13 @@
     var p = qs.get('page');
     var a = qs.get('action');
     if(p && /^page[A-Za-z]+$/.test(p)) return;
-    if(a && /^[a-z-]+$/.test(a)) return;
+    if(a && /^[a-z-]+$/.test(a)){
+      // Con ?action= queremos ejecutar la acción (modal) pero NO mostrar
+      // la antigua pageLanding detrás. Inyectamos un style que oculta las
+      // .page antes de que el parser llegue al body.
+      document.write('<style>.page{display:none!important}body{background:#0a1f14}</style>');
+      return;
+    }
     if(!/\/panel-medico\.html?$/i.test(location.pathname)) return;
     location.replace('index.html' + (location.hash || ''));
   }catch(e){}
