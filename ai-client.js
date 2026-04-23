@@ -77,11 +77,41 @@
     var fns = getFunctions();
     var callable = fns.httpsCallable('askAi');
     var retried = false;
+    var clientStart = Date.now();
     while(true){
       try{
         var res = await callable(payload);
+        // SLA observability: emitimos un evento por cada llamada
+        // con provider/modelo/latencia/cached para GA4 Realtime.
+        try{
+          var d = res.data || {};
+          if(window.cartTrack){
+            window.cartTrack('sla_ia', {
+              ai_type: String(payload && payload.type || ''),
+              provider: String(d.provider || 'unknown'),
+              model: String(d.model || '').substring(0, 60),
+              latency_ms: Number(d.latencyMs) || (Date.now() - clientStart),
+              cached: d.cached === true,
+              ok: true
+            });
+          }
+        }catch(e){}
         return res.data;
       }catch(err){
+        // Registra error con latencia cliente (útil para detectar timeouts).
+        try{
+          if(window.cartTrack){
+            window.cartTrack('sla_ia', {
+              ai_type: String(payload && payload.type || ''),
+              provider: 'none',
+              model: '',
+              latency_ms: Date.now() - clientStart,
+              cached: false,
+              ok: false,
+              error_code: String(err && err.code || 'unknown').substring(0, 40)
+            });
+          }
+        }catch(e){}
         var info = handleAiError(err);
         if(info.retryable && !retried){
           retried = true;

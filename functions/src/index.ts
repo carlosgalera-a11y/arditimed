@@ -17,3 +17,4 @@ export {
 } from './auditLog';
 
 export { weeklyMetricsSnapshot, dailyBackup, weeklyAuditDigest } from './scheduledJobs';
+export { aggregateDailyMetrics } from './aggregateDailyMetrics';
