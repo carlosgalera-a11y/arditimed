@@ -129,6 +129,24 @@ td.num{text-align:right;font-family:var(--mono)}
       <button class="range-tab" data-days="90">90 días</button>
     </div>
     <button id="btnExportPdf" onclick="exportMonthlyPdf()" style="padding:6px 14px;background:linear-gradient(135deg,var(--amber),#d97706);color:#fff;border:0;border-radius:7px;cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:700">📄 Exportar informe PDF del mes</button>
+    <select id="espFilter" onchange="applyEspFilter()" style="padding:6px 10px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:7px;font-family:var(--font);font-size:.82rem">
+      <option value="">🩺 Todas las especialidades</option>
+      <option value="cardio">Cardiología</option>
+      <option value="respiratorio">Respiratorio</option>
+      <option value="neuro">Neurología</option>
+      <option value="digestivo">Digestivo</option>
+      <option value="endocrino">Endocrino</option>
+      <option value="nefro">Nefrología</option>
+      <option value="infeccioso">Infeccioso</option>
+      <option value="dermatolog">Dermatología</option>
+      <option value="psiquiatr">Psiquiatría</option>
+      <option value="pediatr">Pediatría</option>
+      <option value="ginec">Ginecología</option>
+      <option value="traumat">Traumatología</option>
+      <option value="urg">Urgencias</option>
+      <option value="docencia">Docencia</option>
+      <option value="general">General</option>
+    </select>
     <span id="pdfStatus" style="font-size:.78rem;color:var(--t3);font-family:var(--mono)"></span>
   </div>
 
@@ -487,6 +505,9 @@ async function loadDashboard(days){
     document.getElementById('quota').innerHTML = '<div class="err small">No se pudo leer la cuota: '+e.message+'</div>';
   }
 
+  // Exponer rows para applyEspFilter()
+  window._dashRows = rows;
+
   // Recent 50
   const recent = rows.slice(0, 50);
   document.getElementById('recent').innerHTML = recent.length ? (
@@ -620,6 +641,55 @@ async function loadSlaPanel(){
   }catch(e){
     box.innerHTML = '<div class="err small">No se pudo cargar el panel SLA: '+(e && e.message || e)+'</div>';
   }
+}
+
+// ── Filtro por especialidad clínica ────────────────────────────────
+// Cruza el valor del select con type + model + provider. Re-renderiza
+// la tabla "Últimas 50 llamadas" aplicando el filtro.
+const ESP_PATTERNS = {
+  cardio: /cardio|ecg|arritm|fibrilaci|infarto|hta|hipertensi|coronari/i,
+  respiratorio: /respira|torax|chest|pulm|asma|epoc|gold|gema|cxr/i,
+  neuro: /neuro|ictus|cefalea|epilep|tce|parkinson|demenc/i,
+  digestivo: /digestiv|abdomen|gastro|hepat|pancre|colon|hemorragia-digest/i,
+  endocrino: /endocrin|diabet|tiroid|hipoglu|obesid/i,
+  nefro: /nefro|ri[nñ]|renal|hematuria/i,
+  infeccioso: /infeccio|sepsis|fiebre|antibi|proa|covid|tbc|tuberculos|gripe/i,
+  dermatolog: /derma|piel|scan-derma|isic|cutane|melanoma/i,
+  psiquiatr: /psiqui|depresi|ansied|suicid/i,
+  pediatr: /pedia|ni[nñ]o|lactante|infant/i,
+  ginec: /ginec|obstet|embarazo|parto|aborto/i,
+  traumat: /traumat|fractura|luxaci|esguince|mura|scan-osea/i,
+  urg: /urg|triaj|shock|rcp|acls|atls|clinical_case/i,
+  docencia: /doce|caso-cli|sesi[oó]n-cl[ií]n|mir|residente|educational/i,
+  general: /.*/
+};
+
+function applyEspFilter(){
+  const esp = document.getElementById('espFilter').value;
+  const rows = window._dashRows || [];
+  const re = ESP_PATTERNS[esp];
+  const filtered = (esp && re) ? rows.filter(function(r){
+    var haystack = (r.type||'') + ' ' + (r.model||'') + ' ' + (r.provider||'');
+    return re.test(haystack);
+  }) : rows;
+  const recent = filtered.slice(0, 50);
+  const recentBox = document.getElementById('recent');
+  if(!recent.length){
+    recentBox.innerHTML = '<div class="empty">Sin llamadas para la especialidad <code>'+(esp||'—')+'</code> en el rango seleccionado.</div>';
+    return;
+  }
+  recentBox.innerHTML =
+    '<div class="small" style="margin-bottom:8px">Filtro activo: <code>'+(esp||'todas')+'</code> · '+fmtNum(recent.length)+' llamadas</div>' +
+    '<div style="overflow-x:auto"><table><thead><tr><th>Hora</th><th>Tipo</th><th>Modelo</th><th>UID</th><th class="num">Tokens</th><th class="num">Latencia</th><th class="num">Coste</th><th>Estado</th></tr></thead><tbody>' +
+    recent.map(function(r){
+      const hora = r.createdAt ? r.createdAt.toLocaleString('es-ES') : '—';
+      const tagCls = r.type==='vision'?'tag-vision':r.type==='clinical_case'?'tag-clinical':'tag-educational';
+      let status;
+      if(r.error) status = '<span class="tag tag-err">error</span>';
+      else if(r.cacheHit) status = '<span class="tag tag-cache">cache</span>';
+      else status = '<span class="tag tag-ok">ok</span>';
+      return '<tr><td class="small">'+hora+'</td><td><span class="tag '+tagCls+'">'+r.type+'</span></td><td><code style="font-family:var(--mono);font-size:.76rem">'+r.model+'</code></td><td class="small">'+shortUid(r.uid)+'</td><td class="num">'+fmtNum(r.tokensIn+r.tokensOut)+'</td><td class="num">'+fmtNum(r.latencyMs)+'ms</td><td class="num">'+fmtEur(r.costEstimateEur)+'</td><td>'+status+'</td></tr>';
+    }).join('') + '</tbody></table></div>';
 }
 
 // ── Exportador PDF mensual ─────────────────────────────────────────

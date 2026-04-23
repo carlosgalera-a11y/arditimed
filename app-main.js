@@ -1994,10 +1994,23 @@ async function scanAnalyze(){
         }
     }
 
-    var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689</strong><br>Este análisis ha sido generado por IA y <strong>NO constituye diagnóstico médico</strong>. Requiere valoración presencial por profesional sanitario.</div>';
+    var euAiBanner='<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#991b1b;line-height:1.5;"><strong>⚠️ HERRAMIENTA EXCLUSIVAMENTE DOCENTE — EU AI Act 2024/1689 Art. 14</strong><br>Análisis generado por IA. <strong>NO constituye diagnóstico médico</strong>. Requiere valoración presencial por profesional sanitario. <em>Supervisión humana obligatoria</em>.</div>';
+    // Decisión clínica explícita (AI Act art. 14 human oversight)
+    var oversightHtml = '<div id="scanOversight" style="background:#f0f9ff;border:1px solid #0284c7;border-radius:8px;padding:12px 14px;margin-top:12px;font-size:.86rem"><label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;user-select:none"><input type="checkbox" id="scanOversightChk" onchange="scanRegisterDecision(this.checked?\'accepted\':\'pending\')" style="margin-top:3px"><span><strong>Yo, el clínico, asumo la decisión final</strong><br><span style="color:#475569;font-size:.8rem">Acepto que este análisis es orientativo, lo he revisado críticamente, y la decisión clínica recae en mí. (Obligatorio EU AI Act art. 14)</span></span></label><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button type="button" onclick="scanRegisterDecision(\'accepted\')" style="padding:5px 11px;background:#16a34a;color:#fff;border:0;border-radius:6px;font-size:.78rem;cursor:pointer">✓ Aceptar</button><button type="button" onclick="scanRegisterDecision(\'rejected\')" style="padding:5px 11px;background:#ef4444;color:#fff;border:0;border-radius:6px;font-size:.78rem;cursor:pointer">✗ Rechazar</button><button type="button" onclick="scanRegisterDecision(\'ignored\')" style="padding:5px 11px;background:#64748b;color:#fff;border:0;border-radius:6px;font-size:.78rem;cursor:pointer">Ignorar</button><span id="scanDecisionMsg" style="font-size:.76rem;color:#0284c7;align-self:center;margin-left:6px"></span></div></div>';
     if(txt){
         var fmt=typeof fmtClinical==="function"?fmtClinical(txt):txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div></div>";
+        res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;">'+euAiBanner+'<div style="color:#0066cc;font-weight:700;font-family:var(--font-display);margin-bottom:12px;">🔬 '+SCAN_LABELS[scanType]+" — "+usedModel+'</div><div style="color:var(--text);line-height:1.7;font-size:.92rem;font-weight:300;">'+fmt+"</div>"+oversightHtml+"</div>";
+        // Guardamos referencia al análisis para registrar la decisión clínica
+        try{
+          window.__lastScanAnalysis = {
+            scanType: scanType,
+            model: usedModel,
+            modelVersion: (usedModel||'').match(/\\bv?\\d+\\.[\\d.]+/)?.[0] || 'latest',
+            promptHash: (typeof hashStr==='function' ? hashStr(sys+'\\n'+userText) : String((sys+userText).length)),
+            startedAt: new Date().toISOString(),
+            decision: 'pending'
+          };
+        }catch(e){}
         scanHist.unshift({type:scanType,label:SCAN_LABELS[scanType],model:usedModel,ctx:ctx,result:txt,date:new Date().toLocaleString("es-ES")});
         if(scanHist.length>30)scanHist=scanHist.slice(0,30);
         secureStore.set("scan_hist_v2",JSON.stringify(scanHist),24);scanRenderHist();
@@ -2009,6 +2022,46 @@ async function scanAnalyze(){
     btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
 }
 
+// Registra la decisión clínica (AI Act art. 14) sobre el último análisis.
+// Escribe en scan_uploads/{auto-id} con modelVersion, promptHash, decision,
+// timestamp. Usa stamp() para multi-tenancy si Centros está cargado.
+function scanRegisterDecision(decision){
+    var a = window.__lastScanAnalysis;
+    if(!a){ return; }
+    a.decision = decision;
+    try{
+        var msg = document.getElementById('scanDecisionMsg');
+        if(msg){
+            var labels = {accepted:'✓ Registrado · aceptado', rejected:'✗ Registrado · rechazado', ignored:'— Registrado · ignorado', pending:''};
+            msg.textContent = labels[decision] || '';
+        }
+    }catch(e){}
+    try{
+        if(typeof firebase==='undefined' || !firebase.firestore || !firebase.auth) return;
+        var user = firebase.auth().currentUser;
+        if(!user) return;
+        var payload = {
+            uid: user.uid,
+            scanType: a.scanType,
+            model: a.model,
+            modelVersion: a.modelVersion,
+            promptHash: a.promptHash,
+            startedAt: a.startedAt,
+            clinicianDecision: decision,
+            decidedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if(window.Centros && window.Centros.stamp) payload = window.Centros.stamp(payload);
+        firebase.firestore().collection('scan_uploads').add(payload).catch(function(e){ console.warn('[scan] decision save failed:', e.message); });
+        // GA4 evento (AI Act art. 12 logging)
+        try{
+            if(window.cartTrack) window.cartTrack('scan_clinician_decision', {
+                scan_type: a.scanType,
+                decision: decision,
+                model: (a.model||'').substring(0,60)
+            });
+        }catch(e){}
+    }catch(e){ console.warn('[scan] registerDecision error:', e); }
+}
 
 function scanRenderHist(){
     var l=document.getElementById("scanHistList");if(!l)return;

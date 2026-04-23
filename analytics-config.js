@@ -79,6 +79,33 @@
     return p;
   }
 
+  // ───── Inferencia de especialidad desde nombre de sección ─────
+  // Permite filtrar en dashboard por área clínica sin tocar cada call site.
+  var ESP_MAP = {
+    cardio: /cardio|ecg|arritmi|fibrilaci|infarto|hipertensi|presi[oó]n|insuficiencia card|valvul/i,
+    respiratorio: /respirator|torax|pulmon|asma|epoc|neumon|broncoespasmo|tos cr[oó]nica|gold|gema/i,
+    neuro: /neurolog|ictus|cefalea|epilep|crisis convuls|tce|parkinson|demenc/i,
+    digestivo: /digestiv|abdomen|gastro|hepat|pancre|colon|di[aá]rrea|vomit|hemorragia digest/i,
+    endocrino: /endocrin|diabet|tiroid|hipoglu|obesid|suprarren/i,
+    nefro: /nefro|ri[nñ][oó]|renal|hematuria|proteinuria|insuficiencia renal/i,
+    infeccioso: /infeccio|sepsis|fiebre|antibi[oó]tic|proa|covid|tuberculos|gripe|itu/i,
+    dermatolog: /derma|piel|lesi[oó]n cut|acne|quemadura|melanoma/i,
+    psiquiatr: /psiqui|depresi|ansied|suicid|psicosis/i,
+    pediatr: /pedia|ni[nñ]o|lactante|infant|vacuna|reci[eé]n nacido/i,
+    ginec: /ginec|obstet|embarazo|parto|aborto|anticoncepci|menstrua/i,
+    traumat: /traumat|fractura|luxaci|esguince|mur a|rx [oó]sea|art(r[oó]|ros)/i,
+    urg: /urgencias?|triaje|shock|rcp|acls|atls/i,
+    docencia: /docencia|sesi[oó]n cl[ií]nica|caso cl[ií]nico|mir|residente|formacion|vademe/i
+  };
+  function inferEspecialidad(text){
+    try{
+      var s = String(text||'').toLowerCase();
+      for(var k in ESP_MAP){ if(ESP_MAP[k].test(s)) return k; }
+    }catch(e){}
+    return 'general';
+  }
+  window.inferEspecialidad = inferEspecialidad;
+
   // ───── API pública cartTrack ─────
   window.cartTrack = function(ev, params){
     if(!ev) return;
@@ -88,8 +115,11 @@
 
   // Helpers específicos (ergonomía + parámetros consistentes)
   window.cartEvents = {
-    seccionAbierta: function(nombre){
-      window.cartTrack('seccion_abierta', { nombre_seccion: String(nombre||'').substring(0,40) });
+    seccionAbierta: function(nombre, especialidad){
+      window.cartTrack('seccion_abierta', {
+        nombre_seccion: String(nombre||'').substring(0,40),
+        especialidad: String(especialidad||inferEspecialidad(nombre)||'general').substring(0,30)
+      });
     },
     informeIaGenerado: function(tipo, modelo, latenciaMs, ok){
       window.cartTrack('informe_ia_generado', {

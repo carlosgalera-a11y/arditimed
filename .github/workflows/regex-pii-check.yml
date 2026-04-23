@@ -1,0 +1,51 @@
+name: Regex PII Check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  regex-pii-check:
+    name: Regex PII (DNI/NIE/NHC/nombres) en código
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: DNI español (8 dígitos + letra)
+        run: |
+          ! grep -rnE '\b[0-9]{8}[A-HJ-NP-TV-Z]\b' \
+            --include='*.html' --include='*.js' --include='*.ts' --include='*.md' \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=functions/lib \
+            --exclude-dir=docs \
+            . || { echo '❌ Posible DNI real encontrado en código. Usar ejemplos como 12345678Z solo en docs/.' ; exit 1; }
+
+      - name: NIE español (X/Y/Z + 7 dígitos + letra)
+        run: |
+          ! grep -rnE '\b[XYZ][0-9]{7}[A-HJ-NP-TV-Z]\b' \
+            --include='*.html' --include='*.js' --include='*.ts' \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=functions/lib \
+            . || { echo '❌ Posible NIE real encontrado en código.' ; exit 1; }
+
+      - name: NHC / HCN / identificador paciente (patrones comunes)
+        run: |
+          # Buscamos patrones tipo NHC:12345678, HCN-XXXX o HC_NUMBER con 6+ dígitos
+          ! grep -rniE '\b(NHC|HCN|historia[_-]?clinica[_-]?numero)[:=\s-]*[0-9]{6,}\b' \
+            --include='*.html' --include='*.js' --include='*.ts' \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=functions/lib \
+            . || { echo '❌ Posible NHC en código. Usar ejemplo NHC:XXXXXXXX (X) en docs/.' ; exit 1; }
+
+      - name: Nombres completos frecuentes (heurística débil)
+        run: |
+          # Solo avisa (warn), no falla. Detecta patrones 'Nombre Apellido Apellido'
+          MATCHES=$(grep -rnE '\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+ [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+ [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\b' \
+            --include='*.html' --include='*.js' --include='*.ts' \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=functions/lib \
+            --exclude-dir=docs \
+            . | grep -viE '(Carlos Galera Rom|Claude|Lucia|MIR|AstraZeneca|Cartagenaeste|Firebase|Google Analytics|Escuela de|Medicina Familiar|Servicio Murciano|Real Decreto|Ley [0-9]|Cloud Function|Cloud Functions)' || true)
+          if [ -n "$MATCHES" ]; then
+            echo "⚠️  Posibles nombres completos (revisar manualmente):"
+            echo "$MATCHES"
+          fi

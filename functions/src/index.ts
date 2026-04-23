@@ -18,3 +18,4 @@ export {
 
 export { weeklyMetricsSnapshot, dailyBackup, weeklyAuditDigest } from './scheduledJobs';
 export { aggregateDailyMetrics } from './aggregateDailyMetrics';
+export { healthCheckAi } from './healthCheckAi';

@@ -95,11 +95,12 @@
       '</div>' +
 
       '<div class="cfg-badges" aria-label="Acreditaciones y cumplimiento">' +
-        '<span class="cfg-badge pending"><span class="cfg-dot"></span>HONcode · en trámite</span>' +
-        '<span class="cfg-badge active"><span class="cfg-dot"></span>RGPD + LOPDGDD</span>' +
-        '<span class="cfg-badge active"><span class="cfg-dot"></span>EU AI Act 2024/1689</span>' +
+        '<span class="cfg-badge active"><span class="cfg-dot"></span>Cumple RGPD + LOPDGDD</span>' +
+        '<span class="cfg-badge active"><span class="cfg-dot"></span>Sistema formativo bajo EU AI Act 2024/1689</span>' +
+        '<span class="cfg-badge pending"><span class="cfg-dot"></span>Preparado para EHDS · UE 2025/327</span>' +
         '<span class="cfg-badge active"><span class="cfg-dot"></span>Datos en UE · europe-west1</span>' +
         '<span class="cfg-badge active"><span class="cfg-dot"></span>App Check enforce</span>' +
+        '<span class="cfg-badge pending"><span class="cfg-dot"></span>HONcode · en trámite</span>' +
         '<span class="cfg-badge pending"><span class="cfg-dot"></span>WIS Applauded · prevista</span>' +
       '</div>' +
 

@@ -153,8 +153,15 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     match /config/{docId} {
-      allow read: if signedIn();
+      // ops_status es público (lo lee /status.html sin auth).
+      allow read: if docId == 'ops_status' || signedIn();
       allow write: if isAdmin();
+    }
+
+    // ══ Healthchecks IA (escribe cron, lee público via /status.html) ══
+    match /healthchecks/{day} {
+      allow read: if true;
+      allow create, update, delete: if false;
     }
 
     // ══ Métricas (solo server escribe, admin lee) ══════════════════

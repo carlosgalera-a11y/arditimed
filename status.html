@@ -87,10 +87,13 @@ footer a{color:var(--primary);text-decoration:none}
   </section>
 
   <section>
-    <h3>Histórico de incidencias</h3>
-    <div class="list">
-      <p>Sin incidencias registradas.</p>
-    </div>
+    <h3>Salud de los proveedores IA <span style="font-size:.8rem;font-weight:400;color:var(--text-muted)">healthchecks diarios 06:00 Madrid</span></h3>
+    <div id="healthBlock" class="list"><p style="color:var(--text-muted)">Cargando último healthcheck…</p></div>
+  </section>
+
+  <section>
+    <h3>Histórico de incidencias / mantenimiento</h3>
+    <div id="incidentsBlock" class="list"><p style="color:var(--text-muted)">Sin incidencias activas.</p></div>
   </section>
 
   <p class="disclaimer">⚠️ <strong>Plataforma formativa.</strong> No diagnóstica. No sustituye juicio clínico. Datos seudonimizados con fines docentes.</p>
@@ -131,6 +134,105 @@ footer a{color:var(--primary);text-decoration:none}
       setStatus('err','❌ Incidencia en métricas','No se pudo consultar el endpoint. Servicio podría estar degradado.');
       console.warn('[status] fetch error', err.message);
     });
+
+  // ───── Lectura de ops_status (mantenimiento programado) ─────
+  // y healthchecks/YYYY-MM-DD del último cron. Ambos son públicos por rules.
+  var FS_PROJECT = 'docenciacartagenaeste';
+  var FS_BASE = 'https://firestore.googleapis.com/v1/projects/'+FS_PROJECT+'/databases/(default)/documents';
+
+  function fsValue(field){
+    if(!field) return null;
+    if('stringValue' in field) return field.stringValue;
+    if('integerValue' in field) return parseInt(field.integerValue,10);
+    if('doubleValue' in field) return parseFloat(field.doubleValue);
+    if('booleanValue' in field) return field.booleanValue;
+    if('timestampValue' in field) return field.timestampValue;
+    if('mapValue' in field) {
+      var out = {};
+      var fields = field.mapValue && field.mapValue.fields || {};
+      Object.keys(fields).forEach(function(k){ out[k] = fsValue(fields[k]); });
+      return out;
+    }
+    if('arrayValue' in field) {
+      var vals = field.arrayValue && field.arrayValue.values || [];
+      return vals.map(fsValue);
+    }
+    return null;
+  }
+  function fsDoc(json){
+    var out = {};
+    var fields = json && json.fields || {};
+    Object.keys(fields).forEach(function(k){ out[k] = fsValue(fields[k]); });
+    return out;
+  }
+
+  // ops_status: muestra banner si maintenance=true
+  fetch(FS_BASE + '/config/ops_status', { cache: 'no-cache' })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){
+      if(!j) return;
+      var d = fsDoc(j);
+      if(d.maintenance === true){
+        var title = d.title || '🛠️ Mantenimiento programado';
+        var desc = d.message || 'Operación con cobertura reducida. Ver /docs/plan-continuidad-mudanza.md.';
+        setStatus('warn', title, desc);
+      }
+      if(d.incidents && Array.isArray(d.incidents) && d.incidents.length){
+        document.getElementById('incidentsBlock').innerHTML =
+          d.incidents.map(function(it){
+            return '<div style="padding:10px 12px;border-left:3px solid #f59e0b;background:#fef3c7;border-radius:0 6px 6px 0;margin-bottom:8px">' +
+              '<strong>' + (it.date || '') + '</strong> · ' + (it.severity || 'info') + '<br>' +
+              (it.text || '') + '</div>';
+          }).join('');
+      }
+    })
+    .catch(function(e){ console.warn('[status] ops_status', e.message); });
+
+  // healthchecks del día actual (o del anterior si aún no corrió el cron)
+  function tryHealthcheck(date){
+    return fetch(FS_BASE + '/healthchecks/' + date, { cache: 'no-cache' })
+      .then(function(r){ return r.ok ? r.json() : null; });
+  }
+  var today = new Date().toISOString().substring(0,10);
+  var yesterday = new Date(Date.now() - 24*60*60*1000).toISOString().substring(0,10);
+  tryHealthcheck(today).then(function(j){
+    if(j) return j;
+    return tryHealthcheck(yesterday);
+  }).then(function(j){
+    var block = document.getElementById('healthBlock');
+    if(!j){
+      block.innerHTML = '<p style="color:var(--text-muted)">Aún no hay healthchecks. El cron se ejecuta cada día a las 06:00 Madrid.</p>';
+      return;
+    }
+    var d = fsDoc(j);
+    var results = Array.isArray(d.results) ? d.results : [];
+    var statusClass = d.status === 'ok' ? 'ok' : (d.status === 'degraded' ? 'warn' : 'err');
+    var dot = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:6px;background:'+(statusClass==='ok'?'#22c55e':statusClass==='warn'?'#eab308':'#ef4444')+'"></span>';
+    block.innerHTML =
+      '<div style="font-size:.85rem;color:var(--text-muted);margin-bottom:10px">Último check: '+(d.day||'—')+'</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:.88rem">' +
+      '<thead><tr><th style="text-align:left;padding:6px 8px;border-bottom:1px solid #e2e8f0">Proveedor</th><th style="text-align:left;padding:6px 8px;border-bottom:1px solid #e2e8f0">Modelo</th><th style="text-align:right;padding:6px 8px;border-bottom:1px solid #e2e8f0">Latencia</th><th style="text-align:left;padding:6px 8px;border-bottom:1px solid #e2e8f0">Estado</th></tr></thead>' +
+      '<tbody>' +
+      results.map(function(r){
+        var ok = r.ok === true;
+        return '<tr>' +
+          '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9"><code>'+(r.provider||'—')+'</code></td>' +
+          '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9"><code style="font-size:.78rem">'+(r.model||'—')+'</code></td>' +
+          '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">'+(r.latencyMs||0)+' ms</td>' +
+          '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9">'+(ok ? '✅ OK' : '❌ '+(r.error||'error'))+'</td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody></table>';
+    // Si el cron dice degraded/down, degrada también el banner superior.
+    if(d.status && d.status !== 'ok'){
+      var title = d.status === 'degraded' ? '⚠️ Proveedor IA degradado' : '❌ Proveedores IA caídos';
+      var desc = d.summary ? ('errorRate '+((d.summary.errorRate||0)*100).toFixed(1)+'% · latencia promedio '+(d.summary.avgLatencyMs||0)+' ms') : '';
+      setStatus(d.status === 'degraded' ? 'warn' : 'err', title, desc);
+    }
+  }).catch(function(e){
+    document.getElementById('healthBlock').innerHTML = '<p style="color:var(--text-muted)">No se pudo leer el healthcheck.</p>';
+    console.warn('[status] healthcheck', e.message);
+  });
 })();
 </script>
 </body>
