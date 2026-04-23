@@ -190,6 +190,16 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ══ Centros (multi-tenancy, Fase 1) ════════════════════════════
+    // Catálogo de centros/tenants. Lectura abierta para profesionales
+    // autenticados (el cliente necesita el nombre, logo y color del
+    // centro activo). Escritura sólo por superadmins.
+    match /centros/{centroId} {
+      allow read: if signedIn();
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
     // ══ Collection groups ═════════════════════════════════════════
     // Admin dashboard: lectura cross-user de aiRequests/quotas solo para admins.
     // Los usuarios siguen accediendo a su subcolección propia vía las reglas de

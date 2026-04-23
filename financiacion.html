@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Financiación y transparencia · Cartagenaeste</title>
+<meta name="description" content="Declaración de financiación y transparencia económica de Cartagenaeste.">
+<meta name="author" content="Carlos Galera Román, MFyC">
+<meta name="last-reviewed" content="2026-04-23">
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+:root{
+  --primary:#0f6b4a;--primary-light:#238c62;--primary-dark:#0a4d35;
+  --accent:#d4a853;--bg:#0a1f14;--card:#0f2a1e;--card2:#13342a;
+  --border:rgba(255,255,255,.14);
+  --tx:#e9f5ee;--t2:#b4c8bc;--t3:#7f9089;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:40px;position:relative}
+body::after{content:"";position:fixed;inset:-20px;z-index:-1;pointer-events:none;background:url('hero-bg.jpg') center/cover no-repeat;filter:blur(5px) brightness(.35)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(6,20,12,.78),rgba(10,31,20,.88))}
+.nav{background:rgba(6,15,10,.9);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav a{color:#7dd3bb;text-decoration:none;font-size:.85rem;font-weight:600}
+.nav h1{font-size:1rem;font-weight:800;flex:1;font-family:var(--display)}
+.hero{position:relative;z-index:1;padding:40px 24px 30px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(212,168,83,.22),rgba(146,64,14,.1));overflow:hidden;text-align:center}
+.hero h2{font-family:var(--display);font-size:clamp(1.6rem,4vw,2.1rem);font-weight:800;color:#fff;margin-bottom:8px}
+.hero p{color:rgba(255,255,255,.85);font-size:.98rem;font-weight:300;line-height:1.55;max-width:720px;margin:0 auto}
+.wrap{max-width:860px;margin:0 auto;padding:30px 20px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px}
+.card h3{font-family:var(--display);font-size:1.1rem;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.card p{color:var(--t2);font-size:.94rem;line-height:1.65;margin-bottom:10px}
+.card strong{color:#fff}
+.status{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(22,163,74,.14);border:1px solid rgba(22,163,74,.4);color:#86efac;border-radius:10px;font-weight:700;font-size:.92rem;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:8px}
+table th,table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+table th{color:var(--accent);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+table td{color:var(--t2)}
+table .n{color:#fff;font-weight:700}
+.empty{text-align:center;padding:14px;color:var(--t3);font-style:italic}
+ul.clean{list-style:none;padding:0}
+ul.clean li{padding:6px 0 6px 22px;position:relative;color:var(--t2);font-size:.92rem;line-height:1.55}
+ul.clean li::before{content:"✓";position:absolute;left:0;color:#5eead4;font-weight:800}
+ul.cross li::before{content:"✗";color:#fca5a5}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html">← Inicio</a>
+  <h1>💰 Financiación y transparencia</h1>
+</nav>
+
+<div class="hero">
+  <h2>Financiación y transparencia</h2>
+  <p>Declaración pública sobre la financiación, patrocinios y transferencias de valor recibidas por Cartagenaeste.</p>
+</div>
+
+<div class="wrap">
+
+  <div class="card">
+    <div class="status">✅ Estado actual · 23 de abril de 2026 · Financiación 100 % personal</div>
+    <p>A fecha de hoy, Cartagenaeste <strong>no recibe financiación externa</strong> de ninguna institución, empresa farmacéutica, aseguradora o laboratorio. Todos los costes de infraestructura (hosting, servicios en la nube, dominios, certificados y API de inteligencia artificial) corren a cuenta del autor.</p>
+    <p>Tampoco hay publicidad comercial visible ni intersticial en ninguna sección. Los fármacos se citan siempre por <strong>clase terapéutica + principio activo</strong>, nunca por marca comercial.</p>
+  </div>
+
+  <div class="card">
+    <h3>🧭 Principios de transparencia</h3>
+    <ul class="clean">
+      <li>Cualquier patrocinio educativo, contrato de servicios o beca se publicará en esta página con fecha, importe, objeto y condiciones de independencia editorial.</li>
+      <li>Los patrocinadores no revisan, editan ni aprueban el contenido clínico. Se comprometen a respetar la independencia editorial del autor.</li>
+      <li>Las transferencias de valor de la industria farmacéutica (cuando existan) se publicarán en el registro anual conforme al Código de Farmaindustria y la Directiva de Transparencia.</li>
+      <li>La financiación procedente de instituciones sanitarias públicas (contratos menores, becas, convenios) se publicará con el número de expediente cuando proceda.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🏥 Contratos y acuerdos institucionales en vigor</h3>
+    <table>
+      <thead>
+        <tr><th>Periodo</th><th>Entidad</th><th>Objeto</th><th>Importe</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" class="empty">Sin acuerdos institucionales vigentes a día de hoy.</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.84rem;margin-top:10px;color:var(--t3)">Esta tabla se actualiza dentro de los 30 días siguientes a la firma de cualquier acuerdo.</p>
+  </div>
+
+  <div class="card">
+    <h3>💊 Patrocinios educativos de la industria</h3>
+    <table>
+      <thead>
+        <tr><th>Año</th><th>Patrocinador</th><th>Objeto</th><th>Importe</th><th>Independencia editorial</th></tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" class="empty">Sin patrocinios activos ni históricos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>⛔ Qué NO hacemos</h3>
+    <ul class="clean cross">
+      <li>No mostramos marcas comerciales de medicamentos en el contenido clínico.</li>
+      <li>No vendemos datos de uso ni los cedemos a terceros con finalidades comerciales.</li>
+      <li>No aceptamos patrocinios cuyo objeto sea destacar un producto concreto.</li>
+      <li>No cobramos por aparecer en las listas de fichas, fuentes o recursos.</li>
+      <li>No mostramos publicidad programática ni banners de terceros.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🔎 Cómo se usan los ingresos (cuando los haya)</h3>
+    <p>Si en el futuro Cartagenaeste recibe ingresos por contratos con instituciones sanitarias o patrocinios educativos independientes, éstos se destinarán, por este orden de prioridad:</p>
+    <ol style="padding-left:20px;line-height:1.7;color:var(--t2);font-size:.94rem">
+      <li>Cubrir costes operativos (infraestructura cloud, API de IA con SLA, seguro de responsabilidad civil, herramientas de monitorización).</li>
+      <li>Financiar la revisión editorial y la actualización del contenido clínico.</li>
+      <li>Cubrir asesoría legal, fiscal y de protección de datos.</li>
+      <li>Retribuir al equipo de desarrollo y de revisión clínica.</li>
+      <li>Aportar al fondo común que permita seguir ofreciendo las secciones formativas a pacientes sin coste.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>❓ ¿Preguntas sobre financiación?</h3>
+    <p>Si tienes dudas, quieres proponer una colaboración o necesitas documentación adicional (por ejemplo, para un comité ético o para un proceso de contratación pública), escribe a <a href="mailto:carlosgalera2roman@gmail.com?subject=Financiaci%C3%B3n%20Cartagenaeste" style="color:#7dd3bb">carlosgalera2roman@gmail.com</a>.</p>
+  </div>
+
+  <p style="text-align:center;font-size:.78rem;color:var(--t3);margin-top:22px">
+    Última revisión: <strong>23 de abril de 2026</strong> · Próxima revisión trimestral prevista: 23 de julio de 2026.
+  </p>
+</div>
+</body>
+</html>
