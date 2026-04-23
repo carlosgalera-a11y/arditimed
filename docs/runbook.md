@@ -271,4 +271,160 @@ Verificar que la TTL policy de Firestore está creada (§5). Sin ella, `aiCache`
 
 ---
 
+## 9 · Continuidad operativa y respuesta a incidentes
+
+### 9.1 RTO / RPO objetivo
+
+| Métrica | Valor objetivo | Cómo se mide |
+|---|---|---|
+| RTO (Recovery Time Objective) | **≤ 60 min** para restaurar funcionalidad core | Tiempo entre detección → restauración confirmada |
+| RPO (Recovery Point Objective) | **≤ 24 h** de pérdida máxima tolerable | Frecuencia del `dailyBackup` (02:30 Madrid) |
+| Uptime objetivo | **99,5 %** (≈ 3,6 h/mes indisponibilidad tolerada) | Sentry + GA4 + monitor externo (ver §9.7) |
+| Latencia p95 IA | **< 5 s** texto, **< 8 s** visión | Cloud Function `aggregateDailyMetrics` |
+
+Estos valores son exigibles contractualmente en ofertas futuras (Urgencias HSL, Docencia, AstraZeneca). El runbook debe permitir cumplirlos.
+
+### 9.2 Política de backups
+
+- **Firestore**: `dailyBackup` Cloud Function (cron 03:00 Madrid) → `gs://docenciacartagenaeste-backups/firestore/YYYY-MM-DD/` en región UE.
+- **Código**: repositorio duplicado GitHub (`Cartagenaeste` + mirror `area2cartagena`). Commits firmados si aplica.
+- **Secretos**: gestor cifrado personal (1Password / Bitwarden) + Secret Manager GCP. Nunca commits, nunca email, nunca Slack.
+- **Snapshots manuales** antes de operaciones destructivas (`git filter-repo`, migraciones de schema):
+  ```bash
+  git clone --mirror https://github.com/carlosgalera-a11y/Cartagenaeste.git \
+    /tmp/Cartagenaeste-backup-$(date +%F).git
+  git clone --mirror https://github.com/carlosgalera-a11y/area2cartagena.git \
+    /tmp/area2cartagena-backup-$(date +%F).git
+  ```
+- **Retención**:
+  - Firestore: 30 días (lifecycle policy del bucket).
+  - Código: ilimitado (git).
+  - Snapshots manuales: 90 días en `/tmp` local o equivalente.
+
+### 9.3 Procedimiento de restauración (probado)
+
+**Simulacro obligatorio**: ejecutar una vez por trimestre (Q1, Q2, Q3, Q4). Documentar resultado en `docs/simulacros/YYYY-QN.md`.
+
+#### Restauración Firestore completa
+```bash
+# 1. Identificar el snapshot a restaurar
+gsutil ls gs://docenciacartagenaeste-backups/firestore/
+
+# 2. (opcional, recomendado) Crear proyecto de staging y restaurar ahí primero
+# 3. Importar (destruye docs existentes de las colecciones afectadas)
+gcloud firestore import gs://docenciacartagenaeste-backups/firestore/2026-MM-DD/
+
+# 4. Verificar colecciones clave
+gcloud firestore operations list --limit=5
+```
+
+#### Restauración parcial (una colección)
+```bash
+gcloud firestore import gs://docenciacartagenaeste-backups/firestore/2026-MM-DD/ \
+  --collection-ids=centros,users
+```
+
+#### Restauración de código
+```bash
+# Si el repo remoto está comprometido, clonar del mirror
+git clone --mirror /tmp/Cartagenaeste-backup-2026-MM-DD.git Cartagenaeste-restore
+cd Cartagenaeste-restore
+git push --mirror https://github.com/carlosgalera-a11y/Cartagenaeste-new.git
+```
+
+#### Rotación completa de secretos (incidente de exposición)
+Ver §2.4 arriba + `docs/s1.2-rotacion-claves-carlos.md` (procedimiento completo con re-locking de branch protection).
+
+### 9.4 Respuesta a incidentes · playbook general
+
+Ante cualquier incidente (caída IA, 5xx masivos, error de seguridad, pérdida de datos):
+
+1. **Detectar** (≤ 5 min): alertas Sentry, llamadas de usuarios, health check.
+2. **Aislar** (≤ 15 min): deshabilitar el componente afectado. Ver §9.5.
+3. **Evaluar impacto** (≤ 30 min): usuarios afectados, datos afectados, duración.
+4. **Comunicar** (según severidad, ver matriz abajo).
+5. **Restaurar** (≤ 60 min idealmente): aplicar fix o rollback.
+6. **Post-mortem** (≤ 24 h): documentar en `docs/post-mortems/YYYY-MM-DD-titulo.md`.
+
+#### Matriz de comunicación
+| Severidad | Criterio | Comunicar a | Plazo |
+|---|---|---|---|
+| **SEV-1** | Datos personales expuestos | AEPD (art. 33 RGPD) + usuarios + clientes contractuales | ≤ 72 h a AEPD |
+| **SEV-2** | IA caída > 30 min en horario asistencial | Clientes contractuales (HSL, etc.) | ≤ 2 h |
+| **SEV-3** | Degradación parcial < 30 min | Nota en status page | ≤ 24 h |
+| **SEV-4** | Bug cosmético / no crítico | Changelog interno | Siguiente release |
+
+### 9.5 Aislamiento rápido por componente
+
+#### Desactivar `askAi` (si la IA está causando problemas)
+```bash
+# Opción A: bloqueo total por cuota drenada
+firebase functions:config:set askai.disabled=true
+firebase deploy --only functions:askAi
+
+# Opción B: mensaje informativo a usuarios sin tocar deploy
+# Editar una bandera en Firestore config/ops y leerla desde el frontend
+```
+
+#### Desactivar módulo concreto del frontend
+Publicar un commit que muestre un banner de mantenimiento en la sección afectada y mergear/pushear a `main` + area2 (deploy en <2 min).
+
+#### Bloquear un usuario abusivo
+```bash
+# Admin Firestore console → users/{uid} → role = 'blocked'
+# Las rules ya niegan acceso con role != 'admin' || 'user'
+```
+
+### 9.6 Plantilla de post-mortem
+
+Crear `docs/post-mortems/YYYY-MM-DD-titulo.md` con:
+
+```markdown
+# Post-mortem · [Título corto] · YYYY-MM-DD
+
+## Resumen ejecutivo (3-5 líneas)
+## Impacto
+- Usuarios afectados: [número aproximado]
+- Duración: [hora inicio → hora restauración]
+- Severidad: SEV-[1-4]
+- Datos personales implicados: [sí/no, detalle]
+
+## Cronología
+- HH:MM — [evento]
+- HH:MM — [acción tomada]
+
+## Causa raíz (5 Whys)
+
+## Acciones correctoras
+- [ ] Acción 1 · responsable · plazo
+- [ ] Acción 2 · responsable · plazo
+
+## Qué salió bien / mal
+## Aprendizajes
+```
+
+### 9.7 Monitoring externo (recomendado, pendiente de activar)
+
+- **Uptime**: [Uptime Robot](https://uptimerobot.com) free tier → 1 check HTTP/5min a `https://area2cartagena.es/status.html`. Alerta por email si baja.
+- **IA health**: Cloud Scheduler + Cloud Function `healthCheckAi` (ping diario con prompt trivial a cada proveedor). Alerta si un proveedor falla.
+- **Facturas Firebase**: alerta presupuestaria en GCP Billing → aviso al superar 20 €/mes (umbral bajo para detectar abuso temprano).
+
+### 9.8 Acceso de emergencia (bus factor)
+
+El bus factor actual del proyecto es **1** (Carlos). Hasta formalizar backup dev con NDA:
+
+- Credenciales maestras guardadas en gestor personal cifrado (1Password/Bitwarden).
+- Persona de emergencia física con acceso al gestor: [pendiente definir con familiar/persona de confianza].
+- Instrucciones escritas selladas para esa persona sobre cómo contactar al dev de backup cuando éste exista.
+
+**Prioridad S1**: una vez firmado NDA con dev de backup, añadirlo aquí como Operator-2 con:
+- Acceso colaborador al repo GitHub (nivel Write).
+- Rol `editor` en proyecto Firebase `docenciacartagenaeste`.
+- Lectura de secretos específicos (no todos) vía Secret Manager IAM.
+- Teléfono de contacto 24/7 durante los horarios pactados.
+
+Ver `docs/plan-continuidad-mudanza.md` para el procedimiento concreto de traspaso durante la mudanza a Barcelona (29 jul – 11 ago 2026).
+
+---
+
 _Mantener este runbook al día cada vez que se toque functions o Firestore. Referenciar desde CLAUDE.md._
