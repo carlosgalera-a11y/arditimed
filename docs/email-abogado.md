@@ -38,8 +38,8 @@ Resumen de dónde estoy:
  3. Paralelamente tengo una conversación abierta con AstraZeneca para
     patrocinio educativo independiente (Medical Affairs, NO comercial)
     por 12.000-24.000 € anuales bajo Código Farmaindustria + EFPIA.
- 4. Sigo siendo MIR R4 hasta el 30 de junio. Necesito decidir la vía
-    de compatibilidad ex-Ley 53/1984 antes de firmar nada.
+ 4. Sigo siendo MIR R4 hasta el 30 de mayo de 2026. Necesito decidir
+    la vía de compatibilidad ex-Ley 53/1984 antes de firmar nada.
 
 Adjunto en PDF:
  · honcode-dossier.pdf — dossier formal para acreditación.
@@ -59,7 +59,7 @@ prácticos maneja cada una:
 
   A1) Solicitar autorización de compatibilidad al Colegio Médicos +
       SMS en régimen de MIR, manteniendo facturación como autónomo.
-      ¿Viable dado mi estatuto actual hasta 30 junio? ¿Tiempos?
+      ¿Viable dado mi estatuto actual hasta 30 de mayo? ¿Tiempos?
 
   A2) Constituir una Sociedad Limitada (SL) y ceder la licencia de
       explotación de Cartagenaeste a la SL, cobrando como socio.
@@ -129,9 +129,10 @@ antes del 2 de agosto.
 
 Mis fechas/restricciones:
 
- · Semana 1-3 (abril-mayo 2026): quiero cerrar A) y tener A)
-   operativo para firmar contrato Urgencias HSL en junio.
- · Fin de residencia: 30 junio 2026.
+ · Abril-mayo 2026: cerrar A) y tenerlo operativo para firmar
+   contrato con Urgencias HSL antes o en junio.
+ · Fin de residencia MIR: 30 de mayo de 2026.
+ · A partir del 1 de junio ya no hay incompatibilidad MIR.
  · Mudanza a Barcelona: 29 julio - 11 agosto 2026.
  · Deadline AI Act art. 71: 2 agosto 2026.
 
