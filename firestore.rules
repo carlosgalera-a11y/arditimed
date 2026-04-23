@@ -164,6 +164,15 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // ══ Gold-standard: admin CRUD, cron escribe resultados ═══════════
+    match /eval_goldstandard/{caseId} {
+      allow read, write: if isAdmin();
+    }
+    match /eval_results/{monthId} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
     // ══ Métricas (solo server escribe, admin lee) ══════════════════
     match /metrics_snapshots/{id} {
       allow read: if isAdmin();

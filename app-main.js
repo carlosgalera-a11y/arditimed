@@ -1960,8 +1960,45 @@ async function scanAnalyze(){
     }
     var btn=document.getElementById("scanBtnGo"),res=document.getElementById("scanResult"),ctx=document.getElementById("scanCtx").value.trim();
     btn.disabled=true;btn.innerHTML="⏳ Analizando...";
+    res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🛡️ Comprobando PII en la imagen (OCR local)…</div><div style="color:var(--text-muted);font-size:.9rem;">Bloqueo preventivo de DNI/NIE/NHC (EU AI Act art. 10 · RGPD).</div></div>';
+
+    // ── PII Guard (Tesseract.js local) ────────────────────────
+    // Bloquea el envío si detecta DNI/NIE/NHC/nombre completo en la imagen.
+    // Fail-open si Tesseract no carga: sigue con disclaimer reforzado.
+    try{
+        if(window.ScanPiiGuard){
+            var dataUrlForOcr = 'data:image/jpeg;base64,' + scanB64;
+            var piiCheck = await window.ScanPiiGuard.checkImage(dataUrlForOcr);
+            if(piiCheck && piiCheck.ok === false){
+                btn.disabled=false;btn.innerHTML="🔬 Analizar con IA";
+                var detectedHtml = piiCheck.detected.map(function(d){
+                    return '<li><strong>'+d.kind+'</strong>: '+d.matches.slice(0,3).join(', ')+(d.matches.length>3?'…':'')+'</li>';
+                }).join('');
+                res.innerHTML = '<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:var(--radius);padding:18px;color:#7f1d1d"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px">🚫 Envío bloqueado · datos identificativos detectados</div><div style="font-size:.9rem;line-height:1.6">La imagen contiene información que parece identificar al paciente. <strong>El análisis NO se ha enviado</strong>. Edita la imagen (recortar/difuminar) y vuelve a subirla.</div><ul style="margin:10px 0 10px 20px;font-size:.88rem;line-height:1.6">'+detectedHtml+'</ul><div style="font-size:.78rem;color:#991b1b;background:#fee2e2;padding:8px 12px;border-radius:6px;margin-top:8px">Si crees que es un falso positivo (ej. número de estudio DICOM), recorta la zona marcada y reintenta. Este filtro cumple EU AI Act art. 10 + RGPD art. 9.</div></div>';
+                try{ if(window.cartTrack) window.cartTrack('scan_pii_blocked', { kinds: piiCheck.detected.map(function(d){return d.kind;}).join(',') }); }catch(e){}
+                return;
+            }
+            // Aviso no bloqueante para warnings
+            if(piiCheck && piiCheck.warnings && piiCheck.warnings.length){
+                try{ console.info('[ScanPiiGuard] warnings:', piiCheck.warnings); }catch(e){}
+            }
+        }
+    }catch(ePii){
+        // Si el guard lanza error, no bloqueamos (fail-open) pero lo logueamos.
+        try{ console.warn('[ScanPiiGuard] error, continuando:', ePii && ePii.message); }catch(e){}
+    }
     res.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--border);border-left:4px solid #0066cc;border-radius:var(--radius);padding:20px;"><div style="color:#0066cc;font-weight:700;margin-bottom:8px;">🔬 Analizando imagen...</div><div style="color:var(--text-muted);font-size:.9rem;">Enviando a Qwen2.5-VL-72B (Cloud Function askAi)…</div></div>';
     var sys=SCAN_PROMPTS[scanType];if(ctx)sys+="\n\nContexto clínico: "+ctx;
+    // Guidance por modalidad (cierra gaps G-03, G-04, G-05 del risk register)
+    var _autoGuidance = {
+        derma: "\n\nADVERTENCIA: si el paciente tiene fototipo Fitzpatrick V-VI (piel oscura), el modelo ISIC tiene sensibilidad reducida documentada. Advierte explícitamente y recomienda valoración dermatológica presencial.",
+        osea: "\n\nADVERTENCIA: si la imagen NO es de miembro superior (codo/muñeca/mano), declara que MURA no cubre ese dominio y el análisis es orientativo.",
+        ecg: "\n\nADVERTENCIA: evalúa la calidad de la imagen en paso 0: si hay borrosidad, papel doblado, derivaciones perdidas o calibración no visible, declara 'baja confianza en la lectura' al inicio y recomienda ECG digital o repetición.",
+        torax: "",
+        abdomen: "",
+        eco: ""
+    }[scanType] || "";
+    if(_autoGuidance) sys += _autoGuidance;
     // Defensa frente al límite de 4000 chars del servidor: truncar conservadoramente.
     if(sys.length>3900){sys=sys.substring(0,3880)+"\n\n[...contenido truncado para ajustarse al límite]";}
     var mt="image/jpeg";if(document.getElementById("scanImgPreview").src.indexOf("image/png")>-1)mt="image/png";
