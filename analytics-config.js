@@ -23,7 +23,7 @@
   // ───── CONFIG ───── Cambia GA_ID por tu Measurement ID real.
   // Formato: "G-XXXXXXXXXX". Si se queda en el placeholder, la
   // librería simplemente no carga (modo no-op, seguro en prod).
-  var GA_ID = 'G-XXXXXXXXXX';
+  var GA_ID = 'G-JW29V64END';
 
   var isValid = /^G-[A-Z0-9]{6,}$/.test(GA_ID);
 
