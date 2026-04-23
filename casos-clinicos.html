@@ -5505,6 +5505,29 @@ function startCategory(cat){
 
 function shuffle(arr){for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 
+// Limpia el texto importado de los PDFs originales del examen MIR:
+// elimina el bloque de instrucciones genérico ("MUY IMPORTANTE...MEDICINA YYYY"),
+// repeticiones de la marca de agua editorial, identificadores internos y
+// referencias a la edición. El objetivo es que sólo se vea el caso clínico.
+function cleanCaseBody(s){
+    if(!s) return s;
+    // 1. Instrucciones del cuadernillo del examen hasta "MEDICINA YYYY"
+    s = s.replace(/MUY\s+IMPORTANTE[\s\S]*?MEDICINA\s+\d{4}\s*/i, '');
+    // 2. Bloque repetido de la marca editorial (&ge;2 veces consecutivas)
+    s = s.replace(/(?:GRUPO\s*CTO[\s,.-]*){2,}/gi, ' ');
+    // 3. Referencias tipo "N Grupo CTO Medicina MIR.XX.YYYY.NN"
+    s = s.replace(/\d+\s*Grupo\s*CTO\s*Medicina\s*MIR[.\d\s-]*/gi, '');
+    // 4. Identificadores impresos "M-000-0-00000"
+    s = s.replace(/M-\d{3}-\d-\d{5}/g, '');
+    // 5. Menciones sueltas al editor que queden sin contexto
+    s = s.replace(/\bGrupo\s+CTO(?:\s+Medicina)?\b/gi, '');
+    // 6. Bullet numerado inicial tipo "1." / "2." antes del enunciado real
+    s = s.replace(/^\s*\d+\.\s*/, '');
+    // 7. Espacios múltiples y recortes
+    s = s.replace(/\s{2,}/g, ' ').trim();
+    return s;
+}
+
 function showCase(){
     if(caseIndex>=currentCases.length){finishGame();return;}
     answered=false;
@@ -5515,7 +5538,7 @@ function showCase(){
     var h='<div class="case-card">';
     h+='<div class="case-header"><span class="badge '+diffBadge[c.diff]+'">'+diffLabel[c.diff]+'</span><h2>'+c.title+'</h2><span style="font-size:.75rem;color:#94a3b8;">'+(caseIndex+1)+'/'+currentCases.length+'</span></div>';
     h+='<div style="font-size:.72rem;color:#64748b;margin-bottom:8px;">'+( catLabel[c.cat]||c.cat)+'</div>';
-    h+='<div class="case-body">'+c.body+'</div>';
+    h+='<div class="case-body">'+cleanCaseBody(c.body)+'</div>';
     if(c.vitals){
         h+='<div class="vitals">';
         for(var k in c.vitals) h+='<div class="vital"><div class="val">'+c.vitals[k]+'</div><div class="name">'+k+'</div></div>';
