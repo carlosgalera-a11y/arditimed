@@ -103,6 +103,7 @@ td.num{text-align:right;font-family:var(--mono)}
 <script src="centros-config.js"></script>
   <script src="/branding-tenant.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js" defer></script>
 </head>
 <body>
 <nav class="nav">
@@ -120,11 +121,15 @@ td.num{text-align:right;font-family:var(--mono)}
 
 <div id="dashboard" class="wrap" style="display:none">
 
-  <div class="range-tabs">
-    <button class="range-tab active" data-days="1">Hoy</button>
-    <button class="range-tab" data-days="7">7 días</button>
-    <button class="range-tab" data-days="30">30 días</button>
-    <button class="range-tab" data-days="90">90 días</button>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+    <div class="range-tabs" style="margin:0">
+      <button class="range-tab active" data-days="1">Hoy</button>
+      <button class="range-tab" data-days="7">7 días</button>
+      <button class="range-tab" data-days="30">30 días</button>
+      <button class="range-tab" data-days="90">90 días</button>
+    </div>
+    <button id="btnExportPdf" onclick="exportMonthlyPdf()" style="padding:6px 14px;background:linear-gradient(135deg,var(--amber),#d97706);color:#fff;border:0;border-radius:7px;cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:700">📄 Exportar informe PDF del mes</button>
+    <span id="pdfStatus" style="font-size:.78rem;color:var(--t3);font-family:var(--mono)"></span>
   </div>
 
   <div class="section">
@@ -615,6 +620,167 @@ async function loadSlaPanel(){
   }catch(e){
     box.innerHTML = '<div class="err small">No se pudo cargar el panel SLA: '+(e && e.message || e)+'</div>';
   }
+}
+
+// ── Exportador PDF mensual ─────────────────────────────────────────
+async function exportMonthlyPdf(){
+  const btn = document.getElementById('btnExportPdf');
+  const status = document.getElementById('pdfStatus');
+  if(typeof html2pdf === 'undefined'){
+    status.textContent = 'html2pdf aún cargando, reintenta en 2 segundos…';
+    return;
+  }
+  btn.disabled = true;
+  const prevText = btn.textContent;
+  btn.textContent = '⏳ Generando…';
+  status.textContent = 'leyendo metrics_snapshots del último mes';
+
+  try{
+    const db = firebase.firestore();
+    // Snapshots de los últimos 31 días (cubre mes natural + buffer).
+    const snap = await db.collection('metrics_snapshots')
+      .where('kind','==','daily')
+      .orderBy('day','desc')
+      .limit(31)
+      .get();
+    const docs = [];
+    snap.forEach(function(d){ docs.push(d.data()); });
+    docs.sort(function(a,b){ return (a.day||'').localeCompare(b.day||''); });
+
+    // Construir HTML del informe.
+    const now = new Date();
+    const monthLabel = now.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+    const totalCalls = docs.reduce(function(a,s){ return a + (s.total||0); }, 0);
+    const totalCost = docs.reduce(function(a,s){ return a + (s.totalCostEur||0); }, 0);
+    const cacheHitAvg = docs.length ? (docs.reduce(function(a,s){ return a + (s.cacheHitRate||0); }, 0) / docs.length * 100) : 0;
+    const avgUsers = docs.length ? (docs.reduce(function(a,s){ return a + (s.uniqueUsers||0); }, 0) / docs.length) : 0;
+
+    // Agregado por proveedor.
+    const byProvider = {};
+    docs.forEach(function(s){
+      const bp = s.byProvider || {};
+      Object.keys(bp).forEach(function(name){
+        const p = bp[name];
+        if(!byProvider[name]) byProvider[name] = { count:0, errorSum:0, cache:0, p50Sum:0, p95:0, p99:0, cost:0 };
+        byProvider[name].count += p.count || 0;
+        byProvider[name].errorSum += Math.round((p.errorRate||0) * (p.count||0));
+        byProvider[name].cache += p.cacheHits || 0;
+        byProvider[name].p50Sum += (p.p50Ms||0) * (p.count||0);
+        byProvider[name].p95 = Math.max(byProvider[name].p95, p.p95Ms||0);
+        byProvider[name].p99 = Math.max(byProvider[name].p99, p.p99Ms||0);
+        byProvider[name].cost += p.costEur || 0;
+      });
+    });
+    const provRows = Object.keys(byProvider).map(function(name){
+      const p = byProvider[name];
+      return {
+        name: name,
+        count: p.count,
+        errorRate: p.count ? (p.errorSum*100/p.count) : 0,
+        cache: p.cache,
+        p50: p.count ? Math.round(p.p50Sum/p.count) : 0,
+        p95: p.p95, p99: p.p99, cost: p.cost
+      };
+    }).sort(function(a,b){ return b.count - a.count; });
+
+    const container = document.createElement('div');
+    container.style.cssText = 'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#0f172a;background:#fff;padding:24px;max-width:760px;line-height:1.5;font-size:13px';
+    container.innerHTML =
+      '<div style="border-bottom:3px solid #2563eb;padding-bottom:12px;margin-bottom:20px">' +
+        '<div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Informe mensual de uso · Cartagenaeste</div>' +
+        '<div style="font-size:22px;font-weight:800;margin-top:4px">Uso de IA · ' + monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1) + '</div>' +
+        '<div style="font-size:12px;color:#64748b;margin-top:4px">Generado: ' + now.toLocaleString('es-ES') + ' · Carlos Galera Román · Área II Cartagena</div>' +
+      '</div>' +
+
+      '<div style="background:#f8fafc;border-left:4px solid #f59e0b;padding:10px 14px;margin-bottom:16px;font-size:12px">' +
+        '<strong>Plataforma formativa.</strong> No diagnóstica. Datos agregados sin contenido de prompts ni respuestas. Cumplimiento RGPD · LOPDGDD · EU AI Act 2024/1689.' +
+      '</div>' +
+
+      '<h2 style="font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:4px;margin:18px 0 10px">Resumen ejecutivo</h2>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+        '<tr><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9"><strong>Días con datos</strong></td><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right">' + docs.length + '</td></tr>' +
+        '<tr><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9"><strong>Total llamadas IA</strong></td><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtNum(totalCalls) + '</td></tr>' +
+        '<tr><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9"><strong>Cache hit promedio</strong></td><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right">' + cacheHitAvg.toFixed(1) + '%</td></tr>' +
+        '<tr><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9"><strong>Coste acumulado</strong></td><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtEur(totalCost) + '</td></tr>' +
+        '<tr><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9"><strong>Usuarios únicos/día (prom.)</strong></td><td style="padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right">' + avgUsers.toFixed(1) + '</td></tr>' +
+      '</table>' +
+
+      '<h2 style="font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:4px;margin:18px 0 10px">SLA por proveedor</h2>' +
+      (provRows.length ? (
+        '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+        '<thead><tr style="background:#f1f5f9">' +
+          '<th style="padding:6px 8px;text-align:left">Proveedor</th>' +
+          '<th style="padding:6px 8px;text-align:right">Llamadas</th>' +
+          '<th style="padding:6px 8px;text-align:right">Error rate</th>' +
+          '<th style="padding:6px 8px;text-align:right">p50 ms</th>' +
+          '<th style="padding:6px 8px;text-align:right">p95 ms</th>' +
+          '<th style="padding:6px 8px;text-align:right">p99 ms</th>' +
+          '<th style="padding:6px 8px;text-align:right">Coste</th>' +
+        '</tr></thead><tbody>' +
+        provRows.map(function(r){
+          return '<tr>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9"><code>' + r.name + '</code></td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtNum(r.count) + '</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + r.errorRate.toFixed(2) + '%</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtNum(r.p50) + '</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtNum(r.p95) + '</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtNum(r.p99) + '</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right"><strong>' + fmtEur(r.cost) + '</strong></td>' +
+          '</tr>';
+        }).join('') + '</tbody></table>'
+      ) : '<div style="color:#64748b;font-style:italic;padding:12px 0">Sin snapshots todavía. La primera ejecución del cron aggregateDailyMetrics es a las 02:30 Madrid tras el despliegue.</div>') +
+
+      '<h2 style="font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:4px;margin:18px 0 10px">Actividad diaria</h2>' +
+      (docs.length ? (
+        '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+        '<thead><tr style="background:#f1f5f9">' +
+          '<th style="padding:6px 8px;text-align:left">Día</th>' +
+          '<th style="padding:6px 8px;text-align:right">Llamadas</th>' +
+          '<th style="padding:6px 8px;text-align:right">Cache hit</th>' +
+          '<th style="padding:6px 8px;text-align:right">Usuarios</th>' +
+          '<th style="padding:6px 8px;text-align:right">Coste</th>' +
+        '</tr></thead><tbody>' +
+        docs.map(function(s){
+          return '<tr>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9"><code>' + (s.day||'—') + '</code></td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtNum(s.total||0) + '</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + ((s.cacheHitRate||0)*100).toFixed(1) + '%</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + (s.uniqueUsers||0) + '</td>' +
+            '<td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right">' + fmtEur(s.totalCostEur||0) + '</td>' +
+          '</tr>';
+        }).join('') + '</tbody></table>'
+      ) : '') +
+
+      '<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:11px;color:#64748b">' +
+        'Fuente de datos: <code>metrics_snapshots/daily-YYYY-MM-DD</code> · Escrito por Cloud Function <code>aggregateDailyMetrics</code> (europe-west1, 02:30 Madrid).<br>' +
+        'Cartagenaeste · Registro Propiedad Intelectual 00765-03096622 · Art. 51 LPI · © ' + now.getFullYear() + ' Carlos Galera Román.' +
+      '</div>';
+
+    document.body.appendChild(container);
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+
+    const filename = 'cartagenaeste-informe-' + now.toISOString().substring(0,7) + '.pdf';
+    status.textContent = 'renderizando PDF…';
+
+    await html2pdf().set({
+      margin: [12, 10, 12, 10],
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    }).from(container).save();
+
+    container.remove();
+    status.textContent = '✅ PDF descargado: ' + filename;
+    try{ window.cartTrack && window.cartTrack('pdf_report_exported', { month: now.toISOString().substring(0,7), total_calls: totalCalls }); }catch(e){}
+  }catch(e){
+    status.textContent = '❌ Error: ' + (e && e.message || e);
+    console.error(e);
+  }
+  btn.disabled = false;
+  btn.textContent = prevText;
 }
 
 // ── Centros (multi-tenancy) ────────────────────────────────────────

@@ -59,7 +59,8 @@
           '<h4>Sobre el proyecto</h4>' +
           '<ul>' +
             '<li><a href="/about.html">Quiénes somos</a></li>' +
-            '<li><a href="/financiacion.html">Financiación y transparencia</a></li>' +
+            '<li><a href="/financiacion.html">Financiación</a></li>' +
+            '<li><a href="/transparencia.html">Transparencia</a></li>' +
             '<li><a href="/acreditaciones.html">Acreditaciones</a></li>' +
             '<li><a href="/producto.html">El producto</a></li>' +
           '</ul>' +
