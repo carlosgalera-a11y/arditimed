@@ -106,7 +106,7 @@
         '© ' + year + ' <strong>Carlos Galera Román</strong> · ' +
         'Registro Propiedad Intelectual <strong>00765-03096622</strong> · ' +
         'Art. 51 LPI · Todos los derechos reservados.<br>' +
-        'Cartagenaeste · Área II Cartagena · ' +
+        'Cartagenaeste · <span data-cart-tenant="nombre">Área II Cartagena</span> · ' +
         '<span title="Service Worker cache">SW ' + swVer + '</span>' +
       '</div>' +
     '</div>';

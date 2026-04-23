@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="/console-guard.js"></script>
 <script>
 // ═══ REDIRECT INMEDIATO: panel-medico sin ?page/?action → index.html ═══
 // Se ejecuta ANTES de cargar nada para que la vieja pageLanding no llegue
@@ -42,6 +43,7 @@
 </script>
 <!-- Google Analytics 4 — Área II Cartagena PWA · configurado en analytics-config.js -->
 <script src="centros-config.js"></script>
+  <script src="/branding-tenant.js" defer></script>
 <script src="analytics-config.js"></script>
 <script>
 // v8: Aggressive SW cleanup — kills sw-v2.js on EVERY page load
