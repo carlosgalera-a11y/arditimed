@@ -327,11 +327,27 @@ footer a:hover{color:#ffd54f}
   <div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
     <div class="modal">
       <h2 id="loginModalTitle">🔐 Inicia sesión</h2>
-      <p id="loginModalMsg">Accede con tu cuenta de Google profesional para entrar al área de profesionales.</p>
+      <p id="loginModalMsg">Accede para entrar al área de profesionales.</p>
       <button class="btn-google" onclick="signInWithGoogle()">
         <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         <span>Continuar con Google</span>
       </button>
+
+      <div style="display:flex;align-items:center;gap:10px;margin:14px 0 10px;color:#94a3b8;font-size:.78rem;">
+        <div style="flex:1;height:1px;background:#e2e8f0;"></div>
+        <span>o con tu email profesional (@carm.es, @sms.es, …)</span>
+        <div style="flex:1;height:1px;background:#e2e8f0;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <input id="emailLinkInput" type="email" autocomplete="email" placeholder="nombre.apellido@carm.es"
+          style="width:100%;padding:11px 14px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:.92rem;font-family:inherit;box-sizing:border-box;"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();sendEmailLink();}">
+        <button class="btn-google" style="background:#0d9488;color:#fff;border:none;justify-content:center;" onclick="sendEmailLink()">
+          <span>✉️ Enviarme enlace de acceso</span>
+        </button>
+        <p id="emailLinkMsg" style="font-size:.78rem;color:#64748b;margin:4px 0 0;min-height:1.2em;"></p>
+      </div>
+
       <button class="btn-close" onclick="closeLoginModal()">Cancelar</button>
     </div>
   </div>
@@ -445,6 +461,56 @@ footer a:hover{color:#ffd54f}
         alert('No se pudo iniciar sesión: ' + (err.message || err.code));
       });
     }
+
+    // ═══ Email Link (passwordless) — permite @carm.es y cualquier otro dominio ═══
+    function sendEmailLink(){
+      var input = document.getElementById('emailLinkInput');
+      var msg = document.getElementById('emailLinkMsg');
+      var email = (input.value || '').trim().toLowerCase();
+      if(!email || email.indexOf('@') < 1 || email.indexOf('.') < 0){
+        msg.textContent = '⚠️ Introduce un email válido.';
+        msg.style.color = '#dc2626';
+        return;
+      }
+      var actionCodeSettings = {
+        url: location.origin + (pendingRedirect || location.pathname),
+        handleCodeInApp: true,
+      };
+      msg.textContent = '⏳ Enviando enlace…';
+      msg.style.color = '#64748b';
+      auth.sendSignInLinkToEmail(email, actionCodeSettings).then(function(){
+        try{ window.localStorage.setItem('emailForSignIn', email); }catch(e){}
+        msg.innerHTML = '✅ Enlace enviado a <strong>' + esc(email) + '</strong>. Abre el correo en este mismo dispositivo y pulsa el enlace para completar el acceso.';
+        msg.style.color = '#059669';
+        input.disabled = true;
+      }).catch(function(err){
+        console.error('Email link send error:', err);
+        var userMsg = err.code === 'auth/operation-not-allowed'
+          ? 'El acceso por email aún no está habilitado. Avisa al administrador.'
+          : (err.message || err.code || 'Error enviando el enlace.');
+        msg.textContent = '❌ ' + userMsg;
+        msg.style.color = '#dc2626';
+      });
+    }
+
+    // Completar sign-in si se llega desde un enlace de email
+    (function completeEmailLinkSignIn(){
+      try{
+        if(!auth.isSignInWithEmailLink(window.location.href)) return;
+        var email = null;
+        try{ email = window.localStorage.getItem('emailForSignIn'); }catch(e){}
+        if(!email) email = window.prompt('Confirma el email al que se envió el enlace:');
+        if(!email) return;
+        auth.signInWithEmailLink(email, window.location.href).then(function(){
+          try{ window.localStorage.removeItem('emailForSignIn'); }catch(e){}
+          // Limpiar parámetros de la URL para que el enlace no quede guardado
+          history.replaceState({}, document.title, location.origin + location.pathname);
+        }).catch(function(err){
+          console.error('Email link sign-in error:', err);
+          alert('No se pudo completar el acceso: ' + (err.message || err.code));
+        });
+      }catch(e){ console.warn('completeEmailLinkSignIn:', e); }
+    })();
 
     function signOut(){
       if(!confirm('¿Cerrar sesión?')) return;
