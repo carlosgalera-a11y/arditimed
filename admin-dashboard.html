@@ -185,8 +185,14 @@ td.num{text-align:right;font-family:var(--mono)}
   </div>
 
   <div class="section">
-    <h3>👥 Top usuarios por coste <span class="meta">uid seudonimizado</span></h3>
+    <h3>👥 Top usuarios por coste <span class="meta">uid + email cuando está disponible</span></h3>
     <div id="byUser"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section">
+    <h3>🏢 Distribución por dominio de email <span class="meta">infiere centro/servicio</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:10px">Cruza cada UID que ha llamado a la IA con <code>users/&#123;uid&#125;.email</code> (escrito al login). Permite distinguir tráfico de Urgencias HSL (dominio institucional SMS) del tráfico residencial (gmail) y pacientes (móvil).</div>
+    <div id="byDomain"><div class="loading"><span class="spin"></span>Cargando…</div></div>
   </div>
 
   <div class="section">
@@ -473,15 +479,83 @@ async function loadDashboard(days){
     uAgg[r.uid].cost += r.costEstimateEur;
     uAgg[r.uid].tokens += r.tokensIn + r.tokensOut;
   });
+
+  // Fetch email / displayName / emailDomain para cada UID único.
+  // users/{uid} se escribe al login desde firebase-init.js. Si aún no
+  // se ha visitado la app desde el último deploy, faltará.
+  const uidSet = Object.keys(uAgg);
+  const profile = {};
+  await Promise.all(uidSet.slice(0, 100).map(function(uid){
+    return db.collection('users').doc(uid).get().then(function(snap){
+      if(snap.exists){
+        const d = snap.data();
+        profile[uid] = {
+          email: d.email || null,
+          displayName: d.displayName || null,
+          emailDomain: d.emailDomain || (d.email ? (d.email.split('@')[1]||null) : null)
+        };
+      }
+    }).catch(function(){ /* puede estar bloqueado por rules si no eres admin real */ });
+  }));
+
   const uList = Object.values(uAgg).sort(function(a,b){ return b.cost-a.cost; }).slice(0,15);
   const uMaxCost = Math.max.apply(null, uList.map(function(u){return u.cost;}).concat([0.0001]));
   document.getElementById('byUser').innerHTML = uList.length ? (
-    '<table><thead><tr><th>UID</th><th class="num">Llamadas</th><th class="num">Tokens</th><th class="num">Coste</th><th>%</th></tr></thead><tbody>' +
+    '<table><thead><tr><th>Usuario</th><th>Email</th><th class="num">Llamadas</th><th class="num">Tokens</th><th class="num">Coste</th><th>%</th></tr></thead><tbody>' +
     uList.map(function(u){
       const pct = (u.cost/uMaxCost)*100;
-      return '<tr><td><code style="font-family:var(--mono);font-size:.78rem;color:var(--t2)">'+shortUid(u.uid)+'</code></td><td class="num">'+fmtNum(u.calls)+'</td><td class="num">'+fmtNum(u.tokens)+'</td><td class="num"><strong>'+fmtEur(u.cost)+'</strong></td><td><div class="bar-wrap"><div class="bar" style="width:'+pct+'%"></div></div></td></tr>';
+      const p = profile[u.uid] || {};
+      const emailCell = p.email
+        ? '<span style="font-family:var(--mono);font-size:.78rem;color:var(--tx)">'+p.email+'</span>'
+        : '<span class="small" style="color:var(--t3)">— sin registro —</span>';
+      const label = p.displayName
+        ? '<strong>'+p.displayName+'</strong><br><code style="font-family:var(--mono);font-size:.7rem;color:var(--t3)">'+shortUid(u.uid)+'</code>'
+        : '<code style="font-family:var(--mono);font-size:.78rem;color:var(--t2)">'+shortUid(u.uid)+'</code>';
+      return '<tr><td>'+label+'</td><td>'+emailCell+'</td><td class="num">'+fmtNum(u.calls)+'</td><td class="num">'+fmtNum(u.tokens)+'</td><td class="num"><strong>'+fmtEur(u.cost)+'</strong></td><td><div class="bar-wrap"><div class="bar" style="width:'+pct+'%"></div></div></td></tr>';
     }).join('') + '</tbody></table>'
   ) : '<div class="empty">Sin usuarios.</div>';
+
+  // ── Distribución por dominio de email (centro/servicio inferido) ──
+  const dAgg = {};
+  Object.keys(uAgg).forEach(function(uid){
+    const p = profile[uid] || {};
+    const dom = p.emailDomain || '— sin email —';
+    if(!dAgg[dom]) dAgg[dom] = { domain: dom, users: 0, calls: 0, cost: 0, tokens: 0 };
+    dAgg[dom].users++;
+    dAgg[dom].calls += uAgg[uid].calls;
+    dAgg[dom].cost += uAgg[uid].cost;
+    dAgg[dom].tokens += uAgg[uid].tokens;
+  });
+  // Etiqueta humana conocida
+  const DOMAIN_LABEL = {
+    'gmail.com': '🏠 Gmail personal',
+    'hotmail.com': '🏠 Hotmail personal',
+    'outlook.com': '🏠 Outlook personal',
+    'yahoo.com': '🏠 Yahoo personal',
+    'carm.es': '🏥 CARM · SMS (Región de Murcia)',
+    'murciasalud.es': '🏥 Murciasalud · SMS',
+    'scu.murciasalud.es': '🏥 SCU · SMS',
+    'um.es': '🎓 Universidad de Murcia',
+    'upct.es': '🎓 Universidad Politécnica de Cartagena',
+    'astrazeneca.com': '💊 AstraZeneca',
+    'egs.es': '🤝 EGS',
+    'salud.madrid.org': '🏥 SERMAS · Madrid',
+    'sas.junta-andalucia.es': '🏥 SAS · Andalucía',
+    'gencat.cat': '🏥 ICS · Cataluña',
+    '— sin email —': '❓ Sin registro (pre-firebase-init v129)'
+  };
+  const dList = Object.values(dAgg).sort(function(a,b){ return b.calls - a.calls; });
+  const dMaxCalls = Math.max.apply(null, dList.map(function(d){return d.calls;}).concat([1]));
+
+  document.getElementById('byDomain').innerHTML = dList.length ? (
+    '<table><thead><tr><th>Dominio · etiqueta</th><th class="num">Usuarios únicos</th><th class="num">Llamadas IA</th><th class="num">Tokens</th><th class="num">Coste</th><th>Uso relativo</th></tr></thead><tbody>' +
+    dList.map(function(d){
+      const pct = (d.calls/dMaxCalls)*100;
+      const label = DOMAIN_LABEL[d.domain] || ('🔸 '+d.domain);
+      return '<tr><td>'+label+'<br><code style="font-family:var(--mono);font-size:.72rem;color:var(--t3)">'+d.domain+'</code></td><td class="num">'+fmtNum(d.users)+'</td><td class="num"><strong>'+fmtNum(d.calls)+'</strong></td><td class="num">'+fmtNum(d.tokens)+'</td><td class="num">'+fmtEur(d.cost)+'</td><td><div class="bar-wrap"><div class="bar b-tokens" style="width:'+pct+'%"></div></div></td></tr>';
+    }).join('') + '</tbody></table>' +
+    '<div class="small" style="margin-top:10px;padding:8px 12px;background:#1e293b;border-radius:6px;color:var(--t2)">💡 Los UIDs sin registro de email son usuarios que entraron antes del deploy <strong>v129</strong> (2026-04-24). Tras su próximo login, el email se escribirá automáticamente y aparecerá aquí.</div>'
+  ) : '<div class="empty">Sin datos para agrupar.</div>';
 
   // Today's admin quota
   try{

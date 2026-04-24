@@ -24,6 +24,30 @@
   };
   try { firebase.initializeApp(config); } catch (e) { console.error('[firebase-init]', e); }
 
+  // ── Registro de perfil mínimo en users/{uid} al hacer login ──
+  // Escribe {email, displayName, lastSeen} cuando se detecta sesión.
+  // Permite que admin-dashboard cruce UIDs con emails/dominios y ver
+  // qué centros/servicios están usando la plataforma. Idempotente
+  // (merge:true) y no escribe el campo `role` (lo protegen las rules).
+  try {
+    if (firebase.auth && firebase.firestore) {
+      firebase.auth().onAuthStateChanged(function(user){
+        if(!user) return;
+        try {
+          var update = {
+            email: user.email || null,
+            displayName: user.displayName || null,
+            emailDomain: (user.email || '').split('@')[1] || null,
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          firebase.firestore().collection('users').doc(user.uid)
+            .set(update, { merge: true })
+            .catch(function(){ /* best-effort, rules pueden bloquear en ciertos estados */ });
+        } catch(e) {}
+      });
+    }
+  } catch(e) {}
+
   // reCAPTCHA v3 site key: pública, se define en window antes de cargar
   // este script. Si no existe, ai-client.js avisa y salta App Check.
   // Ejemplo en el HTML:
