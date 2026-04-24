@@ -33,7 +33,10 @@ export function validatePrompt(prompt: unknown): ValidationResult {
 export function validateSystemPrompt(sp: unknown): ValidationResult {
   if (sp === undefined || sp === null || sp === '') return { ok: true };
   if (typeof sp !== 'string') return { ok: false, reason: 'systemPrompt debe ser string' };
-  if (sp.length > 6000) return { ok: false, reason: 'systemPrompt excede 6000 caracteres' };
+  // Alto porque las Preguntas IA de Atención Primaria inyectan el contenido
+  // completo de los 10 protocolos en el systemPrompt (≈25-30 KB). 100k chars
+  // ≈ 25k tokens, bien por debajo del contexto de DeepSeek/Qwen/Gemini.
+  if (sp.length > 100000) return { ok: false, reason: 'systemPrompt excede 100000 caracteres' };
   return { ok: true };
 }
 
