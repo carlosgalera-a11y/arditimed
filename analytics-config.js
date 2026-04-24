@@ -55,10 +55,28 @@
   });
   window.cartAnalyticsConfigured = true;
 
+  // ───── Captura UTM al cargar ─────
+  // Persiste utm_source/medium/campaign en sessionStorage para que
+  // cada evento incluya el origen de la visita. Así distinguimos
+  // visitas de 'sesion-pacientes-25abril', 'sesion-hospital-8mayo', etc.
+  try{
+    var qs = new URLSearchParams(location.search);
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(function(k){
+      var v = qs.get(k);
+      if(v) sessionStorage.setItem('cart_' + k, v.substring(0, 50));
+    });
+  }catch(e){}
+
   // ───── Enriquecimiento automático de eventos ─────
   // Añade rol de usuario (detectado del email) y centroId activo.
   function enrich(params){
     var p = Object.assign({}, params || {});
+    try{
+      ['utm_source','utm_medium','utm_campaign'].forEach(function(k){
+        var v = sessionStorage.getItem('cart_' + k);
+        if(v && !p[k]) p[k] = v;
+      });
+    }catch(e){}
     try{
       if(!p.centro_id && window.Centros && window.Centros.getCurrentId){
         p.centro_id = window.Centros.getCurrentId();

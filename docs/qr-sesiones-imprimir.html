@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>QR · Sesiones Cartagenaeste · imprimir</title>
+<style>
+  @page { size: A4; margin: 10mm; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #0f172a; margin: 0; padding: 0; }
+  .page {
+    width: 100%; min-height: 277mm; padding: 20mm 15mm;
+    display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+    page-break-after: always; text-align: center;
+  }
+  .page:last-child { page-break-after: auto; }
+  h1 { font-size: 36pt; font-weight: 800; margin: 0 0 10px; letter-spacing: -1px; }
+  h2 { font-size: 20pt; font-weight: 600; margin: 0 0 25px; color: #2563eb; }
+  .qr-wrap { width: 110mm; height: 110mm; padding: 8mm; background: #fff; border: 2px solid #0f172a; border-radius: 8mm; }
+  .qr-wrap img { width: 100%; height: 100%; }
+  .url { font-family: "JetBrains Mono", monospace; font-size: 16pt; font-weight: 700; margin-top: 22px; color: #0f172a; word-break: break-all; }
+  .tag { display: inline-block; padding: 6px 18px; background: #2563eb; color: #fff; border-radius: 999px; font-size: 12pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px; }
+  .subtitle { font-size: 14pt; color: #475569; margin-top: 12px; max-width: 160mm; line-height: 1.5; }
+  .footer { margin-top: 30px; font-size: 10pt; color: #94a3b8; }
+  .watermark { position: absolute; bottom: 10mm; right: 15mm; font-size: 9pt; color: #cbd5e1; }
+</style>
+</head>
+<body>
+
+<!-- PÁGINA 1 · SESIÓN PACIENTES 25 ABRIL -->
+<div class="page">
+  <div>
+    <div class="tag">Sesión a pacientes · 25 abril 2026</div>
+    <h1>Cartagenaeste</h1>
+    <h2>Tu salud en un móvil</h2>
+  </div>
+
+  <div class="qr-wrap">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=https%3A%2F%2Farea2cartagena.es%2Fpacientes.html%3Futm_source%3Dsesion-pacientes-25abril%26utm_medium%3Dqr%26utm_campaign%3Dlanzamiento"
+         alt="QR pacientes">
+  </div>
+
+  <div>
+    <div class="url">area2cartagena.es</div>
+    <p class="subtitle">
+      Escanea con la cámara del móvil · Se abre sola.<br>
+      Consejos de salud · Prepara tu consulta · Recursos comunitarios.<br>
+      Gratis · sin publicidad · sin recoger datos personales.
+    </p>
+    <div class="footer">
+      Plataforma formativa. No diagnóstica. No sustituye al médico.<br>
+      Cartagenaeste · Carlos Galera Román · RPI 00765-03096622
+    </div>
+  </div>
+</div>
+
+<!-- PÁGINA 2 · SESIÓN HOSPITAL 8 MAYO -->
+<div class="page">
+  <div>
+    <div class="tag">Sesión hospitalaria · 8 mayo 2026</div>
+    <h1>Cartagenaeste</h1>
+    <h2>La herramienta de guardia · para profesionales</h2>
+  </div>
+
+  <div class="qr-wrap">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=https%3A%2F%2Farea2cartagena.es%2Fprofesionales.html%3Futm_source%3Dsesion-hospital-8mayo%26utm_medium%3Dqr%26utm_campaign%3Dpiloto"
+         alt="QR profesionales">
+  </div>
+
+  <div>
+    <div class="url">area2cartagena.es / profesionales</div>
+    <p class="subtitle">
+      132 protocolos · Vademécum · 40+ calculadoras · Scan IA · Organizador guardia.<br>
+      Cumple RGPD · EU AI Act art. 14 · Datos en UE europe-west1.<br>
+      <strong>Early Adopter</strong>: si te sirve, firma la carta de apoyo.
+    </p>
+    <div class="footer">
+      Cartagenaeste · Carlos Galera Román, MIR R4 MFyC · HGU Santa Lucía · Área II<br>
+      RPI 00765-03096622 · carlosgalera2roman@gmail.com
+    </div>
+  </div>
+</div>
+
+<!-- PÁGINA 3 · SESIÓN EGS 29 ABRIL -->
+<div class="page">
+  <div>
+    <div class="tag">Reunión EGS · 29 abril 2026</div>
+    <h1>Cartagenaeste</h1>
+    <h2>Plataforma formativa · demo web</h2>
+  </div>
+
+  <div class="qr-wrap">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=https%3A%2F%2Farea2cartagena.es%3Futm_source%3Dreunion-egs-29abr%26utm_medium%3Dqr"
+         alt="QR EGS">
+  </div>
+
+  <div>
+    <div class="url">area2cartagena.es</div>
+    <p class="subtitle">
+      Demo pública · acceso sin registro.<br>
+      Modelo técnico: Firebase UE · PWA · cadena IA con fallback.<br>
+      Modelo de negocio: contratación pública Ley 9/2017 + patrocinio educativo.
+    </p>
+    <div class="footer">
+      Cartagenaeste · Carlos Galera Román · RPI 00765-03096622<br>
+      NDA requerido para revisión técnica detallada.
+    </div>
+  </div>
+</div>
+
+<!-- PÁGINA 4 · UTM PARAMETERS REFERENCE -->
+<div class="page">
+  <h1 style="font-size:22pt;margin-bottom:20px">Referencia · URLs con tracking</h1>
+  <div style="width:100%;max-width:180mm;text-align:left">
+    <p style="font-size:11pt;color:#475569;margin-bottom:20px;line-height:1.6">
+      Estas URLs llevan parámetros UTM que permiten identificar en
+      GA4 de dónde viene cada visita. Úsalas cuando envíes enlaces
+      por email, WhatsApp o flyer impreso, para medir la efectividad
+      de cada canal.
+    </p>
+
+    <table style="width:100%;border-collapse:collapse;font-size:10pt;font-family:'JetBrains Mono',monospace">
+      <thead>
+        <tr style="background:#f1f5f9"><th style="padding:8px;text-align:left;border:1px solid #cbd5e1">Canal</th><th style="padding:8px;text-align:left;border:1px solid #cbd5e1">URL completa</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">Sesión pacientes 25/4</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es/pacientes.html?utm_source=sesion-pacientes-25abril&utm_medium=qr&utm_campaign=lanzamiento</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">Sesión hospital 8/5</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es/profesionales.html?utm_source=sesion-hospital-8mayo&utm_medium=qr&utm_campaign=piloto</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">Reunión EGS 29/4</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es?utm_source=reunion-egs-29abr&utm_medium=qr</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">Email Jefe Urgencias</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es?utm_source=email-urgencias-jefe&utm_medium=email</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">Email AstraZeneca</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es?utm_source=email-astrazeneca&utm_medium=email</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">Email abogado</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es?utm_source=email-abogado&utm_medium=email</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">WhatsApp personal</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es?utm_source=whatsapp&utm_medium=social</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:700">LinkedIn post</td><td style="padding:8px;border:1px solid #e2e8f0;word-break:break-all">area2cartagena.es?utm_source=linkedin&utm_medium=social</td></tr>
+      </tbody>
+    </table>
+
+    <h2 style="font-size:14pt;margin-top:30px;color:#2563eb">Cómo leer las métricas</h2>
+    <ol style="font-size:10pt;line-height:1.6">
+      <li>Abrir <strong>GA4</strong> → <em>Reports → Acquisition → Traffic acquisition</em>.</li>
+      <li>Agregar dimensión <strong>Session source / medium</strong>.</li>
+      <li>Comparar tráfico por campaña.</li>
+      <li>En <strong>admin-dashboard.html</strong> se puede filtrar el tráfico por estos tags cuando llegan a las secciones profesionales.</li>
+    </ol>
+  </div>
+</div>
+
+</body>
+</html>
