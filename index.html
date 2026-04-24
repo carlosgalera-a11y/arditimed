@@ -218,6 +218,7 @@ footer a:hover{color:#ffd54f}
       <button class="tb-btn tbn-propose tbn-hidden" id="tbPropose" onclick="location.href='panel-medico.html?action=propose'">📤 <span>Proponer contenido</span></button>
       <button class="tb-btn tbn-mod tbn-hidden" id="tbMod" onclick="location.href='panel-medico.html?action=moderate'">🛡️ <span>Moderación</span><span class="tb-badge" id="tbModCount" style="display:none"></span></button>
       <button class="tb-btn tbn-sug tbn-hidden" id="tbSug" onclick="location.href='panel-medico.html?action=sugerencias'">💡 <span>Sugerencias</span></button>
+      <button class="tb-btn tbn-admin tbn-hidden" id="tbAdmin" onclick="location.href='admin-dashboard.html'" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:0">📊 <span>Admin</span></button>
     </div>
   </div>
 
@@ -353,6 +354,12 @@ footer a:hover{color:#ffd54f}
         document.getElementById('tbGuardia').classList.remove('tbn-hidden');
         document.getElementById('tbPropose').classList.remove('tbn-hidden');
         document.getElementById('tbSug').classList.remove('tbn-hidden');
+        // Botón Admin solo si el email es uno de los autorizados
+        var ADMIN_EMAILS_HEADER = ['carlosgalera2roman@gmail.com','ramongalera22@gmail.com'];
+        if(u.email && ADMIN_EMAILS_HEADER.indexOf(u.email.toLowerCase()) >= 0){
+          var adminBtn = document.getElementById('tbAdmin');
+          if(adminBtn) adminBtn.classList.remove('tbn-hidden');
+        }
         checkModeratorRole(u);
         if(pendingRedirect){
           var r = pendingRedirect; pendingRedirect = null;
@@ -361,7 +368,7 @@ footer a:hover{color:#ffd54f}
       } else {
         logBtn.style.display = 'inline-flex';
         userArea.style.display = 'none';
-        ['tbGuardia','tbPropose','tbSug','tbMod'].forEach(function(id){
+        ['tbGuardia','tbPropose','tbSug','tbMod','tbAdmin'].forEach(function(id){
           var el = document.getElementById(id);
           if(el) el.classList.add('tbn-hidden');
         });
