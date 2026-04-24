@@ -12,6 +12,7 @@ service cloud.firestore {
         || request.auth.token.role == 'superadmin'
         || request.auth.token.role == 'admin'
         || request.auth.token.email == 'carlosgalera2roman@gmail.com'
+        || request.auth.token.email == 'ramongalera22@gmail.com'
       );
     }
     function noDni(text) {
