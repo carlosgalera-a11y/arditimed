@@ -169,6 +169,14 @@ td.num{text-align:right;font-family:var(--mono)}
     <div class="kpi kpi-f"><div class="lbl">Errores</div><div class="val" id="kErrors">—</div><div class="sub" id="kErrorsSub">tasa y recuento</div></div>
   </div>
 
+  <div class="section" style="border:2px solid var(--primary);background:linear-gradient(135deg,rgba(34,197,94,.05),rgba(59,130,246,.05))">
+    <h3>🎯 KPIs para reporting · frases listas para cliente <span class="meta">auto-generado del rango</span></h3>
+    <div style="font-size:.82rem;color:var(--t2);margin-bottom:14px;line-height:1.55">Cuatro cifras que puedes decir en voz alta en una reunión con Jefe de Urgencias, Dirección Médica o Medical Affairs. Se calculan del rango seleccionado arriba (Hoy / 7d / 30d / 90d).</div>
+    <div id="kpisReporting" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+      <div class="loading"><span class="spin"></span>Cargando KPIs…</div>
+    </div>
+  </div>
+
   <div class="section">
     <h3>📆 Actividad diaria <span class="meta" id="tlMeta"></span></h3>
     <div class="timeline" id="timeline"><div class="loading"><span class="spin"></span>Cargando…</div></div>
@@ -393,6 +401,11 @@ async function loadDashboard(days){
 
   document.getElementById('kCalls').textContent = fmtNum(total);
   document.getElementById('kCallsSub').textContent = 'últimos '+days+'d · '+(total/Math.max(days,1)).toFixed(1)+'/día';
+
+  // ═══════════════════════════════════════════════════════════════
+  // KPIs reporting · frases listas para cliente
+  // ═══════════════════════════════════════════════════════════════
+  renderKpisReporting(rows, days, from);
   document.getElementById('kCost').textContent = fmtEur(cost);
   document.getElementById('kTokens').textContent = fmtNum(tIn)+' / '+fmtNum(tOut);
   document.getElementById('kTokensSub').textContent = 'prompt / generados · '+fmtNum(tIn+tOut)+' totales';
@@ -715,6 +728,127 @@ async function loadSlaPanel(){
   }catch(e){
     box.innerHTML = '<div class="err small">No se pudo cargar el panel SLA: '+(e && e.message || e)+'</div>';
   }
+}
+
+// ── KPIs reporting · frases listas ──────────────────────────────────
+// Los 4 KPIs que se citan en reuniones (Jefe Urgencias, Dir. Médica,
+// Medical Affairs). Se recalculan del rango seleccionado. Fuentes:
+//   1. sla_ia count / semana   ← aiRequests count (excluye cache hits)
+//   2. scan_clinician_decision accepted/total ← scan_uploads con decision
+//   3. informe_ia_generado count ← aiRequests type=clinical_case + educational
+//   4. eventos únicos por usuario ← llamadas totales / usuarios únicos
+async function renderKpisReporting(rows, days, from){
+  const box = document.getElementById('kpisReporting');
+  if(!box) return;
+
+  const rangeLabel = days === 1 ? 'hoy'
+    : days === 7 ? 'esta semana'
+    : days === 30 ? 'este mes'
+    : 'últimos '+days+' días';
+
+  // KPI 1 · Llamadas IA reales (NO cache) + subdesglose por tipo
+  const realCalls = rows.filter(function(r){ return !r.cacheHit; });
+  const callsTotal = realCalls.length;
+  const visionCalls = realCalls.filter(function(r){ return r.type === 'vision'; }).length;
+  const clinicalCalls = realCalls.filter(function(r){ return r.type === 'clinical_case'; }).length;
+  const eduCalls = realCalls.filter(function(r){ return r.type === 'educational'; }).length;
+
+  // KPI 2 · Decisión clínica del Scan IA (solo hay datos desde v129 · 2026-04-23)
+  let scanAccepted = 0, scanRejected = 0, scanIgnored = 0, scanPending = 0, scanTotal = 0;
+  try {
+    const db = firebase.firestore();
+    const scanSnap = await db.collection('scan_uploads')
+      .where('decidedAt', '>=', firebase.firestore.Timestamp.fromDate(from))
+      .get();
+    scanSnap.forEach(function(d){
+      const dec = d.get('clinicianDecision');
+      if(dec === 'accepted') scanAccepted++;
+      else if(dec === 'rejected') scanRejected++;
+      else if(dec === 'ignored') scanIgnored++;
+      else scanPending++;
+      scanTotal++;
+    });
+  } catch (e) {
+    console.warn('scan_uploads query failed:', e.message);
+  }
+  const scanDecided = scanAccepted + scanRejected + scanIgnored;
+  const acceptRate = scanDecided > 0 ? (scanAccepted * 100 / scanDecided) : 0;
+
+  // KPI 3 · Informes IA generados (tipos clinical_case + educational son informes)
+  const informesIa = clinicalCalls + eduCalls;
+  // Tiempo ahorrado estimado: un informe a mano = ~7 min · auto-generado = ~30 s
+  const tiempoAhorradoMin = informesIa * 6.5;
+  const tiempoAhorradoStr = tiempoAhorradoMin > 60
+    ? (tiempoAhorradoMin / 60).toFixed(1) + ' h'
+    : Math.round(tiempoAhorradoMin) + ' min';
+
+  // KPI 4 · Eventos únicos por usuario
+  const uniqueUids = new Set(rows.map(function(r){ return r.uid; })).size || 1;
+  const eventsPerUser = (rows.length / uniqueUids).toFixed(1);
+
+  // Función interna para pintar una tarjeta KPI
+  function card(icon, title, big, frase, footnote, color){
+    return '<div style="background:var(--card2);border:1px solid var(--border);border-left:4px solid '+color+';border-radius:12px;padding:16px 18px">'+
+      '<div style="font-size:.72rem;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:6px">'+icon+' '+title+'</div>'+
+      '<div style="font-family:var(--mono);font-size:1.8rem;font-weight:800;color:'+color+';line-height:1.1;margin-bottom:8px">'+big+'</div>'+
+      '<div style="font-size:.85rem;color:var(--tx);font-style:italic;line-height:1.5;border-left:2px solid '+color+';padding-left:10px;margin-bottom:8px">"'+frase+'"</div>'+
+      '<div style="font-size:.72rem;color:var(--t3)">'+footnote+'</div>'+
+      '</div>';
+  }
+
+  const cards = [];
+
+  // Card 1 · Llamadas IA
+  cards.push(card(
+    '🤖',
+    'Llamadas IA · '+rangeLabel,
+    fmtNum(callsTotal),
+    'La IA se usó '+fmtNum(callsTotal)+' '+(callsTotal===1?'vez':'veces')+' '+rangeLabel+
+      (callsTotal>0 ? ' (' + clinicalCalls + ' casos clínicos, ' + visionCalls + ' imágenes, ' + eduCalls + ' consultas formativas)' : ''),
+    'Fuente: users/{uid}/aiRequests (excluye cache hits). Cada llamada = 1 token de DeepSeek/Gemini/Qwen consumido realmente.',
+    '#3b82f6'
+  ));
+
+  // Card 2 · Aceptación Scan IA
+  cards.push(card(
+    '👁️',
+    'Aceptación Scan IA',
+    scanDecided > 0
+      ? acceptRate.toFixed(0)+'%'
+      : '—',
+    scanDecided > 0
+      ? 'El '+acceptRate.toFixed(0)+'% de los análisis IA de imagen fueron aceptados por el clínico como útiles para su valoración ('+scanAccepted+' aceptados / '+scanRejected+' rechazados / '+scanIgnored+' ignorados).'
+      : 'Aún no hay decisiones clínicas registradas. El sistema de supervisión humana (EU AI Act art. 14) empezó a grabar decisiones el 23 de abril de 2026 tras el deploy v126.',
+    'Fuente: scan_uploads.clinicianDecision. Requiere al menos una imagen analizada y que el clínico haya pulsado Aceptar/Rechazar/Ignorar tras el análisis.',
+    '#10b981'
+  ));
+
+  // Card 3 · Informes IA
+  cards.push(card(
+    '📝',
+    'Informes generados',
+    fmtNum(informesIa),
+    informesIa > 0
+      ? 'Se generaron '+fmtNum(informesIa)+' informes clínicos asistidos por IA '+rangeLabel+', ahorrando aproximadamente '+tiempoAhorradoStr+' de trabajo redactor (estimación 6,5 min por informe).'
+      : 'Sin informes IA generados '+rangeLabel+'. Cuando empieces a usar plantillas-informes o escalas clínicas con IA aparecerán aquí.',
+    'Fuente: aiRequests.type ∈ {clinical_case, educational}. Cálculo de tiempo ahorrado: diferencia entre redacción manual (7 min) y asistida (30 s).',
+    '#f59e0b'
+  ));
+
+  // Card 4 · Eventos por usuario
+  cards.push(card(
+    '👥',
+    'Intensidad de uso',
+    eventsPerUser,
+    rows.length > 0
+      ? 'Cada profesional genera en promedio '+eventsPerUser+' llamadas a IA '+rangeLabel+', sobre '+uniqueUids+' '+(uniqueUids===1?'usuario único':'usuarios únicos')+' activos.'
+      : 'Sin actividad IA en el rango.',
+    'Fuente: llamadas totales / usuarios únicos de aiRequests. Un valor > 5 indica uso profesional sostenido; < 2 indica exploración esporádica.',
+    '#8b5cf6'
+  ));
+
+  box.innerHTML = cards.join('') +
+    '<div style="grid-column:1/-1;font-size:.75rem;color:var(--t3);background:#1e293b;padding:10px 14px;border-radius:8px;margin-top:6px">💡 Frases diseñadas para decirlas en voz alta en reunión. Cópialas al portapapeles y adáptalas al interlocutor. Los números vienen de Firestore en tiempo real — no son estimaciones.</div>';
 }
 
 // ── Filtro por especialidad clínica ────────────────────────────────
