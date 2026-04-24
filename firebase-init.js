@@ -1,6 +1,9 @@
 // ══════════════════════════════════════════════════════════════════════
 // firebase-init.js — init compartido (un único sitio de verdad)
 // ══════════════════════════════════════════════════════════════════════
+// © 2026 Carlos Galera Román · Licencia propietaria · LPI 00765-03096622
+// Ver LICENSE y NOTICE.md · Reutilización requiere autorización escrita.
+// ══════════════════════════════════════════════════════════════════════
 // Carga en orden: firebase-app/auth/firestore/functions/app-check compat
 // + este init + ai-client.js.  Así cada HTML solo añade los <script src>.
 // ══════════════════════════════════════════════════════════════════════

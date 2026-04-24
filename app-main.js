@@ -1,3 +1,8 @@
+/* ══════════════════════════════════════════════════════════════════
+   app-main.js · Cartagenaeste core
+   © 2026 Carlos Galera Román · Licencia propietaria · LPI 00765-03096622
+   Ver LICENSE y NOTICE.md · Reutilización requiere autorización escrita.
+   ══════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════
    FIX 3: SECURE STORAGE — Encrypted localStorage with TTL

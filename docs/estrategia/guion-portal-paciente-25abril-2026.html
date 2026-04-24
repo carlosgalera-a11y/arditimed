@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guión · Sesión pacientes 25 abril 2026</title>
+<style>
+@page { size: A4; margin: 2cm 1.8cm; }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'Source Sans 3', 'Helvetica Neue', sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.55;
+  color: #1a202c;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+}
+h1 {
+  font-size: 22pt;
+  color: #0a4d35;
+  border-bottom: 3px solid #0f6b4a;
+  padding-bottom: 8px;
+  margin-top: 0;
+  page-break-after: avoid;
+}
+h2 {
+  font-size: 13pt;
+  color: #0a4d35;
+  margin-top: 1.4em;
+  border-left: 4px solid #10b981;
+  padding: 4px 10px;
+  background: #f0f9f4;
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+h3 { font-size: 11pt; color: #0f6b4a; margin-top: 1em; page-break-after: avoid; }
+p { margin: 0.5em 0; }
+blockquote {
+  border-left: 4px solid #0f6b4a;
+  padding: 10px 16px;
+  margin: 0.8em 0;
+  background: #f8fafc;
+  color: #334155;
+  page-break-inside: avoid;
+}
+blockquote p { margin: 0.5em 0; font-size: 10.5pt; line-height: 1.6; }
+strong { color: #0a4d35; }
+code { font-family: 'JetBrains Mono', 'Menlo', monospace; font-size: 9pt; background: #f0f4f8; padding: 1px 5px; border-radius: 3px; color: #334155; }
+hr { border: none; border-top: 1px dashed #cbd5e1; margin: 1.6em 0; }
+ul, ol { margin: 0.5em 0 0.8em 1.4em; padding-left: 0.5em; }
+li { margin: 0.2em 0; }
+.nota-ponente {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 6px 12px;
+  margin: 0.6em 0;
+  font-size: 9.5pt;
+  border-radius: 0 4px 4px 0;
+  color: #78350f;
+  page-break-inside: avoid;
+}
+.nota-ponente strong { color: #78350f; }
+pre {
+  background: #0f172a;
+  color: #f1f5f9;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 8pt;
+  line-height: 1.45;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  page-break-inside: avoid;
+}
+.cover {
+  text-align: center;
+  padding: 40px 10px 20px;
+  border: 2px solid #0f6b4a;
+  border-radius: 10px;
+  margin-bottom: 26px;
+  background: linear-gradient(135deg,#f0f9f4,#e6f4ed);
+}
+.cover h1 {
+  border: none;
+  font-size: 28pt;
+  margin-bottom: 6px;
+}
+.cover .subtitle {
+  font-size: 13pt;
+  color: #0a4d35;
+  font-weight: 600;
+}
+.cover .meta {
+  margin-top: 20px;
+  font-size: 10pt;
+  color: #555;
+  line-height: 1.8;
+}
+.footer-note {
+  margin-top: 3em;
+  padding-top: 1em;
+  border-top: 1px solid #e2e8f0;
+  font-size: 8.5pt;
+  color: #64748b;
+  text-align: center;
+  font-style: italic;
+}
+.slide-header {
+  background: #0a4d35;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 4px 4px 0 0;
+  display: inline-block;
+  font-size: 9.5pt;
+  font-weight: 700;
+  margin-top: 1.2em;
+  letter-spacing: 0.03em;
+}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>Guión · Sesión pacientes</h1>
+  <div class="subtitle">Portal del Paciente SMS + area2cartagena.es</div>
+  <div class="meta">
+    <div><strong>Dr. Carlos Galera Román</strong> · MFyC · H.G.U. Santa Lucía</div>
+    <div>25 de abril de 2026</div>
+    <div>Duración: 20 minutos · 20 diapositivas</div>
+    <div style="margin-top: 14px; font-size: 9pt; color: #78350f"><em>Documento interno · Para uso del ponente</em></div>
+  </div>
+</div>
+
+<h2>Antes de empezar</h2>
+<ul>
+  <li>Llega 15 min antes, prueba que la presentación se ve bien en el proyector.</li>
+  <li>Ten abierto en otra pestaña <code>https://sms.carm.es/ciudadano</code> por si quieres enseñarlo en vivo.</li>
+  <li>Lleva QR impresos (tamaño A5) con URL <code>https://area2cartagena.es/?utm_source=sesion-pacientes-25abril</code>.</li>
+  <li>Lleva el móvil a mano para demos rápidas si alguien pregunta.</li>
+</ul>
+
+<hr>
+
+<div class="slide-header">SLIDE 1 · Portada — 0:00 → 0:30 · 30 s</div>
+<blockquote>
+<p>Muy buenas tardes a todos. Soy Carlos Galera, médico de familia de este mismo centro. Hoy os voy a contar algo que puede cambiaros el día a día cuando tratáis con la sanidad pública: cómo usar <strong>dos herramientas gratuitas</strong> que os ahorran llamadas, viajes al ambulatorio y esperas.</p>
+<p>Una es oficial del Servicio Murciano de Salud. La otra la he hecho yo para vosotros. Las dos están en internet, en el móvil, y no cuestan nada.</p>
+<p>Son 20 minutos. Si al final queda tiempo, respondo preguntas.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> sonríe, relajado. Evita parecer profesoral.</div>
+
+<div class="slide-header">SLIDE 2 · De qué vamos a hablar — 0:30 → 1:30 · 60 s</div>
+<blockquote>
+<p>Dos herramientas. Muy distintas pero complementarias.</p>
+<p>La primera: <strong>el Portal del Paciente del SMS</strong>. Es la web oficial del sistema sanitario regional. Ahí vive vuestra historia clínica, vuestras citas, vuestras recetas, vuestras analíticas.</p>
+<p>La segunda: <strong>area2cartagena.es</strong>. Es una web que hice yo el año pasado porque me cansé de contarle a todos mis pacientes las mismas cosas en consulta: "qué tienes que traer", "qué es esta pastilla", "dónde tienes la farmacia de guardia". Todo eso ya está ahí, preparado, en español fácil.</p>
+<p>Las dos son gratis. Las dos funcionan en cualquier móvil, el vuestro, el de vuestros hijos. No piden datos bancarios. No venden vuestra información.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> pausa marcada después de "no venden vuestra información" — es un miedo común.</div>
+
+<div class="slide-header">SLIDE 3 · La tarjeta sanitaria — 1:30 → 2:30 · 60 s</div>
+<blockquote>
+<p>Antes de nada, el objeto estrella: la <strong>tarjeta sanitaria</strong>. Seguro que la tenéis en la cartera. Se la enseñan a todo Cristo pero en realidad es vuestra llave de acceso a muchísimas cosas.</p>
+<p>Fijaos en el <strong>número</strong>. Está debajo de vuestro nombre. Tiene letras y números. Ese número es único en el mundo, solo vuestro.</p>
+<p>Con la tarjeta podéis: pedir cita, acceder al Portal, recoger medicamentos de receta electrónica, ser atendidos en cualquier centro del SMS, y si viajáis por España, en cualquier otro centro público con la tarjeta SNS.</p>
+<p>Si la habéis perdido o está rota, al ambulatorio con el DNI y os dan una nueva gratis. O podéis llamar al <strong>900 878 300</strong>, un teléfono gratuito que resuelve 9 de cada 10 dudas.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> si alguien enseña su tarjeta, señala el número en la tuya propia.</div>
+
+<div class="slide-header">SLIDE 4 · Portal del Paciente en una frase — 2:30 → 3:30 · 60 s</div>
+<blockquote>
+<p>El <strong>Portal del Paciente</strong> es la ventanilla online del SMS. Todo lo que antes os obligaba a venir en persona al ambulatorio o a llamar por teléfono, desde el Portal lo hacéis en 3 minutos, desde el sofá de casa.</p>
+<p>La dirección es esta: <code>sms.carm.es/ciudadano</code>. Os la vais a encontrar en las últimas diapositivas, no hace falta apuntarla ahora.</p>
+<p>Tres cosas importantes:</p>
+<ol>
+  <li><strong>Está abierto las 24 horas del día.</strong> Podéis pedir cita a las 11 de la noche.</li>
+  <li><strong>Es gratuito.</strong> Como la sanidad pública.</li>
+  <li><strong>Es seguro.</strong> Solo entráis vosotros con vuestras claves.</li>
+</ol>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> la línea "solo entráis vosotros" suele relajar a la audiencia mayor que desconfía.</div>
+
+<div class="slide-header">SLIDE 5 · Qué podéis hacer desde el Portal — 3:30 → 5:00 · 90 s</div>
+<blockquote>
+<p>Seis cosas principales.</p>
+<p><strong>Pedir y cambiar citas.</strong> Con vuestro médico de familia, vuestra enfermera, o el pediatra si tenéis niños pequeños.</p>
+<p><strong>Ver vuestra medicación activa.</strong> Qué pastillas tenéis recetadas. Hasta cuándo están prescritas. Cuándo toca ir a la farmacia.</p>
+<p><strong>Consultar analíticas.</strong> Cuando vuestro médico firma los resultados, aparecen en el Portal. Los números, los valores normales, si algo sale alto o bajo.</p>
+<p><strong>Informes médicos.</strong> Si os han dado de alta en el hospital, o os ha visto un especialista, el informe queda ahí digital.</p>
+<p><strong>Calendario de vacunas.</strong> El vuestro y el de vuestros hijos menores de edad.</p>
+<p><strong>Gestión familiar.</strong> Para esto hablo más en detalle en una diapositiva más adelante.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> lee rápido los 6 bullets, todos igual de importantes.</div>
+
+<div class="slide-header">SLIDE 6 · Historia clínica digital — 5:00 → 6:00 · 60 s</div>
+<blockquote>
+<p>Lo que os habéis perdido: todo lo que vuestro médico escribe en consulta <strong>ya está guardado digitalmente</strong>. Desde el Portal podéis consultar vuestra propia historia.</p>
+<p>Veis vuestros diagnósticos crónicos (diabetes, tensión alta, tiroides…), las alergias que os han puesto, las operaciones que habéis tenido, las consultas.</p>
+<p>¿Por qué importa esto? Porque si un día vais a urgencias con un problema, el médico de guardia ve <strong>lo mismo que vosotros</strong>. No tenéis que contarlo todo de memoria. Si un nuevo especialista os ve, tampoco. Y si os mudáis, vuestra historia os sigue.</p>
+<p>Ahora, un consejo práctico: cuando vayáis a urgencias, <strong>traed apuntadas vuestras pastillas y vuestras alergias</strong>. Eso reduce errores y acelera vuestra atención.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> recalca "traed apuntadas". Conecta con el slide 17 de area2.</div>
+
+<div class="slide-header">SLIDE 7 · Pedir cita sin llamar — 6:00 → 7:00 · 60 s</div>
+<blockquote>
+<p>Compara antes y después.</p>
+<p><strong>Antes</strong>: llamáis a las 8 de la mañana, línea ocupada, esperáis 15 minutos, os dicen que no hay hueco hasta la semana siguiente, y cuando llega la cita no os acordáis de a qué hora era.</p>
+<p><strong>Con el Portal</strong>: entráis cuando os dé la gana. Veis todos los huecos libres en un calendario. Elegís el que mejor os venga. Y el sistema os <strong>manda un aviso automático el día antes</strong>.</p>
+<p>En serio, solo por esto ya merece la pena. Yo no he vuelto a llamar para pedir cita del dentista desde que uso el suyo equivalente.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> el comentario del dentista humaniza, reduce distancia.</div>
+
+<div class="slide-header">SLIDE 8 · Receta electrónica — 7:00 → 8:00 · 60 s</div>
+<blockquote>
+<p>La receta electrónica. Si tomáis algo crónico —y a estas edades casi todo el mundo lo toma— <strong>ya no tenéis que ir al ambulatorio a por el papelito de recetas</strong>.</p>
+<p>Vuestro médico os prescribe la medicación en el sistema. Vosotros vais a la farmacia con la tarjeta sanitaria. El farmacéutico lee la receta en su ordenador y os da la medicación. Fin.</p>
+<p>Y en el Portal podéis ver <strong>qué tenéis activo y hasta cuándo</strong>.</p>
+<p>Ojo: si una medicación se os acaba, o ya no aparece como "activa" en el Portal, <strong>pedid cita para renovarla con tiempo</strong>. No esperéis a quedaros sin. Eso es lo único que a veces falla.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> pausa en "no esperéis a quedaros sin" — es error común.</div>
+
+<div class="slide-header">SLIDE 9 · Analíticas — 8:00 → 9:00 · 60 s</div>
+<blockquote>
+<p>Analíticas. Una pregunta que me hacen muchísimo: "Doctor, ¿han llegado ya mis análisis?"</p>
+<p>Ya no tenéis que preguntármelo. Cuando os hacen un análisis de sangre u orina, los resultados entran al sistema y, en cuanto yo los firmo —tardo entre 24 y 72 horas dependiendo del volumen— <strong>aparecen en vuestro Portal</strong>.</p>
+<p>Veis los números. Veis los rangos normales. Veis si algo os sale en rojo.</p>
+<p>Pero aquí una advertencia importante: <strong>ver un valor fuera de rango no significa siempre un problema grave</strong>. Los valores dependen de la edad, del sexo, de la medicación, de la hora del día, de si habéis desayunado. Si veis algo raro, <strong>no entréis en pánico</strong>. Me lo preguntáis en la próxima consulta, o pedís cita para que os lo interprete.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> subraya "no entréis en pánico". Algunos pacientes se obsesionan con un "rojo".</div>
+
+<div class="slide-header">SLIDE 10 · Acceso familiar — 9:00 → 10:00 · 60 s</div>
+<blockquote>
+<p>Esto para los que cuidáis a mayores. Si tenéis un padre o una madre de 85 años que no se maneja con el móvil, <strong>podéis gestionar su Portal desde el vuestro</strong>.</p>
+<p>Se llama "representación". Se solicita <strong>una sola vez</strong> en el centro de salud de vuestro familiar, llevando su DNI y el vuestro. A partir de ese día, desde vuestra cuenta veis sus citas y su medicación.</p>
+<p>Esto cambia la vida a los cuidadores. Ya no tenéis que llevarles al ambulatorio cada vez que se les acaba una medicación o cada vez que necesitan un informe.</p>
+<p>Para <strong>hijos menores de 14 años</strong>, el acceso es automático: si sois padre o madre, veis su Portal desde el vuestro sin hacer nada.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> este slide suele provocar preguntas al final.</div>
+
+<div class="slide-header">SLIDE 11 · Cómo daros de alta · 4 pasos — 10:00 → 11:30 · 90 s</div>
+<blockquote>
+<p>Vamos a lo práctico: cómo os dais de alta en el Portal. Son <strong>4 pasos</strong>, solo la primera vez.</p>
+<p><strong>Paso 1: conseguir una clave.</strong> La más fácil se llama <strong>cl@ve PIN</strong>. Es un sistema del Gobierno de España que os manda un código por SMS cada vez que queráis entrar. Como los bancos, pero más simple.</p>
+<p><strong>Paso 2: daros de alta en cl@ve</strong>. Esto requiere ir en persona una vez. A una Oficina de la Seguridad Social, a la Agencia Tributaria, a veces al ambulatorio grande. Os identificáis con el DNI y os activan la cl@ve.</p>
+<p><strong>Paso 3: entrar al Portal.</strong> Vais a <code>sms.carm.es/ciudadano</code> y le dais al botón "Acceder con cl@ve".</p>
+<p><strong>Paso 4: vincular vuestra tarjeta sanitaria</strong> la primera vez. Ponéis el número de vuestra tarjeta. Y listo.</p>
+<p>¿Tiempo total? <strong>15–20 minutos la primera vez</strong>. A partir de ahí, <strong>10 segundos</strong> cada vez que entréis.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> este es EL slide. Enfatiza que la inversión inicial de 15 min ahorra horas al año.</div>
+
+<div class="slide-header">SLIDE 12 · Cl@ve PIN en detalle — 11:30 → 12:45 · 75 s</div>
+<blockquote>
+<p>Vamos con más detalle sobre <strong>cl@ve PIN</strong>, porque me van a preguntar.</p>
+<p>Necesitáis: DNI o NIE, un móvil con número español, e ir una sola vez a que os den de alta.</p>
+<p>Os dan de alta en: cualquier <strong>Oficina de la Seguridad Social</strong>, Oficinas de <strong>Agencia Tributaria</strong>, algunos ambulatorios grandes, y recientemente también <strong>por videollamada</strong> — esto último es lo más cómodo si tenéis internet en casa, lo buscáis en Google como "cl@ve videollamada".</p>
+<p>¿Cómo funciona después? Tres cosas: 1) Ponéis vuestro DNI en la web. 2) El sistema os manda un <strong>SMS con un código</strong>. Llega en 30 segundos. 3) Copiáis el código y ya estáis dentro.</p>
+<p>El mismo sistema lo usaréis para Hacienda, para la Seguridad Social, para las pensiones, para todo. Un alta, mil puertas abiertas.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> "un alta, mil puertas abiertas" — frase pegadiza, repite.</div>
+
+<div class="slide-header">SLIDE 13 · App Murciasalud — 12:45 → 13:45 · 60 s</div>
+<blockquote>
+<p>Hay una <strong>aplicación</strong> llamada "Murcia Salud". Es exactamente la misma información del Portal pero optimizada para el móvil.</p>
+<p>La descargáis gratis desde la App Store (iPhone) o el Play Store (Android). Buscáis "Murcia Salud" y es la primera que aparece.</p>
+<p>Ventajas respecto al navegador:</p>
+<ul>
+  <li>Os <strong>avisa con notificación</strong> antes de vuestra cita. Adiós a olvidaros de la hora.</li>
+  <li>En algunas farmacias ya aceptan la <strong>tarjeta digital</strong> directamente desde la app.</li>
+  <li>Podéis entrar con <strong>huella digital</strong>, más rápido que el SMS.</li>
+</ul>
+<p>Consejo: si os cuesta instalar apps en el móvil, <strong>pedidle a un hijo, un nieto, o un vecino joven</strong> que os la ponga la primera vez. Son 5 minutos.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> el comentario del "hijo/nieto/vecino" desarma la ansiedad tecnológica sin avergonzar.</div>
+
+<div class="slide-header">SLIDE 14 · Seguridad y privacidad — 13:45 → 14:45 · 60 s</div>
+<blockquote>
+<p>La pregunta que me hacéis más cuando hablamos de esto: <strong>"Doctor, ¿es seguro? ¿No verán mis cosas?"</strong></p>
+<p>Cuatro respuestas cortas:</p>
+<p><strong>Uno:</strong> Solo vosotros entráis. Ni Google, ni Facebook, ni ninguna empresa privada tiene acceso a vuestros datos.</p>
+<p><strong>Dos:</strong> Los datos están en España, con ley europea. La ley más estricta del mundo en protección de datos, el RGPD.</p>
+<p><strong>Tres:</strong> No se venden a aseguradoras ni a farmacéuticas. Es ilegal. La Consejería de Salud tiene obligación de no hacerlo.</p>
+<p><strong>Cuatro:</strong> Hay auditoría. Cada vez que un profesional sanitario entra en vuestra historia queda un registro.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> enumera rápido, uno dos tres cuatro, sin dramatismo.</div>
+
+<div class="slide-header">SLIDE 15 · Problemas frecuentes — 14:45 → 15:45 · 60 s</div>
+<blockquote>
+<p>Problemas típicos que os vais a encontrar.</p>
+<p><strong>"No me llega el SMS con el PIN."</strong> Cobertura. Esperad un minuto. Si nada, pedís otro. Si tampoco, llamáis al 900 878 300.</p>
+<p><strong>"Dice que mi tarjeta no existe."</strong> Puede estar caducada. Al ambulatorio con DNI, os la renuevan gratis.</p>
+<p><strong>"No aparecen mis analíticas."</strong> El médico aún no las ha firmado. 48–72 horas.</p>
+<p><strong>"He olvidado el PIN de cl@ve."</strong> Se pide uno nuevo desde la propia web de cl@ve.</p>
+<p><strong>"Quiero quitarme del Portal."</strong> No lo usáis y ya está. Para borrarse del todo: 900 878 300.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> lee rápido. Si alguien pregunta por uno concreto, expándete.</div>
+
+<div class="slide-header">SLIDE 16 · Transición a area2cartagena — 15:45 → 16:30 · 45 s</div>
+<blockquote>
+<p>Con esto acabamos la parte oficial. Ahora quiero enseñaros la segunda herramienta.</p>
+<p>Se llama <code>area2cartagena.es</code>. Es <strong>complementaria</strong> al Portal del SMS, no lo sustituye. Vive al lado.</p>
+<p>¿Qué os da? Lo que el Portal no os da: <strong>ayuda para preparar consultas</strong>, <strong>consejos de salud en español fácil</strong>, y <strong>recursos locales</strong> específicos de Cartagena y la comarca.</p>
+<p>Es gratis, la hice yo, y no pide ningún registro.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> pausa antes de la URL, cambio de ritmo, nueva sección.</div>
+
+<div class="slide-header">SLIDE 17 · Qué ofrece area2 a pacientes — 16:30 → 18:00 · 90 s</div>
+<blockquote>
+<p>Cuatro cosas concretas que encontraréis útiles.</p>
+<p><strong>Preparar la consulta.</strong> Antes de venir al médico, hay una sección que os dice qué preguntar, qué síntomas apuntar, qué llevar. Muchas veces llegáis a la consulta y os olvidáis de la mitad de las dudas. Con esto no.</p>
+<p><strong>Consulta rápida de medicación.</strong> Si tomáis varias pastillas, a veces os preguntáis si se llevan bien entre ellas. Ahí lo podéis mirar vosotros. Efectos secundarios comunes, interacciones básicas, recordatorios.</p>
+<p><strong>Consejos de salud.</strong> Fichas sobre diabetes, hipertensión, colesterol, EPOC, asma, insomnio… escritas <strong>para pacientes, no para médicos</strong>. Sin jerga, en español normal.</p>
+<p><strong>Recursos locales.</strong> Farmacias de guardia en Cartagena, teléfonos útiles del Área II, ayudas a domicilio, cómo pedir la dependencia. Todo adaptado a la comarca.</p>
+<p>Lo que no encontraréis ahí es vuestra historia clínica, ni vuestras citas del SMS. Eso sigue estando en el Portal del SMS. Insisto: <strong>area2 es complementaria</strong>, no lo sustituye.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> repite "complementaria, no lo sustituye" dos veces.</div>
+
+<div class="slide-header">SLIDE 18 · Cómo usar area2 · 0 fricción — 18:00 → 19:00 · 60 s</div>
+<blockquote>
+<p>Cómo entrar en area2. <strong>Cuatro pasos</strong> aún más fáciles que el Portal.</p>
+<p><strong>Uno: escaneáis el QR</strong> que os doy al salir de aquí. Con la cámara del móvil, os aparece la web directamente.</p>
+<p><strong>Dos: se abre la web</strong> en vuestro navegador, sin instalar nada.</p>
+<p><strong>Tres: la guardáis en favoritos</strong>. Así la próxima vez entráis con un toque.</p>
+<p><strong>Cuatro: usáis lo que os interese</strong>. No hay registro obligatorio. Ni DNI. Ni cuota. Nada.</p>
+<p>Si no os sirve, cerráis la pestaña y listo. Ningún compromiso.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> muestra el QR en alto al decir "escaneáis el QR". Quien quiera lo escanea ya.</div>
+
+<div class="slide-header">SLIDE 19 · Resumen — 19:00 → 19:30 · 30 s</div>
+<blockquote>
+<p>Resumen final. Cuatro direcciones que os quedan grabadas.</p>
+<p><code>sms.carm.es/ciudadano</code> — Portal oficial. Para citas, recetas, analíticas.<br>
+<strong>App Murcia Salud</strong> — Lo mismo pero en el móvil.<br>
+<strong>900 878 300</strong> — Teléfono gratuito de ayuda del SMS.<br>
+<code>area2cartagena.es</code> — Mi web. Complementaria, para preparar consultas y consejos.</p>
+<p>Dos oficiales y una mía. Usad todas.</p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> lee rápido, ritmo de cierre.</div>
+
+<div class="slide-header">SLIDE 20 · Cierre — 19:30 → 20:00 · 30 s</div>
+<blockquote>
+<p>Escanead el QR antes de iros. Probad las dos herramientas esta semana. Si al entrar en alguna os atascáis, apuntadme la duda y me la traéis a la próxima consulta. Yo os ayudo.</p>
+<p>Muchas gracias por haber venido.</p>
+<p><em>(aplausos — ofrecer tiempo para Q&A si la sala lo pide)</em></p>
+</blockquote>
+<div class="nota-ponente"><strong>Nota ponente:</strong> mantén el QR en alto mientras la gente se levanta.</div>
+
+<hr>
+
+<h2>Timing total</h2>
+<pre>
+Slide  1 · Portada                          0:00 → 0:30    ( 30 s)
+Slide  2 · De qué vamos a hablar            0:30 → 1:30    ( 60 s)
+Slide  3 · Tarjeta sanitaria                1:30 → 2:30    ( 60 s)
+Slide  4 · Portal en una frase              2:30 → 3:30    ( 60 s)
+Slide  5 · Qué puedes hacer                 3:30 → 5:00    ( 90 s)
+Slide  6 · Historia clínica                 5:00 → 6:00    ( 60 s)
+Slide  7 · Pedir cita                       6:00 → 7:00    ( 60 s)
+Slide  8 · Receta electrónica               7:00 → 8:00    ( 60 s)
+Slide  9 · Analíticas                       8:00 → 9:00    ( 60 s)
+Slide 10 · Acceso familiar                  9:00 → 10:00   ( 60 s)
+Slide 11 · 4 pasos alta                     10:00 → 11:30  ( 90 s)
+Slide 12 · Cl@ve PIN detalle                11:30 → 12:45  ( 75 s)
+Slide 13 · App Murciasalud                  12:45 → 13:45  ( 60 s)
+Slide 14 · Seguridad                        13:45 → 14:45  ( 60 s)
+Slide 15 · Problemas frecuentes             14:45 → 15:45  ( 60 s)
+Slide 16 · Transición                       15:45 → 16:30  ( 45 s)
+Slide 17 · area2 para pacientes             16:30 → 18:00  ( 90 s)
+Slide 18 · Cómo usar area2                  18:00 → 19:00  ( 60 s)
+Slide 19 · Resumen                          19:00 → 19:30  ( 30 s)
+Slide 20 · Cierre                           19:30 → 20:00  ( 30 s)
+                                            ────────────────────
+                                            TOTAL: 20:00
+</pre>
+
+<h2>Material de apoyo que debes llevar</h2>
+
+<h3>Impresiones (lleva 50–60 copias)</h3>
+<ul>
+  <li><strong>QR A5</strong> con URL <code>https://area2cartagena.es/?utm_source=sesion-pacientes-25abril</code></li>
+  <li><strong>Ficha resumen A4</strong> (opcional): con los 4 enlaces del slide 19 y el teléfono 900 878 300.</li>
+</ul>
+
+<h3>Demo en vivo (pestañas de Chrome ya abiertas)</h3>
+<ol>
+  <li><code>https://sms.carm.es/ciudadano</code> — portada del Portal.</li>
+  <li><code>https://area2cartagena.es/prepara-consulta.html</code> — ejemplo concreto.</li>
+  <li>Presentación en modo F11 (pantalla completa).</li>
+</ol>
+
+<h3>Preguntas tipo que te harán — respuestas preparadas</h3>
+<ul>
+  <li><strong>"¿Y si no tengo móvil?"</strong> → Se puede usar desde el ordenador de casa, o desde el de un hijo. El Portal está igualmente accesible.</li>
+  <li><strong>"¿Y si no tengo internet?"</strong> → La mayoría de centros de salud tienen WiFi público gratuito. Además, para cosas urgentes, el teléfono 900 878 300 cubre el 90% de gestiones.</li>
+  <li><strong>"¿Puedo ver las citas de mi marido?"</strong> → Sí, con representación autorizada en el ambulatorio. Una sola vez.</li>
+  <li><strong>"¿Tu web guarda mi DNI?"</strong> → No. area2cartagena no pide DNI ni email para la parte de pacientes. Para la parte de preparar consultas con IA (opcional) pide solo un email de Google, nada más.</li>
+</ul>
+
+<h2>Después de la sesión</h2>
+
+<h3>Inmediato (mismo día)</h3>
+<ul>
+  <li>Comprobar en admin-dashboard de area2 si han empezado a entrar visitas con <code>utm_source=sesion-pacientes-25abril</code>.</li>
+  <li>Anotar las preguntas que te hayan hecho (si hay patrón repetido, lo añades a la web como FAQ).</li>
+</ul>
+
+<h3>Al día siguiente (26 abril)</h3>
+<ul>
+  <li>Abrir GA4 filtrado por <code>utm_source=sesion-pacientes-25abril</code>.</li>
+  <li>Ver qué secciones han visitado más.</li>
+  <li>Si alguien ha contactado por email, responder en menos de 24h.</li>
+</ul>
+
+<h3>Primera semana</h3>
+<ul>
+  <li>Si alguien te lo pregunta en consulta, reforzar cómo darse de alta en el Portal (no asumir que todos lo hicieron ya).</li>
+  <li>Compartir en el grupo de WhatsApp del centro de salud el enlace a la presentación en PDF.</li>
+</ul>
+
+<div class="footer-note">
+  Guión generado 2026-04-24 · Revisión tras sesión 25 abr · © Carlos Galera Román · LPI 00765-03096622
+</div>
+
+</body>
+</html>

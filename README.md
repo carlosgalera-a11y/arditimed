@@ -10,9 +10,19 @@
 
 **Plataforma formativa y organizador personal de guardia** para profesionales sanitarios. En uso clínico activo en el Servicio de Urgencias del **H.G.U. Santa Lucía** (Área II Cartagena, SMS).
 
-🔗 **[Demo en vivo](https://area2cartagena.es/)** · 📊 **[Estado del servicio](https://area2cartagena.es/status.html)** · 📋 **[Privacidad](https://area2cartagena.es/privacidad.html)** · 📜 **[Licencia](LICENSE)** · 🛡️ **[Security](SECURITY.md)**
+🔗 **[Demo en vivo](https://area2cartagena.es/)** · 📊 **[Estado del servicio](https://area2cartagena.es/status.html)** · 📋 **[Privacidad](https://area2cartagena.es/privacidad.html)** · 📜 **[Licencia](LICENSE)** · ⚖️ **[NOTICE](NOTICE.md)** · 🛡️ **[Security](SECURITY.md)**
 
 > ⚠️ **Herramienta DOCENTE.** No diagnóstica. No sustituye el juicio clínico profesional.
+
+---
+
+## 🔒 AVISO LEGAL — LEER ANTES DE CLONAR
+
+> **Este código NO es open source.** Licencia **propietaria** registrada en la Propiedad Intelectual de la Región de Murcia (expediente **00765-03096622**, Art. 51 LPI).
+>
+> La visualización pública del repositorio sirve para **transparencia** y **evaluación técnica por terceros** (instituciones, inversores). Cualquier **clonado, reutilización, despliegue paralelo u obra derivada requiere LICENCIA por escrito** del autor.
+>
+> Ver [NOTICE.md](NOTICE.md) para los términos completos · Contacto para licencias: `carlosgalera2roman@gmail.com`
 
 ---
 

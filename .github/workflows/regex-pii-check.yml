@@ -19,14 +19,16 @@ jobs:
           ! grep -rnE '\b[0-9]{8}[A-HJ-NP-TV-Z]\b' \
             --include='*.html' --include='*.js' --include='*.ts' --include='*.md' \
             --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=functions/lib \
+            --exclude-dir=test \
             --exclude-dir=docs \
-            . || { echo '❌ Posible DNI real encontrado en código. Usar ejemplos como 12345678Z solo en docs/.' ; exit 1; }
+            . || { echo '❌ Posible DNI real encontrado en código. Usar ejemplos como 12345678Z solo en docs/ o functions/test/.' ; exit 1; }
 
       - name: NIE español (X/Y/Z + 7 dígitos + letra)
         run: |
           ! grep -rnE '\b[XYZ][0-9]{7}[A-HJ-NP-TV-Z]\b' \
             --include='*.html' --include='*.js' --include='*.ts' \
             --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=functions/lib \
+            --exclude-dir=test \
             . || { echo '❌ Posible NIE real encontrado en código.' ; exit 1; }
 
       - name: NHC / HCN / identificador paciente (patrones comunes)
@@ -35,6 +37,7 @@ jobs:
           ! grep -rniE '\b(NHC|HCN|historia[_-]?clinica[_-]?numero)[:=\s-]*[0-9]{6,}\b' \
             --include='*.html' --include='*.js' --include='*.ts' \
             --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=functions/lib \
+            --exclude-dir=test \
             . || { echo '❌ Posible NHC en código. Usar ejemplo NHC:XXXXXXXX (X) en docs/.' ; exit 1; }
 
       - name: Nombres completos frecuentes (heurística débil)

@@ -1,6 +1,9 @@
 // ══════════════════════════════════════════════════════════════════════
 // ai-client.js — Cliente único del frontend hacia la Cloud Function askAi
 // ══════════════════════════════════════════════════════════════════════
+// © 2026 Carlos Galera Román · Licencia propietaria · LPI 00765-03096622
+// Ver LICENSE y NOTICE.md · Reutilización requiere autorización escrita.
+// ══════════════════════════════════════════════════════════════════════
 // Toda llamada a IA del frontend pasa por aquí. Nunca claves en cliente.
 // Requiere: firebase-app-compat.js, firebase-auth-compat.js,
 //           firebase-functions-compat.js, firebase-app-check-compat.js

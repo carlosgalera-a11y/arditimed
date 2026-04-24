@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Portal del Paciente + area2cartagena.es · Sesión 25 abril 2026</title>
+<style>
+@page { size: 297mm 167mm; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: -apple-system, 'Source Sans 3', 'Helvetica Neue', sans-serif;
+  background: #0a0e1a;
+  color: #1a202c;
+  overflow-x: hidden;
+}
+.deck { width: 100%; }
+.slide {
+  width: 100vw;
+  height: 56.25vw;
+  max-height: 100vh;
+  max-width: 177.78vh;
+  margin: 0 auto;
+  padding: 48px 64px;
+  background: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  page-break-after: always;
+  overflow: hidden;
+  border-bottom: 2px solid #e2e8f0;
+}
+.slide-num {
+  position: absolute;
+  bottom: 20px;
+  right: 32px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #64748b;
+}
+.slide-brand {
+  position: absolute;
+  bottom: 20px;
+  left: 32px;
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+h1 { color: #0a4d35; font-size: 40px; margin-bottom: 16px; line-height: 1.1; }
+h1.xl { font-size: 52px; }
+h2 { color: #0a4d35; font-size: 32px; margin-bottom: 20px; line-height: 1.2; }
+h3 { color: #0f6b4a; font-size: 22px; margin-bottom: 12px; font-weight: 700; }
+p { font-size: 18px; line-height: 1.6; margin-bottom: 12px; color: #334155; }
+p.lead { font-size: 22px; color: #1a202c; font-weight: 500; }
+ul { margin: 0 0 12px 28px; font-size: 18px; line-height: 1.8; color: #334155; }
+ul li::marker { color: #0f6b4a; }
+strong { color: #0a4d35; }
+code { font-family: 'JetBrains Mono', 'Menlo', monospace; background: #f0f4f8; padding: 2px 8px; border-radius: 4px; font-size: 15px; color: #334155; }
+
+.cover {
+  background: linear-gradient(135deg, #0a4d35 0%, #0f6b4a 55%, #10b981 100%);
+  color: #fff;
+  align-items: flex-start;
+  justify-content: center;
+}
+.cover h1 { color: #fff; font-size: 56px; margin-bottom: 24px; }
+.cover p { color: rgba(255,255,255,.9); font-size: 24px; }
+.cover .meta { margin-top: 32px; font-size: 16px; color: rgba(255,255,255,.75); border-top: 2px solid rgba(255,255,255,.3); padding-top: 20px; max-width: 500px; }
+.cover .slide-num, .cover .slide-brand { color: rgba(255,255,255,.7); }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 12px;
+}
+.card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.card {
+  background: #f8fafc;
+  border-left: 4px solid #0f6b4a;
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+}
+.card .icon { font-size: 28px; margin-bottom: 8px; display: block; }
+.card h4 { color: #0a4d35; font-size: 18px; margin-bottom: 6px; font-weight: 700; }
+.card p { font-size: 15px; margin-bottom: 0; }
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+.step {
+  background: linear-gradient(135deg, #f0f9f4 0%, #e6f4ed 100%);
+  border: 2px solid #10b981;
+  border-radius: 12px;
+  padding: 18px 16px;
+  position: relative;
+}
+.step .num {
+  position: absolute;
+  top: -14px;
+  left: 14px;
+  background: #0a4d35;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+}
+.step h4 { color: #0a4d35; margin-top: 6px; font-size: 16px; margin-bottom: 6px; }
+.step p { font-size: 14px; margin: 0; line-height: 1.5; }
+
+.callout {
+  background: #fef3c7;
+  border-left: 5px solid #f59e0b;
+  padding: 14px 20px;
+  border-radius: 0 6px 6px 0;
+  margin-top: 16px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #78350f;
+}
+.callout.ok { background: #d1fae5; border-left-color: #10b981; color: #064e3b; }
+.callout.warn { background: #fee2e2; border-left-color: #ef4444; color: #7f1d1d; }
+
+.pill {
+  display: inline-block;
+  background: #0f6b4a;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+.pill.blue { background: #3b82f6; }
+.pill.purple { background: #8b5cf6; }
+.pill.amber { background: #f59e0b; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.big-url {
+  display: block;
+  background: #0a4d35;
+  color: #fff;
+  padding: 22px 32px;
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin: 18px 0;
+  letter-spacing: 0.02em;
+}
+
+.faq {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+.faq .q { font-weight: 700; color: #0a4d35; font-size: 17px; margin-bottom: 4px; }
+.faq .a { font-size: 15px; color: #475569; line-height: 1.5; }
+
+.closing {
+  background: linear-gradient(135deg, #0a4d35 0%, #10b981 100%);
+  color: #fff;
+  text-align: center;
+  align-items: center;
+}
+.closing h1 { color: #fff; font-size: 52px; }
+.closing p { color: rgba(255,255,255,.95); font-size: 22px; max-width: 700px; margin: 0 auto 12px; }
+
+.nav-hint {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0,0,0,.7);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 1000;
+}
+
+@media print {
+  .nav-hint { display: none; }
+  html, body { background: #fff; overflow: visible; }
+  .slide { max-height: none; page-break-after: always; border-bottom: none; }
+}
+</style>
+</head>
+<body>
+<div class="nav-hint">← → navegar · F11 fullscreen · ⌘P imprimir</div>
+
+<div class="deck">
+
+<!-- 1 — PORTADA -->
+<section class="slide cover">
+  <h1>Tu salud, en la palma de tu mano</h1>
+  <p>Portal del Paciente del Servicio Murciano de Salud + area2cartagena.es</p>
+  <div class="meta">
+    <div><strong>Dr. Carlos Galera Román · MFyC</strong></div>
+    <div>H.G.U. Santa Lucía · Área II Cartagena</div>
+    <div>Sesión para pacientes · 25 abril 2026</div>
+    <div>Duración: 20 minutos</div>
+  </div>
+  <div class="slide-num">1 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 2 — ¿De qué vamos a hablar? -->
+<section class="slide">
+  <h2>¿De qué vamos a hablar hoy?</h2>
+  <p class="lead">De dos herramientas <strong>gratuitas</strong> y <strong>seguras</strong> que os pueden ahorrar tiempo, viajes al ambulatorio y llamadas imposibles al centro de salud.</p>
+  <div class="card-grid">
+    <div class="card">
+      <span class="icon">🏥</span>
+      <h4>1. Portal del Paciente</h4>
+      <p>Oficial del Servicio Murciano de Salud. Con vuestra tarjeta sanitaria. Para citas, recetas, analíticas.</p>
+    </div>
+    <div class="card">
+      <span class="icon">📱</span>
+      <h4>2. area2cartagena.es</h4>
+      <p>Herramienta complementaria hecha por un médico de vuestro centro. Consejos de salud, preparar consultas, recursos locales.</p>
+    </div>
+  </div>
+  <div class="callout">💡 Las dos son <strong>gratuitas</strong>, están en <strong>español</strong>, no piden datos bancarios y funcionan desde cualquier móvil.</div>
+  <div class="slide-num">2 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 3 — La Tarjeta Sanitaria -->
+<section class="slide">
+  <h2>La tarjeta sanitaria: vuestra llave</h2>
+  <div class="two-col">
+    <div>
+      <p><strong>¿Qué es?</strong> Una tarjeta individual que os identifica dentro del Servicio Murciano de Salud.</p>
+      <p><strong>¿Dónde está el número?</strong> Debajo del nombre. Empieza normalmente por letras y tiene 14–16 caracteres.</p>
+      <p><strong>¿Y si la he perdido?</strong> Se pide una nueva en el ambulatorio o llamando al <code>900 878 300</code> (gratuito).</p>
+    </div>
+    <div>
+      <div class="card">
+        <span class="icon">💳</span>
+        <h4>Con la tarjeta sanitaria podéis</h4>
+        <ul style="font-size: 14px; margin-top: 6px; margin-left: 18px">
+          <li>Pedir cita con vuestro médico.</li>
+          <li>Acceder al Portal del Paciente.</li>
+          <li>Recoger medicación con la receta electrónica.</li>
+          <li>Ser atendidos en cualquier centro del SMS.</li>
+          <li>Ser atendidos en cualquier lugar de España (con la tarjeta SNS).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">3 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 4 — El Portal del Paciente en una frase -->
+<section class="slide">
+  <h2>El Portal del Paciente · en una frase</h2>
+  <p class="lead">Es <strong>la ventanilla online del Servicio Murciano de Salud</strong>. Desde el móvil o el ordenador de casa podéis hacer todo lo que antes os obligaba a ir en persona al ambulatorio o llamar por teléfono.</p>
+  <span class="big-url">sms.carm.es/ciudadano</span>
+  <div class="card-grid cols-3">
+    <div class="card">
+      <span class="icon">🕐</span>
+      <h4>24 horas al día</h4>
+      <p>Nunca cierra. Podéis pedir cita a las 11 de la noche.</p>
+    </div>
+    <div class="card">
+      <span class="icon">🆓</span>
+      <h4>Gratuito</h4>
+      <p>No cuesta nada entrar ni usarlo. Es un servicio público.</p>
+    </div>
+    <div class="card">
+      <span class="icon">🔐</span>
+      <h4>Seguro</h4>
+      <p>Solo entráis vosotros con vuestras claves. Nadie más ve los datos.</p>
+    </div>
+  </div>
+  <div class="slide-num">4 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 5 — ¿Qué se puede hacer desde el Portal? -->
+<section class="slide">
+  <h2>¿Qué podéis hacer desde el Portal?</h2>
+  <div class="card-grid">
+    <div class="card"><span class="icon">📅</span><h4>Pedir y cambiar citas</h4><p>Con vuestro médico de familia, enfermera y pediatra.</p></div>
+    <div class="card"><span class="icon">💊</span><h4>Ver vuestra medicación activa</h4><p>Qué pastillas tenéis recetadas y cuándo recogerlas en la farmacia.</p></div>
+    <div class="card"><span class="icon">🩸</span><h4>Consultar analíticas</h4><p>Resultados de sangre y orina, cuando el médico los firma.</p></div>
+    <div class="card"><span class="icon">📄</span><h4>Informes médicos</h4><p>Alta hospitalaria, consultas de especialistas, pruebas.</p></div>
+    <div class="card"><span class="icon">💉</span><h4>Calendario de vacunas</h4><p>Las vuestras y las de vuestros hijos menores.</p></div>
+    <div class="card"><span class="icon">👨‍👩‍👧</span><h4>Gestión familiar</h4><p>Podéis ver las citas y medicación de mayores a vuestro cargo.</p></div>
+  </div>
+  <div class="slide-num">5 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 6 — Historia clínica digital -->
+<section class="slide">
+  <h2>Vuestra historia clínica, digital</h2>
+  <p class="lead">Todo lo que vuestro médico escribe en la consulta <strong>ya está guardado digitalmente</strong>. Desde el Portal podéis consultarlo vosotros mismos.</p>
+  <div class="two-col">
+    <div>
+      <h3>Qué veis</h3>
+      <ul>
+        <li>Listado de diagnósticos crónicos (diabetes, hipertensión…).</li>
+        <li>Alergias conocidas.</li>
+        <li>Intervenciones quirúrgicas.</li>
+        <li>Consultas de los últimos años.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Por qué importa</h3>
+      <ul>
+        <li>Si vais a urgencias, el médico de guardia ve lo mismo que vosotros.</li>
+        <li>Si os ve un especialista nuevo, no tenéis que contarle todo de memoria.</li>
+        <li>Si os mudáis, la historia os sigue a cualquier centro del SMS.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout">📌 Traer preparada vuestra lista de medicación y alergias cuando vais a urgencias <strong>mejora vuestra atención</strong> y reduce errores.</div>
+  <div class="slide-num">6 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 7 — Pedir cita -->
+<section class="slide">
+  <h2>Pedir cita sin llamar por teléfono</h2>
+  <div class="two-col">
+    <div>
+      <h3>Antes</h3>
+      <ul>
+        <li>Llamar a las 8 de la mañana.</li>
+        <li>Línea ocupada 15 minutos.</li>
+        <li>"No hay hueco hasta la semana que viene".</li>
+        <li>Nos olvidamos de la hora.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Con el Portal</h3>
+      <ul>
+        <li>Entras a cualquier hora.</li>
+        <li>Ves todos los huecos disponibles.</li>
+        <li>Eliges el que mejor te venga.</li>
+        <li>Recibes <strong>aviso automático</strong> el día anterior.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout ok">✅ Ahorra tiempo · evita frustración · funciona cuando la centralita está colapsada.</div>
+  <div class="slide-num">7 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 8 — Receta electrónica -->
+<section class="slide">
+  <h2>La receta electrónica</h2>
+  <p class="lead">Si tenéis medicación crónica (hipertensión, colesterol, diabetes, tiroides…) <strong>ya no necesitáis recoger papel de recetas</strong> en el ambulatorio.</p>
+  <div class="card-grid">
+    <div class="card">
+      <span class="icon">📱</span>
+      <h4>Desde el Portal</h4>
+      <p>Veis qué medicación tenéis activa y hasta cuándo está prescrita.</p>
+    </div>
+    <div class="card">
+      <span class="icon">💊</span>
+      <h4>En la farmacia</h4>
+      <p>Lleváis la tarjeta sanitaria. El farmacéutico ve la receta en su sistema y os da la medicación.</p>
+    </div>
+  </div>
+  <div class="callout warn">⚠️ Si vuestra medicación ya no aparece como "activa" en el Portal, <strong>pedid cita</strong> a vuestro médico para renovarla. No esperéis a quedaros sin.</div>
+  <div class="slide-num">8 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 9 — Analíticas y resultados -->
+<section class="slide">
+  <h2>Analíticas: dejad de llamar para "ver si han llegado"</h2>
+  <div class="two-col">
+    <div>
+      <p>Cuando os hacen un análisis de sangre u orina, los resultados llegan al Portal <strong>en cuanto los firma el médico</strong> (suele ser 48–72 h).</p>
+      <p>Allí veis los números, los valores de referencia, y si algo está fuera de rango.</p>
+    </div>
+    <div>
+      <div class="card">
+        <h4>Pero ojo:</h4>
+        <p>Ver un valor <strong>fuera del rango</strong> NO significa siempre que haya un problema grave. Muchos valores dependen del contexto (edad, sexo, medicación, hora del día).</p>
+        <p><strong>Contactad con vuestro médico para interpretarlos</strong>, no entréis en pánico por un "rojo".</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">9 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 10 — Acceso familiar -->
+<section class="slide">
+  <h2>Acceso para familiares y mayores a cargo</h2>
+  <p class="lead">Si cuidáis a un familiar mayor que no se maneja con el móvil, <strong>podéis gestionar su Portal desde el vuestro</strong>.</p>
+  <div class="card-grid">
+    <div class="card">
+      <span class="icon">👵</span>
+      <h4>Padres mayores</h4>
+      <p>Si tienen más de 75 años o dificultad cognitiva, podéis solicitar en su centro de salud la autorización de "representación". Con eso veis sus citas y medicación desde vuestra cuenta.</p>
+    </div>
+    <div class="card">
+      <span class="icon">🧒</span>
+      <h4>Hijos menores</h4>
+      <p>Automáticamente visibles desde el Portal del padre/madre hasta que cumplen 14 años.</p>
+    </div>
+  </div>
+  <div class="callout">📋 La solicitud de representación se hace <strong>una sola vez</strong> en el ambulatorio. No hay que renovarla cada año.</div>
+  <div class="slide-num">10 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 11 — Cómo darse de alta: paso a paso -->
+<section class="slide">
+  <h2>Cómo daros de alta · 4 pasos</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h4>Conseguir una clave</h4>
+      <p>Cl@ve PIN (SMS al móvil) o certificado digital. Lo más fácil: cl@ve PIN.</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h4>Darse de alta en cl@ve</h4>
+      <p>En el ambulatorio, en una oficina de la Seguridad Social, o con videollamada.</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h4>Entrar al Portal</h4>
+      <p>Ir a <code>sms.carm.es/ciudadano</code> y darle a "Acceder con cl@ve".</p>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <h4>Vincular la tarjeta</h4>
+      <p>Introducir vuestro número de tarjeta sanitaria la primera vez. Ya está.</p>
+    </div>
+  </div>
+  <div class="callout ok">⏱️ Primera vez: <strong>15–20 minutos</strong>. A partir de entonces, <strong>10 segundos</strong> cada vez que entréis (PIN al móvil).</div>
+  <div class="slide-num">11 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 12 — Cl@ve PIN en detalle -->
+<section class="slide">
+  <h2>Cl@ve PIN · la opción más sencilla</h2>
+  <div class="two-col">
+    <div>
+      <h3>¿Qué necesitáis?</h3>
+      <ul>
+        <li>DNI o NIE.</li>
+        <li>Un móvil con número español registrado.</li>
+        <li>Ir <strong>una sola vez</strong> a que os den de alta.</li>
+      </ul>
+      <h3>¿Dónde os dan de alta?</h3>
+      <ul>
+        <li>Cualquier Oficina de la Seguridad Social.</li>
+        <li>Oficinas de la Agencia Tributaria.</li>
+        <li>Algunos ambulatorios grandes del SMS.</li>
+        <li>Por videollamada (consultar web de cl@ve).</li>
+      </ul>
+    </div>
+    <div>
+      <div class="card">
+        <span class="icon">📲</span>
+        <h4>Cómo funciona después</h4>
+        <p>Cada vez que queréis entrar al Portal:</p>
+        <ol style="font-size: 15px; margin-left: 18px; line-height: 1.7;">
+          <li>Ponéis vuestro DNI.</li>
+          <li>El sistema os manda un <strong>SMS con un código</strong>.</li>
+          <li>Copiáis el código.</li>
+          <li>Ya estáis dentro.</li>
+        </ol>
+        <p style="margin-top: 10px; font-size: 14px; color: #64748b;">El SMS llega en menos de 30 segundos. Si no llega, volvéis a pedirlo.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">12 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 13 — App Murciasalud -->
+<section class="slide">
+  <h2>La app "Murcia Salud" · Portal en el móvil</h2>
+  <div class="two-col">
+    <div>
+      <p class="lead">Es la misma información del Portal web pero <strong>optimizada para móvil</strong>.</p>
+      <p>Se descarga gratis desde:</p>
+      <ul>
+        <li><strong>iPhone:</strong> App Store → buscar "Murcia Salud".</li>
+        <li><strong>Android:</strong> Play Store → buscar "Murcia Salud".</li>
+      </ul>
+    </div>
+    <div>
+      <div class="card">
+        <h4>Ventajas de la app</h4>
+        <ul style="font-size: 15px; margin-top: 6px; margin-left: 18px">
+          <li><strong>Notificaciones</strong> antes de vuestra cita.</li>
+          <li>Podéis enseñar la tarjeta digital en la farmacia.</li>
+          <li>Todo en 3 toques de pantalla.</li>
+          <li>Acceso por huella digital (más rápido que el SMS).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="callout">💡 Si os cuesta el móvil, pedidle a un hijo, nieto o vecino que os lo instale la primera vez. Son 5 minutos.</div>
+  <div class="slide-num">13 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 14 — Seguridad y privacidad -->
+<section class="slide">
+  <h2>¿Es seguro? ¿Pueden ver mis datos otros?</h2>
+  <div class="card-grid">
+    <div class="card">
+      <span class="icon">🔒</span>
+      <h4>Solo vosotros</h4>
+      <p>Ni Google, ni Facebook, ni ninguna empresa privada tiene acceso a vuestros datos del Portal. Solo vosotros y vuestros profesionales sanitarios.</p>
+    </div>
+    <div class="card">
+      <span class="icon">🇪🇺</span>
+      <h4>Datos en Europa</h4>
+      <p>Todo está alojado en servidores del Gobierno de España, con el RGPD europeo (la ley de protección de datos más estricta del mundo).</p>
+    </div>
+    <div class="card">
+      <span class="icon">🚫</span>
+      <h4>No se comparte con aseguradoras</h4>
+      <p>Vuestros datos NO se venden a compañías de seguros privadas ni a farmacéuticas. Es ilegal.</p>
+    </div>
+    <div class="card">
+      <span class="icon">👁️</span>
+      <h4>Auditoría</h4>
+      <p>Cada vez que un profesional entra en vuestra historia queda registrado. Podéis pedir el log si os preocupa.</p>
+    </div>
+  </div>
+  <div class="slide-num">14 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 15 — Problemas frecuentes -->
+<section class="slide">
+  <h2>Problemas que veréis (y cómo resolverlos)</h2>
+  <div class="faq"><div class="q">❓ "No me llega el SMS con el PIN"</div><div class="a">Cobertura. Esperad 1 minuto. Si sigue sin llegar, volved a pedirlo. Si no llega ninguno, llamad al 900 878 300.</div></div>
+  <div class="faq"><div class="q">❓ "Dice que mi tarjeta no existe"</div><div class="a">Puede estar caducada. Acudid al ambulatorio con DNI para renovarla gratis.</div></div>
+  <div class="faq"><div class="q">❓ "No aparecen mis analíticas"</div><div class="a">El médico aún no las ha firmado. Suele tardar 48–72 h desde que os las hacen. Si pasa más de una semana, llamad a vuestro centro.</div></div>
+  <div class="faq"><div class="q">❓ "He olvidado el PIN de cl@ve"</div><div class="a">Podéis pedir uno nuevo desde la propia web de cl@ve, o reactivar en una oficina.</div></div>
+  <div class="faq"><div class="q">❓ "Quiero quitarme del Portal"</div><div class="a">Basta con no usarlo. No guarda datos nuevos si no entráis. Para borrar cuenta completa: 900 878 300.</div></div>
+  <div class="slide-num">15 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 16 — Transición a la webapp -->
+<section class="slide" style="background: linear-gradient(135deg, #f0f9f4, #fff);">
+  <h1 class="xl">Y ahora…</h1>
+  <h2>area2cartagena.es</h2>
+  <p class="lead">Una herramienta <strong>complementaria</strong>, hecha por un médico de vuestro centro, para <strong>preparar consultas</strong> y <strong>encontrar información de salud fiable</strong>.</p>
+  <p style="font-size: 18px; color: #64748b;">No sustituye al Portal del SMS. Vive <strong>al lado</strong> de él.</p>
+  <span class="big-url">area2cartagena.es</span>
+  <div class="slide-num">16 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 17 — Qué ofrece area2 a pacientes -->
+<section class="slide">
+  <h2>Qué ofrece area2cartagena para vosotros</h2>
+  <div class="card-grid">
+    <div class="card">
+      <span class="icon">📝</span>
+      <h4>Preparar la consulta</h4>
+      <p>Antes de ir al médico: qué preguntar, qué síntomas apuntar, qué llevar. Menos olvidos, consulta más útil.</p>
+    </div>
+    <div class="card">
+      <span class="icon">💊</span>
+      <h4>Consulta rápida de medicación</h4>
+      <p>Interacciones básicas entre pastillas, efectos secundarios comunes, recordatorios de tomas.</p>
+    </div>
+    <div class="card">
+      <span class="icon">🧠</span>
+      <h4>Consejos de salud</h4>
+      <p>Fichas claras de diabetes, hipertensión, colesterol, EPOC… escritas para pacientes, no para médicos.</p>
+    </div>
+    <div class="card">
+      <span class="icon">📍</span>
+      <h4>Recursos locales</h4>
+      <p>Farmacias de guardia, teléfonos útiles, ayudas a domicilio, dependencia. Todo de Cartagena y comarca.</p>
+    </div>
+  </div>
+  <div class="slide-num">17 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 18 — Cómo usar area2cartagena -->
+<section class="slide">
+  <h2>Cómo entrar y usarla · 0 fricción</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h4>Escanead el QR</h4>
+      <p>Con la cámara del móvil. Aparece en la hoja que os doy hoy.</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h4>Se abre la web</h4>
+      <p>En vuestro navegador, como cualquier página.</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h4>Guardad en favoritos</h4>
+      <p>Para volver a entrar con un toque, sin tener que escanear otra vez.</p>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <h4>Usad lo que os interese</h4>
+      <p>No hay registro obligatorio. Ni DNI. Ni cuota. Nada.</p>
+    </div>
+  </div>
+  <div class="callout ok">✅ <strong>Ni descargas</strong>, ni registros, ni datos personales. Si no os sirve, cerráis la pestaña y listo.</div>
+  <div class="slide-num">18 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 19 — Resumen -->
+<section class="slide">
+  <h2>Resumen · para recordar</h2>
+  <div class="two-col">
+    <div>
+      <h3>🏥 Portal del Paciente SMS</h3>
+      <ul>
+        <li><code>sms.carm.es/ciudadano</code></li>
+        <li>App <strong>"Murcia Salud"</strong> (iOS/Android).</li>
+        <li>Alta: con cl@ve PIN (SMS).</li>
+        <li>Para: citas, recetas, analíticas, informes.</li>
+        <li>Teléfono ayuda: <strong>900 878 300</strong>.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>📱 area2cartagena.es</h3>
+      <ul>
+        <li><code>area2cartagena.es</code></li>
+        <li>No hay app, es una web.</li>
+        <li>Alta: no hay registro obligatorio.</li>
+        <li>Para: preparar consultas, consejos de salud, recursos locales.</li>
+        <li>Hecha por: vuestro servidor 😊</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout">💬 Usad las dos juntas: el Portal para lo <strong>oficial</strong>, area2 para lo <strong>preparatorio y formativo</strong>.</div>
+  <div class="slide-num">19 / 20</div>
+  <div class="slide-brand">area2cartagena.es</div>
+</section>
+
+<!-- 20 — Cierre -->
+<section class="slide closing">
+  <h1>Gracias.</h1>
+  <p>Escanead el QR antes de iros.</p>
+  <p>Probadlo esta semana. Si tenéis dudas, me las traéis a la próxima consulta.</p>
+  <p style="margin-top: 32px; font-size: 20px;">📧 carlosgalera2roman [arroba] gmail [punto] com</p>
+  <p style="margin-top: 40px; font-size: 14px; color: rgba(255,255,255,.7);">Dr. Carlos Galera Román · H.G.U. Santa Lucía · Área II Cartagena · 2026</p>
+  <div class="slide-num" style="color:rgba(255,255,255,.7)">20 / 20</div>
+  <div class="slide-brand" style="color:rgba(255,255,255,.7)">area2cartagena.es</div>
+</section>
+
+</div>
+
+<script>
+// Navegación con teclas de flecha
+document.addEventListener('keydown', function(e){
+  const slides = document.querySelectorAll('.slide');
+  const current = Array.from(slides).findIndex(s => {
+    const r = s.getBoundingClientRect();
+    return r.top >= -10 && r.top <= window.innerHeight * 0.5;
+  });
+  if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){
+    const next = Math.min(current + 1, slides.length - 1);
+    slides[next].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    e.preventDefault();
+  }
+  if(e.key === 'ArrowLeft' || e.key === 'PageUp'){
+    const prev = Math.max(current - 1, 0);
+    slides[prev].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    e.preventDefault();
+  }
+  if(e.key === 'Home'){ slides[0].scrollIntoView({ behavior: 'smooth' }); e.preventDefault(); }
+  if(e.key === 'End'){ slides[slides.length-1].scrollIntoView({ behavior: 'smooth' }); e.preventDefault(); }
+});
+</script>
+</body>
+</html>

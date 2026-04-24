@@ -177,6 +177,42 @@ td.num{text-align:right;font-family:var(--mono)}
     </div>
   </div>
 
+  <div class="section" id="gaSection" style="border-left:4px solid var(--cyan)">
+    <h3>🌐 Tráfico web (GA4) <span class="meta" id="gaMeta">property 525246514</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Visitas totales a <code style="font-family:var(--mono)">area2cartagena.es</code> y <code style="font-family:var(--mono)">carlosgalera-a11y.github.io/Cartagenaeste/</code>. Datos agregados por Google Analytics 4; incluye sesiones no autenticadas (pacientes, visitantes anónimos). Latencia GA4 ~24h.</div>
+
+    <div class="range-tabs" id="gaFilterTabs" style="margin-bottom:14px">
+      <button class="range-tab active" data-host="all">🌐 Todos los dominios</button>
+      <button class="range-tab" data-host="area2">🟢 area2cartagena.es</button>
+      <button class="range-tab" data-host="github">🔵 github.io</button>
+    </div>
+
+    <div class="kpis" style="margin-bottom:14px">
+      <div class="kpi kpi-e"><div class="lbl">Usuarios hoy</div><div class="val" id="gaToday">—</div><div class="sub" id="gaTodaySub">cargando…</div></div>
+      <div class="kpi kpi-e"><div class="lbl">Usuarios 7 días</div><div class="val" id="ga7d">—</div><div class="sub" id="ga7dSub">sesiones/vistas</div></div>
+      <div class="kpi kpi-e"><div class="lbl">Usuarios 28 días</div><div class="val" id="ga28d">—</div><div class="sub" id="ga28dSub">sesiones/vistas</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🌍 Por dominio · 28 días</div>
+        <div id="gaByHost"><div class="loading"><span class="spin"></span>Consultando GA4…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📈 Usuarios diarios · 7 días</div>
+        <div style="position:relative;height:180px"><canvas id="gaDailyChart"></canvas></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📄 Top páginas · 28 días</div>
+        <div id="gaTopPages"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🎯 Top fuentes · 28 días</div>
+        <div id="gaTopSources"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+    </div>
+  </div>
+
   <div class="section">
     <h3>📆 Actividad diaria <span class="meta" id="tlMeta"></span></h3>
     <div class="timeline" id="timeline"><div class="loading"><span class="spin"></span>Cargando…</div></div>
@@ -201,6 +237,12 @@ td.num{text-align:right;font-family:var(--mono)}
     <h3>🏢 Distribución por dominio de email <span class="meta">infiere centro/servicio</span></h3>
     <div style="font-size:.8rem;color:var(--t3);margin-bottom:10px">Cruza cada UID que ha llamado a la IA con <code>users/&#123;uid&#125;.email</code> (escrito al login). Permite distinguir tráfico de Urgencias HSL (dominio institucional SMS) del tráfico residencial (gmail) y pacientes (móvil).</div>
     <div id="byDomain"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <div class="section" style="border-left:4px solid var(--amber)">
+    <h3>🔥 Gasto por proveedor IA · quién quema qué tokens <span class="meta">DeepSeek / Gemini / Qwen / Mistral</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:10px">Responde a dos preguntas operativas: <strong>(a)</strong> qué proveedor está consumiendo más créditos (DeepSeek suele ser el más usado) y <strong>(b)</strong> qué usuario concreto está disparando ese gasto. Útil para alertar antes de agotar créditos y para identificar early adopters reales.</div>
+    <div id="byProviderDetail"><div class="loading"><span class="spin"></span>Cargando…</div></div>
   </div>
 
   <div class="section">
@@ -253,10 +295,12 @@ td.num{text-align:right;font-family:var(--mono)}
 // ═══════════════════════════════════════════════════════════════════
 // Admin dashboard · solo Carlos
 // ═══════════════════════════════════════════════════════════════════
-// Emails admin autorizados. Ambos son del autor:
-//  · carlosgalera2roman@gmail.com = cuenta del autor en la app
-//  · ramongalera22@gmail.com      = cuenta owner del proyecto GCP/Firebase
-const ADMIN_EMAILS = ['carlosgalera2roman@gmail.com', 'ramongalera22@gmail.com'];
+// DASHBOARD_VIEWERS es estricto: solo la cuenta personal del autor
+// puede ver las métricas agregadas (IA, coste, GA4). Se mantiene
+// aparte de la lista de admins globales del resto de la app — así
+// si en el futuro se delega admin a más cuentas, el dashboard sigue
+// restringido a una única persona.
+const DASHBOARD_VIEWERS = ['carlosgalera2roman@gmail.com'];
 
 const gate = document.getElementById('gate');
 const dashboard = document.getElementById('dashboard');
@@ -270,10 +314,10 @@ firebase.auth().onAuthStateChanged(function(user){
     dashboard.style.display='none';
     return;
   }
-  if(ADMIN_EMAILS.indexOf((user.email||'').toLowerCase())<0){
+  if(DASHBOARD_VIEWERS.indexOf((user.email||'').toLowerCase())<0){
     gate.style.display='block';
     dashboard.style.display='none';
-    showErr('⛔ La cuenta '+user.email+' no está autorizada. Cierra sesión y entra con la cuenta admin.');
+    showErr('⛔ La cuenta '+user.email+' no está autorizada para ver este panel. El dashboard está restringido a la cuenta personal del autor.');
     return;
   }
   gate.style.display='none';
@@ -573,6 +617,65 @@ async function loadDashboard(days){
     '<div class="small" style="margin-top:10px;padding:8px 12px;background:#1e293b;border-radius:6px;color:var(--t2)">💡 Los UIDs sin registro de email son usuarios que entraron antes del deploy <strong>v129</strong> (2026-04-24). Tras su próximo login, el email se escribirá automáticamente y aparecerá aquí.</div>'
   ) : '<div class="empty">Sin datos para agrupar.</div>';
 
+  // ── Gasto por proveedor IA · quién quema qué tokens ──────────────
+  // Agrupa cada llamada por provider (deepseek / gemini / qwen / mistral)
+  // y dentro de cada uno identifica top 3 gastadores con email resuelto.
+  const providerGroups = {};
+  function providerBucket(model, provider){
+    const m = (model||'').toLowerCase();
+    const p = (provider||'').toLowerCase();
+    if(m.indexOf('deepseek')>=0 || p.indexOf('deepseek')>=0) return 'deepseek';
+    if(m.indexOf('gemini')>=0 || p.indexOf('gemini')>=0) return 'gemini';
+    if(m.indexOf('qwen')>=0 || p.indexOf('qwen')>=0) return 'qwen';
+    if(m.indexOf('mistral')>=0 || p.indexOf('mistral')>=0) return 'mistral';
+    if(m.indexOf('claude')>=0 || p.indexOf('claude')>=0 || p.indexOf('anthropic')>=0) return 'claude';
+    return p || 'otro';
+  }
+  rows.forEach(function(r){
+    const bucket = providerBucket(r.model, r.provider);
+    if(!providerGroups[bucket]) providerGroups[bucket] = { provider: bucket, calls:0, tokens:0, cost:0, byUid:{} };
+    const g = providerGroups[bucket];
+    g.calls++;
+    g.tokens += r.tokensIn + r.tokensOut;
+    g.cost += r.costEstimateEur;
+    if(!g.byUid[r.uid]) g.byUid[r.uid] = { uid:r.uid, calls:0, tokens:0, cost:0 };
+    g.byUid[r.uid].calls++;
+    g.byUid[r.uid].tokens += r.tokensIn + r.tokensOut;
+    g.byUid[r.uid].cost += r.costEstimateEur;
+  });
+  const PROVIDER_META = {
+    deepseek: { emoji:'🟦', label:'DeepSeek',  credits:'consume créditos OpenRouter o directo DeepSeek' },
+    gemini:   { emoji:'🟧', label:'Gemini',    credits:'Google AI Studio · cuota gratuita amplia' },
+    qwen:     { emoji:'🟪', label:'Qwen (visión)', credits:'DashScope Intl / OpenRouter' },
+    mistral:  { emoji:'🟥', label:'Mistral',   credits:'OpenRouter' },
+    claude:   { emoji:'🟫', label:'Claude',    credits:'Anthropic' },
+    otro:     { emoji:'⬜', label:'Otro',      credits:'proveedor sin clasificar' }
+  };
+  const pvList = Object.values(providerGroups).sort(function(a,b){ return b.cost - a.cost; });
+  const pvMaxCost = Math.max.apply(null, pvList.map(function(p){return p.cost;}).concat([0.0001]));
+  document.getElementById('byProviderDetail').innerHTML = pvList.length ? (
+    '<table><thead><tr><th>Proveedor</th><th class="num">Llamadas</th><th class="num">Tokens</th><th class="num">Coste</th><th>Top 3 gastadores</th><th>Uso</th></tr></thead><tbody>' +
+    pvList.map(function(g){
+      const meta = PROVIDER_META[g.provider] || { emoji:'⬜', label:g.provider, credits:'' };
+      const topU = Object.values(g.byUid).sort(function(a,b){ return b.cost - a.cost; }).slice(0,3);
+      const topUHtml = topU.map(function(u){
+        const p = profile[u.uid] || {};
+        const who = p.email || p.displayName || shortUid(u.uid);
+        return '<div style="font-size:.78rem;line-height:1.4"><span style="font-family:var(--mono);color:var(--tx)">'+who+'</span> <span class="small" style="color:var(--t3)">· '+fmtNum(u.calls)+' llamadas · '+fmtEur(u.cost)+'</span></div>';
+      }).join('') || '<span class="small" style="color:var(--t3)">sin datos</span>';
+      const pct = (g.cost/pvMaxCost)*100;
+      return '<tr>' +
+        '<td><span style="font-size:1.1rem">'+meta.emoji+'</span> <strong>'+meta.label+'</strong><br><span class="small" style="color:var(--t3)">'+meta.credits+'</span></td>' +
+        '<td class="num">'+fmtNum(g.calls)+'</td>' +
+        '<td class="num">'+fmtNum(g.tokens)+'</td>' +
+        '<td class="num"><strong>'+fmtEur(g.cost)+'</strong></td>' +
+        '<td>'+topUHtml+'</td>' +
+        '<td><div class="bar-wrap"><div class="bar b-cost" style="width:'+pct+'%"></div></div></td>' +
+      '</tr>';
+    }).join('') + '</tbody></table>' +
+    '<div class="small" style="margin-top:10px;padding:8px 12px;background:#1e293b;border-radius:6px;color:var(--t2)">💡 Si DeepSeek lidera el ranking, confirma que la cadena de fallback funciona (la jerarquía definida en <code style="font-family:var(--mono)">functions/src/routing.ts</code> pone DeepSeek V3 como primario en <code>educational</code> y Qwen-VL en <code>vision</code>). El top 3 por proveedor ayuda a identificar cuentas muy intensivas antes de que agoten créditos.</div>'
+  ) : '<div class="empty">Sin llamadas en este rango.</div>';
+
   // Today's admin quota
   try{
     const admin = firebase.auth().currentUser;
@@ -630,6 +733,151 @@ async function loadDashboard(days){
   }catch(e){ /* silencioso si no hay permisos */ }
   renderCentros();
   loadSlaPanel();
+  loadGaMetrics(__gaFilter);
+}
+
+// Segmented control del filtro GA4 (Todos / area2 / github)
+document.addEventListener('DOMContentLoaded', function(){
+  const tabs = document.getElementById('gaFilterTabs');
+  if(!tabs) return;
+  tabs.querySelectorAll('.range-tab').forEach(function(btn){
+    btn.onclick = function(){
+      tabs.querySelectorAll('.range-tab').forEach(function(x){ x.classList.remove('active'); });
+      btn.classList.add('active');
+      loadGaMetrics(btn.dataset.host || 'all');
+    };
+  });
+});
+
+// ── Tráfico web GA4 (Cloud Function getGaMetrics) ─────────────────
+// Caché 5 min en sessionStorage (por filtro) para no saturar la cuota de
+// GA4 Data API al alternar entre filtros o refrescar el dashboard.
+let __gaInflight = null;
+let __gaFilter = 'all';
+async function loadGaMetrics(filter){
+  const CACHE_TTL_MS = 5 * 60 * 1000;
+  const f = (filter === 'area2' || filter === 'github') ? filter : 'all';
+  __gaFilter = f;
+  const CACHE_KEY = 'cart_ga_metrics_v1_' + f;
+  try{
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if(cached){
+      const parsed = JSON.parse(cached);
+      if(parsed && (Date.now() - parsed.ts) < CACHE_TTL_MS){
+        renderGaMetrics(parsed.data);
+        return;
+      }
+    }
+  }catch(e){}
+
+  if(__gaInflight) return __gaInflight;
+  ['gaByHost','gaTopPages','gaTopSources'].forEach(function(id){
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = '<div class="loading"><span class="spin"></span>Consultando GA4…</div>';
+  });
+  __gaInflight = (async function(){
+    try{
+      const fn = firebase.app().functions('europe-west1').httpsCallable('getGaMetrics');
+      const res = await fn({ hostname: f });
+      const data = res.data;
+      try{ sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); }catch(e){}
+      renderGaMetrics(data);
+    }catch(e){
+      const msg = (e && e.message) ? e.message : String(e);
+      const metaEl = document.getElementById('gaMeta');
+      if(metaEl) metaEl.textContent = 'error · ' + msg.substring(0,80);
+      ['gaToday','ga7d','ga28d'].forEach(function(id){
+        const el = document.getElementById(id); if(el) el.textContent = '—';
+      });
+      ['gaByHost','gaTopPages','gaTopSources'].forEach(function(id){
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = '<div class="empty">'+msg+'</div>';
+      });
+      console.error('getGaMetrics error:', e);
+    }finally{
+      __gaInflight = null;
+    }
+  })();
+  return __gaInflight;
+}
+
+function renderGaMetrics(d){
+  if(!d) return;
+  const r = d.ranges || {};
+  function fill(id, val){ const el = document.getElementById(id); if(el) el.textContent = fmtNum(val||0); }
+  fill('gaToday', (r.today||{}).users);
+  fill('ga7d',   (r.last7d||{}).users);
+  fill('ga28d',  (r.last28d||{}).users);
+  function sub(id, ranges){
+    const el = document.getElementById(id); if(!el) return;
+    el.textContent = fmtNum(ranges.sessions||0)+' sesiones · '+fmtNum(ranges.views||0)+' vistas';
+  }
+  sub('gaTodaySub', r.today||{});
+  sub('ga7dSub',   r.last7d||{});
+  sub('ga28dSub',  r.last28d||{});
+
+  const metaEl = document.getElementById('gaMeta');
+  if(metaEl && d.generatedAt){
+    const filterLabel = d.appliedFilter === 'area2' ? ' · filtro: area2cartagena.es'
+      : d.appliedFilter === 'github' ? ' · filtro: github.io'
+      : '';
+    metaEl.textContent = 'property '+(d.propertyId||'—')+' · '+new Date(d.generatedAt).toLocaleTimeString('es-ES') + filterLabel;
+  }
+
+  // Tabla por hostname
+  const hostEl = document.getElementById('gaByHost');
+  if(hostEl){
+    const hosts = d.byHostname28d || [];
+    if(hosts.length){
+      const maxUsers = Math.max.apply(null, hosts.map(function(h){return h.users||0;})) || 1;
+      hostEl.innerHTML = '<table><thead><tr><th>Dominio</th><th class="num">Usuarios</th><th>Proporción</th></tr></thead><tbody>' +
+        hosts.map(function(h){
+          const pct = ((h.users||0)/maxUsers*100).toFixed(0);
+          const label = h.hostname || '(desconocido)';
+          const isProd = label.indexOf('area2cartagena.es') === 0;
+          const icon = isProd ? '🟢' : (label.indexOf('github.io') >= 0 ? '🔵' : '⚪');
+          return '<tr><td class="small">'+icon+' <code style="font-family:var(--mono);font-size:.76rem">'+label+'</code></td><td class="num">'+fmtNum(h.users||0)+'</td><td><div class="bar-wrap"><div class="bar" style="width:'+pct+'%"></div></div></td></tr>';
+        }).join('') + '</tbody></table>';
+    } else {
+      hostEl.innerHTML = '<div class="empty">Sin datos de GA4 aún. Tras el despliegue del nuevo tag, tardan hasta 24 h en aparecer visitas.</div>';
+    }
+  }
+
+  // Gráfica de usuarios diarios (7 días)
+  if(typeof Chart !== 'undefined' && d.daily7d){
+    const labels = d.daily7d.map(function(p){ return (p.date||'').substring(5); });
+    const values = d.daily7d.map(function(p){ return p.users||0; });
+    drawLineChart('gaDailyChart', labels, values, 'Usuarios', '#06b6d4');
+  }
+
+  // Top páginas
+  const pagesEl = document.getElementById('gaTopPages');
+  if(pagesEl){
+    const pages = d.topPages28d || [];
+    if(pages.length){
+      pagesEl.innerHTML = '<table><thead><tr><th>Página</th><th class="num">Vistas</th></tr></thead><tbody>' +
+        pages.map(function(p){
+          const title = (p.title||'').substring(0,50) || p.path || '—';
+          return '<tr><td class="small" title="'+(p.path||'').replace(/"/g,'&quot;')+'">'+title+'</td><td class="num">'+fmtNum(p.views||0)+'</td></tr>';
+        }).join('') + '</tbody></table>';
+    } else {
+      pagesEl.innerHTML = '<div class="empty">Sin páginas todavía.</div>';
+    }
+  }
+
+  // Top fuentes de tráfico
+  const srcEl = document.getElementById('gaTopSources');
+  if(srcEl){
+    const sources = d.topSources28d || [];
+    if(sources.length){
+      srcEl.innerHTML = '<table><thead><tr><th>Origen / medio</th><th class="num">Sesiones</th></tr></thead><tbody>' +
+        sources.map(function(s){
+          return '<tr><td class="small"><code style="font-family:var(--mono);font-size:.76rem">'+(s.source||'(direct)')+' / '+(s.medium||'(none)')+'</code></td><td class="num">'+fmtNum(s.sessions||0)+'</td></tr>';
+        }).join('') + '</tbody></table>';
+    } else {
+      srcEl.innerHTML = '<div class="empty">Sin fuentes todavía.</div>';
+    }
+  }
 }
 
 // ── Panel SLA IA por proveedor (metrics_snapshots daily) ──────────

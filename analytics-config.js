@@ -1,6 +1,9 @@
 /* ══════════════════════════════════════════════════════════════════
    ANALYTICS-CONFIG.JS · Telemetría centralizada Cartagenaeste
    ══════════════════════════════════════════════════════════════════
+   © 2026 Carlos Galera Román · Licencia propietaria · LPI 00765-03096622
+   Ver LICENSE y NOTICE.md · Reutilización requiere autorización escrita.
+   ══════════════════════════════════════════════════════════════════
    ÚNICO PUNTO DE CONFIGURACIÓN DE GA4.
 
    → Para activar en producción con tu ID real:
@@ -23,7 +26,11 @@
   // ───── CONFIG ───── Cambia GA_ID por tu Measurement ID real.
   // Formato: "G-XXXXXXXXXX". Si se queda en el placeholder, la
   // librería simplemente no carga (modo no-op, seguro en prod).
-  var GA_ID = 'G-JW29V64END';
+  // Propiedad GA4 `docenciacartagenaeste` (ID 525246514) dentro del mismo
+  // proyecto Firebase. El tag anterior G-JW29V64END apuntaba a una propiedad
+  // huérfana del proyecto ARDITI; se cambió para consolidar la telemetría
+  // bajo el proyecto GCP oficial.
+  var GA_ID = 'G-DYDVR0N44D';
 
   var isValid = /^G-[A-Z0-9]{6,}$/.test(GA_ID);
 
