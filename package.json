@@ -1,0 +1,18 @@
+{
+  "name": "cartagenaeste-root",
+  "version": "1.0.0",
+  "description": "Tooling root: tests E2E + a11y. Frontend en HTML estático servido por GitHub Pages; functions/ tiene su propio package.json.",
+  "private": true,
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:ui": "playwright test --ui",
+    "e2e:local": "E2E_BASE_URL=http://127.0.0.1:5500 playwright test",
+    "e2e:install": "playwright install --with-deps chromium firefox",
+    "e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.48.0"
+  }
+}

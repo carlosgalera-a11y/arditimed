@@ -37,3 +37,8 @@ Thumbs.db
 
 # ── Claude Code workspace ──
 .claude/
+
+# E2E tests (root)
+node_modules/
+playwright-report/
+test-results/
