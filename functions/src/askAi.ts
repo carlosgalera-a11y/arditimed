@@ -10,6 +10,7 @@ import { getCached, setCached, hashKey } from './cache';
 import { checkIpRateLimit } from './rateLimit';
 import { buildProviderChain, tryProviderChain } from './routing';
 import { logAiCall, logSecurityEvent, estimateCostEur } from './logging';
+import { initSentry, captureException, setUser, SENTRY_DSN } from './sentry';
 
 // Secretos OBLIGATORIOS — deploy falla si faltan.
 const DEEPSEEK_API_KEY = defineSecret('DEEPSEEK_API_KEY');
@@ -40,7 +41,7 @@ function extractIp(raw: unknown): string {
 export const askAi = onCall(
   {
     region: 'europe-west1',
-    secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY],
+    secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY, SENTRY_DSN],
     // TODO: reactivar a true cuando el frontend envíe token App Check.
     // Requiere: reCAPTCHA v3 site key + window.RECAPTCHA_SITE_KEY + firebase.appCheck().activate(...).
     // Ver docs/s1.2-deploy-pendiente-carlos.md §3.
@@ -57,6 +58,7 @@ export const askAi = onCall(
     ],
   },
   async (request): Promise<AskAiResponse> => {
+    initSentry();
     const start = Date.now();
     const db = getFirestore(getApp());
 
@@ -65,6 +67,7 @@ export const askAi = onCall(
       throw new HttpsError('unauthenticated', 'Debes iniciar sesión para usar la IA.');
     }
     const uid = request.auth.uid;
+    setUser(uid);
 
     // ─── Validación input ──────────────────────────────────
     const raw = (request.data ?? {}) as Partial<AskAiRequest>;
@@ -169,6 +172,7 @@ export const askAi = onCall(
         promptHash: cacheableKey,
         error: msg,
       });
+      captureException(e, { type, model: effectiveModel, uid });
       throw new HttpsError('unavailable', 'Servicio IA temporalmente no disponible. Reintenta en 1 minuto.');
     }
 
