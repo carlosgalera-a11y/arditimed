@@ -1,0 +1,25 @@
+{
+  "displayName": "askAi · error rate >5% en 10 min · ALTA",
+  "documentation": {
+    "content": "Más del 5% de invocaciones a `askAi` están devolviendo 5xx en los últimos 10 minutos. Causas habituales: secret expirado (DEEPSEEK_API_KEY/OPENROUTER_API_KEY), provider IA caído, deploy roto.\n\nAcciones:\n1. Revisar logs: https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%20resource.labels.service_name%3D%22askai%22%20severity%3E%3DERROR?project=docenciacartagenaeste\n2. Comprobar status providers: https://status.deepseek.com / https://status.openrouter.ai\n3. Verificar secrets: `firebase functions:secrets:access DEEPSEEK_API_KEY`",
+    "mimeType": "text/markdown"
+  },
+  "conditions": [{
+    "displayName": "5xx ratio > 5%",
+    "conditionThreshold": {
+      "filter": "metric.type=\"run.googleapis.com/request_count\" resource.type=\"cloud_run_revision\" resource.label.\"service_name\"=\"askai\" metric.label.\"response_code_class\"=\"5xx\"",
+      "aggregations": [{
+        "alignmentPeriod": "600s",
+        "perSeriesAligner": "ALIGN_RATE",
+        "crossSeriesReducer": "REDUCE_SUM"
+      }],
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 0.05,
+      "duration": "600s"
+    }
+  }],
+  "alertStrategy": { "autoClose": "1800s" },
+  "combiner": "OR",
+  "enabled": true,
+  "severity": "ERROR"
+}

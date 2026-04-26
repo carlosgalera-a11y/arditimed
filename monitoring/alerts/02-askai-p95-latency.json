@@ -1,0 +1,25 @@
+{
+  "displayName": "askAi · p95 latencia >8s en 5 min · MEDIA",
+  "documentation": {
+    "content": "El percentil 95 de latencia de `askAi` ha estado por encima de 8s durante 5 minutos. Si persiste, los usuarios verán timeouts (default 30s en navegador) o respuestas IA lentas.\n\nCausas habituales:\n- Provider IA primario lento → fallback dispara cadena (suma latencia).\n- Cold start prolongado tras tag de despliegue (minInstances=1 lo mitiga pero no elimina).\n- Cache miss masivo (aiCache TTL agotado por update masivo).\n\nLogs: https://console.cloud.google.com/run/detail/europe-west1/askai/logs?project=docenciacartagenaeste",
+    "mimeType": "text/markdown"
+  },
+  "conditions": [{
+    "displayName": "p95 latency > 8000ms",
+    "conditionThreshold": {
+      "filter": "metric.type=\"run.googleapis.com/request_latencies\" resource.type=\"cloud_run_revision\" resource.label.\"service_name\"=\"askai\"",
+      "aggregations": [{
+        "alignmentPeriod": "300s",
+        "perSeriesAligner": "ALIGN_DELTA",
+        "crossSeriesReducer": "REDUCE_PERCENTILE_95"
+      }],
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 8000,
+      "duration": "300s"
+    }
+  }],
+  "alertStrategy": { "autoClose": "1800s" },
+  "combiner": "OR",
+  "enabled": true,
+  "severity": "WARNING"
+}

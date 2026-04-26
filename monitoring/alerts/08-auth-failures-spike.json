@@ -1,0 +1,25 @@
+{
+  "displayName": "Auth · spike de fallos sign-in · MEDIA",
+  "documentation": {
+    "content": "Más de 50 fallos de autenticación por minuto. Causas:\n\n- Bot de credential stuffing apuntando al endpoint de email/password (poco probable con magic link).\n- Provider Google OAuth con rate limit en tu OAuth client.\n- Misconfig: dominio no autorizado en Firebase Authorized Domains.\n\nDashboard: https://console.firebase.google.com/project/docenciacartagenaeste/authentication/users",
+    "mimeType": "text/markdown"
+  },
+  "conditions": [{
+    "displayName": "sign-in failures > 50/min",
+    "conditionThreshold": {
+      "filter": "metric.type=\"firebaseauth.googleapis.com/user/sign_in_failure_count\" resource.type=\"firebase_namespace\"",
+      "aggregations": [{
+        "alignmentPeriod": "60s",
+        "perSeriesAligner": "ALIGN_RATE",
+        "crossSeriesReducer": "REDUCE_SUM"
+      }],
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 50,
+      "duration": "60s"
+    }
+  }],
+  "alertStrategy": { "autoClose": "1800s" },
+  "combiner": "OR",
+  "enabled": true,
+  "severity": "WARNING"
+}

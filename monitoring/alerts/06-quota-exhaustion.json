@@ -1,0 +1,25 @@
+{
+  "displayName": "askAi · cuotas IA agotadas · MEDIA",
+  "documentation": {
+    "content": "Más del 30% de invocaciones a `askAi` están devolviendo `resource-exhausted` (cuota 50/usuario/día agotada o rate-limit 30/min/IP).\n\nSi es sostenido, indica:\n- Pico de uso real → considerar subir cuota o tier.\n- Bot/abuse → revisar IPs en logs.\n- Bug que causa retries en bucle (frontend).\n\nAjuste cuota: `functions/src/quotaCheck.ts`. Para subir tier global, redeploy con env var.",
+    "mimeType": "text/markdown"
+  },
+  "conditions": [{
+    "displayName": "resource_exhausted ratio > 30%",
+    "conditionThreshold": {
+      "filter": "metric.type=\"logging.googleapis.com/user/askai_quota_exceeded\" resource.type=\"cloud_run_revision\"",
+      "aggregations": [{
+        "alignmentPeriod": "600s",
+        "perSeriesAligner": "ALIGN_RATE",
+        "crossSeriesReducer": "REDUCE_SUM"
+      }],
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 5,
+      "duration": "600s"
+    }
+  }],
+  "alertStrategy": { "autoClose": "3600s" },
+  "combiner": "OR",
+  "enabled": true,
+  "severity": "WARNING"
+}

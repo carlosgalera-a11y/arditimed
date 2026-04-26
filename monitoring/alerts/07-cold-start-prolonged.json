@@ -1,0 +1,25 @@
+{
+  "displayName": "askAi · cold start >20s · BAJA",
+  "documentation": {
+    "content": "Una invocación a `askAi` ha tardado >20s en arrancar (cold start). Con `minInstances: 1` esto no debería pasar salvo:\n\n- Tras un deploy nuevo (la primera request a la nueva revisión es cold).\n- Si el throughput sube y se escalan instancias adicionales (esas son cold).\n- Si se sobrepasó `maxInstances: 10` (no debería con la cuota actual).\n\nNo es bloqueante por sí mismo — pero si esto se dispara fuera de deploys, es señal de que el load balancing está creando instancias sin warmup. Revisar `concurrency` y `minInstances`.",
+    "mimeType": "text/markdown"
+  },
+  "conditions": [{
+    "displayName": "p99 latency > 20s con instancia cold",
+    "conditionThreshold": {
+      "filter": "metric.type=\"run.googleapis.com/request_latencies\" resource.type=\"cloud_run_revision\" resource.label.\"service_name\"=\"askai\"",
+      "aggregations": [{
+        "alignmentPeriod": "300s",
+        "perSeriesAligner": "ALIGN_DELTA",
+        "crossSeriesReducer": "REDUCE_PERCENTILE_99"
+      }],
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 20000,
+      "duration": "300s"
+    }
+  }],
+  "alertStrategy": { "autoClose": "1800s" },
+  "combiner": "OR",
+  "enabled": true,
+  "severity": "INFO"
+}

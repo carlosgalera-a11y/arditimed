@@ -1,0 +1,25 @@
+{
+  "displayName": "Hosting · cualquier 5xx · MEDIA",
+  "documentation": {
+    "content": "GitHub Pages devuelve 5xx en `area2cartagena.es`. GitHub Pages raramente falla — si esto se dispara repetidamente, sospechar:\n\n1. DNS de `area2cartagena.es` mal configurado.\n2. Repo `area2cartagena` con custom domain corrupto en config.\n3. Incidente de GitHub: https://www.githubstatus.com/\n\nVerificar: `curl -I https://area2cartagena.es/`\n\nNOTA: esta alerta requiere un check de uptime configurado primero (ver `05-hosting-5xx-uptime-check.json`). Sin uptime check no hay metric `uptime_check`.",
+    "mimeType": "text/markdown"
+  },
+  "conditions": [{
+    "displayName": "uptime check failure",
+    "conditionThreshold": {
+      "filter": "metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" resource.type=\"uptime_url\" resource.label.\"host\"=\"area2cartagena.es\"",
+      "aggregations": [{
+        "alignmentPeriod": "60s",
+        "perSeriesAligner": "ALIGN_NEXT_OLDER",
+        "crossSeriesReducer": "REDUCE_COUNT_FALSE"
+      }],
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 0,
+      "duration": "300s"
+    }
+  }],
+  "alertStrategy": { "autoClose": "1800s" },
+  "combiner": "OR",
+  "enabled": true,
+  "severity": "WARNING"
+}

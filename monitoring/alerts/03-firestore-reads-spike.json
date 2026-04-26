@@ -1,0 +1,25 @@
+{
+  "displayName": "Firestore · reads >200k/h · MEDIA",
+  "documentation": {
+    "content": "Lecturas Firestore por hora superan las 200.000. Sostenido este ritmo, coste mensual >50€/día solo en Firestore.\n\nCausas habituales:\n- Bug nuevo: query sin paginación o `onSnapshot` no liberado.\n- Bot/scraper apuntando a la app (si App Check OFF).\n- Frontend en bucle infinito (revisar logs Sentry).\n\nDashboard: https://console.cloud.google.com/firestore/databases/-default-/usage?project=docenciacartagenaeste",
+    "mimeType": "text/markdown"
+  },
+  "conditions": [{
+    "displayName": "reads >200k/h",
+    "conditionThreshold": {
+      "filter": "metric.type=\"firestore.googleapis.com/document/read_count\" resource.type=\"firestore_database\"",
+      "aggregations": [{
+        "alignmentPeriod": "3600s",
+        "perSeriesAligner": "ALIGN_RATE",
+        "crossSeriesReducer": "REDUCE_SUM"
+      }],
+      "comparison": "COMPARISON_GT",
+      "thresholdValue": 55.55,
+      "duration": "1800s"
+    }
+  }],
+  "alertStrategy": { "autoClose": "3600s" },
+  "combiner": "OR",
+  "enabled": true,
+  "severity": "WARNING"
+}
