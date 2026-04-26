@@ -52,8 +52,15 @@
   } catch(e) {}
 
   // reCAPTCHA v3 site key: pública, se define en window antes de cargar
-  // este script. Si no existe, ai-client.js avisa y salta App Check.
-  // Ejemplo en el HTML:
+  // este script. Si no existe, App Check no se activa (ai-client.js
+  // también lo avisa). Ejemplo en el HTML:
   //   <script>window.RECAPTCHA_SITE_KEY='6Lc…';</script>
   //   <script src="firebase-init.js"></script>
+  try {
+    var siteKey = (typeof window !== 'undefined' && window.RECAPTCHA_SITE_KEY) || '';
+    if (siteKey && firebase.appCheck) {
+      var appCheck = firebase.appCheck();
+      appCheck.activate(siteKey, /* isTokenAutoRefreshEnabled */ true);
+    }
+  } catch(e) { console.warn('[firebase-init] appCheck:', e && e.message); }
 })();
