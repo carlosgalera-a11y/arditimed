@@ -351,7 +351,10 @@ function renderResultado(d){
   var ol = $('eviFuentes');
   ol.innerHTML = (d.fuentes || []).map(function(s, i){
     var a = s.ref;
-    var src = a.source === 'pubmed' ? 'PubMed' : a.source === 'europepmc' ? 'Europe PMC' : a.source;
+    var src = a.source === 'pubmed' ? 'PubMed'
+            : a.source === 'europepmc' ? 'Europe PMC'
+            : a.source === 'openalex' ? 'OpenAlex'
+            : a.source;
     var url = a.doi ? 'https://doi.org/' + a.doi
       : (a.pmid ? 'https://pubmed.ncbi.nlm.nih.gov/' + a.pmid + '/'
       : (a.full_text_url || ''));
@@ -386,6 +389,7 @@ function renderResultado(d){
     'consultaId=' + d.consultaId + ' · ' +
     'pubmed=' + (meta.pubmed_count||0) + ' · ' +
     'epmc=' + (meta.europepmc_count||0) + ' · ' +
+    'openalex=' + (meta.openalex_count||0) + ' · ' +
     'aemps=' + (meta.aemps_count||0) + ' · ' +
     'duración=' + (meta.duracion_ms||0) + 'ms' +
     (s.provider ? ' · synth=' + s.provider + '/' + s.model : '') +

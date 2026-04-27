@@ -11,8 +11,9 @@
 
 import type { PubmedAbstract } from './pubmed';
 import type { EpmcAbstract } from './europepmc';
+import type { OpenAlexAbstract } from './openalex';
 
-export type Abstract = PubmedAbstract | EpmcAbstract;
+export type Abstract = PubmedAbstract | EpmcAbstract | OpenAlexAbstract;
 
 export interface ScoredAbstract {
   ref: Abstract;
@@ -90,6 +91,13 @@ export function scoreAbstract(a: Abstract, currentYear: number = new Date().getF
   if ('is_open_access' in a && a.is_open_access) {
     score += 1;
     reasons.push('open access');
+  }
+  // Bonus por citas (solo OpenAlex expone cited_by_count). Escala log para
+  // no inflar artículos virales: log10(cited_by_count) acotado a +2.
+  if ('cited_by_count' in a && typeof a.cited_by_count === 'number' && a.cited_by_count > 10) {
+    const bonus = Math.min(2, Math.floor(Math.log10(a.cited_by_count)));
+    score += bonus;
+    reasons.push(`citado ${a.cited_by_count}× (+${bonus})`);
   }
   return { ref: a, score, reasons };
 }
