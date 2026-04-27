@@ -264,6 +264,12 @@ service cloud.firestore {
       allow create, update, delete: if false; // solo Cloud Function
       allow read: if isAdmin();
     }
+    match /evidenciaCache/{hash} {
+      // Cualquier autenticado lee (cache compartida acelera todas las
+      // consultas). Solo servidor escribe.
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
 
     // ══ Centros (multi-tenancy, Fase 1) ════════════════════════════
     // Catálogo de centros/tenants. Lectura abierta para profesionales

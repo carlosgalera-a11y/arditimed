@@ -387,6 +387,7 @@ function renderResultado(d){
   var s = d.sintesis || {};
   $('eviMeta').textContent =
     'consultaId=' + d.consultaId + ' · ' +
+    (d.cached ? '⚡ cacheado · ' : '') +
     'pubmed=' + (meta.pubmed_count||0) + ' · ' +
     'epmc=' + (meta.europepmc_count||0) + ' · ' +
     'openalex=' + (meta.openalex_count||0) + ' · ' +
