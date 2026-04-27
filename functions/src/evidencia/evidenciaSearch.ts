@@ -25,6 +25,7 @@ import { searchAemps, type AempsMedicamento } from './aemps';
 import { rerank, type ScoredAbstract } from './reranker';
 import { extractPico, type PicoExtraction } from './picoExtractor';
 import { synthesize, type SynthOutput } from './ragSynthesizer';
+import { hashEviKey, getEviCached, setEviCached, bumpEviCacheHit } from './cache';
 
 // Secreto OPCIONAL: si existe, sube el rate limit de PubMed de 3 a 10 req/s.
 // Si no existe, las funciones siguen funcionando sin ella.
@@ -62,6 +63,7 @@ interface SearchResponse {
   aemps: AempsMedicamento[];
   pico: PicoExtraction | null;
   sintesis: SynthOutput | null;
+  cached: boolean;
   meta: {
     pubmed_count: number;
     europepmc_count: number;
@@ -114,6 +116,64 @@ export const evidenciaSearch = onCall(
     const filtros = data.filtros ?? {};
     const anios = Math.max(1, Math.min(50, Number(filtros.anios ?? 10)));
     const dateFrom = new Date().getFullYear() - anios;
+
+    // ─── Cache lookup (24h TTL, hash de pregunta normalizada) ──────────
+    const db = getFirestore(getApp());
+    const cacheKey = hashEviKey({
+      pregunta: v.sanitized,
+      sintetizar: data.sintetizar === true,
+      anios,
+      soloRevisiones: !!filtros.soloRevisiones,
+      incluirAemps: !!filtros.incluirAemps,
+    });
+    const cached = await getEviCached(db, cacheKey).catch(() => null);
+    if (cached) {
+      // Log mínimo de cache hit para auditoría AI Act art. 12.
+      const refHit = db.collection('evidencia_consultas').doc();
+      try {
+        await refHit.set({
+          uid,
+          pregunta_original: v.sanitized,
+          rechazada: false,
+          fuentes_consultadas: ['cache'],
+          num_abstracts_recuperados: cached.fuentes.length,
+          abstracts_pmids: cached.fuentes
+            .map((s) => (s.ref as { pmid?: string }).pmid ?? null)
+            .filter(Boolean),
+          filtros_aplicados: filtros,
+          sintetizar: data.sintetizar === true,
+          ai_act_disclaimer_shown: true,
+          cache_hit: true,
+          cache_key: cacheKey,
+          duracion_ms: Date.now() - start,
+          timestamp: FieldValue.serverTimestamp(),
+        });
+      } catch {
+        /* best-effort */
+      }
+      bumpEviCacheHit(db, cacheKey).catch(() => {
+        /* best-effort */
+      });
+      logger.info('evidenciaSearch.cacheHit', { uid, hash: cacheKey });
+      return {
+        ok: true,
+        consultaId: refHit.id,
+        pregunta: v.sanitized,
+        fuentes: cached.fuentes,
+        aemps: cached.aemps,
+        pico: cached.pico,
+        sintesis: cached.sintesis,
+        cached: true,
+        meta: {
+          pubmed_count: cached.meta.pubmed_count,
+          europepmc_count: cached.meta.europepmc_count,
+          openalex_count: cached.meta.openalex_count,
+          aemps_count: cached.meta.aemps_count,
+          duracion_ms: Date.now() - start,
+          errors: {},
+        },
+      };
+    }
     const pubTypesPubmed = filtros.soloRevisiones
       ? ['Systematic Review', 'Meta-Analysis', 'Randomized Controlled Trial']
       : undefined;
@@ -212,7 +272,6 @@ export const evidenciaSearch = onCall(
     }
 
     // Log a Firestore (best-effort).
-    const db = getFirestore(getApp());
     const ref = db.collection('evidencia_consultas').doc();
     const consultaId = ref.id;
     try {
@@ -252,11 +311,30 @@ export const evidenciaSearch = onCall(
       consultaId,
       pubmed: pubmed.length,
       epmc: epmc.length,
+      openalex: openalex.length,
       aemps: aemps.length,
       reranked: reranked.length,
       duracion_ms: Date.now() - start,
       errors: Object.keys(errors),
     });
+
+    // Cache write (best-effort, solo si tenemos resultado decente).
+    if (reranked.length > 0) {
+      setEviCached(db, cacheKey, {
+        pregunta: v.sanitized,
+        fuentes: reranked,
+        aemps,
+        pico,
+        sintesis,
+        meta: {
+          pubmed_count: pubmed.length,
+          europepmc_count: epmc.length,
+          openalex_count: openalex.length,
+          aemps_count: aemps.length,
+          duracion_ms: Date.now() - start,
+        },
+      }).catch((e) => logger.warn('evidencia.cache.set.failed', { err: (e as Error).message }));
+    }
 
     return {
       ok: true,
@@ -266,6 +344,7 @@ export const evidenciaSearch = onCall(
       aemps,
       pico,
       sintesis,
+      cached: false,
       meta: {
         pubmed_count: pubmed.length,
         europepmc_count: epmc.length,

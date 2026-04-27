@@ -15,6 +15,7 @@ export { getGaMetrics } from './getGaMetrics';
 export { csCreateInvite, csRedeemInvite } from './csInvites';
 export { evidenciaSearch } from './evidencia/evidenciaSearch';
 export { evidenciaFeedback } from './evidencia/evidenciaFeedback';
+export { evidenciaHealthCheck } from './evidencia/healthCheck';
 
 export {
   auditCases,
