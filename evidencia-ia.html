@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="/console-guard.js"></script>
+<meta charset="UTF-8">
+<meta name="author" content="Carlos Galera Román, MFyC">
+<meta name="medical-organization" content="H.G.U. Santa Lucía · Área II · Servicio Murciano de Salud">
+<meta name="compliance" content="RGPD · EU AI Act 2024/1689 art. 50 · LPI Art. 51">
+<meta name="last-reviewed" content="2026-04-27">
+<meta name="generator" content="Cartagenaeste PWA">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0a1f14">
+<meta name="description" content="EvidenciaIA · Búsqueda bibliográfica clínica con síntesis IA y citas verificadas. PubMed · Europe PMC · AEMPS · sesgo europeo.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
+<link rel="manifest" href="manifest.json">
+<link rel="canonical" href="https://area2cartagena.es/evidencia-ia.html">
+<script src="/canonical-banner.js" defer></script>
+<title>EvidenciaIA · Búsqueda bibliográfica · Área II</title>
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://securetoken.googleapis.com https://*.sentry.io https://*.ingest.de.sentry.io https://www.gstatic.com https://browser.sentry-cdn.com wss:;">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="recaptcha-key.js"></script>
+<script src="firebase-init.js"></script>
+
+<script>window.SENTRY_DSN='https://397ff22b9f93f5ed251ec81c68806546@o4511258495090688.ingest.de.sentry.io/4511258543784016';</script>
+<script src="sentry-init.js" defer></script>
+<script src="update-button.js" defer></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Sans+3:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{font-family:'Source Sans 3',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a1f14;color:#e9f5ee;display:flex;flex-direction:column;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;flex-wrap:wrap;background:rgba(0,0,0,.32);border-bottom:1px solid rgba(255,255,255,.08)}
+.brand{display:inline-flex;align-items:center;gap:10px;color:#fff}
+.brand-emblem{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d3d26,#1a6b4a);display:inline-flex;align-items:center;justify-content:center;font-size:1.25rem;border:1px solid rgba(255,255,255,.15)}
+.brand-name{font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem}
+.brand-name em{font-style:normal;color:#d4a853;margin-left:2px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tb-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(255,255,255,.18);border-radius:16px;color:#fff;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.08)}
+.tb-btn:hover{background:rgba(255,255,255,.16)}
+
+main{flex:1;padding:24px 22px 40px;max-width:980px;width:100%;margin:0 auto}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800;letter-spacing:-.4px;line-height:1.1;color:#fff}
+.hero p{font-size:.95rem;opacity:.82;line-height:1.55;font-weight:300;max-width:680px;margin-top:8px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{padding:3px 10px;border-radius:12px;font-size:.7rem;font-weight:700;letter-spacing:.5px}
+.badge-eu{background:rgba(59,130,246,.18);color:#93bbfc;border:1px solid rgba(59,130,246,.35)}
+.badge-art50{background:rgba(212,168,83,.16);color:#f3d98a;border:1px solid rgba(212,168,83,.35)}
+.badge-formativo{background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+
+.disclaimer{margin:18px 0;padding:12px 16px;background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.30);border-radius:12px;font-size:.85rem;color:#fff;line-height:1.55}
+.disclaimer strong{color:#ffd54f}
+.disclaimer .acept{margin-top:10px;display:flex;align-items:center;gap:8px}
+.disclaimer .acept input{width:18px;height:18px;cursor:pointer}
+.disclaimer .acept label{font-size:.82rem;cursor:pointer}
+
+.search-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:18px;backdrop-filter:blur(10px)}
+.search-card textarea{width:100%;min-height:90px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:12px 14px;color:#fff;font-family:inherit;font-size:.95rem;resize:vertical}
+.search-card textarea:focus{outline:none;border-color:#d4a853}
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+.filters select,.filters label{font-size:.84rem;color:#fff}
+.filters select{padding:7px 10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-family:inherit}
+.filters label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.filters input[type=checkbox]{cursor:pointer}
+.row-buttons{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.btn-primary{padding:10px 18px;background:linear-gradient(135deg,#0d9488,#0f766e);border:0;border-radius:10px;color:#fff;font-family:inherit;font-weight:800;cursor:pointer;font-size:.92rem}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed}
+.btn-secondary{padding:9px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.20);border-radius:10px;color:#fff;font-family:inherit;font-weight:700;cursor:pointer;font-size:.85rem}
+
+.progress{margin-top:18px;display:none}
+.progress.show{display:block}
+.progress .step{padding:7px 12px;font-size:.85rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:8px}
+.progress .step.active{color:#86efac;font-weight:700}
+.progress .step.done::before{content:"✓";color:#86efac;font-weight:900}
+.progress .step.active::before{content:"▶";color:#d4a853}
+
+.results{margin-top:22px;display:none}
+.results.show{display:block}
+.sint{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:18px 22px;line-height:1.65;font-size:.95rem;white-space:pre-wrap}
+.sint h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:#d4a853;margin:14px 0 6px}
+.sint h3:first-child{margin-top:0}
+.sint .cite{display:inline-block;background:rgba(212,168,83,.18);border:1px solid rgba(212,168,83,.35);color:#f3d98a;padding:0 6px;border-radius:6px;margin:0 2px;font-weight:700;font-size:.75rem;cursor:pointer;text-decoration:none}
+.sint .cite:hover{background:rgba(212,168,83,.32)}
+.sint .nv{background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.35);color:#fca5a5;padding:0 6px;border-radius:6px;font-weight:700;font-size:.75rem}
+.sint-warn{margin-top:10px;padding:10px 14px;background:rgba(239,68,68,.10);border:1px solid rgba(239,68,68,.30);border-radius:10px;font-size:.84rem;color:#fca5a5}
+.fuentes{margin-top:18px}
+.fuentes h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:#fff;margin-bottom:10px}
+.fuente{padding:12px 14px;border-bottom:1px dashed rgba(255,255,255,.12);font-size:.88rem;line-height:1.5}
+.fuente:last-child{border-bottom:0}
+.fuente .num{display:inline-block;background:rgba(212,168,83,.16);color:#f3d98a;border-radius:8px;padding:2px 8px;font-weight:800;margin-right:6px}
+.fuente .meta{font-size:.78rem;opacity:.7;margin-top:3px}
+.fuente .meta a{color:#93bbfc;text-decoration:underline}
+.fuente .reasons{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.fuente .reasons span{font-size:.68rem;padding:1px 6px;border-radius:8px;background:rgba(34,197,94,.14);color:#86efac;font-weight:700}
+
+.feedback{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.feedback button{padding:7px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:10px;color:#fff;font-family:inherit;font-size:.82rem;cursor:pointer}
+.feedback button:hover{background:rgba(255,255,255,.16)}
+.feedback button.sent{background:rgba(34,197,94,.20);border-color:#86efac;cursor:default}
+
+.meta-info{margin-top:14px;font-size:.74rem;opacity:.6;font-family:monospace}
+
+.login-gate{max-width:520px;margin:60px auto;padding:32px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:18px;text-align:center}
+.login-gate h2{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:10px}
+.login-gate p{font-size:.92rem;opacity:.82;line-height:1.5;margin-bottom:18px}
+.btn-google{display:inline-flex;align-items:center;gap:10px;padding:11px 20px;background:#fff;color:#3c4043;border:1.5px solid #dadce0;border-radius:10px;font-weight:600;font-size:.92rem;cursor:pointer;font-family:inherit}
+.btn-google svg{width:20px;height:20px}
+
+.error-box{margin-top:14px;padding:12px 16px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);border-radius:10px;color:#fca5a5;font-size:.88rem}
+.error-box strong{color:#fff}
+
+footer{padding:14px 22px;text-align:center;font-size:.7rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.08)}
+footer a{text-decoration:underline;color:#d4a853}
+
+@media(max-width:640px){main{padding:16px 14px 28px}.search-card{padding:14px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="profesionales.html" class="brand">
+    <span class="brand-emblem">🔬</span>
+    <span class="brand-name">EvidenciaIA<em>Área II</em></span>
+  </a>
+  <div class="toolbar">
+    <button class="tb-btn" onclick="location.href='profesionales.html'">← Profesionales</button>
+    <button class="tb-btn" data-cart-update type="button">🔄 Actualizar</button>
+    <button class="tb-btn" onclick="firebase.auth().signOut()">Salir</button>
+  </div>
+</div>
+
+<main>
+
+  <div id="loginGate" class="login-gate" style="display:none">
+    <h2>🔐 Requiere inicio de sesión</h2>
+    <p>EvidenciaIA es exclusivo para profesionales sanitarios autenticados del Área II.</p>
+    <button class="btn-google" onclick="signIn()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <span>Continuar con Google</span>
+    </button>
+  </div>
+
+  <div id="eviApp" style="display:none">
+    <div class="hero">
+      <h1>🔬 EvidenciaIA</h1>
+      <p>Búsqueda bibliográfica clínica en PubMed, Europe PMC y AEMPS, con re-ranking europeo (Cochrane · NICE · ESC · ESMO · GuíaSalud) y síntesis IA con citas verificadas. Pensado como apoyo a la lectura crítica, no como soporte a decisión clínica.</p>
+      <div class="badges">
+        <span class="badge badge-eu">🇪🇺 europe-west1</span>
+        <span class="badge badge-art50">EU AI Act art. 50</span>
+        <span class="badge badge-formativo">Uso formativo</span>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠️ Aviso de transparencia (EU AI Act art. 50).</strong>
+      Este sistema usa IA para extraer la pregunta PICO y para sintetizar
+      abstracts. La síntesis NO constituye diagnóstico ni recomendación
+      terapéutica para un paciente concreto. Cada cita debe verificarse
+      en la fuente original antes de aplicarla. El sistema rechaza
+      preguntas que pidan diagnóstico/tratamiento individual.
+      <div class="acept">
+        <input type="checkbox" id="eviAcept">
+        <label for="eviAcept">He leído el aviso y entiendo que EvidenciaIA es una herramienta de búsqueda bibliográfica formativa.</label>
+      </div>
+    </div>
+
+    <div class="search-card">
+      <textarea id="eviInput" maxlength="500" placeholder="Ej: ¿Qué dice la evidencia sobre apixaban vs warfarina en pacientes con FA no valvular mayores de 75 años en términos de mortalidad y sangrado?"></textarea>
+      <div class="filters">
+        <select id="eviAnios">
+          <option value="3">Últimos 3 años</option>
+          <option value="5" selected>Últimos 5 años</option>
+          <option value="10">Últimos 10 años</option>
+          <option value="20">Últimos 20 años</option>
+        </select>
+        <label><input type="checkbox" id="eviSoloRev"> Solo revisiones / RCT</label>
+        <label><input type="checkbox" id="eviAemps"> Incluir fichas AEMPS</label>
+        <label><input type="checkbox" id="eviSint" checked> Sintetizar con IA</label>
+      </div>
+      <div class="row-buttons">
+        <button class="btn-primary" id="eviGo" disabled>🔍 Buscar evidencia</button>
+        <span id="eviHint" style="font-size:.8rem;opacity:.7">Acepta el aviso para activar.</span>
+      </div>
+    </div>
+
+    <div class="progress" id="eviProgress">
+      <div class="step" data-step="pico">Extrayendo pregunta PICO…</div>
+      <div class="step" data-step="search">Buscando en PubMed, Europe PMC, AEMPS…</div>
+      <div class="step" data-step="rerank">Ordenando por relevancia clínica…</div>
+      <div class="step" data-step="synth">Sintetizando con citas…</div>
+      <div class="step" data-step="verify">Verificando referencias…</div>
+    </div>
+
+    <div id="eviError" class="error-box" style="display:none"></div>
+
+    <div class="results" id="eviResults">
+      <article class="sint" id="eviSintesis"></article>
+      <div class="sint-warn" id="eviSintWarn" style="display:none"></div>
+      <section class="fuentes">
+        <h2>📚 Fuentes consultadas</h2>
+        <ol id="eviFuentes" style="list-style:none;padding-left:0"></ol>
+      </section>
+      <div class="feedback">
+        <button data-fb="util">👍 Útil</button>
+        <button data-fb="incorrecto">👎 Incorrecto</button>
+        <button data-fb="cita_falsa">⚠️ Cita no verificable</button>
+        <button data-fb="sesgo">🚩 Sesgo</button>
+      </div>
+      <div class="meta-info" id="eviMeta"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>© 2026 Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622</div>
+  <div style="margin-top:4px"><a href="profesionales.html">Profesionales</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="docs/aiact/">AI Act compliance</a></div>
+</footer>
+
+<script>
+'use strict';
+
+var auth = firebase.auth();
+var db = firebase.firestore();
+var fns = firebase.app().functions('europe-west1');
+
+var currentConsultaId = null;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+  return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+}); }
+
+function signIn(){
+  var p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt: 'select_account' });
+  auth.signInWithPopup(p).catch(function(e){ alert('Login: ' + (e.message||e.code)); });
+}
+
+auth.onAuthStateChanged(function(u){
+  $('loginGate').style.display = u ? 'none' : 'block';
+  $('eviApp').style.display = u ? 'block' : 'none';
+});
+
+$('eviAcept').addEventListener('change', function(e){
+  var on = e.target.checked;
+  $('eviGo').disabled = !on;
+  $('eviHint').textContent = on ? '' : 'Acepta el aviso para activar.';
+});
+
+$('eviGo').addEventListener('click', buscar);
+
+async function buscar(){
+  var pregunta = $('eviInput').value.trim();
+  if (pregunta.length < 15) {
+    showError('La pregunta debe tener al menos 15 caracteres.');
+    return;
+  }
+  if (!$('eviAcept').checked) return;
+
+  hideError();
+  $('eviResults').classList.remove('show');
+  $('eviProgress').classList.add('show');
+  setSteps(['pico','search','rerank','synth','verify'], 'pending');
+  if ($('eviSint').checked) setStep('pico','active');
+  else setStep('search','active');
+
+  $('eviGo').disabled = true;
+
+  var payload = {
+    pregunta: pregunta,
+    ai_act_disclaimer_shown: true,
+    sintetizar: $('eviSint').checked,
+    filtros: {
+      anios: parseInt($('eviAnios').value, 10),
+      soloRevisiones: $('eviSoloRev').checked,
+      incluirAemps: $('eviAemps').checked,
+    },
+  };
+
+  try {
+    var call = fns.httpsCallable('evidenciaSearch');
+    var res = await call(payload);
+    var d = res && res.data || {};
+    if (!d.ok) throw new Error('Respuesta inesperada del servidor.');
+    setSteps(['pico','search','rerank','synth','verify'], 'done');
+    renderResultado(d);
+    try { if (window.cartTrack) window.cartTrack('evidencia_consulta', {
+      num_fuentes: (d.fuentes||[]).length,
+      modelo: d.sintesis ? d.sintesis.model : 'none',
+      duracion_ms: d.meta ? d.meta.duracion_ms : 0,
+      sintetizar: payload.sintetizar,
+    }); } catch(e) {}
+  } catch(e) {
+    setSteps(['pico','search','rerank','synth','verify'], 'pending');
+    showError(e.message || e.code || String(e));
+    try { if (window.cartTrack) window.cartTrack('evidencia_query_rechazada', {
+      motivo: (e.code || 'error') + ''
+    }); } catch(_) {}
+  } finally {
+    $('eviProgress').classList.remove('show');
+    $('eviGo').disabled = !$('eviAcept').checked;
+  }
+}
+
+function setSteps(ids, state){ ids.forEach(function(id){ setStep(id, state); }); }
+function setStep(id, state){
+  var el = document.querySelector('.step[data-step="'+id+'"]');
+  if (!el) return;
+  el.classList.remove('active','done');
+  if (state === 'active') el.classList.add('active');
+  if (state === 'done') el.classList.add('done');
+}
+function showError(msg){
+  var box = $('eviError');
+  box.style.display = 'block';
+  box.innerHTML = '<strong>Error:</strong> ' + esc(msg);
+}
+function hideError(){ $('eviError').style.display = 'none'; }
+
+function renderResultado(d){
+  currentConsultaId = d.consultaId;
+  // Síntesis
+  var sintEl = $('eviSintesis');
+  if (d.sintesis && d.sintesis.texto_sintetizado) {
+    sintEl.innerHTML = formatSintesis(d.sintesis.texto_sintetizado);
+    if (d.sintesis.verificacion && d.sintesis.verificacion.warning) {
+      $('eviSintWarn').style.display = 'block';
+      $('eviSintWarn').textContent = d.sintesis.verificacion.warning;
+    } else {
+      $('eviSintWarn').style.display = 'none';
+    }
+  } else {
+    sintEl.innerHTML = '<em style="opacity:.7">Sin síntesis IA — solo se muestran las fuentes recuperadas.</em>';
+    $('eviSintWarn').style.display = 'none';
+  }
+
+  // Fuentes
+  var ol = $('eviFuentes');
+  ol.innerHTML = (d.fuentes || []).map(function(s, i){
+    var a = s.ref;
+    var src = a.source === 'pubmed' ? 'PubMed' : a.source === 'europepmc' ? 'Europe PMC' : a.source;
+    var url = a.doi ? 'https://doi.org/' + a.doi
+      : (a.pmid ? 'https://pubmed.ncbi.nlm.nih.gov/' + a.pmid + '/'
+      : (a.full_text_url || ''));
+    var reasons = (s.reasons||[]).map(function(r){ return '<span>'+esc(r)+'</span>'; }).join('');
+    return '<li class="fuente">'
+      + '<span class="num">['+(i+1)+']</span><strong>'+esc(a.title)+'</strong>'
+      + '<div class="meta">' + esc((a.authors||[]).slice(0,5).join(', '))
+      + (a.year ? ' · ' + esc(String(a.year)) : '')
+      + (a.journal ? ' · ' + esc(a.journal) : '')
+      + ' · ' + esc(src)
+      + (url ? ' · <a href="'+esc(url)+'" target="_blank" rel="noopener">enlace ↗</a>' : '')
+      + '</div>'
+      + (reasons ? '<div class="reasons">'+reasons+'</div>' : '')
+      + '</li>';
+  }).join('') || '<li class="fuente"><em>Sin resultados.</em></li>';
+
+  // AEMPS
+  if (d.aemps && d.aemps.length) {
+    ol.insertAdjacentHTML('beforeend',
+      '<li class="fuente"><strong>📦 Fichas AEMPS</strong><div class="meta">'
+      + d.aemps.map(function(m){
+          return '<a href="'+esc(m.url_ficha_tecnica||'#')+'" target="_blank" rel="noopener">'+esc(m.nombre)+'</a>';
+        }).join(' · ')
+      + '</div></li>'
+    );
+  }
+
+  // Meta
+  var meta = d.meta || {};
+  var s = d.sintesis || {};
+  $('eviMeta').textContent =
+    'consultaId=' + d.consultaId + ' · ' +
+    'pubmed=' + (meta.pubmed_count||0) + ' · ' +
+    'epmc=' + (meta.europepmc_count||0) + ' · ' +
+    'aemps=' + (meta.aemps_count||0) + ' · ' +
+    'duración=' + (meta.duracion_ms||0) + 'ms' +
+    (s.provider ? ' · synth=' + s.provider + '/' + s.model : '') +
+    (s.verificacion ? ' · citas=' + s.verificacion.citationsVerified + '/' + s.verificacion.citationsEmitted : '');
+
+  // Reset feedback buttons
+  Array.prototype.forEach.call(document.querySelectorAll('.feedback button'), function(b){
+    b.classList.remove('sent');
+    b.disabled = false;
+  });
+
+  $('eviResults').classList.add('show');
+  $('eviResults').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function formatSintesis(txt){
+  // Convierte ### Encabezado en <h3>; [n] en spans con tooltip clickable;
+  // [cita no verificable] en marca roja.
+  var html = esc(txt);
+  html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/\[cita no verificable\]/g, '<span class="nv">cita no verificable</span>');
+  html = html.replace(/\[(\d+)\]/g, function(_, n){
+    return '<a class="cite" href="#fuente-'+n+'" onclick="document.getElementById(\'eviFuentes\').children['+(parseInt(n,10)-1)+']?.scrollIntoView({behavior:\'smooth\'}); return false;">['+n+']</a>';
+  });
+  return html;
+}
+
+// Feedback handlers
+Array.prototype.forEach.call(document.querySelectorAll('.feedback button'), function(b){
+  b.addEventListener('click', async function(){
+    if (!currentConsultaId) return;
+    if (b.classList.contains('sent')) return;
+    var tipo = b.getAttribute('data-fb');
+    b.disabled = true;
+    try {
+      var call = fns.httpsCallable('evidenciaFeedback');
+      await call({ consultaId: currentConsultaId, tipo: tipo });
+      b.classList.add('sent');
+      b.textContent = '✓ Enviado';
+      try { if (window.cartTrack) window.cartTrack('evidencia_feedback', { tipo: tipo, consulta_id: currentConsultaId }); } catch(_) {}
+    } catch(e) {
+      b.disabled = false;
+      alert('No se pudo enviar feedback: ' + (e.message||e.code));
+    }
+  });
+});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+
+<script src="sw-update.js" defer></script>
+</body>
+</html>
