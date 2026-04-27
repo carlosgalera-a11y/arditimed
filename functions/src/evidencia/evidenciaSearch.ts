@@ -22,10 +22,15 @@ import { searchPubmed, type PubmedAbstract } from './pubmed';
 import { searchEuropePMC, type EpmcAbstract } from './europepmc';
 import { searchAemps, type AempsMedicamento } from './aemps';
 import { rerank, type ScoredAbstract } from './reranker';
+import { extractPico, type PicoExtraction } from './picoExtractor';
+import { synthesize, type SynthOutput } from './ragSynthesizer';
 
 // Secreto OPCIONAL: si existe, sube el rate limit de PubMed de 3 a 10 req/s.
 // Si no existe, las funciones siguen funcionando sin ella.
 const NCBI_API_KEY = defineSecret('NCBI_API_KEY');
+// Secretos IA — reusados de askAi para extracción PICO + síntesis RAG.
+const DEEPSEEK_API_KEY = defineSecret('DEEPSEEK_API_KEY');
+const OPENROUTER_API_KEY = defineSecret('OPENROUTER_API_KEY');
 
 const REGION = 'europe-west1';
 const CORS = [
@@ -42,6 +47,9 @@ interface SearchRequest {
     incluirAemps?: boolean;
     priorizarGuiasEU?: boolean;
   };
+  // Si true, ejecuta extracción PICO + síntesis RAG con citas verificadas.
+  // Si false, devuelve solo los abstracts re-rankeados (modo PR-1).
+  sintetizar?: boolean;
   ai_act_disclaimer_shown?: boolean;
 }
 
@@ -51,6 +59,8 @@ interface SearchResponse {
   pregunta: string;
   fuentes: ScoredAbstract[];
   aemps: AempsMedicamento[];
+  pico: PicoExtraction | null;
+  sintesis: SynthOutput | null;
   meta: {
     pubmed_count: number;
     europepmc_count: number;
@@ -63,10 +73,10 @@ interface SearchResponse {
 export const evidenciaSearch = onCall(
   {
     region: REGION,
-    secrets: [NCBI_API_KEY],
+    secrets: [NCBI_API_KEY, DEEPSEEK_API_KEY, OPENROUTER_API_KEY],
     enforceAppCheck: false, // se flipa cuando reCAPTCHA esté en producción
     memory: '512MiB',
-    timeoutSeconds: 60,
+    timeoutSeconds: 90,
     cors: CORS,
   },
   async (request): Promise<SearchResponse> => {
@@ -117,8 +127,30 @@ export const evidenciaSearch = onCall(
         return undefined;
       }
     })();
+    const aiSecrets = {
+      deepseekKey: DEEPSEEK_API_KEY.value(),
+      openrouterKey: OPENROUTER_API_KEY.value(),
+    };
 
-    const pubmedP = searchPubmed(v.sanitized, {
+    // Extracción PICO opcional — si el cliente pide sintetizar, también
+    // generamos queries optimizadas. Si falla, fallback a la pregunta cruda.
+    let pico: PicoExtraction | null = null;
+    let queryPubmed = v.sanitized;
+    let queryEpmc = v.sanitized;
+    let terminoFarmaco = v.sanitized.slice(0, 80);
+    if (data.sintetizar === true) {
+      try {
+        pico = await extractPico({ pregunta: v.sanitized, secrets: aiSecrets });
+        if (pico.query_pubmed) queryPubmed = pico.query_pubmed;
+        if (pico.query_europepmc) queryEpmc = pico.query_europepmc;
+        if (pico.contiene_farmaco && pico.farmaco) terminoFarmaco = pico.farmaco;
+      } catch (e: unknown) {
+        errors['pico'] = (e as Error).message ?? String(e);
+        logger.warn('evidencia.pico.failed', { err: errors['pico'] });
+      }
+    }
+
+    const pubmedP = searchPubmed(queryPubmed, {
       maxResults: 15,
       dateFrom,
       pubTypes: pubTypesPubmed,
@@ -129,7 +161,7 @@ export const evidenciaSearch = onCall(
       return [] as PubmedAbstract[];
     });
 
-    const epmcP = searchEuropePMC(v.sanitized, {
+    const epmcP = searchEuropePMC(queryEpmc, {
       pageSize: 10,
       resultType: 'core',
       pubTypes: pubTypesEpmc,
@@ -142,17 +174,30 @@ export const evidenciaSearch = onCall(
     });
 
     const aempsP: Promise<AempsMedicamento[]> = filtros.incluirAemps
-      ? searchAemps(extraerTerminoFarmaco(v.sanitized), { timeoutMs: 5000, pageSize: 5 }).catch(
-          (e: Error) => {
-            errors['aemps'] = e.message ?? String(e);
-            return [] as AempsMedicamento[];
-          },
-        )
+      ? searchAemps(terminoFarmaco, { timeoutMs: 5000, pageSize: 5 }).catch((e: Error) => {
+          errors['aemps'] = e.message ?? String(e);
+          return [] as AempsMedicamento[];
+        })
       : Promise.resolve([] as AempsMedicamento[]);
 
     const [pubmed, epmc, aemps] = await Promise.all([pubmedP, epmcP, aempsP]);
 
     const reranked = rerank([...pubmed, ...epmc], { maxResults: 8 });
+
+    // Síntesis RAG opcional con verificación de citas.
+    let sintesis: SynthOutput | null = null;
+    if (data.sintetizar === true && reranked.length > 0) {
+      try {
+        sintesis = await synthesize({
+          pregunta: v.sanitized,
+          fuentes: reranked,
+          secrets: aiSecrets,
+        });
+      } catch (e: unknown) {
+        errors['sintesis'] = (e as Error).message ?? String(e);
+        logger.warn('evidencia.synth.failed', { err: errors['sintesis'] });
+      }
+    }
 
     // Log a Firestore (best-effort).
     const db = getFirestore(getApp());
@@ -173,6 +218,14 @@ export const evidenciaSearch = onCall(
           .map((s) => (s.ref as { pmid?: string }).pmid ?? null)
           .filter(Boolean),
         filtros_aplicados: filtros,
+        sintetizar: data.sintetizar === true,
+        pico_query_pubmed: pico ? pico.query_pubmed : null,
+        pico_provider: pico ? pico.raw_provider : null,
+        sintesis_provider: sintesis ? sintesis.provider : null,
+        sintesis_model: sintesis ? sintesis.model : null,
+        sintesis_citas_emitidas: sintesis ? sintesis.verificacion.citationsEmitted : 0,
+        sintesis_citas_verificadas: sintesis ? sintesis.verificacion.citationsVerified : 0,
+        sintesis_citas_ratio: sintesis ? sintesis.verificacion.ratio : 0,
         ai_act_disclaimer_shown: true,
         duracion_ms: Date.now() - start,
         timestamp: FieldValue.serverTimestamp(),
@@ -198,6 +251,8 @@ export const evidenciaSearch = onCall(
       pregunta: v.sanitized,
       fuentes: reranked,
       aemps,
+      pico,
+      sintesis,
       meta: {
         pubmed_count: pubmed.length,
         europepmc_count: epmc.length,
@@ -208,11 +263,3 @@ export const evidenciaSearch = onCall(
     };
   },
 );
-
-// Heurística simple — si la pregunta contiene algún sustantivo que pueda
-// ser principio activo (mayúscula inicial, longitud razonable), lo usa.
-// En PR-2 esto lo sustituye el extractor PICO con LLM.
-function extraerTerminoFarmaco(q: string): string {
-  // Por ahora, usa la pregunta entera como query libre del CIMA.
-  return q.slice(0, 80);
-}
