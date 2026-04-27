@@ -24,9 +24,11 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
       allow create: if isOwner(uid);
-      // Usuario NO puede modificar su propio campo `role`.
+      // Usuario NO puede modificar su propio campo `role` ni `csRoles` (este
+      // último lo escribe sólo la Cloud Function `csRedeemInvite` con Admin SDK).
       allow update: if isOwner(uid)
-        && !('role' in request.resource.data.diff(resource.data).affectedKeys());
+        && !('role' in request.resource.data.diff(resource.data).affectedKeys())
+        && !('csRoles' in request.resource.data.diff(resource.data).affectedKeys());
       allow delete: if isAdmin();
 
       // Casos docentes: DNI/NIE bloqueado, iniciales <= 4.
@@ -200,6 +202,49 @@ service cloud.firestore {
                  && request.resource.data.count is int
                  && request.resource.data.count >= resource.data.count;
       allow delete: if isAdmin();
+    }
+
+    // ══ Centros de Salud (Área II) ═════════════════════════════════
+    // Directorio editable por equipos locales. Cada profesional autenticado
+    // lee TODOS los centros (interconexión); sólo el redactor/coordinador del
+    // centro (rol en /users/{uid}.csRoles[centroId]) — o un admin global —
+    // puede escribir. Los códigos de invitación viven en /cs_invites y se
+    // canjean vía Cloud Function `csRedeemInvite` (no escritura directa).
+    function csRol(cid) {
+      return signedIn()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid))
+            .data.get('csRoles', {}).get(cid, '')
+        : '';
+    }
+    function csCanWrite(cid) {
+      return isAdmin() || csRol(cid) == 'redactor' || csRol(cid) == 'coordinador';
+    }
+    match /centros_salud/{cid} {
+      allow read: if signedIn();
+      allow create, update: if csCanWrite(cid);
+      allow delete: if isAdmin();
+
+      match /{sub}/{docId} {
+        allow read: if signedIn();
+        allow create, update, delete: if csCanWrite(cid);
+      }
+    }
+
+    // Códigos de invitación: se crean y se canjean SOLO desde Cloud Function
+    // (Admin SDK). El cliente no puede leerlos ni escribirlos directamente.
+    match /cs_invites/{codigo} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // Tablón global del Área II (sólo admin publica; todos leen).
+    match /area2_global/{docId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+      match /{sub}/{subId} {
+        allow read: if signedIn();
+        allow write: if isAdmin();
+      }
     }
 
     // ══ Centros (multi-tenancy, Fase 1) ════════════════════════════

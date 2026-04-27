@@ -12,6 +12,7 @@ export { askAi } from './askAi';
 export { setUserRole } from './setUserRole';
 export { publicMetrics } from './publicMetrics';
 export { getGaMetrics } from './getGaMetrics';
+export { csCreateInvite, csRedeemInvite } from './csInvites';
 
 export {
   auditCases,

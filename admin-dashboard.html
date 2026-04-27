@@ -288,6 +288,27 @@ td.num{text-align:right;font-family:var(--mono)}
     <div id="centrosList" style="margin-top:14px"></div>
   </div>
 
+  <div class="section">
+    <h3>🎟️ Invitaciones a Centros de Salud <span class="meta">códigos de un solo uso · 7 días</span></h3>
+    <p class="small" style="margin-bottom:10px">Genera un código para que un compañero pueda editar la ficha de un Centro de Salud del Área II. El compañero lo introduce en <code>centros-salud.html → pestaña "Soy del equipo"</code> y recibe el rol <code>redactor</code> o <code>coordinador</code> para ese centro únicamente.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;align-items:start">
+      <form id="csInviteForm" onsubmit="return crearInviteCS(event)" style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+        <input required pattern="cs-[a-z0-9-]{3,40}" placeholder="centroId (ej: cs-cartagena-casco)" id="csInvCentro" style="padding:8px 12px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:8px;font-family:inherit;font-size:.9rem">
+        <select id="csInvRol" style="padding:8px 12px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:8px;font-family:inherit;font-size:.9rem">
+          <option value="redactor">redactor (edita su centro)</option>
+          <option value="coordinador">coordinador (edita su centro)</option>
+        </select>
+        <input type="number" min="1" max="30" value="7" id="csInvDias" style="padding:8px 12px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:8px;font-family:inherit;font-size:.9rem" placeholder="Días hasta caducar (1-30)">
+        <button type="submit" style="padding:9px 14px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:8px;font-weight:700;font-family:inherit;cursor:pointer">Generar código</button>
+        <div id="csInvResult" class="small" style="min-height:16px;font-family:var(--mono)"></div>
+      </form>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">Últimos códigos emitidos</div>
+        <div id="csInvList" class="small">Cargando…</div>
+      </div>
+    </div>
+  </div>
+
   <p class="small" style="text-align:center;margin-top:20px">Datos: <code style="font-family:var(--mono)">users/{uid}/aiRequests</code> · <code style="font-family:var(--mono)">centros</code> · actualizados en tiempo real desde Firestore · no se almacena el texto de prompts ni respuestas.</p>
 </div>
 
@@ -1368,6 +1389,72 @@ async function saveCentro(e){
   }
   return false;
 }
+
+// ════════════════════════════════════════════════════════════════════
+// Invitaciones a Centros de Salud — generador de códigos one-shot
+// ════════════════════════════════════════════════════════════════════
+async function crearInviteCS(e){
+  e.preventDefault();
+  const centroId = document.getElementById('csInvCentro').value.trim();
+  const rol = document.getElementById('csInvRol').value;
+  const dias = parseInt(document.getElementById('csInvDias').value || '7', 10);
+  const out = document.getElementById('csInvResult');
+  out.textContent = 'Generando…';
+  try {
+    const fns = firebase.app().functions('europe-west1');
+    const call = fns.httpsCallable('csCreateInvite');
+    const res = await call({ centroId, rol, expiraEnDias: dias });
+    const d = res && res.data;
+    if(d && d.ok){
+      out.innerHTML = '<span class="tag tag-ok">✓ Código:</span> <strong style="font-family:var(--mono);font-size:1.05rem">'+d.codigo+'</strong> · '+d.rol+' en '+d.centroId+' · caduca '+new Date(d.expiraISO).toLocaleString('es-ES');
+      cargarInvitesCS();
+    } else {
+      out.innerHTML = '<span class="tag tag-err">Respuesta inesperada</span>';
+    }
+  } catch(err){
+    out.innerHTML = '<span class="tag tag-err">❌ '+(err.message||err.code||err)+'</span>';
+  }
+  return false;
+}
+
+async function cargarInvitesCS(){
+  const list = document.getElementById('csInvList');
+  if(!list) return;
+  try {
+    const snap = await firebase.firestore()
+      .collection('cs_invites').orderBy('creadoAt','desc').limit(20).get();
+    if(snap.empty){ list.innerHTML = '<em>Sin códigos emitidos.</em>'; return; }
+    let html = '<table style="width:100%;font-size:.78rem"><thead><tr><th>Código</th><th>Centro</th><th>Rol</th><th>Estado</th><th>Caduca</th></tr></thead><tbody>';
+    snap.forEach(d => {
+      const inv = d.data();
+      const exp = inv.expiraAt && inv.expiraAt.toDate ? inv.expiraAt.toDate() : null;
+      const caducado = exp && exp.getTime() < Date.now();
+      const estado = inv.usado
+        ? '<span class="tag tag-ok">usado</span>'
+        : caducado
+          ? '<span class="tag tag-err">caducado</span>'
+          : '<span class="tag tag-cache">vivo</span>';
+      html += '<tr><td style="font-family:var(--mono);font-weight:700">'+d.id+'</td>'
+        + '<td>'+(inv.centroId||'')+'</td>'
+        + '<td>'+(inv.rol||'')+'</td>'
+        + '<td>'+estado+'</td>'
+        + '<td>'+(exp ? exp.toLocaleDateString('es-ES') : '—')+'</td></tr>';
+    });
+    html += '</tbody></table>';
+    list.innerHTML = html;
+  } catch(e){
+    list.innerHTML = '<span class="tag tag-err">Error: '+(e.message||e.code||e)+'</span>';
+  }
+}
+
+// Carga inicial de la lista cuando el admin pasa el gate.
+// Reutiliza el mismo onAuthStateChanged ya cableado más arriba: añadimos un
+// pequeño hook que se dispara tras el primer paint del dashboard.
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    if(firebase.auth && firebase.auth().currentUser) cargarInvitesCS();
+  }, 1500);
+});
 </script>
 </body>
 </html>

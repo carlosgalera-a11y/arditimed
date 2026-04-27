@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="/console-guard.js"></script>
+<meta charset="UTF-8">
+<meta name="author" content="Carlos Galera Román, MFyC">
+<meta name="medical-organization" content="H.G.U. Santa Lucía · Área II · Servicio Murciano de Salud">
+<meta name="compliance" content="RGPD · EU AI Act 2024/1689 · LPI Art. 51">
+<meta name="last-reviewed" content="2026-04-27">
+<meta name="generator" content="Cartagenaeste PWA">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0a1f14">
+<meta name="description" content="Directorio interactivo de Centros de Salud del Área II Cartagena. Horarios, recursos, calendarios y actividades.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+<link rel="manifest" href="manifest.json">
+<link rel="canonical" href="https://area2cartagena.es/centros-salud.html">
+<script src="/canonical-banner.js" defer></script>
+<title>Centros de Salud · Área II Cartagena</title>
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://securetoken.googleapis.com https://*.sentry.io https://*.ingest.de.sentry.io https://www.gstatic.com https://browser.sentry-cdn.com wss:;">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="firebase-init.js"></script>
+
+<script>window.SENTRY_DSN='https://397ff22b9f93f5ed251ec81c68806546@o4511258495090688.ingest.de.sentry.io/4511258543784016';</script>
+<script src="sentry-init.js" defer></script>
+<script src="update-button.js" defer></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Sans+3:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  font-family:'Source Sans 3',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#0a1f14;color:#e9f5ee;display:flex;flex-direction:column;min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;flex-wrap:wrap;background:rgba(0,0,0,.32);border-bottom:1px solid rgba(255,255,255,.08)}
+.brand{display:inline-flex;align-items:center;gap:10px;color:#fff}
+.brand-emblem{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d3d26,#1a6b4a);display:inline-flex;align-items:center;justify-content:center;font-size:1.25rem;border:1px solid rgba(255,255,255,.15)}
+.brand-name{font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem}
+.brand-name em{font-style:normal;color:#d4a853;margin-left:2px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tb-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(255,255,255,.18);border-radius:16px;color:#fff;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.08)}
+.tb-btn:hover{background:rgba(255,255,255,.16)}
+
+main{flex:1;padding:24px 22px 40px;max-width:1200px;width:100%;margin:0 auto}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800;letter-spacing:-.4px;line-height:1.1;color:#fff}
+.hero p{font-size:.95rem;opacity:.82;line-height:1.55;font-weight:300;max-width:640px;margin-top:8px}
+
+.disclaimer{margin:18px 0 0;padding:10px 14px;background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.28);border-radius:10px;font-size:.78rem;color:#fff;opacity:.9}
+.disclaimer strong{color:#ffd54f}
+
+/* Buscador + filtros */
+.cs-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 8px}
+.cs-search{flex:1;min-width:240px;padding:10px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:14px;color:#fff;font-family:inherit;font-size:.92rem}
+.cs-search:focus{outline:none;border-color:#d4a853}
+.cs-chip{padding:7px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:18px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.cs-chip.on{background:#d4a853;color:#0d3d26;border-color:#d4a853}
+
+/* Grid de centros */
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:8px}
+.cs-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px 18px;cursor:pointer;transition:.18s;backdrop-filter:blur(10px);position:relative;color:#fff;font-family:inherit;text-align:left}
+.cs-card:hover{transform:translateY(-2px);background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4)}
+.cs-card h3{font-family:'Playfair Display',serif;font-size:1.08rem;margin-bottom:4px}
+.cs-card .sub{font-size:.78rem;opacity:.72;margin-bottom:8px}
+.cs-card .pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.pill{font-size:.66rem;padding:2px 8px;border-radius:10px;background:rgba(212,168,83,.18);color:#f3d98a;font-weight:700}
+.pill.docente{background:rgba(34,197,94,.18);color:#86efac}
+.pill.suap{background:rgba(239,68,68,.18);color:#fca5a5}
+.pill.ecografo{background:rgba(59,130,246,.2);color:#93bbfc}
+.pill.cma{background:rgba(139,92,246,.2);color:#c4b5fd}
+
+/* Detalle del centro */
+.cs-detail{display:none;margin-top:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);border-radius:16px;overflow:hidden}
+.cs-detail.show{display:block}
+.cs-detail-head{padding:18px 22px;background:linear-gradient(135deg,rgba(13,61,38,.88),rgba(26,107,74,.65));border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cs-detail-head h2{font-family:'Playfair Display',serif;font-size:1.35rem;color:#fff;flex:1}
+.cs-detail-head .back{padding:6px 12px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;font-family:inherit;cursor:pointer;font-size:.78rem;font-weight:700}
+.cs-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.1);overflow-x:auto}
+.cs-tab{padding:10px 18px;background:transparent;border:0;color:rgba(255,255,255,.65);font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent}
+.cs-tab.on{color:#fff;border-bottom-color:#d4a853}
+.cs-pane{display:none;padding:18px 22px}
+.cs-pane.on{display:block}
+.cs-row{display:grid;grid-template-columns:160px 1fr;gap:8px;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.1);font-size:.92rem}
+.cs-row .k{color:#cbd5e1;font-weight:700}
+.cs-row textarea,.cs-row input{width:100%;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.9rem;padding:6px 10px;resize:vertical;min-height:32px}
+.cs-row textarea:focus,.cs-row input:focus{outline:none;border-color:#d4a853}
+
+.cs-edit-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.cs-edit-bar button{padding:8px 14px;border-radius:10px;border:0;font-family:inherit;font-weight:700;cursor:pointer;font-size:.86rem}
+.cs-save{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff}
+.cs-save:disabled{opacity:.5;cursor:not-allowed}
+.cs-cancel{background:rgba(0,0,0,.18);color:#fff;border:1px solid rgba(255,255,255,.18)!important}
+.cs-msg{font-size:.82rem;color:#86efac}
+.cs-msg.err{color:#fca5a5}
+
+.cs-acceso{margin-top:14px;padding:14px 16px;background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.28);border-radius:12px}
+.cs-acceso h3{font-size:.95rem;color:#ffd54f;margin-bottom:6px}
+.cs-acceso p{font-size:.82rem;opacity:.85;line-height:1.45}
+.cs-acceso .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.cs-acceso input{flex:1;min-width:160px;padding:8px 12px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.92rem;letter-spacing:1.5px;text-transform:uppercase}
+.cs-acceso button{padding:8px 14px;background:#d4a853;color:#0d3d26;border:0;border-radius:8px;font-family:inherit;font-weight:700;cursor:pointer}
+.cs-acceso .help{font-size:.74rem;opacity:.7;margin-top:6px}
+
+/* Login gate */
+.login-gate{max-width:520px;margin:60px auto;padding:32px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:18px;text-align:center}
+.login-gate h2{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:10px}
+.login-gate p{font-size:.92rem;opacity:.82;line-height:1.5;margin-bottom:18px}
+.btn-google{display:inline-flex;align-items:center;gap:10px;padding:11px 20px;background:#fff;color:#3c4043;border:1.5px solid #dadce0;border-radius:10px;font-weight:600;font-size:.92rem;cursor:pointer;font-family:inherit}
+.btn-google svg{width:20px;height:20px}
+
+footer{padding:14px 22px;text-align:center;font-size:.7rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.08)}
+footer a{text-decoration:underline;color:#d4a853}
+
+@media(max-width:640px){
+  main{padding:16px 14px 28px}
+  .cs-row{grid-template-columns:1fr;gap:2px}
+  .cs-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="profesionales.html" class="brand">
+    <span class="brand-emblem">🏥</span>
+    <span class="brand-name">Centros de Salud<em>Área II</em></span>
+  </a>
+  <div class="toolbar">
+    <button class="tb-btn" onclick="location.href='profesionales.html'">← Profesionales</button>
+    <button class="tb-btn" data-cart-update type="button">🔄 Actualizar</button>
+    <button class="tb-btn" id="tbLogout" onclick="firebase.auth().signOut()">Salir</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- Login gate (visible si no hay sesión) -->
+  <div id="loginGate" class="login-gate" style="display:none">
+    <h2>🔐 Requiere inicio de sesión</h2>
+    <p>El directorio de Centros de Salud es exclusivo para profesionales sanitarios autenticados del Área II Cartagena.</p>
+    <button class="btn-google" onclick="signIn()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <span>Continuar con Google</span>
+    </button>
+  </div>
+
+  <!-- Contenido (visible si hay sesión) -->
+  <div id="csApp" style="display:none">
+    <div class="hero">
+      <h1>Centros de Salud · Área II Cartagena</h1>
+      <p>Directorio interconectado de los 14 centros del Área II. Cualquier profesional autenticado puede consultar todos; sólo el redactor de cada centro edita su ficha. Para ser redactor, pide a tu coordinador o a un superadmin un código de invitación de un solo uso.</p>
+    </div>
+
+    <div class="disclaimer">
+      ⚠️ <strong>Plataforma formativa.</strong> No diagnóstica. Información de gestión y organización docente. Cualquier dato sensible debe revisarse contra la fuente oficial del SMS antes de su uso clínico.
+    </div>
+
+    <div class="cs-toolbar">
+      <input class="cs-search" id="csSearch" placeholder="Buscar centro, recurso, zona…" oninput="renderCentros()">
+      <button class="cs-chip on" data-filter="todos" onclick="setFilter(this,'todos')">Todos</button>
+      <button class="cs-chip" data-filter="suap" onclick="setFilter(this,'suap')">Con SUAP</button>
+      <button class="cs-chip" data-filter="docente" onclick="setFilter(this,'docente')">Docentes</button>
+      <button class="cs-chip" data-filter="ecografo" onclick="setFilter(this,'ecografo')">Con ecógrafo</button>
+      <button class="cs-chip" data-filter="cma" onclick="setFilter(this,'cma')">Con cirugía menor</button>
+    </div>
+
+    <div class="cs-grid" id="csGrid"></div>
+
+    <div class="cs-detail" id="csDetail">
+      <div class="cs-detail-head">
+        <h2 id="csDetailName">—</h2>
+        <span class="pill" id="csDetailRole">lectura</span>
+        <button class="back" onclick="cerrarDetalle()">← Volver al listado</button>
+      </div>
+      <div class="cs-tabs" id="csTabs">
+        <button class="cs-tab on" data-tab="info" onclick="setTab('info')">Información</button>
+        <button class="cs-tab" data-tab="horario" onclick="setTab('horario')">Horarios</button>
+        <button class="cs-tab" data-tab="plantilla" onclick="setTab('plantilla')">Plantilla</button>
+        <button class="cs-tab" data-tab="recursos" onclick="setTab('recursos')">Recursos</button>
+        <button class="cs-tab" data-tab="particularidades" onclick="setTab('particularidades')">Particularidades</button>
+        <button class="cs-tab" data-tab="acceso" onclick="setTab('acceso')">Soy del equipo</button>
+      </div>
+
+      <div class="cs-pane on" data-pane="info" id="paneInfo"></div>
+      <div class="cs-pane" data-pane="horario" id="paneHorario"></div>
+      <div class="cs-pane" data-pane="plantilla" id="panePlantilla"></div>
+      <div class="cs-pane" data-pane="recursos" id="paneRecursos"></div>
+      <div class="cs-pane" data-pane="particularidades" id="paneParticularidades"></div>
+      <div class="cs-pane" data-pane="acceso" id="paneAcceso">
+        <div class="cs-acceso">
+          <h3>¿Eres del equipo de <span id="csNombreAcceso">este centro</span>?</h3>
+          <p>Pide a tu coordinador o a un superadmin un código de invitación. Los códigos son de un solo uso y caducan a los 7 días.</p>
+          <div class="row">
+            <input id="csCodigo" maxlength="9" placeholder="XXXX-XXXX" autocomplete="off">
+            <button onclick="canjearCodigo()">Canjear</button>
+          </div>
+          <div class="cs-msg" id="csCodigoMsg"></div>
+          <div class="help">Puedes pegar el código tal y como te lo pasaron (con o sin guion).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>© 2026 Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622</div>
+  <div style="margin-top:4px"><a href="profesionales.html">Profesionales</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a></div>
+</footer>
+
+<script src="centros-salud-seed.js"></script>
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════════════════════
+// Centros de Salud · Área II Cartagena
+// ════════════════════════════════════════════════════════════════════
+// · Lectura libre para cualquier autenticado.
+// · Edición sólo si /users/{uid}.csRoles[centroId] ∈ {redactor, coordinador}.
+// · Datos seed locales en `window.CS_SEED` (centros-salud-seed.js); cuando un
+//   redactor guarda cambios se persiste en /centros_salud/{centroId} y a partir
+//   de ahí el doc Firestore tiene precedencia sobre el seed.
+// · Canje de código: Cloud Function csRedeemInvite (atómico).
+// ════════════════════════════════════════════════════════════════════
+
+var auth = firebase.auth();
+var db = firebase.firestore();
+var fns = firebase.app().functions('europe-west1');
+
+var state = {
+  centros: [],          // merge de seed + Firestore
+  currentId: null,
+  currentTab: 'info',
+  filter: 'todos',
+  csRoles: {},
+  isAdmin: false,
+};
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+  return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+}); }
+
+// ── Auth ──────────────────────────────────────────────────────────
+function signIn(){
+  var p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt: 'select_account' });
+  auth.signInWithPopup(p).catch(function(e){ alert('Login: ' + (e.message||e.code)); });
+}
+
+auth.onAuthStateChanged(async function(u){
+  document.getElementById('loginGate').style.display = u ? 'none' : 'block';
+  document.getElementById('csApp').style.display = u ? 'block' : 'none';
+  if(!u) return;
+  try {
+    var t = await u.getIdTokenResult(true);
+    var c = t && t.claims || {};
+    state.isAdmin = c.role === 'admin' || c.role === 'superadmin' || c.admin === true
+      || u.email === 'carlosgalera2roman@gmail.com'
+      || u.email === 'ramongalera22@gmail.com';
+  } catch(e){ state.isAdmin = false; }
+  try {
+    var snap = await db.collection('users').doc(u.uid).get();
+    state.csRoles = (snap.exists && snap.data() && snap.data().csRoles) || {};
+  } catch(e){ state.csRoles = {}; }
+  await cargarCentros();
+  renderCentros();
+});
+
+// ── Carga de centros: seed + Firestore overlay ────────────────────
+async function cargarCentros(){
+  var seed = (window.CS_SEED || []).slice();
+  var overlays = {};
+  try {
+    var snap = await db.collection('centros_salud').get();
+    snap.forEach(function(d){ overlays[d.id] = d.data(); });
+  } catch(e){
+    console.warn('[centros-salud] no se pudo leer Firestore', e);
+  }
+  state.centros = seed.map(function(s){
+    var ov = overlays[s.id] || {};
+    return Object.assign({}, s, ov, { id: s.id });
+  });
+  // Centros que existan SOLO en Firestore (creados por admin) y no en seed.
+  Object.keys(overlays).forEach(function(id){
+    if(!state.centros.find(function(c){ return c.id === id; })){
+      state.centros.push(Object.assign({ id: id, nombre: id }, overlays[id]));
+    }
+  });
+}
+
+// ── Filtro y render del listado ───────────────────────────────────
+function setFilter(btn, f){
+  state.filter = f;
+  Array.prototype.forEach.call(document.querySelectorAll('.cs-chip'), function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  renderCentros();
+}
+
+function matchFiltro(c){
+  if(state.filter === 'todos') return true;
+  if(state.filter === 'suap') return !!c.suap;
+  if(state.filter === 'docente') return !!c.docente;
+  if(state.filter === 'ecografo') return (c.recursos||'').toLowerCase().indexOf('ecógraf') >= 0
+    || (c.recursos||'').toLowerCase().indexOf('ecograf') >= 0;
+  if(state.filter === 'cma') return (c.recursos||'').toLowerCase().indexOf('cirugía menor') >= 0
+    || (c.recursos||'').toLowerCase().indexOf('cirugia menor') >= 0;
+  return true;
+}
+
+function renderCentros(){
+  var q = (document.getElementById('csSearch').value || '').toLowerCase();
+  var grid = document.getElementById('csGrid');
+  var html = state.centros
+    .filter(matchFiltro)
+    .filter(function(c){
+      if(!q) return true;
+      var hay = (c.nombre+' '+c.zona+' '+c.recursos+' '+c.particularidades+' '+(c.localidad||'')).toLowerCase();
+      return hay.indexOf(q) >= 0;
+    })
+    .map(function(c){
+      var rol = state.csRoles[c.id];
+      var pills = [];
+      if(rol === 'redactor' || rol === 'coordinador') pills.push('<span class="pill">tu rol: '+esc(rol)+'</span>');
+      if(c.suap) pills.push('<span class="pill suap">SUAP</span>');
+      if(c.docente) pills.push('<span class="pill docente">docente</span>');
+      if(/ecógraf|ecograf/i.test(c.recursos||'')) pills.push('<span class="pill ecografo">ecógrafo</span>');
+      if(/cirug[íi]a menor/i.test(c.recursos||'')) pills.push('<span class="pill cma">cirugía menor</span>');
+      return '<button class="cs-card" onclick="abrirCentro(\''+esc(c.id)+'\')">'
+        + '<h3>'+esc(c.nombre)+'</h3>'
+        + '<div class="sub">'+esc(c.localidad||'')+(c.zona?(' · '+esc(c.zona)):'')+'</div>'
+        + (c.coordinador ? '<div class="sub">Coordinador: '+esc(c.coordinador)+'</div>' : '')
+        + '<div class="pills">'+pills.join('')+'</div>'
+        + '</button>';
+    }).join('');
+  grid.innerHTML = html || '<p style="opacity:.7">Sin resultados.</p>';
+}
+
+// ── Detalle ───────────────────────────────────────────────────────
+function abrirCentro(id){
+  var c = state.centros.find(function(x){ return x.id === id; });
+  if(!c) return;
+  state.currentId = id;
+  document.getElementById('csDetailName').textContent = c.nombre;
+  document.getElementById('csNombreAcceso').textContent = c.nombre;
+  var rol = state.csRoles[id];
+  var roleLabel = state.isAdmin ? 'admin' : (rol || 'lectura');
+  document.getElementById('csDetailRole').textContent = roleLabel;
+  document.getElementById('csDetail').classList.add('show');
+  setTab('info');
+  document.getElementById('csDetail').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function cerrarDetalle(){
+  state.currentId = null;
+  document.getElementById('csDetail').classList.remove('show');
+}
+
+function puedeEditar(){
+  if(state.isAdmin) return true;
+  var r = state.csRoles[state.currentId];
+  return r === 'redactor' || r === 'coordinador';
+}
+
+function setTab(name){
+  state.currentTab = name;
+  Array.prototype.forEach.call(document.querySelectorAll('.cs-tab'), function(b){
+    b.classList.toggle('on', b.dataset.tab === name);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.cs-pane'), function(p){
+    p.classList.toggle('on', p.dataset.pane === name);
+  });
+  if(name !== 'acceso') renderTab(name);
+}
+
+function renderTab(name){
+  var c = state.centros.find(function(x){ return x.id === state.currentId; });
+  if(!c) return;
+  var pane = document.getElementById('pane'+name.charAt(0).toUpperCase()+name.slice(1));
+  if(!pane) return;
+  var editable = puedeEditar();
+  var fields = {
+    info: [
+      ['nombre','Nombre',true,false],
+      ['localidad','Localidad',false,false],
+      ['zona','Zona básica',false,false],
+      ['direccion','Dirección',false,false],
+      ['telefono','Teléfono',false,false],
+      ['coordinador','Coordinador/a',false,false],
+      ['suap','SUAP (sí/no)',false,'bool'],
+      ['docente','Centro docente (sí/no)',false,'bool'],
+    ],
+    horario: [['horario','Horario de apertura',false,'long']],
+    plantilla: [['plantilla','Plantilla y composición',false,'long']],
+    recursos: [['recursos','Recursos materiales (ecógrafo, retinógrafo, etc.)',false,'long']],
+    particularidades: [['particularidades','Particularidades del centro',false,'long']],
+  }[name];
+  if(!fields) return;
+  var html = fields.map(function(f){
+    var k = f[0], label = f[1], required = f[2], type = f[3];
+    var v = c[k] == null ? '' : c[k];
+    if(type === 'bool') v = v ? 'sí' : 'no';
+    if(!editable){
+      return '<div class="cs-row"><div class="k">'+esc(label)+'</div><div>'+esc(v||'—')+'</div></div>';
+    }
+    var input = type === 'long'
+      ? '<textarea data-field="'+esc(k)+'" rows="4">'+esc(v)+'</textarea>'
+      : '<input data-field="'+esc(k)+'" type="text" value="'+esc(v)+'"'+(required?' required':'')+'>';
+    return '<div class="cs-row"><div class="k">'+esc(label)+'</div><div>'+input+'</div></div>';
+  }).join('');
+  if(editable){
+    html += '<div class="cs-edit-bar">'
+      + '<button class="cs-save" onclick="guardarTab()">💾 Guardar</button>'
+      + '<button class="cs-cancel" onclick="renderTab(state.currentTab)">Descartar</button>'
+      + '<span class="cs-msg" id="paneMsg"></span>'
+      + '</div>';
+  }
+  pane.innerHTML = html;
+}
+
+async function guardarTab(){
+  if(!state.currentId) return;
+  if(!puedeEditar()){ alert('No tienes permiso para editar este centro.'); return; }
+  var pane = document.querySelector('.cs-pane.on');
+  if(!pane) return;
+  var inputs = pane.querySelectorAll('[data-field]');
+  var update = {};
+  inputs.forEach(function(el){
+    var k = el.dataset.field;
+    var v = el.value;
+    if(k === 'suap' || k === 'docente'){
+      v = /^(sí|si|true|1|yes)$/i.test(String(v).trim());
+    }
+    update[k] = v;
+  });
+  update.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+  update.updatedBy = auth.currentUser ? auth.currentUser.uid : null;
+  update.updatedByEmail = auth.currentUser ? auth.currentUser.email : null;
+  var msg = document.getElementById('paneMsg');
+  msg.textContent = 'Guardando…'; msg.classList.remove('err');
+  try {
+    await db.collection('centros_salud').doc(state.currentId).set(update, { merge: true });
+    Object.assign(state.centros.find(function(c){ return c.id === state.currentId; }), update);
+    msg.textContent = '✓ Guardado.';
+    setTimeout(function(){ msg.textContent = ''; }, 2500);
+  } catch(e){
+    msg.classList.add('err');
+    msg.textContent = 'Error: ' + (e.message || e.code || 'no se pudo guardar');
+  }
+}
+
+async function canjearCodigo(){
+  var raw = (document.getElementById('csCodigo').value || '').trim().toUpperCase().replace(/[^A-Z2-9]/g,'');
+  if(raw.length !== 8){
+    setMsg('Formato inválido. Debe tener 8 caracteres (XXXX-XXXX).', true); return;
+  }
+  var codigo = raw.slice(0,4) + '-' + raw.slice(4);
+  setMsg('Canjeando…', false);
+  try {
+    var call = fns.httpsCallable('csRedeemInvite');
+    var res = await call({ codigo: codigo });
+    var data = res && res.data || {};
+    if(data.ok){
+      state.csRoles[data.centroId] = data.rol;
+      setMsg('✓ Acceso concedido como ' + data.rol + ' en ' + data.centroId + '. Recarga la página para editar.', false);
+      setTimeout(function(){ location.reload(); }, 1800);
+    } else {
+      setMsg('Respuesta inesperada del servidor.', true);
+    }
+  } catch(e){
+    setMsg(e.message || e.code || 'Error', true);
+  }
+}
+function setMsg(t, err){
+  var m = document.getElementById('csCodigoMsg');
+  m.textContent = t;
+  m.classList.toggle('err', !!err);
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+
+<script src="sw-update.js" defer></script>
+</body>
+</html>
