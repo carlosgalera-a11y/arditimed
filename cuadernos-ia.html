@@ -13,6 +13,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
@@ -305,21 +309,31 @@ async function sendChat(){
   messages[messages.length-1]={role:'user',content:content};
 
   var hasImages=nb.docs.length>0;
-  var model=hasImages?'qwen/qwen2.5-vl-32b-instruct:free':'deepseek/deepseek-chat-v3-0324:free';
 
   renderChatMsg('loading','');
 
+  if(typeof window.askAi !== 'function'){
+    removeLoading();
+    renderChatMsg('bot','❌ IA no disponible. Inicia sesión para usar el asistente del cuaderno.');
+    return;
+  }
+
   try{
-    var body={model:model,messages:messages,max_tokens:4000,temperature:0.3};
-    var proxyUrl=localStorage.getItem('api_proxy_url');
-    var r;
-    if(proxyUrl){
-      r=await fetch(proxyUrl+'/api/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    }else{
-      r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Cuadernos IA'},body:JSON.stringify(body)});
+    var firstImgB64='';
+    if(hasImages){
+      // askAi soporta una imagen por llamada — usamos la primera del cuaderno.
+      for(var di=0; di<nb.docs.length; di++){
+        var d0=nb.docs[di].data||'';
+        if(d0){ firstImgB64 = d0.indexOf(',')>=0 ? d0.split(',')[1] : d0; break; }
+      }
     }
-    var data=await r.json();
-    var answer=data.choices&&data.choices[0]?data.choices[0].message.content:'Error al generar respuesta';
+    var res=await window.askAi({
+      type: hasImages ? 'vision' : 'educational',
+      systemPrompt: sysPrompt,
+      prompt: question + (hasImages && nb.docs.length>1 ? '\n\n[Nota: solo se analiza la primera de las '+nb.docs.length+' imágenes adjuntas.]' : ''),
+      imageBase64: hasImages ? firstImgB64 : undefined,
+    });
+    var answer=(res && res.text) ? res.text : 'Error al generar respuesta';
 
     removeLoading();
     chatHistory.push({role:'assistant',text:answer});
@@ -328,7 +342,8 @@ async function sendChat(){
     saveNotebooks();
   }catch(e){
     removeLoading();
-    renderChatMsg('bot','❌ Error: '+e.message);
+    var msg=(e && e.userMessage) ? e.userMessage : (e && e.message) ? e.message : 'No se pudo generar respuesta.';
+    renderChatMsg('bot','❌ '+msg);
   }
 }
 

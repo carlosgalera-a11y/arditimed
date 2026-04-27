@@ -56,36 +56,8 @@ var secureStore=(function(){
 /* Clean expired data on load */
 try{secureStore.cleanExpired();}catch(e){}
 
-// ── API KEY PROTECTION ───────────────────────────────
-// ⚠ DEPRECATED: toda llamada IA debe usar window.askAi().
-// Los stubs siguientes devuelven string vacío para que cualquier código
-// legacy que aún las referencie falle con 401/403 limpio en lugar de
-// revelar una clave. Eliminar tras PR #8 (refactor completo de call sites).
-function _xd(){ console.warn('[deprecated] _xd() — usar window.askAi()'); return ''; }
-var _KP_ENC = '';
-function _dk(){ console.warn('[deprecated] _dk() — usar window.askAi()'); return ''; }
-
-/* ═══ API PROXY (legacy, opt-in solo local vía localStorage) ═══ */
-var API_PROXY_URL = localStorage.getItem('api_proxy_url') || "";
-
-/* orFetch: fallback directo eliminado. Toda petición IA pasa por askAi.
-   Se mantiene el símbolo para no romper importadores legacy — delega. */
-window.orFetch = async function(body) {
-  console.warn('[deprecated] orFetch() — usar window.askAi()');
-  if (typeof window.askAi !== 'function') throw new Error('Cliente IA no cargado');
-  var sysMsg = '';
-  var userMsg = '';
-  try {
-    var msgs = (body && body.messages) || [];
-    for (var i = 0; i < msgs.length; i++) {
-      if (msgs[i].role === 'system') sysMsg = msgs[i].content || '';
-      else if (msgs[i].role === 'user') userMsg = msgs[i].content || '';
-    }
-  } catch(e) {}
-  var res = await window.askAi({ type: 'educational', prompt: userMsg, systemPrompt: sysMsg });
-  // Respuesta en shape OpenAI-compat para compatibilidad:
-  return { choices: [{ message: { content: res.text } }] };
-};
+// (Stubs API legacy _xd/_KP_ENC/_dk/orFetch eliminados. Toda llamada
+// IA debe usar window.askAi() de ai-client.js — ver functions/src/askAi.ts.)
 
 // ── CALCULADORAS MÉDICAS ──────────────────────────────
 function calcCURB65(){
@@ -2899,34 +2871,21 @@ function tradCallDeepL(text,srcLang,tgtLang){
     });
 }
 
-// OpenRouter AI translation (free, good quality)
+// IA translation via window.askAi (DeepSeek / Gemini / Mistral chain).
 function tradCallOpenRouterTranslate(text,srcLang,tgtLang){
-    var OR_KEY=_dk();
+    if(typeof window.askAi !== 'function') return Promise.reject('askAi no disponible');
     var LANG_NAMES={es:'español',en:'inglés',fr:'francés',de:'alemán',it:'italiano',pt:'portugués',ro:'rumano',ar:'árabe',zh:'chino mandarín',ru:'ruso',uk:'ucraniano',pl:'polaco',bg:'búlgaro',wo:'wolof',ha:'hausa',am:'amárico',sw:'suajili',ur:'urdu',hi:'hindi',bn:'bengalí',ta:'tamil'};
     var srcName=LANG_NAMES[srcLang]||srcLang;
     var tgtName=LANG_NAMES[tgtLang]||tgtLang;
-
-    var models=['deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free'];
-    function tryModel(idx){
-        if(idx>=models.length) return Promise.reject('all failed');
-        return fetch('about:disabled-openrouter',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,'HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Traductor Area II'},
-            body:JSON.stringify({model:models[idx],messages:[
-                {role:'system',content:'Eres un traductor médico profesional. Traduce el siguiente texto de '+srcName+' a '+tgtName+'. SOLO devuelve la traducción, sin explicaciones ni notas adicionales. Mantén la terminología médica precisa.'},
-                {role:'user',content:text}
-            ],max_tokens:1000,temperature:0.1})
-        }).then(function(r){
-            if(r.status===429||r.status===502||r.status===503) return tryModel(idx+1);
-            if(!r.ok) return tryModel(idx+1);
-            return r.json();
-        }).then(function(d){
-            var ans=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
-            if(!ans) return tryModel(idx+1);
-            return {text:ans.trim(),provider:'ia'};
-        });
-    }
-    return tryModel(0);
+    return window.askAi({
+        type:'educational',
+        systemPrompt:'Eres un traductor médico profesional. Traduce el siguiente texto de '+srcName+' a '+tgtName+'. SOLO devuelve la traducción, sin explicaciones ni notas adicionales. Mantén la terminología médica precisa.',
+        prompt:text,
+    }).then(function(res){
+        var ans=(res && res.text) ? res.text.trim() : '';
+        if(!ans) throw new Error('empty');
+        return {text:ans,provider:'ia'};
+    });
 }
 
 // MyMemory fallback (basic, free)

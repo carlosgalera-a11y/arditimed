@@ -13,6 +13,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="ai-client.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
@@ -339,22 +343,21 @@ function copiarPlantilla(){
   navigator.clipboard.writeText(text).then(function(){alert('✅ Copiado');});
 }
 
-// ═══ API CALL ═══
+// ═══ API CALL ═══ Toda la IA pasa por window.askAi (Cloud Function europe-west1).
+// Mantenemos la forma OpenAI-compat de la respuesta para no romper los call sites.
 async function callAI(prompt,bodyOverride){
-  var body=bodyOverride||{
-    model:'deepseek/deepseek-chat-v3-0324:free',
-    messages:[{role:'user',content:prompt}],
-    max_tokens:4000,
-    temperature:0.3
-  };
-  var proxyUrl=localStorage.getItem('api_proxy_url');
-  if(proxyUrl){
-    var r=await fetch(proxyUrl+'/api/openrouter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    return r.json();
-  } else {
-    var r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','HTTP-Referer':'https://carlosgalera-a11y.github.io/Cartagenaeste/','X-Title':'Turnos Area II'},body:JSON.stringify(body)});
-    return r.json();
+  if(typeof window.askAi !== 'function'){
+    throw new Error('IA no disponible. Inicia sesión para generar plantillas.');
   }
+  var msgs = bodyOverride ? (bodyOverride.messages||[]) : [{role:'user',content:prompt}];
+  var sys = '';
+  var user = '';
+  for (var i = 0; i < msgs.length; i++){
+    if (msgs[i].role === 'system') sys = msgs[i].content || '';
+    else if (msgs[i].role === 'user') user = msgs[i].content || '';
+  }
+  var res = await window.askAi({type:'educational', systemPrompt:sys, prompt:user});
+  return { choices: [{ message: { content: (res && res.text) || '' } }] };
 }
 
 function esc(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}

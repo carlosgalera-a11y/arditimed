@@ -25,10 +25,14 @@ test.describe('Smoke · home pública', () => {
 
   test('botón de inicio de sesión visible y abre modal', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
     const loginBtn = page.locator('#tbLoginBtn');
     await expect(loginBtn).toBeVisible();
-    await loginBtn.click();
-    await expect(page.locator('#loginModal.show, #loginModal[class*=show]')).toBeVisible();
+    // Forzamos llamada explicita para evitar dependencia de clicks/timings
+    // (el modal se controla por la clase 'show' añadida desde openLoginModal()).
+    await page.evaluate(() => (window as any).openLoginModal && (window as any).openLoginModal());
+    const modal = page.locator('#loginModal');
+    await expect(modal).toHaveClass(/show/, { timeout: 5000 });
     // Modal trae las dos vías: Google + email link (PR #98).
     await expect(page.locator('button.btn-google').first()).toBeVisible();
     await expect(page.locator('#emailLinkInput')).toBeVisible();

@@ -2508,11 +2508,7 @@ window.showNotebooksModal=function(){
 
 <script>
 // ── API KEY PROTECTION (early inline) ──
-// ⚠️ DEPRECATED: _KP será eliminado en futuras versiones.
-// Migrar todas las llamadas a API_CONFIG (api-config.js).
-// Las keys deben ir en el proxy del NAS, no en el cliente.
-var _KP=[]; /* DEPRECATED: clave OpenRouter retirada - usar window.askAi */
-function _dk(){try{return atob(_KP.join(""));}catch(e){return "";}}
+// _KP / _dk eliminados — toda la IA pasa por window.askAi().
 // ═══ PATIENTS DATA ═══
 var patientSections=[
     {icon:"🥗",title:"Dietas",desc:"Planes nutricionales",url:"dietas.html"},
@@ -3116,19 +3112,8 @@ async function infGenerar(){
     if(!confirm('⚠️ Se han detectado posibles datos personales en el texto.\n\nRecuerda: NO incluyas nombres de pacientes, DNI ni datos identificativos.\n\n¿Has verificado que el texto está anonimizado?'))return;
   }
 
-  // Get API key from AP config
-  var provider=localStorage.getItem('iaProvider')||'groq';
-  var key,model,apiUrl;
-  if(provider==='qwen'){
-    key=localStorage.getItem('qwenApiKey');
-    model=localStorage.getItem('qwenModel')||'qwen-turbo';
-    apiUrl='about:disabled-qwen';
-  }else{
-    // ⚠️ NAS proxy first, then OpenRouter free (no key needed for :free models)
-    key=_dk()||'';
-    model='deepseek/deepseek-chat-v3-0324:free';
-    apiUrl='about:disabled-openrouter';
-  }
+  // (Selección de proveedor eliminada — todo el routing IA vive en
+  // functions/src/routing.ts. window.askAi() decide modelo y fallbacks.)
 
   var instrucciones=document.getElementById('infInstrucciones').value.trim();
 
@@ -3690,167 +3675,9 @@ function megaDispatch(question) {
     });
 }
 
-function megaCallNAS(sp, msgs, btn) {
-    // Only try NAS on HTTP (HTTPS blocks mixed content)
-    if(location.protocol==='https:'){megaCallDeepSeek(sp,msgs,btn);return;}
-    var NAS_URL=(typeof localStorage!=='undefined' && localStorage.getItem('api_proxy_url'))||'';
-    if (btn) btn.textContent = "Pensando...";
-    fetch(NAS_URL+'/ai/chat', {
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({messages:[{role:'system',content:sp}].concat(msgs),max_tokens:1200,temperature:0.3})
-    }).then(function(r){
-        if(!r.ok) throw new Error('NAS error');
-        return r.json();
-    }).then(function(d){
-        var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
-        if(!c) throw new Error('No content');
-        c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-        if(!c) throw new Error('Empty');
-        megaHistory.push({role:'assistant',content:c}); megaSaveHistory();
-        megaAppendMsg('bot',c);
-        megaIsBusy=false;
-        if(btn){btn.disabled=false;btn.textContent='Enviar';}
-    }).catch(function(){
-        megaCallPollinations(sp, msgs, btn, true);
-    });
-}
-
-var MEGA_DS_KEY = "";/* REMOVED: paid key moved to NAS proxy */
-
-function megaCallDeepSeek(sp, msgs, btn) {
-    if (!MEGA_DS_KEY) { megaCallPollinations(sp, msgs, btn, true); return; }
-    if (btn) btn.textContent = "Consultando DeepSeek...";
-    fetch("about:disabled-deepseek", {
-        method: "POST",
-        headers: {"Content-Type":"application/json","Authorization":"Bearer "+MEGA_DS_KEY},
-        body: JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:sp}].concat(msgs),max_tokens:1200,temperature:0.3})
-    }).then(function(r){
-        if(!r.ok) throw new Error("DS error "+r.status);
-        return r.json();
-    }).then(function(d){
-        var c=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;
-        if(!c) throw new Error("No content");
-        c=c.replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-        if(!c) throw new Error("Empty");
-        megaHistory.push({role:"assistant",content:c}); megaSaveHistory();
-        megaAppendMsg("bot",c);
-        megaIsBusy=false;
-        if(btn){btn.disabled=false;btn.textContent="Enviar";}
-    }).catch(function(){
-        megaCallPollinations(sp, msgs, btn, true);
-    });
-}
-
-// ═══ OPENROUTER — 3-tier model chain ═══
-// Nivel 1: Pollinations (sin límite, primer intento)
-// Nivel 2: Modelos :free (50/día sin créditos, 1000/día con $10)
-// Nivel 3: DeepSeek directo (sin :free) — ~$0.27/M tokens
-// Nivel 3: Pollinations (último recurso, sin key)
-var MEGA_OR_KEY = _dk();
-var MEGA_OR_MODELS = [
-    "deepseek/deepseek-chat-v3-0324:free",
-    "google/gemma-3-27b-it:free",
-    "meta-llama/llama-4-maverick:free",
-    "deepseek/deepseek-chat-v3-0324"
-];
-
-function megaCallOpenRouter(sp, msgs, modelIdx, btn) {
-    var model = MEGA_OR_MODELS[modelIdx];
-    if (!model) {
-        megaCallPollinations(sp, msgs, btn);
-        return;
-    }
-
-    var isFree = model.indexOf(":free") >= 0;
-    if (btn) btn.textContent = isFree ? "Pensando..." : "Consultando DeepSeek...";
-
-    var headers = {
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://carlosgalera-a11y.github.io/Cartagenaeste/",
-        "X-Title": "MegaCuaderno Clinico Area II Cartagena"
-    };
-    // Add auth header — needed for both free (higher limits) and paid models
-    if (MEGA_OR_KEY) {
-        headers["Authorization"] = "Bearer " + MEGA_OR_KEY;
-    }
-
-    fetch("about:disabled-openrouter", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-            model: model,
-            messages: [{role:"system",content:sp}].concat(msgs),
-            max_tokens: 1200,
-            temperature: 0.3
-        })
-    })
-    .then(function(r) {
-        if (r.status === 429 || r.status === 503 || r.status === 502) {
-            if (modelIdx + 1 < MEGA_OR_MODELS.length) {
-                setTimeout(function(){ megaCallOpenRouter(sp, msgs, modelIdx+1, btn); }, 800);
-            } else {
-                megaCallPollinations(sp, msgs, btn);
-            }
-            return null;
-        }
-        if (r.status === 402) {
-            // No credits — skip paid models, go to Pollinations
-            megaCallPollinations(sp, msgs, btn);
-            return null;
-        }
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-    })
-    .then(function(d) {
-        if (!d) return;
-        var ans = (d.choices && d.choices[0] && d.choices[0].message)
-            ? d.choices[0].message.content : null;
-        if (!ans) throw new Error("empty");
-        megaOnAnswer(ans, btn);
-    })
-    .catch(function(e) {
-        if (modelIdx + 1 < MEGA_OR_MODELS.length) {
-            megaCallOpenRouter(sp, msgs, modelIdx+1, btn);
-        } else {
-            megaCallPollinations(sp, msgs, btn);
-        }
-    });
-}
-
-// ═══ POLLINATIONS — Last resort fallback (no key needed) ═══
-function megaCallPollinations(sp, msgs, btn, tryORonFail) {
-    if (btn) btn.textContent = "Pensando...";
-    var allMsgs = [{role:"system", content:sp}].concat(msgs);
-    fetch("about:disabled-pollinations", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-            model: "openai-large",
-            messages: allMsgs,
-            seed: Math.floor(Math.random()*9999),
-            private: true
-        })
-    })
-    .then(function(r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-    })
-    .then(function(d) {
-        var ans = (d.choices && d.choices[0] && d.choices[0].message)
-            ? d.choices[0].message.content : null;
-        if (!ans) throw new Error("empty");
-        megaOnAnswer(ans, btn);
-    })
-    .catch(function(e) {
-        if (tryORonFail) {
-            // Pollinations failed, try OpenRouter
-            megaCallOpenRouter(sp, msgs, 0, btn);
-        } else {
-            megaAppendMsg("system","⚠️ No se pudo conectar con la IA. Posibles causas:\n• Conexión a internet inestable\n• Servidores de IA temporalmente saturados\n\n<button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
-            megaReset(btn);
-        }
-    });
-}
+// megaCall{NAS,DeepSeek,OpenRouter,Pollinations} eliminadas — toda la
+// IA pasa por window.askAi() en europe-west1. La cadena de fallbacks
+// vive en functions/src/routing.ts.
 
 function megaRetryLast() {
     if (megaHistory.length > 0) {
@@ -4136,19 +3963,7 @@ function ckCallAI(msgs,cb){
         .catch(function(){ cb(null); });
 }
 
-function ckCallOR(msgs,idx,cb){
-    var models=typeof MEGA_OR_MODELS!=="undefined"?MEGA_OR_MODELS:["deepseek/deepseek-chat-v3-0324:free"];
-    var m=models[idx];if(!m){cb(null);return;}
-    var h={"Content-Type":"application/json","HTTP-Referer":"https://carlosgalera-a11y.github.io/Cartagenaeste/","X-Title":"Checklist Clinico Area II"};
-    var k=typeof MEGA_OR_KEY!=="undefined"?MEGA_OR_KEY:"";
-    if(k)h["Authorization"]="Bearer "+k;
-    fetch("about:disabled-openrouter",{
-        method:"POST",headers:h,
-        body:JSON.stringify({model:m,messages:[{role:"system",content:CK_SYS}].concat(msgs),max_tokens:4000,temperature:0.3})
-    }).then(function(r){if(r.status===429||r.status===503||r.status===502||r.status===402)throw new Error("retry");if(!r.ok)throw new Error("OR"+r.status);return r.json()})
-    .then(function(d){var a=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:null;if(!a)throw new Error("empty");cb(a)})
-    .catch(function(){if(idx+1<models.length)setTimeout(function(){ckCallOR(msgs,idx+1,cb)},500);else cb(null)});
-}
+// ckCallOR eliminada — checklist clínico debe usar window.askAi().
 
 // Section icons/colors for the 4 clinical sections
 var CK_SEC_STYLE={
