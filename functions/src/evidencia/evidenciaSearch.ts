@@ -20,6 +20,7 @@ import { logger } from 'firebase-functions/v2';
 import { validarPregunta } from './safeguards';
 import { searchPubmed, type PubmedAbstract } from './pubmed';
 import { searchEuropePMC, type EpmcAbstract } from './europepmc';
+import { searchOpenAlex, type OpenAlexAbstract } from './openalex';
 import { searchAemps, type AempsMedicamento } from './aemps';
 import { rerank, type ScoredAbstract } from './reranker';
 import { extractPico, type PicoExtraction } from './picoExtractor';
@@ -64,6 +65,7 @@ interface SearchResponse {
   meta: {
     pubmed_count: number;
     europepmc_count: number;
+    openalex_count: number;
     aemps_count: number;
     duracion_ms: number;
     errors: Record<string, string>;
@@ -173,6 +175,16 @@ export const evidenciaSearch = onCall(
       return [] as EpmcAbstract[];
     });
 
+    const openalexP = searchOpenAlex(queryEpmc, {
+      perPage: 10,
+      dateFrom,
+      pubTypes: filtros.soloRevisiones ? ['review'] : undefined,
+      timeoutMs: 8000,
+    }).catch((e: Error) => {
+      errors['openalex'] = e.message ?? String(e);
+      return [] as OpenAlexAbstract[];
+    });
+
     const aempsP: Promise<AempsMedicamento[]> = filtros.incluirAemps
       ? searchAemps(terminoFarmaco, { timeoutMs: 5000, pageSize: 5 }).catch((e: Error) => {
           errors['aemps'] = e.message ?? String(e);
@@ -180,9 +192,9 @@ export const evidenciaSearch = onCall(
         })
       : Promise.resolve([] as AempsMedicamento[]);
 
-    const [pubmed, epmc, aemps] = await Promise.all([pubmedP, epmcP, aempsP]);
+    const [pubmed, epmc, openalex, aemps] = await Promise.all([pubmedP, epmcP, openalexP, aempsP]);
 
-    const reranked = rerank([...pubmed, ...epmc], { maxResults: 8 });
+    const reranked = rerank([...pubmed, ...epmc, ...openalex], { maxResults: 8 });
 
     // Síntesis RAG opcional con verificación de citas.
     let sintesis: SynthOutput | null = null;
@@ -211,6 +223,7 @@ export const evidenciaSearch = onCall(
         fuentes_consultadas: [
           ...(pubmed.length ? ['pubmed'] : []),
           ...(epmc.length ? ['europepmc'] : []),
+          ...(openalex.length ? ['openalex'] : []),
           ...(aemps.length ? ['aemps'] : []),
         ],
         num_abstracts_recuperados: reranked.length,
@@ -256,6 +269,7 @@ export const evidenciaSearch = onCall(
       meta: {
         pubmed_count: pubmed.length,
         europepmc_count: epmc.length,
+        openalex_count: openalex.length,
         aemps_count: aemps.length,
         duracion_ms: Date.now() - start,
         errors,

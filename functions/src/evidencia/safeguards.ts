@@ -37,7 +37,7 @@ const PATRONES_DIAGNOSTICOS: ReadonlyArray<RegExp> = [
 
 const PATRONES_TERAPEUTICOS: ReadonlyArray<RegExp> = [
   /qu[eé]\s+(le\s+)?(receto|prescribo|pongo|doy|administro)/i,
-  /qu[eé]\s+dosis\s+le\s+(pongo|doy|prescribo)/i,
+  /qu[eé]\s+dosis\s+(.{1,40}?\s+)?le\s+(pongo|doy|prescribo|administro)/i,
   /es\s+urgente\s+(operar|intervenir|derivar)/i,
   /(tengo|debo)\s+que\s+operarl[oa]/i,
   /a\s+qu[eé]\s+hospital\s+lo\s+derivo/i,
