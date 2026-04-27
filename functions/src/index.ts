@@ -13,6 +13,8 @@ export { setUserRole } from './setUserRole';
 export { publicMetrics } from './publicMetrics';
 export { getGaMetrics } from './getGaMetrics';
 export { csCreateInvite, csRedeemInvite } from './csInvites';
+export { evidenciaSearch } from './evidencia/evidenciaSearch';
+export { evidenciaFeedback } from './evidencia/evidenciaFeedback';
 
 export {
   auditCases,

@@ -247,6 +247,24 @@ service cloud.firestore {
       }
     }
 
+    // ══ EvidenciaIA · búsquedas bibliográficas con síntesis ═══════
+    // Cada consulta del usuario queda registrada con metadata mínima
+    // (sin texto sintetizado completo — eso lo guarda solo si la
+    // Cloud Function lo añade). El admin lee todas para auditoría
+    // EU AI Act (art. 12, trazabilidad). El usuario solo lee las suyas.
+    match /evidencia_consultas/{id} {
+      // Cliente NO escribe directamente — todo pasa por Cloud Function
+      // `evidenciaSearch` (Admin SDK). Garantiza que el flag de
+      // disclaimer Art. 50 viaja siempre y que la pregunta queda
+      // sanitizada antes de tocar Firestore.
+      allow create, update, delete: if false;
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+    match /evidencia_feedback/{id} {
+      allow create, update, delete: if false; // solo Cloud Function
+      allow read: if isAdmin();
+    }
+
     // ══ Centros (multi-tenancy, Fase 1) ════════════════════════════
     // Catálogo de centros/tenants. Lectura abierta para profesionales
     // autenticados (el cliente necesita el nombre, logo y color del
