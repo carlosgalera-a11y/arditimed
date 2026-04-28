@@ -104,6 +104,12 @@ service cloud.firestore {
     match /megacuaderno_backups/{docId} {
       allow read, write: if signedIn() && docId == request.auth.uid;
     }
+    // Boletín diario agregado por el cron `megaCuadernoDailyDigest`.
+    // Lectura abierta a profesionales autenticados (lo muestra Hub Pro).
+    match /megacuaderno_digests/{day} {
+      allow read: if signedIn();
+      allow create, update, delete: if false; // solo cron (Admin SDK)
+    }
     match /plantillas_backup/{docId} {
       allow read, write: if signedIn() && docId == request.auth.uid;
     }
