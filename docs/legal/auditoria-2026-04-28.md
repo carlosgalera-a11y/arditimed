@@ -1,9 +1,25 @@
 # Auditoría legal interna · Cartagenaeste
 
-**Fecha:** 2026-04-28
+**Fecha:** 2026-04-28 (actualizada 2026-04-29 con cierre H-03/04/05/06/07/08)
 **Auditor:** Carlos Galera Román (con asistente Claude Code) · barrido sistemático del repo
 **Alcance:** RGPD/LOPDGDD · EU AI Act 2024/1689 · MDR 2017/745 · LPI · OWASP top 10 (aplicado) · WCAG 2.1 AA · ePrivacy/cookies
 **Estado del repo en la auditoría:** main @ commit posterior a PR #123 · sw.js v145
+
+## Estado de cierre (2026-04-29)
+
+| ID | Severidad inicial | Estado | PR/Doc |
+|---|---|---|---|
+| H-01 | 🔴 | ⏳ Pendiente — espera reCAPTCHA site key (Carlos) | — |
+| H-02 | 🔴 | ⏳ Pendiente — solicitar DPA a OpenRouter + DeepSeek (Carlos) | — |
+| H-03 | 🔴 | ✅ Cerrado | PR #125 |
+| H-04 | 🔴 | ✅ Cerrado | PR #125 |
+| H-05 | 🟡 | ✅ Cerrado | PR #126 |
+| H-06 | 🟡 | ✅ Cerrado · HSTS ya activo en GitHub Pages | [hsts-status.md](hsts-status.md) |
+| H-07 | 🟡 | ✅ Cerrado | PR #126 |
+| H-08 | 🟡 | ✅ Cerrado | PR #126 |
+| H-09 | 🟢 | ⏳ Pendiente | — |
+| H-10 | 🟢 | ⏳ Pendiente | — |
+| H-11 | 🟢 | ⏳ Pendiente | — |
 
 > Este documento es una auditoría **interna**, no sustituye dictamen de letrado. Es deliberadamente directo: los hallazgos están priorizados por riesgo legal real (no por percepción).
 > Sirve como input para (a) revisión externa con asesor legal o `alexlegal.ai`, (b) entrega a CDTI/AstraZeneca/SMS en due diligence, (c) cierre interno de los hallazgos resolubles sin abogado.

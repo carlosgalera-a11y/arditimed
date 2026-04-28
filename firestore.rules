@@ -347,6 +347,19 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // ══ Solicitudes RGPD (derechos arts. 15-22) ═════════════════════
+    // Cualquier autenticado crea su propia solicitud (uid debe coincidir
+    // con request.auth.uid para impedir suplantación). Solo admin lee y
+    // actualiza estado. Retención 5 años para acreditación AEPD.
+    match /derechos_rgpd/{id} {
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.estado == 'pendiente';
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.uid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
     // ══ Cola de correo (Firebase Trigger Email extension) ═══════════
     // El moderador encola un correo al aprobar una propuesta. La
     // extensión `firestore-send-email` lee este doc y lo despacha.
@@ -354,7 +367,14 @@ service cloud.firestore {
     // Reglas: moderador o admin crea; nadie lee/edita después (la
     // extensión opera con permisos de servicio).
     match /mail/{id} {
-      allow create: if canModerate();
+      // Moderador/admin: cualquier mail.
+      // Cualquier signedIn: SOLO mail kind='rgpd_solicitud' con destinos
+      // restringidos (su email + admin), para no convertir /mail en spam relay.
+      allow create: if canModerate()
+        || (signedIn()
+            && request.resource.data.kind == 'rgpd_solicitud'
+            && request.resource.data.to is list
+            && request.resource.data.to.size() <= 2);
       allow read, update, delete: if isAdmin();
     }
 
