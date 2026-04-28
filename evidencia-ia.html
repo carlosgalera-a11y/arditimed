@@ -18,7 +18,7 @@
 <script src="/canonical-banner.js" defer></script>
 <title>EvidenciaIA · Búsqueda bibliográfica · Área II</title>
 
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://securetoken.googleapis.com https://*.sentry.io https://*.ingest.de.sentry.io https://www.gstatic.com https://browser.sentry-cdn.com wss:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com https://browser.sentry-cdn.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://securetoken.googleapis.com https://*.sentry.io https://*.ingest.de.sentry.io https://www.gstatic.com https://browser.sentry-cdn.com wss:;">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 
@@ -29,6 +29,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
 <script src="recaptcha-key.js"></script>
 <script src="firebase-init.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js" defer></script>
 
 <script>window.SENTRY_DSN='https://397ff22b9f93f5ed251ec81c68806546@o4511258495090688.ingest.de.sentry.io/4511258543784016';</script>
 <script src="sentry-init.js" defer></script>
@@ -217,6 +218,7 @@ footer a{text-decoration:underline;color:#d4a853}
         <button data-fb="incorrecto">👎 Incorrecto</button>
         <button data-fb="cita_falsa">⚠️ Cita no verificable</button>
         <button data-fb="sesgo">🚩 Sesgo</button>
+        <button id="eviExportPdf" onclick="exportarEvidenciaPDF()" type="button">📄 Exportar PDF</button>
       </div>
       <div class="meta-info" id="eviMeta"></div>
     </div>
@@ -437,6 +439,97 @@ Array.prototype.forEach.call(document.querySelectorAll('.feedback button'), func
     }
   });
 });
+
+// ─── Export PDF ────────────────────────────────────────────────────
+// Construye un container blanco offscreen con: cabecera Cartagenaeste,
+// pregunta, síntesis (sin colores oscuros), lista de fuentes con DOI/PMID,
+// disclaimer Art. 50, footer con consultaId/fecha. Llama a html2pdf.
+async function exportarEvidenciaPDF(){
+  if (typeof html2pdf === 'undefined') {
+    alert('La librería de PDF aún se está cargando. Reintenta en 2 segundos.');
+    return;
+  }
+  if (!currentConsultaId) { alert('Aún no hay consulta para exportar.'); return; }
+  var btn = document.getElementById('eviExportPdf');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generando…'; }
+
+  try {
+    var sintEl = document.getElementById('eviSintesis');
+    var meta = document.getElementById('eviMeta');
+    var fuentesOl = document.getElementById('eviFuentes');
+    var pregunta = ($('eviInput').value || '').trim();
+
+    var container = document.createElement('div');
+    container.style.cssText = 'width:190mm;padding:14mm 12mm;background:#fff;color:#1a1a1a;font-family:Source Sans 3,Arial,sans-serif;font-size:11pt;line-height:1.55;';
+    container.innerHTML =
+      '<header style="border-bottom:2px solid #0d3d26;padding-bottom:8px;margin-bottom:14px">'
+      + '<div style="display:flex;align-items:center;gap:10px">'
+      +   '<span style="font-size:1.6rem">🔬</span>'
+      +   '<div>'
+      +     '<div style="font-family:Playfair Display,serif;font-weight:800;font-size:1.15rem;color:#0d3d26">EvidenciaIA · Cartagenaeste</div>'
+      +     '<div style="font-size:.78rem;color:#555">Búsqueda bibliográfica con síntesis IA y citas verificadas — Área II Cartagena</div>'
+      +   '</div>'
+      + '</div>'
+      + '</header>'
+      + '<section style="margin-bottom:14px">'
+      +   '<div style="font-size:.74rem;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:4px">Pregunta del profesional</div>'
+      +   '<div style="font-size:1rem;font-weight:600">' + esc(pregunta) + '</div>'
+      + '</section>'
+      + '<section style="margin-bottom:18px">'
+      +   '<div style="font-size:.74rem;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px">Síntesis</div>'
+      +   '<div style="white-space:pre-wrap;font-size:.95rem">' + (sintEl ? sintEl.innerText.replace(/\n{3,}/g,'\n\n') : '(sin síntesis)') + '</div>'
+      + '</section>'
+      + '<section style="margin-bottom:18px">'
+      +   '<div style="font-size:.74rem;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px">Fuentes consultadas</div>'
+      +   '<ol style="padding-left:18px;font-size:.86rem;line-height:1.5">' + extraerFuentesParaPDF(fuentesOl) + '</ol>'
+      + '</section>'
+      + '<section style="background:#fff8e1;border:1px solid #fbc02d;border-radius:8px;padding:10px 12px;font-size:.82rem;line-height:1.5;margin-bottom:14px">'
+      +   '<strong>⚠️ Aviso EU AI Act art. 50.</strong> Este documento contiene una síntesis generada por IA y no constituye recomendación clínica para un paciente concreto. '
+      +   'Cada cita debe verificarse en la fuente original antes de aplicarla.'
+      + '</section>'
+      + '<footer style="font-size:.72rem;color:#888;border-top:1px solid #eee;padding-top:8px">'
+      +   'Generado: ' + new Date().toLocaleString('es-ES')
+      +   ' · ' + (meta ? esc(meta.textContent) : '')
+      +   '<br>Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622 · area2cartagena.es'
+      + '</footer>';
+
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    document.body.appendChild(container);
+
+    var fname = 'evidencia-' + (currentConsultaId.slice(0,8)) + '-' + new Date().toISOString().slice(0,10) + '.pdf';
+    await html2pdf().set({
+      margin: [10, 8, 10, 8],
+      filename: fname,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    }).from(container).save();
+    container.remove();
+    if (btn) { btn.disabled = false; btn.textContent = '✓ PDF descargado'; setTimeout(function(){ btn.textContent='📄 Exportar PDF'; }, 2500); }
+    try { if (window.cartTrack) window.cartTrack('evidencia_pdf_export', { consulta_id: currentConsultaId }); } catch(_) {}
+  } catch(e){
+    console.error('exportarEvidenciaPDF', e);
+    alert('No se pudo generar el PDF: ' + (e && e.message || e));
+    if (btn) { btn.disabled = false; btn.textContent = '📄 Exportar PDF'; }
+  }
+}
+function extraerFuentesParaPDF(ol){
+  if (!ol) return '<li>(sin fuentes)</li>';
+  var items = ol.querySelectorAll('li.fuente');
+  if (!items.length) return '<li>(sin fuentes)</li>';
+  return Array.prototype.map.call(items, function(li){
+    var titulo = (li.querySelector('strong') || {}).textContent || '';
+    var meta = (li.querySelector('.meta') || {}).textContent || '';
+    var enlaceEl = li.querySelector('.meta a');
+    var url = enlaceEl ? enlaceEl.getAttribute('href') : '';
+    return '<li style="margin-bottom:6px"><strong>' + esc(titulo) + '</strong>'
+      + '<div style="font-size:.78rem;color:#555">' + esc(meta) + '</div>'
+      + (url ? '<div style="font-size:.74rem;color:#1976d2;word-break:break-all">' + esc(url) + '</div>' : '')
+      + '</li>';
+  }).join('');
+}
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
