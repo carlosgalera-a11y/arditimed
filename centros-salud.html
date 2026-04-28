@@ -222,6 +222,15 @@ footer a{text-decoration:underline;color:#d4a853}
             <div id="foroNuevaMsg" class="cs-msg" style="margin-top:6px"></div>
             <div style="font-size:.7rem;opacity:.6;margin-top:6px;line-height:1.4">⚠️ No incluyas nombres, DNI/NIE ni datos identificativos del paciente. Recuerda: este foro es formativo y queda registrado.</div>
           </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+            <input id="foroBuscar" placeholder="🔍 Buscar en título, cuerpo o etiquetas…" oninput="filtrarPreguntasForo()" style="flex:1;min-width:200px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.85rem;padding:7px 12px">
+            <select id="foroFiltroEstado" onchange="filtrarPreguntasForo()" style="background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.82rem;padding:7px 10px">
+              <option value="todas">Todas</option>
+              <option value="abiertas">Sin respuesta aceptada</option>
+              <option value="resueltas">Con respuesta aceptada</option>
+              <option value="propias">Mías</option>
+            </select>
+          </div>
           <div id="foroListaPreguntas"></div>
         </div>
       </div>
@@ -517,6 +526,10 @@ function rolBadge(rol){
   return '<span style="font-size:.65rem;padding:1px 7px;border-radius:8px;background:rgba(255,255,255,.1);color:'+color+';font-weight:700;letter-spacing:.3px;text-transform:uppercase">'+esc(rol)+'</span>';
 }
 
+// Cache de preguntas del foro abierto en memoria, para que el filtrado
+// (búsqueda + estado) no re-pegue a Firestore cada keystroke.
+state.foroPreguntas = [];
+
 async function cargarPreguntasForo(){
   var lista = document.getElementById('foroListaPreguntas');
   if (!lista) return;
@@ -525,33 +538,54 @@ async function cargarPreguntasForo(){
     var snap = await db.collection('centros_salud').doc(state.currentId)
       .collection('foro')
       .orderBy('ultimaActividadAt','desc')
-      .limit(50).get();
-    if (snap.empty) {
-      lista.innerHTML = '<div style="text-align:center;padding:30px 16px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.18);border-radius:10px"><div style="font-size:2rem;margin-bottom:6px">💬</div><p style="font-size:.88rem;opacity:.8">Aún no hay preguntas. Sé el primero en abrir hilo.</p></div>';
-      return;
-    }
-    var html = '';
+      .limit(100).get();
+    state.foroPreguntas = [];
     snap.forEach(function(d){
       var p = d.data();
-      var tagsHtml = (p.tags||[]).map(function(t){ return '<span style="font-size:.66rem;background:rgba(212,168,83,.16);color:#f3d98a;padding:1px 7px;border-radius:8px;margin-right:3px">#'+esc(t)+'</span>'; }).join('');
-      var resCount = p.respuestasCount || 0;
-      var resColor = resCount === 0 ? '#fca5a5' : (p.respuestaAceptadaId ? '#86efac' : '#f3d98a');
-      var resLabel = resCount === 0 ? 'sin respuesta' : (resCount === 1 ? '1 respuesta' : resCount + ' respuestas');
-      html += '<button class="cs-card" onclick="abrirHiloForo(\''+esc(d.id)+'\')" style="display:block;width:100%;margin-bottom:10px;text-align:left">'
-        + '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">'
-          + '<div style="flex:1;min-width:240px">'
-            + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1rem;color:#fff;margin-bottom:4px">'+esc(p.titulo)+'</h3>'
-            + '<div class="sub" style="font-size:.74rem">por <strong>'+esc(p.autorNombre)+'</strong> '+rolBadge(p.autorRol)+' · '+esc(fmtFecha(p.creadoAt))+'</div>'
-            + (tagsHtml ? '<div style="margin-top:4px">'+tagsHtml+'</div>' : '')
-          + '</div>'
-          + '<div style="font-size:.72rem;font-weight:700;color:'+resColor+';white-space:nowrap">'+resLabel+(p.respuestaAceptadaId?' ✓':'')+'</div>'
-        + '</div>'
-        + '</button>';
+      p.__id = d.id;
+      state.foroPreguntas.push(p);
     });
-    lista.innerHTML = html;
+    filtrarPreguntasForo();
   } catch(e){
     lista.innerHTML = '<p style="color:#fca5a5;font-size:.85rem">Error al cargar el foro: '+esc(e.message||e.code||'')+'</p>';
   }
+}
+
+function filtrarPreguntasForo(){
+  var lista = document.getElementById('foroListaPreguntas');
+  if (!lista) return;
+  var q = ((document.getElementById('foroBuscar')||{}).value || '').toLowerCase().trim();
+  var estado = ((document.getElementById('foroFiltroEstado')||{}).value) || 'todas';
+  var u = auth.currentUser;
+  var preguntas = (state.foroPreguntas || []).filter(function(p){
+    if (estado === 'abiertas' && p.respuestaAceptadaId) return false;
+    if (estado === 'resueltas' && !p.respuestaAceptadaId) return false;
+    if (estado === 'propias' && (!u || p.autorUid !== u.uid)) return false;
+    if (!q) return true;
+    var hay = (p.titulo + ' ' + (p.cuerpo||'') + ' ' + ((p.tags||[]).join(' ')) + ' ' + (p.autorNombre||'')).toLowerCase();
+    return hay.indexOf(q) >= 0;
+  });
+  if (!preguntas.length) {
+    lista.innerHTML = '<div style="text-align:center;padding:30px 16px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.18);border-radius:10px"><div style="font-size:2rem;margin-bottom:6px">💬</div><p style="font-size:.88rem;opacity:.8">'+(state.foroPreguntas.length ? 'Sin resultados con el filtro actual.' : 'Aún no hay preguntas. Sé el primero en abrir hilo.')+'</p></div>';
+    return;
+  }
+  var html = preguntas.map(function(p){
+    var tagsHtml = (p.tags||[]).map(function(t){ return '<span style="font-size:.66rem;background:rgba(212,168,83,.16);color:#f3d98a;padding:1px 7px;border-radius:8px;margin-right:3px">#'+esc(t)+'</span>'; }).join('');
+    var resCount = p.respuestasCount || 0;
+    var resColor = resCount === 0 ? '#fca5a5' : (p.respuestaAceptadaId ? '#86efac' : '#f3d98a');
+    var resLabel = resCount === 0 ? 'sin respuesta' : (resCount === 1 ? '1 respuesta' : resCount + ' respuestas');
+    return '<button class="cs-card" onclick="abrirHiloForo(\''+esc(p.__id)+'\')" style="display:block;width:100%;margin-bottom:10px;text-align:left">'
+      + '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">'
+        + '<div style="flex:1;min-width:240px">'
+          + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1rem;color:#fff;margin-bottom:4px">'+esc(p.titulo)+'</h3>'
+          + '<div class="sub" style="font-size:.74rem">por <strong>'+esc(p.autorNombre)+'</strong> '+rolBadge(p.autorRol)+' · '+esc(fmtFecha(p.creadoAt))+'</div>'
+          + (tagsHtml ? '<div style="margin-top:4px">'+tagsHtml+'</div>' : '')
+        + '</div>'
+        + '<div style="font-size:.72rem;font-weight:700;color:'+resColor+';white-space:nowrap">'+resLabel+(p.respuestaAceptadaId?' ✓':'')+'</div>'
+      + '</div>'
+      + '</button>';
+  }).join('');
+  lista.innerHTML = html;
 }
 
 async function abrirHiloForo(qid){

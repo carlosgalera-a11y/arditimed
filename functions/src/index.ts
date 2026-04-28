@@ -13,6 +13,7 @@ export { setUserRole } from './setUserRole';
 export { publicMetrics } from './publicMetrics';
 export { getGaMetrics } from './getGaMetrics';
 export { csCreateInvite, csRedeemInvite } from './csInvites';
+export { foroNotifyOnRespuesta } from './foroNotify';
 export { evidenciaSearch } from './evidencia/evidenciaSearch';
 export { evidenciaFeedback } from './evidencia/evidenciaFeedback';
 export { evidenciaHealthCheck } from './evidencia/healthCheck';
