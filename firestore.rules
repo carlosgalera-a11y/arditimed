@@ -15,6 +15,18 @@ service cloud.firestore {
         || request.auth.token.email == 'ramongalera22@gmail.com'
       );
     }
+    // Moderador: doc en /moderadores/{email} con activo:true.
+    // El admin gestiona la lista desde el Panel de Moderación. Permite que
+    // moderadores sin custom claim puedan aprobar propuestas, marcar
+    // documentos como visibles, etc., sin tener admin global.
+    function isModerator() {
+      return signedIn() && request.auth.token.email != null
+        && exists(/databases/$(database)/documents/moderadores/$(request.auth.token.email))
+        && get(/databases/$(database)/documents/moderadores/$(request.auth.token.email)).data.activo == true;
+    }
+    function canModerate() {
+      return isAdmin() || isModerator();
+    }
     function noDni(text) {
       return text is string
         && !text.matches('.*[0-9]{8}[A-HJ-NP-TV-Zа-я].*')
@@ -117,26 +129,31 @@ service cloud.firestore {
       allow update: if isAdmin();
     }
 
-    // ══ Sugerencias: crear cualquier auth, leer admin ══════════════
+    // ══ Sugerencias: crear cualquier auth, leer moderador+ ═════════
     match /sugerencias/{docId} {
       allow create: if signedIn();
-      allow read: if isAdmin();
-      allow update, delete: if isAdmin();
+      allow read: if canModerate();
+      allow update, delete: if canModerate();
     }
     match /propuestas_contenido/{docId} {
       allow create: if signedIn();
       allow read: if signedIn();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      // Moderador/admin pueden cambiar estado y borrar propuestas.
+      allow update: if canModerate();
+      allow delete: if canModerate();
     }
 
-    // ══ Documentos aprobados — todos leen, admin escribe ══════════
+    // ══ Documentos aprobados — todos leen, moderador+ escribe ═════
     match /documentos_aprobados/{docId} {
       allow read: if signedIn();
-      allow write: if isAdmin();
+      allow write: if canModerate();
     }
 
-    // ══ Moderadores/accesos (admin only) ═══════════════════════════
+    // ══ Moderadores/accesos ════════════════════════════════════════
+    // Lectura abierta a profesionales autenticados (el frontend lo
+    // necesita para construir moderadoresCache y enseñar el badge en
+    // el header). Escritura sólo superadmin (isAdmin con custom claim
+    // o emails hardcoded — un moderador NO puede crearse otros pares).
     match /moderadores/{docId} {
       allow read: if signedIn();
       allow write: if isAdmin();
