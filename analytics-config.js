@@ -43,24 +43,45 @@
     return;
   }
 
-  // Cargar gtag.js si aún no está cargado
-  if(!window.__cartGaLoaded){
+  // ───── Stub no-op hasta que llegue consentimiento ─────
+  // Cumple ePrivacy art. 5.3 / AEPD Cookies Guide 2024: GA4 sólo carga
+  // si el usuario ha pulsado "Aceptar todas" en el banner. Si no ha
+  // decidido, o ha rechazado, cartTrack queda en no-op y _ga no se crea.
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+
+  function _hasConsent(){
+    try {
+      return !!(window.cartCookieConsent && window.cartCookieConsent.isAccepted());
+    } catch(e) { return false; }
+  }
+
+  function _activateGA(){
+    if (window.__cartGaLoaded) return;
     var s = document.createElement('script');
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
     document.head.appendChild(s);
     window.__cartGaLoaded = true;
+    gtag('js', new Date());
+    gtag('config', GA_ID, {
+      page_title: document.title || 'Cartagenaeste',
+      cookie_flags: 'SameSite=None;Secure',
+      anonymize_ip: true
+    });
+    window.cartAnalyticsConfigured = true;
   }
 
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
-  gtag('js', new Date());
-  gtag('config', GA_ID, {
-    page_title: document.title || 'Cartagenaeste',
-    cookie_flags: 'SameSite=None;Secure',
-    anonymize_ip: true
-  });
-  window.cartAnalyticsConfigured = true;
+  // Si ya hay consentimiento (visita posterior), activar inmediatamente.
+  if (_hasConsent()) {
+    _activateGA();
+  } else {
+    window.cartAnalyticsConfigured = false;
+    // Esperar a que el usuario acepte (evento del banner cookie-consent.js).
+    window.addEventListener('cart-cookie-consent', function(ev){
+      if (ev && ev.detail && ev.detail.state === 'accepted') _activateGA();
+    });
+  }
 
   // ───── Captura UTM al cargar ─────
   // Persiste utm_source/medium/campaign en sessionStorage para que
@@ -132,8 +153,15 @@
   window.inferEspecialidad = inferEspecialidad;
 
   // ───── API pública cartTrack ─────
+  // Si NO hay consentimiento, los eventos no se envían (no quedan en
+  // dataLayer ni se mandan a GA4). Coherente con ePrivacy: sin consent,
+  // sin medición.
   window.cartTrack = function(ev, params){
     if(!ev) return;
+    if(!_hasConsent()) {
+      try{ if(window._cartTraceLog) console.debug('[cartTrack:no-consent]', ev); }catch(e){}
+      return;
+    }
     try{ gtag('event', ev, enrich(params)); }catch(e){}
     try{ if(window._cartTraceLog) console.debug('[cartTrack]', ev, params); }catch(e){}
   };
