@@ -188,6 +188,7 @@ footer a{text-decoration:underline;color:#d4a853}
         <button class="cs-tab" data-tab="plantilla" onclick="setTab('plantilla')">Plantilla</button>
         <button class="cs-tab" data-tab="recursos" onclick="setTab('recursos')">Recursos</button>
         <button class="cs-tab" data-tab="particularidades" onclick="setTab('particularidades')">Particularidades</button>
+        <button class="cs-tab" data-tab="foro" id="csTabForo" onclick="setTab('foro')">💬 Foro privado <span id="csForoBadge" class="pill" style="display:none;font-size:.62rem;padding:0 6px;margin-left:4px">solo miembros</span></button>
         <button class="cs-tab" data-tab="acceso" onclick="setTab('acceso')">Soy del equipo</button>
       </div>
 
@@ -196,6 +197,34 @@ footer a{text-decoration:underline;color:#d4a853}
       <div class="cs-pane" data-pane="plantilla" id="panePlantilla"></div>
       <div class="cs-pane" data-pane="recursos" id="paneRecursos"></div>
       <div class="cs-pane" data-pane="particularidades" id="paneParticularidades"></div>
+      <div class="cs-pane" data-pane="foro" id="paneForo">
+        <div id="foroLockBox" style="display:none" class="cs-acceso">
+          <h3>🔒 Foro privado de <span id="foroNombreCentro">este centro</span></h3>
+          <p>Sólo profesionales con código de invitación de este centro de salud pueden ver y participar en el foro.
+             Pide a tu coordinador o a un superadmin un código y canjéalo en la pestaña <strong>Soy del equipo</strong>.</p>
+        </div>
+        <div id="foroBox" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div>
+              <h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;color:#fff;margin:0">💬 Preguntas y respuestas del equipo</h3>
+              <p style="font-size:.78rem;opacity:.72;margin:4px 0 0">Residentes preguntan, adjuntos y coordinadores responden. Solo lo ven miembros de este centro.</p>
+            </div>
+            <button id="foroNuevaBtn" class="cs-save" type="button" onclick="abrirNuevaPregunta()" style="padding:8px 14px;border-radius:10px">+ Nueva pregunta</button>
+          </div>
+          <div id="foroNuevaForm" style="display:none;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:14px;margin-bottom:16px">
+            <input id="foroTitulo" maxlength="160" placeholder="Título corto y claro (ej: ¿cuándo derivar a Cardio una FA con CVRC?)" style="width:100%;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.95rem;padding:9px 12px;margin-bottom:8px">
+            <textarea id="foroCuerpo" rows="4" maxlength="2000" placeholder="Describe el contexto clínico (sin datos identificativos del paciente: solo iniciales, edad, motivo). 2000 caracteres máx." style="width:100%;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.92rem;padding:9px 12px;resize:vertical"></textarea>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
+              <input id="foroTags" maxlength="120" placeholder="Etiquetas separadas por comas (ej: cardio, urgencias, geriatría)" style="flex:1;min-width:200px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.85rem;padding:7px 12px">
+              <button onclick="enviarPregunta()" class="cs-save" style="padding:8px 14px;border-radius:10px">Publicar</button>
+              <button onclick="cancelarNuevaPregunta()" class="cs-cancel" style="padding:8px 14px;border-radius:10px">Cancelar</button>
+            </div>
+            <div id="foroNuevaMsg" class="cs-msg" style="margin-top:6px"></div>
+            <div style="font-size:.7rem;opacity:.6;margin-top:6px;line-height:1.4">⚠️ No incluyas nombres, DNI/NIE ni datos identificativos del paciente. Recuerda: este foro es formativo y queda registrado.</div>
+          </div>
+          <div id="foroListaPreguntas"></div>
+        </div>
+      </div>
       <div class="cs-pane" data-pane="acceso" id="paneAcceso">
         <div class="cs-acceso">
           <h3>¿Eres del equipo de <span id="csNombreAcceso">este centro</span>?</h3>
@@ -379,7 +408,258 @@ function setTab(name){
   Array.prototype.forEach.call(document.querySelectorAll('.cs-pane'), function(p){
     p.classList.toggle('on', p.dataset.pane === name);
   });
+  if(name === 'foro') {
+    abrirForo();
+    return;
+  }
   if(name !== 'acceso') renderTab(name);
+}
+
+// ─── Foro privado del centro ──────────────────────────────────────
+// Visible solo si el usuario tiene CUALQUIER rol en csRoles[centroId]
+// (miembro, redactor o coordinador) o es admin global. La regla
+// Firestore /centros_salud/{cid}/foro hace cumplir esto en servidor;
+// la UI lo replica para no enseñar el formulario en vacío.
+function esMiembroDelCentro(){
+  if (state.isAdmin) return true;
+  var r = state.csRoles[state.currentId];
+  return r === 'miembro' || r === 'redactor' || r === 'coordinador';
+}
+
+function abrirForo(){
+  var c = state.centros.find(function(x){ return x.id === state.currentId; });
+  if (!c) return;
+  var nombre = document.getElementById('foroNombreCentro');
+  if (nombre) nombre.textContent = c.nombre;
+  var lock = document.getElementById('foroLockBox');
+  var box = document.getElementById('foroBox');
+  if (!esMiembroDelCentro()){
+    lock.style.display = 'block';
+    box.style.display = 'none';
+    return;
+  }
+  lock.style.display = 'none';
+  box.style.display = 'block';
+  cargarPreguntasForo();
+}
+
+function abrirNuevaPregunta(){
+  document.getElementById('foroNuevaForm').style.display = 'block';
+  document.getElementById('foroTitulo').focus();
+}
+function cancelarNuevaPregunta(){
+  document.getElementById('foroNuevaForm').style.display = 'none';
+  document.getElementById('foroTitulo').value = '';
+  document.getElementById('foroCuerpo').value = '';
+  document.getElementById('foroTags').value = '';
+  document.getElementById('foroNuevaMsg').textContent = '';
+}
+
+async function enviarPregunta(){
+  var titulo = (document.getElementById('foroTitulo').value || '').trim();
+  var cuerpo = (document.getElementById('foroCuerpo').value || '').trim();
+  var tagsRaw = (document.getElementById('foroTags').value || '').trim();
+  var msg = document.getElementById('foroNuevaMsg');
+  msg.classList.remove('err');
+  if (titulo.length < 8) { msg.textContent = 'Título demasiado corto.'; msg.classList.add('err'); return; }
+  if (cuerpo.length < 15) { msg.textContent = 'Cuerpo demasiado corto.'; msg.classList.add('err'); return; }
+  if (/\b\d{8}[A-HJ-NP-TV-Z]\b|\b[XYZ]\d{7}[A-HJ-NP-TV-Z]\b/.test(titulo + ' ' + cuerpo)) {
+    msg.textContent = 'No incluyas DNI/NIE en el texto.'; msg.classList.add('err'); return;
+  }
+  var tags = tagsRaw ? tagsRaw.split(',').map(function(s){return s.trim().toLowerCase();}).filter(Boolean).slice(0,8) : [];
+  var u = auth.currentUser;
+  if (!u) return;
+  var rol = state.csRoles[state.currentId] || (state.isAdmin ? 'admin' : 'miembro');
+  msg.textContent = 'Publicando…';
+  try {
+    await db.collection('centros_salud').doc(state.currentId)
+      .collection('foro').add({
+        titulo: titulo,
+        cuerpo: cuerpo,
+        tags: tags,
+        autorUid: u.uid,
+        autorEmail: u.email || null,
+        autorNombre: u.displayName || u.email || 'Anónimo',
+        autorRol: rol,
+        creadoAt: firebase.firestore.FieldValue.serverTimestamp(),
+        ultimaActividadAt: firebase.firestore.FieldValue.serverTimestamp(),
+        respuestasCount: 0,
+        cerrado: false,
+        respuestaAceptadaId: null,
+      });
+    cancelarNuevaPregunta();
+    cargarPreguntasForo();
+  } catch(e){
+    msg.classList.add('err');
+    msg.textContent = 'Error: ' + (e.message || e.code || 'no se pudo publicar');
+  }
+}
+
+function fmtFecha(ts){
+  if (!ts || !ts.toDate) return '';
+  var d = ts.toDate();
+  var hoy = new Date();
+  var ms = hoy.getTime() - d.getTime();
+  var min = Math.floor(ms/60000);
+  if (min < 1) return 'ahora';
+  if (min < 60) return 'hace ' + min + ' min';
+  if (min < 60*24) return 'hace ' + Math.floor(min/60) + ' h';
+  if (min < 60*24*7) return 'hace ' + Math.floor(min/(60*24)) + ' días';
+  return d.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' });
+}
+
+function rolBadge(rol){
+  if (!rol) return '';
+  var color = rol === 'coordinador' ? '#86efac'
+            : rol === 'redactor' ? '#f3d98a'
+            : rol === 'admin' ? '#fca5a5'
+            : '#93bbfc';
+  return '<span style="font-size:.65rem;padding:1px 7px;border-radius:8px;background:rgba(255,255,255,.1);color:'+color+';font-weight:700;letter-spacing:.3px;text-transform:uppercase">'+esc(rol)+'</span>';
+}
+
+async function cargarPreguntasForo(){
+  var lista = document.getElementById('foroListaPreguntas');
+  if (!lista) return;
+  lista.innerHTML = '<p style="opacity:.6;font-size:.85rem">Cargando preguntas…</p>';
+  try {
+    var snap = await db.collection('centros_salud').doc(state.currentId)
+      .collection('foro')
+      .orderBy('ultimaActividadAt','desc')
+      .limit(50).get();
+    if (snap.empty) {
+      lista.innerHTML = '<div style="text-align:center;padding:30px 16px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.18);border-radius:10px"><div style="font-size:2rem;margin-bottom:6px">💬</div><p style="font-size:.88rem;opacity:.8">Aún no hay preguntas. Sé el primero en abrir hilo.</p></div>';
+      return;
+    }
+    var html = '';
+    snap.forEach(function(d){
+      var p = d.data();
+      var tagsHtml = (p.tags||[]).map(function(t){ return '<span style="font-size:.66rem;background:rgba(212,168,83,.16);color:#f3d98a;padding:1px 7px;border-radius:8px;margin-right:3px">#'+esc(t)+'</span>'; }).join('');
+      var resCount = p.respuestasCount || 0;
+      var resColor = resCount === 0 ? '#fca5a5' : (p.respuestaAceptadaId ? '#86efac' : '#f3d98a');
+      var resLabel = resCount === 0 ? 'sin respuesta' : (resCount === 1 ? '1 respuesta' : resCount + ' respuestas');
+      html += '<button class="cs-card" onclick="abrirHiloForo(\''+esc(d.id)+'\')" style="display:block;width:100%;margin-bottom:10px;text-align:left">'
+        + '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">'
+          + '<div style="flex:1;min-width:240px">'
+            + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1rem;color:#fff;margin-bottom:4px">'+esc(p.titulo)+'</h3>'
+            + '<div class="sub" style="font-size:.74rem">por <strong>'+esc(p.autorNombre)+'</strong> '+rolBadge(p.autorRol)+' · '+esc(fmtFecha(p.creadoAt))+'</div>'
+            + (tagsHtml ? '<div style="margin-top:4px">'+tagsHtml+'</div>' : '')
+          + '</div>'
+          + '<div style="font-size:.72rem;font-weight:700;color:'+resColor+';white-space:nowrap">'+resLabel+(p.respuestaAceptadaId?' ✓':'')+'</div>'
+        + '</div>'
+        + '</button>';
+    });
+    lista.innerHTML = html;
+  } catch(e){
+    lista.innerHTML = '<p style="color:#fca5a5;font-size:.85rem">Error al cargar el foro: '+esc(e.message||e.code||'')+'</p>';
+  }
+}
+
+async function abrirHiloForo(qid){
+  var lista = document.getElementById('foroListaPreguntas');
+  if (!lista) return;
+  lista.innerHTML = '<p style="opacity:.6;font-size:.85rem">Abriendo hilo…</p>';
+  try {
+    var ref = db.collection('centros_salud').doc(state.currentId).collection('foro').doc(qid);
+    var qSnap = await ref.get();
+    if (!qSnap.exists) { lista.innerHTML = '<p style="opacity:.7">Pregunta no encontrada.</p>'; return; }
+    var p = qSnap.data();
+    var u = auth.currentUser;
+    var puedoBorrar = state.isAdmin || (u && p.autorUid === u.uid)
+      || state.csRoles[state.currentId] === 'coordinador'
+      || state.csRoles[state.currentId] === 'redactor';
+    var rsnap = await ref.collection('respuestas').orderBy('creadoAt','asc').limit(100).get();
+    var respHtml = '';
+    rsnap.forEach(function(r){
+      var d = r.data();
+      var aceptada = p.respuestaAceptadaId === r.id;
+      var puedoAceptar = (state.isAdmin
+                          || (u && p.autorUid === u.uid)
+                          || state.csRoles[state.currentId] === 'coordinador');
+      respHtml += '<div style="background:'+(aceptada?'rgba(34,197,94,.10)':'rgba(0,0,0,.18)')+';border:1px solid '+(aceptada?'rgba(134,239,172,.35)':'rgba(255,255,255,.12)')+';border-radius:10px;padding:12px 14px;margin-bottom:8px">'
+        + (aceptada ? '<div style="font-size:.7rem;color:#86efac;font-weight:800;margin-bottom:4px">✓ RESPUESTA ACEPTADA</div>' : '')
+        + '<div style="font-size:.74rem;opacity:.75;margin-bottom:6px"><strong>'+esc(d.autorNombre||'')+'</strong> '+rolBadge(d.autorRol)+' · '+esc(fmtFecha(d.creadoAt))+'</div>'
+        + '<div style="font-size:.92rem;line-height:1.55;white-space:pre-wrap">'+esc(d.cuerpo||'')+'</div>'
+        + (puedoAceptar && !aceptada ? '<div style="margin-top:8px"><button onclick="aceptarRespuesta(\''+esc(qid)+'\',\''+esc(r.id)+'\')" style="padding:5px 10px;background:rgba(34,197,94,.20);border:1px solid #86efac;color:#86efac;border-radius:8px;font-family:inherit;font-size:.74rem;font-weight:700;cursor:pointer">Marcar como aceptada</button></div>' : '')
+        + '</div>';
+    });
+    if (!respHtml) respHtml = '<p style="opacity:.6;font-size:.85rem;font-style:italic">Sin respuestas todavía.</p>';
+
+    var tagsHtml = (p.tags||[]).map(function(t){ return '<span style="font-size:.66rem;background:rgba(212,168,83,.16);color:#f3d98a;padding:1px 7px;border-radius:8px;margin-right:3px">#'+esc(t)+'</span>'; }).join('');
+    var html = '<button class="cs-cancel" onclick="cargarPreguntasForo()" style="margin-bottom:10px">← Volver al foro</button>'
+      + '<article style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:16px 18px">'
+        + '<h2 style="font-family:\'Playfair Display\',serif;font-size:1.15rem;color:#fff;margin-bottom:6px">'+esc(p.titulo)+'</h2>'
+        + '<div style="font-size:.78rem;opacity:.78;margin-bottom:8px">por <strong>'+esc(p.autorNombre)+'</strong> '+rolBadge(p.autorRol)+' · '+esc(fmtFecha(p.creadoAt))+(tagsHtml?' · '+tagsHtml:'')+'</div>'
+        + '<div style="font-size:.95rem;line-height:1.6;white-space:pre-wrap">'+esc(p.cuerpo||'')+'</div>'
+        + (puedoBorrar ? '<button onclick="borrarPregunta(\''+esc(qid)+'\')" style="margin-top:10px;padding:5px 10px;background:rgba(239,68,68,.18);border:1px solid #fca5a5;color:#fca5a5;border-radius:8px;font-family:inherit;font-size:.74rem;cursor:pointer">Borrar pregunta</button>' : '')
+      + '</article>'
+      + '<h3 style="font-family:\'Playfair Display\',serif;font-size:1rem;color:#fff;margin:16px 0 8px">Respuestas</h3>'
+      + respHtml
+      + '<div style="background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:12px 14px;margin-top:10px">'
+        + '<textarea id="foroNuevaRespuesta" rows="3" maxlength="2000" placeholder="Escribe tu respuesta. Sin datos identificativos del paciente." style="width:100%;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.92rem;padding:9px 12px;resize:vertical"></textarea>'
+        + '<div style="display:flex;gap:8px;align-items:center;margin-top:8px">'
+          + '<button onclick="enviarRespuesta(\''+esc(qid)+'\')" class="cs-save" style="padding:8px 14px;border-radius:10px">Responder</button>'
+          + '<span class="cs-msg" id="foroRespMsg"></span>'
+        + '</div>'
+      + '</div>';
+    lista.innerHTML = html;
+  } catch(e){
+    lista.innerHTML = '<p style="color:#fca5a5">Error: '+esc(e.message||e.code||'')+'</p>';
+  }
+}
+
+async function enviarRespuesta(qid){
+  var ta = document.getElementById('foroNuevaRespuesta');
+  var msg = document.getElementById('foroRespMsg');
+  msg.classList.remove('err');
+  var cuerpo = (ta.value||'').trim();
+  if (cuerpo.length < 5) { msg.classList.add('err'); msg.textContent = 'Respuesta demasiado corta.'; return; }
+  if (/\b\d{8}[A-HJ-NP-TV-Z]\b|\b[XYZ]\d{7}[A-HJ-NP-TV-Z]\b/.test(cuerpo)) {
+    msg.classList.add('err'); msg.textContent = 'No incluyas DNI/NIE.'; return;
+  }
+  var u = auth.currentUser;
+  if (!u) return;
+  var rol = state.csRoles[state.currentId] || (state.isAdmin ? 'admin' : 'miembro');
+  msg.textContent = 'Enviando…';
+  try {
+    var ref = db.collection('centros_salud').doc(state.currentId).collection('foro').doc(qid);
+    await ref.collection('respuestas').add({
+      cuerpo: cuerpo,
+      autorUid: u.uid,
+      autorEmail: u.email || null,
+      autorNombre: u.displayName || u.email || 'Anónimo',
+      autorRol: rol,
+      creadoAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    await ref.update({
+      ultimaActividadAt: firebase.firestore.FieldValue.serverTimestamp(),
+      respuestasCount: firebase.firestore.FieldValue.increment(1),
+    }).catch(function(){ /* tolerable si update lo bloquea */ });
+    abrirHiloForo(qid);
+  } catch(e){
+    msg.classList.add('err');
+    msg.textContent = 'Error: ' + (e.message || e.code);
+  }
+}
+
+async function aceptarRespuesta(qid, rid){
+  try {
+    var ref = db.collection('centros_salud').doc(state.currentId).collection('foro').doc(qid);
+    await ref.update({ respuestaAceptadaId: rid, cerrado: true });
+    abrirHiloForo(qid);
+  } catch(e){ alert('No se pudo marcar como aceptada: ' + (e.message||e.code)); }
+}
+
+async function borrarPregunta(qid){
+  if (!confirm('¿Borrar la pregunta y todas sus respuestas? No se puede deshacer.')) return;
+  try {
+    var ref = db.collection('centros_salud').doc(state.currentId).collection('foro').doc(qid);
+    var rsnap = await ref.collection('respuestas').get();
+    var batch = db.batch();
+    rsnap.forEach(function(r){ batch.delete(r.ref); });
+    batch.delete(ref);
+    await batch.commit();
+    cargarPreguntasForo();
+  } catch(e){ alert('No se pudo borrar: ' + (e.message||e.code)); }
 }
 
 function renderTab(name){
