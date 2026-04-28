@@ -288,6 +288,17 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // ══ Cola de correo (Firebase Trigger Email extension) ═══════════
+    // El moderador encola un correo al aprobar una propuesta. La
+    // extensión `firestore-send-email` lee este doc y lo despacha.
+    // Si la extensión NO está instalada, el doc queda inerte (no rompe).
+    // Reglas: moderador o admin crea; nadie lee/edita después (la
+    // extensión opera con permisos de servicio).
+    match /mail/{id} {
+      allow create: if canModerate();
+      allow read, update, delete: if isAdmin();
+    }
+
     // ══ Centros (multi-tenancy, Fase 1) ════════════════════════════
     // Catálogo de centros/tenants. Lectura abierta para profesionales
     // autenticados (el cliente necesita el nombre, logo y color del
