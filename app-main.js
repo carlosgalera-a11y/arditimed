@@ -3779,6 +3779,50 @@ function generarResumenHospitalaria(modo){
 }
 
 // ════════════════════════════════════════════════════════════════════
+// MegaCuaderno · digest diario (cron `megaCuadernoDailyDigest`)
+// ════════════════════════════════════════════════════════════════════
+// Lee /megacuaderno_digests/{YYYY-MM-DD} y pinta el resumen del día en
+// el bloque #megaCuadernoDigestBox de la pestaña preguntas. Si no hay
+// doc del día actual, intenta el día anterior. Si tampoco hay, oculta
+// el bloque sin error.
+async function cargarDigestMegaCuaderno(){
+  var box = document.getElementById('megaCuadernoDigestBox');
+  if (!box || typeof db === 'undefined') return;
+  function fmt(d){ return d.toISOString().slice(0,10); }
+  var hoy = new Date(); var ayer = new Date(Date.now() - 24*60*60*1000);
+  for (var k = 0; k < 2; k++) {
+    var day = k === 0 ? fmt(hoy) : fmt(ayer);
+    try {
+      var snap = await db.collection('megacuaderno_digests').doc(day).get();
+      if (!snap.exists) continue;
+      var d = snap.data();
+      if (d.empty) {
+        box.style.display = 'none';
+        return;
+      }
+      var label = k === 0 ? 'Hoy' : 'Ayer';
+      var html = '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px">'
+        + '<strong>📰 Boletín de novedades · ' + esc(label) + ' (' + (d.count||0) + ' aportaciones)</strong>'
+        + '<button onclick="document.getElementById(\'megaCuadernoDigestBox\').style.display=\'none\'" style="background:none;border:0;color:#0c4a6e;font-size:.76rem;cursor:pointer">cerrar ✕</button>'
+        + '</div>'
+        + '<div style="white-space:pre-wrap">' + esc(d.text||'').replace(/^### (.+)$/gm, '<strong>$1</strong>') + '</div>';
+      box.innerHTML = html;
+      box.style.display = 'block';
+      return;
+    } catch(e) { /* ignore */ }
+  }
+  box.style.display = 'none';
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;'})[c];}); }
+
+// Disparar carga del digest cuando el usuario entra al panel pageProfessionals.
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){
+    if (document.getElementById('megaCuadernoDigestBox')) cargarDigestMegaCuaderno();
+  }, 800);
+});
+
+// ════════════════════════════════════════════════════════════════════
 // MegaCuaderno IA · merge de documentos_aprobados (inMegaCuaderno:true)
 // con el documents.json estático para la categoría activa.
 // ════════════════════════════════════════════════════════════════════
