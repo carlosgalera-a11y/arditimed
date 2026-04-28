@@ -12,7 +12,7 @@
 | Domicilio | (omitido en doc público) |
 | Contacto RGPD | carlosgalera2roman@gmail.com |
 | Delegado de Protección de Datos (DPD/DPO) | No designado (no obligatorio según art. 37 RGPD; ver §X) |
-| Fecha actualización | 2026-04-26 |
+| Fecha actualización | 2026-04-28 (revisión post-auditoría auditoria-2026-04-28.md) |
 
 ---
 
@@ -87,6 +87,72 @@
 | **Plazo de conservación** | Igual a actividad 1 |
 | **Destinatarios** | Firebase Auth (envío de magic link y verificación) |
 | **Transferencias internacionales** | Google LLC bajo SCC + DPF |
+
+## Actividad de tratamiento 6 · EvidenciaIA · búsqueda bibliográfica con síntesis
+
+| Campo | Valor |
+|---|---|
+| **Finalidad** | Apoyo a la lectura crítica formativa: el profesional formula una pregunta clínica (PICO), el sistema busca en PubMed/Europe PMC/AEMPS/OpenAlex y devuelve una síntesis IA con citas verificadas |
+| **Base jurídica** | Interés legítimo (art. 6.1.f) — formación continua del profesional |
+| **Categorías de interesados** | Profesionales sanitarios autenticados |
+| **Categorías de datos** | UID, email, texto de la pregunta clínica (sanitizado: rechaza DNI/NIE/fecha/teléfono), filtros aplicados, abstracts recuperados (PMID), texto sintetizado, ratio de citas verificadas |
+| **Categorías especiales** | El texto de la pregunta puede contener menciones a categorías clínicas (no a paciente identificable — los safeguards rechazan PII) |
+| **Destinatarios** | Google (Cloud Function europe-west1), DeepSeek o Gemini (proveedor IA), Sentry (errores) |
+| **Transferencias internacionales** | DeepSeek/OpenRouter cuando aplica (US/CN) bajo SCC; Gemini en EU |
+| **Plazo de conservación** | `evidencia_consultas`: 24 meses (auditoría AI Act art. 12). `evidenciaCache`: 24 horas TTL automático. `evidencia_feedback`: 24 meses |
+| **Medidas técnicas** | Validador anti-PII server-side (`safeguards.ts`); flag `ai_act_disclaimer_shown:true` obligatorio; verificador de citas inventadas; rate limit 30 req/min/IP, cuota 50/día/usuario |
+| **Medidas organizativas** | Disclaimer Art. 50 AI Act visible y aceptación obligatoria; logging exhaustivo para auditoría; refuse de consultas diagnósticas/terapéuticas individuales |
+
+## Actividad de tratamiento 7 · Centros de Salud · directorio y foro privado
+
+| Campo | Valor |
+|---|---|
+| **Finalidad** | Mantenimiento del directorio interconectado de los 14 centros del Área II (info, horarios, recursos) + foro privado de preguntas/respuestas restringido a miembros de cada centro (residentes ↔ adjuntos) |
+| **Base jurídica** | Interés legítimo (art. 6.1.f) — formación interna del equipo del centro |
+| **Categorías de interesados** | Profesionales del Área II Cartagena con código de invitación canjeado |
+| **Categorías de datos** | UID, email, nombre, rol asignado en `csRoles[centroId]` (`miembro/redactor/coordinador`); preguntas y respuestas del foro con autoría visible para los miembros del centro |
+| **Categorías especiales** | Texto formativo que puede mencionar patología (sin identificar paciente — bloqueo regex DNI/NIE en cliente) |
+| **Destinatarios** | Solo miembros del mismo centro (regla Firestore `csEsMiembro(cid)` con `exists()` + `get()`) |
+| **Transferencias internacionales** | Google Cloud Firestore EU |
+| **Plazo de conservación** | Mientras el usuario sea miembro del centro; al revocar el rol, sus contribuciones permanecen como aportación histórica salvo solicitud de supresión |
+| **Códigos de invitación** | `cs_invites/{codigo}`: caducidad 1-30 días, un solo uso, marca `usadoPor` + `fechaUso`. Generados solo por admin |
+| **Medidas técnicas** | Reglas Firestore explícitas (catch-all wildcard removido tras hallazgo en PR #121); validación cliente DNI/NIE; transacción atómica en canje |
+
+## Actividad de tratamiento 8 · Cola de correo (notificaciones de aprobación y foro)
+
+| Campo | Valor |
+|---|---|
+| **Finalidad** | Encolar correos transaccionales: (a) aviso al proponente cuando se aprueba su contenido; (b) aviso al autor cuando le responden en el foro privado |
+| **Base jurídica** | Ejecución de contrato (art. 6.1.b) — funcionalidad esperada por el usuario |
+| **Categorías de interesados** | Profesionales registrados |
+| **Categorías de datos** | Email destino, asunto, cuerpo del mensaje, metadata de origen (qué propuesta/pregunta) |
+| **Destinatarios** | Firebase Trigger Email Extension (cuando se instale) → SMTP del proveedor configurado |
+| **Plazo de conservación** | Hasta despacho exitoso. Cron mensual a futuro borra `delivery.state == SUCCESS` >30 días |
+| **Medidas técnicas** | Reglas Firestore: `create` solo `canModerate()` o trigger Cloud Function; `read/update/delete` solo admin |
+
+## Actividad de tratamiento 9 · Boletín diario MegaCuaderno (digest agregado)
+
+| Campo | Valor |
+|---|---|
+| **Finalidad** | Generar resumen agregado por categoría de las aportaciones aprobadas en las últimas 24h, para mostrar como "Novedades del día" en el panel de profesionales |
+| **Base jurídica** | Interés legítimo (art. 6.1.f) — formación continua |
+| **Categorías de interesados** | Sin interesado individual: el digest agrega títulos + descripciones de aportaciones, no datos personales |
+| **Categorías de datos** | Títulos de documentos, descripciones, conteo agregado por categoría |
+| **Destinatarios** | DeepSeek (síntesis IA) |
+| **Plazo de conservación** | 30 días por documento `megacuaderno_digests/{YYYY-MM-DD}` |
+| **Medidas técnicas** | Cron Cloud Function 06:45 Madrid; sin contenido personal en el prompt; reglas Firestore read-only para signedIn, write solo cron |
+
+## Actividad de tratamiento 10 · Solicitudes de derechos del interesado
+
+| Campo | Valor |
+|---|---|
+| **Finalidad** | Recoger solicitudes de ejercicio de derechos RGPD (acceso, rectificación, supresión, limitación, oposición, portabilidad) y trazarlas hasta su resolución |
+| **Base jurídica** | Cumplimiento obligación legal (art. 6.1.c) — RGPD arts. 15-22 |
+| **Categorías de interesados** | Cualquier titular de datos que ejerce su derecho |
+| **Categorías de datos** | Email, derecho ejercido, descripción de la petición, fecha, estado (pendiente / resuelto / rechazado), email/UID del solicitante |
+| **Destinatarios** | Carlos Galera Román (responsable). En el futuro, DPO si se designa |
+| **Plazo de conservación** | 5 años desde resolución (acreditación de cumplimiento ante AEPD) |
+| **Medidas técnicas** | Formulario público en `derechos-rgpd.html` (PR H-07); reglas Firestore: `create` por cualquier signedIn limitado a sus propios datos; `read/update` solo admin; encolado de email de confirmación al solicitante |
 
 ---
 
