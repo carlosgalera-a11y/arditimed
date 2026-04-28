@@ -1278,13 +1278,17 @@ async function enviarPropuesta(){
     var barraEl  = document.getElementById("barraProgresoSubida");
     statusEl.style.display = "none";
     
-    // Datos base de la propuesta
+    // Datos base de la propuesta. Si el proponente es moderador o admin
+    // (isAdmin() en cliente devuelve true para ambos), la propuesta se
+    // crea ya como aprobada y se replica a documentos_aprobados sin
+    // necesidad de pasar por el panel de moderación.
+    var esModerador = (typeof isAdmin === "function" && isAdmin());
     var propuesta = {
         titulo:      titulo,
         descripcion: descripcion,
         seccion:     seccion,
         tipo:        tipo,
-        estado:      "pendiente",
+        estado:      esModerador ? "aprobado" : "pendiente",
         email:       user.email,
         nombre:      user.displayName || user.email,
         fecha:       new Date(),
@@ -1293,14 +1297,48 @@ async function enviarPropuesta(){
         fileName:    "",
         storagePath: ""
     };
+    if (esModerador) {
+        propuesta.moderadoPor    = user.email;
+        propuesta.moderadoNombre = user.displayName || user.email;
+        propuesta.fechaModeracion= new Date();
+        propuesta.autoAprobado   = true;
+    }
     
+    // Helper: si es moderador, replicar a documentos_aprobados.
+    async function publicarSiModerador(propuestaId, propuestaData){
+        if (!esModerador) return;
+        try {
+            var docAprobado = {
+                titulo:          propuestaData.titulo || propuestaData.fileName || "Documento",
+                categoria:       propuestaData.seccion || "Otro",
+                url:             propuestaData.url || "",
+                fileName:        propuestaData.fileName || "",
+                tipo:            propuestaData.tipo || "archivo",
+                sizeMB:          parseFloat(propuestaData.sizeMB) || 0,
+                descripcion:     propuestaData.descripcion || "",
+                autorEmail:      propuestaData.email || "",
+                autorNombre:     propuestaData.nombre || "",
+                aprobadoPor:     user.email,
+                aprobadoNombre:  user.displayName || user.email,
+                fechaAprobacion: new Date(),
+                propuestaId:     propuestaId,
+                visible:         true,
+                autoAprobado:    true,
+                // Hacer el doc indexable por MegaCuaderno IA (PR-D).
+                inMegaCuaderno:  true,
+            };
+            await db.collection("documentos_aprobados").add(docAprobado);
+        } catch(e) { console.warn("publicarSiModerador:", e && e.message); }
+    }
+
     try{
         if(tipo === "url"){
             propuesta.url = urlInput;
             barraEl.style.display = "block";
             document.getElementById("progresoSubidaInner").style.width = "100%";
             document.getElementById("progresoSubidaTexto").textContent = "Guardando propuesta...";
-            await db.collection("propuestas_contenido").add(propuesta);
+            var ref0 = await db.collection("propuestas_contenido").add(propuesta);
+            await publicarSiModerador(ref0.id, propuesta);
         } else {
             // Subir archivo a Firebase Storage
             var ext   = archivoSubirSeleccionado.name.split(".").pop();
@@ -1325,10 +1363,11 @@ async function enviarPropuesta(){
                     propuesta.fileName    = archivoSubirSeleccionado.name;
                     propuesta.storagePath = path;
                     propuesta.sizeMB      = (archivoSubirSeleccionado.size/1024/1024).toFixed(2);
-                    await db.collection("propuestas_contenido").add(propuesta);
+                    var ref1 = await db.collection("propuestas_contenido").add(propuesta);
+                    await publicarSiModerador(ref1.id, propuesta);
                     document.getElementById("progresoSubidaInner").style.width = "100%";
-                    document.getElementById("progresoSubidaTexto").textContent = "✅ ¡Propuesta enviada!";
-                    mostrarStatusSubida("✅ Propuesta enviada correctamente. Un moderador la revisará pronto.", "success");
+                    document.getElementById("progresoSubidaTexto").textContent = esModerador ? "✅ ¡Documento publicado!" : "✅ ¡Propuesta enviada!";
+                    mostrarStatusSubida(esModerador ? "✅ Publicado directamente (eres moderador)." : "✅ Propuesta enviada correctamente. Un moderador la revisará pronto.", "success");
                     setTimeout(cerrarModalSubir, 2200);
                 }
             );
@@ -1336,7 +1375,7 @@ async function enviarPropuesta(){
         }
         
         document.getElementById("progresoSubidaInner").style.width = "100%";
-        mostrarStatusSubida("✅ Propuesta enviada correctamente. Un moderador la revisará pronto.", "success");
+        mostrarStatusSubida(esModerador ? "✅ Publicado directamente (eres moderador)." : "✅ Propuesta enviada correctamente. Un moderador la revisará pronto.", "success");
         setTimeout(cerrarModalSubir, 2200);
     } catch(err){
         mostrarStatusSubida("❌ Error: " + err.message, "error");
