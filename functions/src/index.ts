@@ -29,6 +29,7 @@ export {
 } from './auditLog';
 
 export { weeklyMetricsSnapshot, dailyBackup, weeklyAuditDigest } from './scheduledJobs';
+export { megaCuadernoDailyDigest } from './megaCuadernoDigest';
 export { aggregateDailyMetrics } from './aggregateDailyMetrics';
 export { healthCheckAi } from './healthCheckAi';
 export { goldStandardEval } from './goldStandardEval';
