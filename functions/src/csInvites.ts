@@ -10,7 +10,9 @@ const CORS = [
   'http://localhost:5000',
 ];
 
-const VALID_ROLES = ['redactor', 'coordinador'] as const;
+// `miembro` = residente o adjunto del centro: lee el foro privado y
+// participa, pero NO edita la ficha del centro (eso es redactor+).
+const VALID_ROLES = ['miembro', 'redactor', 'coordinador'] as const;
 type CsRol = (typeof VALID_ROLES)[number];
 
 function isAdminClaim(token: Record<string, unknown> | undefined): boolean {

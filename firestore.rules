@@ -233,6 +233,13 @@ service cloud.firestore {
             .data.get('csRoles', {}).get(cid, '')
         : '';
     }
+    // Cualquier rol no vacío = miembro del centro (residente, adjunto,
+    // redactor o coordinador). Suficiente para LEER el foro privado.
+    function csEsMiembro(cid) {
+      return isAdmin() || csRol(cid) != '';
+    }
+    // Sólo redactor/coordinador editan la ficha del centro y subcolecciones
+    // públicas (recursos, calendario, etc.).
     function csCanWrite(cid) {
       return isAdmin() || csRol(cid) == 'redactor' || csRol(cid) == 'coordinador';
     }
@@ -241,7 +248,53 @@ service cloud.firestore {
       allow create, update: if csCanWrite(cid);
       allow delete: if isAdmin();
 
-      match /{sub}/{docId} {
+      // Foro privado del centro — acceso restringido a miembros (cualquiera
+      // con rol no-vacío en csRoles[cid]). Residentes pueden preguntar y
+      // adjuntos/coordinadores responder. Los autores editan/borran su
+      // propio contenido; admin todo.
+      match /foro/{qid} {
+        allow read: if csEsMiembro(cid);
+        allow create: if csEsMiembro(cid)
+          && request.resource.data.autorUid == request.auth.uid;
+        // Update libre para el autor; los miembros pueden cambiar sólo
+        // los campos de votos/respuestaAceptadaId (resolver) si lo permite
+        // el coordinador. Para simplicidad v1: autor o coordinador/admin.
+        allow update: if isAdmin()
+          || (csEsMiembro(cid) && resource.data.autorUid == request.auth.uid)
+          || csCanWrite(cid);
+        allow delete: if isAdmin()
+          || (csEsMiembro(cid) && resource.data.autorUid == request.auth.uid)
+          || csCanWrite(cid);
+
+        match /respuestas/{rid} {
+          allow read: if csEsMiembro(cid);
+          allow create: if csEsMiembro(cid)
+            && request.resource.data.autorUid == request.auth.uid;
+          allow update: if isAdmin()
+            || (csEsMiembro(cid) && resource.data.autorUid == request.auth.uid)
+            || csCanWrite(cid);
+          allow delete: if isAdmin()
+            || (csEsMiembro(cid) && resource.data.autorUid == request.auth.uid)
+            || csCanWrite(cid);
+        }
+      }
+
+      // Subcolecciones públicas (lectura libre autenticada, escritura
+      // sólo redactor/coordinador). Listadas explícitamente para que el
+      // foro privado NO herede el read:signedIn() de un wildcard.
+      match /actividades/{docId} {
+        allow read: if signedIn();
+        allow create, update, delete: if csCanWrite(cid);
+      }
+      match /calendario/{docId} {
+        allow read: if signedIn();
+        allow create, update, delete: if csCanWrite(cid);
+      }
+      match /avisos/{docId} {
+        allow read: if signedIn();
+        allow create, update, delete: if csCanWrite(cid);
+      }
+      match /documentos/{docId} {
         allow read: if signedIn();
         allow create, update, delete: if csCanWrite(cid);
       }
