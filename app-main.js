@@ -1863,7 +1863,64 @@ function scanGoogleLogin(){
 }
 
 function scanSetType(t,btn){scanType=t;document.querySelectorAll(".scan-mode-btn").forEach(function(b){b.style.borderColor="var(--border)";b.style.background="var(--bg-card)";b.style.color="var(--text)";});if(btn){btn.style.borderColor="#0066cc";btn.style.background="linear-gradient(135deg,#0066cc,#004499)";btn.style.color="#fff";}var m=SCAN_MODELS[t];if(m){var html="<strong>"+m.model+"</strong><br><span style='font-size:.8rem;color:var(--text-muted);'>📊 "+m.dataset+"</span>";if(m.repo)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>📦 "+m.repo+"</span>";if(m.precision)html+="<br><span style='font-size:.8rem;color:var(--text-muted);'>🎯 "+m.precision+"</span>";if(m.formato)html+="<br><span style='font-size:.78rem;color:var(--text-muted);'>⚙️ "+m.formato+"</span>";if(m.nota)html+="<br><span style='font-size:.78rem;color:"+(m.nota.indexOf("⚠️")>-1?"#d97706":"#64748b")+";font-style:italic;'>"+m.nota+"</span>";if(m.links){html+="<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;'>";if(m.links.physionet)html+="<a href='"+m.links.physionet+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#e0f2fe;color:#0369a1;border-radius:4px;text-decoration:none;font-weight:600;'>📥 PhysioNet</a>";if(m.links.github)html+="<a href='"+m.links.github+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#f0fdf4;color:#15803d;border-radius:4px;text-decoration:none;font-weight:600;'>💻 GitHub</a>";if(m.links.paper)html+="<a href='"+m.links.paper+"' target='_blank' style='font-size:.75rem;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;text-decoration:none;font-weight:600;'>📄 Paper</a>";html+="</div>";}html+="<br><span style='font-size:.78rem;color:#0066cc;'>Análisis por Llama 4 Scout (OpenRouter)</span>";if(m.external){var ex=m.external;html+="<div style=\"margin-top:12px;padding:10px 12px;background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.08));border:1px solid #a78bfa;border-radius:10px\"><div style=\"font-size:.78rem;color:#6d28d9;text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:4px\">🧪 Herramienta externa adicional</div><div style=\"font-weight:700;color:var(--text)\">"+ex.name+"</div>"+(ex.institution?"<div style=\"font-size:.78rem;color:var(--text-muted);margin-bottom:6px\">"+ex.institution+"</div>":"")+(ex.desc?"<div style=\"font-size:.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:8px\">"+ex.desc+"</div>":"")+(ex.note?"<div style=\"font-size:.72rem;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:6px;margin-bottom:8px\">⚠️ "+ex.note+"</div>":"")+"<a href=\""+ex.url+"\" target=\"_blank\" rel=\"noopener noreferrer\" onclick=\"try{window.cartTrack&&window.cartTrack('external_tool_open',{tool:'"+ex.name.replace(/'/g,"")+"'});}catch(e){}\" style=\"display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;text-decoration:none;border-radius:8px;font-size:.85rem;font-weight:600\">Abrir "+ex.name+" ↗</a></div>";}document.getElementById("scanModelRef").innerHTML=html;}}
-function scanHandleFile(e){var f=e.target.files[0];if(f)scanProcessFile(f);}
+// H-05 · ScanIA · disclaimer formativo obligatorio antes de la primera
+// imagen de la sesión. Cumple recomendación docs/legal/ce-mdr-analysis.md
+// y cierra el riesgo de cruzar a "soporte a decisión clínica" (MDR).
+function scanHandleFile(e){
+  var f=e.target.files[0];
+  if(!f) return;
+  if(sessionStorage.getItem('scan_disclaimer_acked_v1') === '1'){
+    scanProcessFile(f);
+    return;
+  }
+  // Mostrar modal one-shot por sesión.
+  scanShowDisclaimerModal(function(){
+    sessionStorage.setItem('scan_disclaimer_acked_v1','1');
+    scanProcessFile(f);
+  }, function(){
+    // Rechazado — limpiar input y abandonar.
+    var inp = document.getElementById('scanFileIn');
+    if(inp) inp.value = '';
+  });
+}
+function scanShowDisclaimerModal(onAccept, onCancel){
+  // Construir modal in-line para no añadir dependencias.
+  var existing = document.getElementById('scanDisclaimerModal');
+  if(existing) existing.parentNode.removeChild(existing);
+  var bg = document.createElement('div');
+  bg.id = 'scanDisclaimerModal';
+  bg.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px';
+  bg.innerHTML =
+    '<div role="dialog" aria-modal="true" aria-labelledby="scanDisclTitle" style="background:#fff;color:#1a1a1a;max-width:520px;width:100%;border-radius:14px;padding:24px 26px;box-shadow:0 20px 60px rgba(0,0,0,.5);font-family:Source Sans 3,-apple-system,BlinkMacSystemFont,sans-serif">'
+    + '<h2 id="scanDisclTitle" style="font-size:1.15rem;color:#0d3d26;margin-bottom:10px;font-weight:800">⚠️ Análisis de imagen con IA · uso formativo</h2>'
+    + '<p style="font-size:.92rem;line-height:1.55;margin-bottom:12px">Antes de subir una imagen clínica, confirma que entiendes:</p>'
+    + '<ul style="font-size:.88rem;line-height:1.6;padding-left:20px;color:#475569;margin-bottom:14px">'
+    +   '<li>Esta herramienta es <strong>formativa</strong>. NO es un dispositivo médico (MDR 2017/745).</li>'
+    +   '<li>El análisis IA es <strong>orientativo</strong>. La decisión clínica recae en el profesional, nunca en el modelo.</li>'
+    +   '<li>Los datos enviados deben estar <strong>seudonimizados</strong>: sin DNI, NHC, nombre completo ni fecha de nacimiento visibles en la imagen.</li>'
+    +   '<li>Las imágenes <strong>no se almacenan</strong> en la plataforma; se envían solo durante el procesamiento.</li>'
+    + '</ul>'
+    + '<label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;user-select:none;font-size:.88rem;line-height:1.5;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px 12px;margin-bottom:14px">'
+    +   '<input type="checkbox" id="scanDisclAck" style="margin-top:3px">'
+    +   '<span><strong>He leído y acepto</strong>. La imagen está seudonimizada y entiendo que el análisis es formativo.</span>'
+    + '</label>'
+    + '<div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">'
+    +   '<button type="button" id="scanDisclCancel" style="padding:8px 16px;background:#f3f4f6;color:#475569;border:1px solid #cbd5e1;border-radius:8px;cursor:pointer;font-family:inherit;font-size:.86rem;font-weight:700">Cancelar</button>'
+    +   '<button type="button" id="scanDisclOk" disabled style="padding:8px 16px;background:#0d3d26;color:#fff;border:0;border-radius:8px;cursor:pointer;font-family:inherit;font-size:.86rem;font-weight:800;opacity:.5">Continuar y subir imagen</button>'
+    + '</div>'
+    + '</div>';
+  document.body.appendChild(bg);
+  var chk = document.getElementById('scanDisclAck');
+  var ok = document.getElementById('scanDisclOk');
+  chk.addEventListener('change', function(){
+    ok.disabled = !chk.checked;
+    ok.style.opacity = chk.checked ? '1' : '.5';
+  });
+  ok.addEventListener('click', function(){ bg.remove(); onAccept && onAccept(); });
+  document.getElementById('scanDisclCancel').addEventListener('click', function(){ bg.remove(); onCancel && onCancel(); });
+  // Tracking auditoría (no PII).
+  try{ if(window.cartTrack) window.cartTrack('scan_disclaimer_shown', {}); }catch(e){}
+}
 function scanProcessFile(f){if(!f.type.startsWith("image/")){alert("Selecciona una imagen");return;}var r=new FileReader();r.onload=function(e){var d=e.target.result;scanB64=d.split(",")[1];document.getElementById("scanImgPreview").src=d;document.getElementById("scanImgPreview").style.display="block";document.getElementById("scanDropContent").style.display="none";document.getElementById("scanDropZone").style.borderStyle="solid";document.getElementById("scanDropZone").style.borderColor="#0066cc";document.getElementById("scanBtnGo").disabled=false;};r.readAsDataURL(f);}
 (function(){var z=document.getElementById("scanDropZone");if(z){z.addEventListener("dragover",function(e){e.preventDefault();z.style.borderColor="#0066cc";z.style.background="rgba(0,102,204,.04)";});z.addEventListener("dragleave",function(){z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";});z.addEventListener("drop",function(e){e.preventDefault();z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";if(e.dataTransfer.files.length)scanProcessFile(e.dataTransfer.files[0]);});}})();
 
