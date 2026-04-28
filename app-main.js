@@ -994,7 +994,27 @@ async function llamarIA(up,sp){
     return e.userMessage || ('⚠️ '+(e.message||'Error IA'));
   }
 }
-async function hacerPregunta(){var input=document.getElementById("preguntaInput"),q=input.value.trim();if(!q||isProcessing)return;isProcessing=true;document.getElementById("btnPreguntar").disabled=true;if(!preguntas[currentCategory])preguntas[currentCategory]=[];var idx=preguntas[currentCategory].length;preguntas[currentCategory].push({pregunta:q,respuesta:"⏳ Consultando...",fecha:new Date().toLocaleString("es-ES")});input.value="";actualizarUI();var docs=documents[currentCategory]||[];var dc=docs.map(function(d){return"- "+d.name+(d.description?": "+d.description.substring(0,300):"")}).join("\n");var sys="Eres un asistente médico experto en "+currentCategory+" del Área II de Cartagena. Responde en español con información clínica precisa y actualizada. Usa formato markdown con ### para secciones, ** para negritas, listas con - para puntos clave, y emojis clínicos (⚠️ para alertas, 💊 para fármacos, ℹ️ para información). Estructura tu respuesta de forma clara y profesional."+(dc?"\n\nDocumentos disponibles en esta especialidad:\n"+dc:"");var r=await llamarIA(q,sys);preguntas[currentCategory][idx].respuesta=r;guardarDatos();actualizarUI();isProcessing=false;document.getElementById("btnPreguntar").disabled=false;}
+async function hacerPregunta(){
+  var input=document.getElementById("preguntaInput"),q=input.value.trim();
+  if(!q||isProcessing)return;
+  isProcessing=true;document.getElementById("btnPreguntar").disabled=true;
+  if(!preguntas[currentCategory])preguntas[currentCategory]=[];
+  var idx=preguntas[currentCategory].length;
+  preguntas[currentCategory].push({pregunta:q,respuesta:"⏳ Consultando...",fecha:new Date().toLocaleString("es-ES")});
+  input.value="";actualizarUI();
+  var docs=(documents[currentCategory]||[]).slice();
+  // Inyectar aportaciones aprobadas (inMegaCuaderno:true) de Firestore
+  // — best-effort, si falla no rompe la pregunta.
+  try {
+    var extra = await inyectarDocsAprobadosEnMegaCuaderno(currentCategory);
+    if (extra && extra.length) docs = docs.concat(extra);
+  } catch(e) { /* silencioso */ }
+  var dc=docs.map(function(d){return"- "+d.name+(d.description?": "+d.description.substring(0,300):"")+(d._aprobado?" (aportación de la comunidad)":"")}).join("\n");
+  var sys="Eres un asistente médico experto en "+currentCategory+" del Área II de Cartagena. Responde en español con información clínica precisa y actualizada. Usa formato markdown con ### para secciones, ** para negritas, listas con - para puntos clave, y emojis clínicos (⚠️ para alertas, 💊 para fármacos, ℹ️ para información). Estructura tu respuesta de forma clara y profesional."+(dc?"\n\nDocumentos disponibles en esta especialidad:\n"+dc:"");
+  var r=await llamarIA(q,sys);
+  preguntas[currentCategory][idx].respuesta=r;
+  guardarDatos();actualizarUI();isProcessing=false;document.getElementById("btnPreguntar").disabled=false;
+}
 var studioPrompts={resumen:{title:"📋 Resumen — ",prompt:"Resumen ejecutivo sobre {cat}: patologías, diagnósticos, tratamientos."},faq:{title:"❓ FAQ — ",prompt:"8 preguntas frecuentes sobre {cat} con respuestas."},guia:{title:"📖 Guía — ",prompt:"Guía de estudio {cat}: conceptos, clasificaciones, fármacos, dosis."},diagnostico:{title:"🩺 Dx — ",prompt:"Diagnóstico diferencial de {cat}: síntomas, pruebas, red flags."},farmacologia:{title:"💊 Farma — ",prompt:"Farmacología {cat}: grupos, mecanismo, dosis, efectos adversos."},emergencia:{title:"🚨 Urgencia — ",prompt:"Protocolos emergencia {cat}: reconocimiento, tratamiento, dosis."}};
 var lastSC="",lastST="";
 async function studioAction(t){if(!isReady()||isProcessing)return;var c=studioPrompts[t];if(!c)return;isProcessing=true;document.querySelectorAll(".studio-card").forEach(function(x){x.disabled=true});var rd=document.getElementById("studioResult"),cd=document.getElementById("studioResultContent");lastST=c.title+currentCategory;document.getElementById("studioResultTitle").textContent=lastST;cd.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;opacity:.6;font-size:.88rem;"><div style="width:16px;height:16px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Generando con DeepSeek V3...</div>';rd.style.display="block";lastSC=await llamarIA(c.prompt.replace(/\{cat\}/g,currentCategory),"Eres un experto médico del Área II de Cartagena. Responde en español con formato markdown: ### para secciones, ** para negritas, listas con -, emojis clínicos (⚠️ alertas, 💊 fármacos, ℹ️ info).");cd.innerHTML=typeof fmtClinical==="function"?fmtClinical(lastSC):lastSC;isProcessing=false;document.querySelectorAll(".studio-card").forEach(function(x){x.disabled=false});}
@@ -1519,10 +1539,37 @@ function moderarPropuesta(docId, nuevoEstado, motivo){
                         aprobadoNombre:  user.displayName || user.email,
                         fechaAprobacion: new Date(),
                         propuestaId:     docId,
-                        visible:         true
+                        visible:         true,
+                        inMegaCuaderno:  true,
                     };
                     db.collection("documentos_aprobados").add(docAprobado).then(function(){
                         console.log("✅ Documento guardado en categoría:", docAprobado.categoria);
+                        // Encolar email al proponente (Trigger Email Extension lee /mail).
+                        if (p.email) {
+                            db.collection("mail").add({
+                                to: [p.email],
+                                message: {
+                                    subject: "✅ Tu aportación a Cartagenaeste ha sido aprobada",
+                                    text: "Hola " + (p.nombre || p.email) + ",\n\n" +
+                                          "Tu propuesta \"" + (p.titulo || p.fileName || 'Documento') + "\" " +
+                                          "ha sido aprobada por " + (user.displayName || user.email) + " " +
+                                          "y ya está disponible en Cartagenaeste, dentro de la categoría \"" + (p.seccion || 'Otro') + "\".\n\n" +
+                                          "Gracias por contribuir.\n\n" +
+                                          "— Equipo Cartagenaeste · Área II Cartagena\n" +
+                                          "https://area2cartagena.es/",
+                                    html: "<p>Hola <strong>" + (p.nombre || p.email) + "</strong>,</p>" +
+                                          "<p>Tu propuesta <em>\"" + (p.titulo || p.fileName || 'Documento') + "\"</em> " +
+                                          "ha sido aprobada por <strong>" + (user.displayName || user.email) + "</strong> " +
+                                          "y ya está disponible en Cartagenaeste, dentro de la categoría <strong>" + (p.seccion || 'Otro') + "</strong>.</p>" +
+                                          "<p>Gracias por contribuir.</p>" +
+                                          "<p style='font-size:.85rem;color:#666;'>— Equipo Cartagenaeste · Área II Cartagena<br>" +
+                                          "<a href='https://area2cartagena.es/'>area2cartagena.es</a></p>",
+                                },
+                                kind: "aprobacion_propuesta",
+                                propuestaId: docId,
+                                createdAt: new Date(),
+                            }).catch(function(e){ console.warn("[mail] no se pudo encolar:", e && e.message); });
+                        }
                     }).catch(function(e){ console.error("Error guardando doc aprobado:", e); });
                 });
                 // Refrescar bloque en sección si coincide
@@ -3523,3 +3570,247 @@ document.addEventListener('DOMContentLoaded', function() {
     var enfInput=document.getElementById('enfPreguntaInput');
     if(enfInput)enfInput.addEventListener('keypress',function(e){if(e.key==='Enter')enfHacerPregunta();});
 });
+
+// ════════════════════════════════════════════════════════════════════
+// AP · Aportaciones de la comunidad por especialidad + Resumen IA
+// ════════════════════════════════════════════════════════════════════
+// Lee /documentos_aprobados con visible:true filtrando por categorías
+// que empiezan por "AP · " o son "Protocolos AP" (legacy bucket).
+// Agrupa por categoría y permite generar resumen con DeepSeek (askAi).
+// Reusable: la versión Hospitalaria usa el mismo patrón con prefijos
+// distintos (especialidades sin prefijo "AP ·").
+// ════════════════════════════════════════════════════════════════════
+
+var __aportAPCargadas = null; // cache en memoria por sesión
+
+function _esAportacionAP(cat){
+  if (!cat) return false;
+  return cat.indexOf('AP · ') === 0 || cat === 'Protocolos AP';
+}
+function _esAportacionHospitalaria(cat){
+  if (!cat) return false;
+  if (_esAportacionAP(cat)) return false;
+  // Las especialidades sin prefijo "AP · " son hospitalarias.
+  return true;
+}
+function _escAport(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+  return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+}); }
+
+function cargarAportacionesAP(){
+  var grid = document.getElementById('aportacionesAPGrid');
+  if (!grid || typeof db === 'undefined') return;
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Cargando…</div>';
+  db.collection('documentos_aprobados')
+    .where('visible','==',true)
+    .orderBy('fechaAprobacion','desc')
+    .limit(200)
+    .get()
+    .then(function(snap){
+      var grupos = {};
+      snap.forEach(function(doc){
+        var d = doc.data();
+        if (!_esAportacionAP(d.categoria)) return;
+        var k = d.categoria || 'Otro';
+        if (!grupos[k]) grupos[k] = [];
+        grupos[k].push(d);
+      });
+      __aportAPCargadas = grupos;
+      var keys = Object.keys(grupos).sort();
+      if (!keys.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:10px;">📂</div><p style="font-weight:600;margin-bottom:4px;">Aún no hay aportaciones</p><p style="font-size:.85rem;">Usa "Proponer contenido" para añadir el primer documento de Atención Primaria.</p></div>';
+        return;
+      }
+      var html = keys.map(function(cat){
+        var docs = grupos[cat];
+        var inner = docs.slice(0, 6).map(function(d){
+          var icon = d.tipo === 'url' ? '🔗' : '📄';
+          var fecha = d.fechaAprobacion && d.fechaAprobacion.seconds
+            ? new Date(d.fechaAprobacion.seconds * 1000).toLocaleDateString('es-ES', {day:'2-digit',month:'2-digit',year:'2-digit'})
+            : '';
+          var url = d.url || '#';
+          return '<a href="' + _escAport(url) + '" target="_blank" rel="noopener" style="display:block;padding:8px 10px;border-radius:6px;background:rgba(255,255,255,.6);text-decoration:none;color:var(--text);margin-bottom:6px;border:1px solid var(--border);">'
+            + '<div style="font-size:.85rem;font-weight:600;color:var(--primary-dark);">' + icon + ' ' + _escAport(d.titulo || d.fileName || 'Documento') + '</div>'
+            + '<div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">'
+            + _escAport(d.autorNombre || d.autorEmail || 'Anónimo')
+            + (fecha ? ' · ' + fecha : '')
+            + '</div></a>';
+        }).join('');
+        var more = docs.length > 6 ? '<div style="font-size:.74rem;color:var(--text-muted);margin-top:4px;">+ ' + (docs.length - 6) + ' más</div>' : '';
+        return '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px;">'
+          + '<div style="font-family:var(--font-display);font-weight:700;color:var(--primary-dark);font-size:1rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">'
+          + '<span>' + _escAport(cat) + '</span>'
+          + '<span style="font-size:.7rem;background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:10px;">' + docs.length + '</span>'
+          + '</div>' + inner + more + '</div>';
+      }).join('');
+      grid.innerHTML = html;
+    })
+    .catch(function(err){
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#dc2626;font-size:.85rem;">Error: ' + _escAport(err.message || err.code || 'desconocido') + '</div>';
+    });
+}
+
+function generarResumenAP(modo){
+  var box = document.getElementById('resumenAPBox');
+  if (!box) return;
+  if (typeof window.askAi !== 'function') { alert('La IA no está disponible. Recarga e inicia sesión.'); return; }
+  var grupos = __aportAPCargadas;
+  if (!grupos) { cargarAportacionesAP(); setTimeout(function(){ generarResumenAP(modo); }, 1500); return; }
+
+  // Selección de docs según modo:
+  //   "reciente" → últimos 7 días (o último mes si <5 docs)
+  //   "todos"    → toda la colección, hasta 30 docs más recientes
+  var todos = [];
+  Object.keys(grupos).forEach(function(cat){
+    grupos[cat].forEach(function(d){ d.__cat = cat; todos.push(d); });
+  });
+  if (!todos.length) { box.style.display = 'block'; box.textContent = 'Sin aportaciones que resumir todavía.'; return; }
+
+  var ahora = Date.now();
+  var seleccion = todos;
+  if (modo === 'reciente') {
+    var lim = ahora - 7*24*60*60*1000;
+    seleccion = todos.filter(function(d){ return d.fechaAprobacion && d.fechaAprobacion.seconds*1000 >= lim; });
+    if (seleccion.length < 5) {
+      lim = ahora - 30*24*60*60*1000;
+      seleccion = todos.filter(function(d){ return d.fechaAprobacion && d.fechaAprobacion.seconds*1000 >= lim; });
+    }
+  }
+  seleccion = seleccion.slice(0, 30);
+  if (!seleccion.length) { box.style.display = 'block'; box.textContent = 'Sin aportaciones recientes (últimos 30 días) para resumir.'; return; }
+
+  box.style.display = 'block';
+  box.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><div style="width:14px;height:14px;border:2px solid #0369a1;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Generando resumen con DeepSeek (' + seleccion.length + ' documentos · modo ' + modo + ')…</div>';
+
+  var lista = seleccion.map(function(d, i){
+    var t = d.titulo || d.fileName || '(sin título)';
+    var c = d.__cat || d.categoria || '';
+    var desc = (d.descripcion || '').slice(0, 280);
+    return (i+1) + '. [' + c + '] ' + t + (desc ? ' — ' + desc : '');
+  }).join('\n');
+
+  var sysPrompt = 'Eres un editor médico que prepara un resumen formativo para profesionales de Atención Primaria del Área II Cartagena. ' +
+    'Te dan los títulos y descripciones de las últimas aportaciones de la comunidad clasificadas por especialidad de AP. ' +
+    'Genera un resumen de aproximadamente 1 folio (350-500 palabras) que: ' +
+    '(1) agrupa por especialidad las novedades; ' +
+    '(2) destaca de cada especialidad las 1-2 ideas clínicas más prácticas para AP; ' +
+    '(3) cierra con un párrafo "Lo que conviene revisar primero" priorizando por relevancia clínica. ' +
+    'NO inventes datos que no estén en los títulos/descripciones. Si solo tienes el título sin descripción, di que falta abstract. ' +
+    'Estructura con encabezados de Markdown (### Especialidad). Aviso al final: "Resumen generado por IA. No sustituye lectura crítica de los documentos originales."';
+  var userPrompt = 'Documentos (modo: ' + modo + ', ' + seleccion.length + ' aportaciones):\n\n' + lista;
+
+  window.askAi({ type: 'educational', systemPrompt: sysPrompt, prompt: userPrompt })
+    .then(function(res){
+      var txt = res && res.text ? res.text : '';
+      box.textContent = '';
+      box.style.whiteSpace = 'pre-wrap';
+      box.textContent = txt;
+    })
+    .catch(function(err){
+      box.style.color = '#b91c1c';
+      box.textContent = '❌ Error generando resumen: ' + (err.userMessage || err.message || err.code || 'desconocido');
+    });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Hospitalaria · botón resumen IA en pestaña Documentos
+// ════════════════════════════════════════════════════════════════════
+// La página de Hospitalaria ya muestra "Aportaciones de la comunidad"
+// dentro de cada categoría (cargarPropuestasEnSeccion). Aquí añadimos
+// botones para resumir todos los docs aprobados a especialidades
+// hospitalarias (sin prefijo "AP · ").
+function generarResumenHospitalaria(modo){
+  if (typeof window.askAi !== 'function') { alert('La IA no está disponible.'); return; }
+  var box = document.getElementById('resumenHospBox');
+  if (!box) return;
+  box.style.display = 'block';
+  box.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><div style="width:14px;height:14px;border:2px solid #0369a1;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>Recuperando aportaciones hospitalarias…</div>';
+  db.collection('documentos_aprobados')
+    .where('visible','==',true)
+    .orderBy('fechaAprobacion','desc')
+    .limit(200)
+    .get()
+    .then(function(snap){
+      var ahora = Date.now();
+      var lim = modo === 'reciente' ? ahora - 7*24*60*60*1000 : 0;
+      var docs = [];
+      snap.forEach(function(d){
+        var x = d.data();
+        if (!_esAportacionHospitalaria(x.categoria)) return;
+        if (lim && (!x.fechaAprobacion || x.fechaAprobacion.seconds*1000 < lim)) return;
+        docs.push(x);
+      });
+      if (modo === 'reciente' && docs.length < 5) {
+        lim = ahora - 30*24*60*60*1000;
+        docs = [];
+        snap.forEach(function(d){
+          var x = d.data();
+          if (!_esAportacionHospitalaria(x.categoria)) return;
+          if (!x.fechaAprobacion || x.fechaAprobacion.seconds*1000 < lim) return;
+          docs.push(x);
+        });
+      }
+      docs = docs.slice(0, 30);
+      if (!docs.length) { box.textContent = 'Sin aportaciones hospitalarias en el rango pedido.'; return; }
+      var lista = docs.map(function(d, i){
+        var desc = (d.descripcion || '').slice(0, 280);
+        return (i+1) + '. [' + (d.categoria||'') + '] ' + (d.titulo||d.fileName||'(sin título)') + (desc ? ' — ' + desc : '');
+      }).join('\n');
+      var sys = 'Eres un editor médico que prepara un resumen formativo para profesionales de Atención Hospitalaria. ' +
+        'Te dan los títulos y descripciones de aportaciones recientes clasificadas por especialidad. ' +
+        'Genera ~1 folio (350-500 palabras) con encabezados ### por especialidad, 1-2 ideas clínicas prácticas por bloque, ' +
+        'y un cierre "Lo que conviene revisar primero". NO inventes datos. Aviso final: "Resumen generado por IA. No sustituye lectura crítica."';
+      var user = 'Documentos hospitalarios (modo: ' + modo + ', ' + docs.length + '):\n\n' + lista;
+      window.askAi({ type:'educational', systemPrompt: sys, prompt: user })
+        .then(function(res){
+          box.textContent = '';
+          box.style.whiteSpace = 'pre-wrap';
+          box.textContent = res && res.text ? res.text : '(sin respuesta)';
+        })
+        .catch(function(err){
+          box.style.color = '#b91c1c';
+          box.textContent = '❌ Error: ' + (err.userMessage || err.message || err.code || 'desconocido');
+        });
+    })
+    .catch(function(err){
+      box.style.color = '#b91c1c';
+      box.textContent = '❌ Error: ' + (err.message || err.code);
+    });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// MegaCuaderno IA · merge de documentos_aprobados (inMegaCuaderno:true)
+// con el documents.json estático para la categoría activa.
+// ════════════════════════════════════════════════════════════════════
+// Llamado desde hacerPregunta() y actualizarUI() — extiende el array
+// `documents[currentCategory]` con los docs aprobados en esa categoría.
+// La integración es no-destructiva: documents.json sigue siendo la base.
+async function inyectarDocsAprobadosEnMegaCuaderno(categoria){
+  if (typeof db === 'undefined' || !categoria) return [];
+  try {
+    var snap = await db.collection('documentos_aprobados')
+      .where('visible','==',true)
+      .where('categoria','==',categoria)
+      .where('inMegaCuaderno','==',true)
+      .orderBy('fechaAprobacion','desc')
+      .limit(20)
+      .get();
+    var extra = [];
+    snap.forEach(function(d){
+      var x = d.data();
+      extra.push({
+        name: x.titulo || x.fileName || 'Documento',
+        description: x.descripcion || '',
+        url: x.url || '',
+        type: x.tipo || 'aportación',
+        size_mb: x.sizeMB || 0,
+        _aprobado: true,
+        _autor: x.autorNombre || x.autorEmail || 'Anónimo',
+      });
+    });
+    return extra;
+  } catch (e) {
+    console.warn('[MegaCuaderno] inyectarDocsAprobados:', e && e.message);
+    return [];
+  }
+}
