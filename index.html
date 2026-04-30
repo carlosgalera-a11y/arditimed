@@ -465,24 +465,59 @@ footer a:hover{color:#ffd54f}
 
       var provider = new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-      auth.signInWithPopup(provider).then(function(){
+      console.log('[auth] iniciando signInWithPopup...');
+      auth.signInWithPopup(provider).then(function(result){
+        console.log('[auth] login OK:', result.user && result.user.email);
         closeLoginModal();
       }).catch(function(err){
-        // Estos códigos son benignos: el usuario cerró el popup o se canceló
-        // por otro popup. NO mostrar alert al usuario.
+        console.error('[auth] error:', err && err.code, err && err.message);
+
+        // Silenciosos (el usuario cerró el popup o canceló — no es un error real):
         if(err && (err.code === 'auth/cancelled-popup-request'
-                || err.code === 'auth/popup-closed-by-user'
-                || err.code === 'auth/popup-blocked')){
-          console.log('[auth] popup cancelado/cerrado por el usuario:', err.code);
+                || err.code === 'auth/popup-closed-by-user')){
           return;
         }
-        console.error('Login error:', err);
-        alert('No se pudo iniciar sesión: ' + (err.message || err.code));
+
+        // Popup bloqueado por el navegador o extensión → fallback automático
+        // a signInWithRedirect (no requiere popup, redirige a Google y vuelve).
+        if(err && (err.code === 'auth/popup-blocked'
+                || err.code === 'auth/operation-not-supported-in-this-environment')){
+          console.warn('[auth] popup bloqueado, usando redirect como fallback...');
+          try {
+            auth.signInWithRedirect(provider);
+            return;
+          } catch(e2){
+            alert('El popup está bloqueado por una extensión (AdBlock, uBlock, Privacy Badger) o por el navegador. Desactiva extensiones para area2cartagena.es y vuelve a intentarlo, o usa el enlace de email.');
+            return;
+          }
+        }
+
+        // Errores reales que el usuario debe ver:
+        var msg = 'No se pudo iniciar sesión:\n' + (err.message || err.code || 'Error desconocido');
+        if(err && err.code === 'auth/network-request-failed'){
+          msg = 'Sin conexión o algo bloquea las peticiones a Google. Comprueba tu red y desactiva extensiones bloqueadoras de anuncios para esta web.';
+        } else if(err && err.code === 'auth/internal-error'){
+          msg = 'Error interno de Firebase. Refresca la página (Cmd+Shift+R) y reintenta. Si persiste, prueba en otro navegador.';
+        }
+        alert(msg);
       }).finally(function(){
         __signInInFlight = false;
         if(btn){ btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; }
       });
     }
+
+    // Si volvimos de un signInWithRedirect, recoger el resultado.
+    // (auth.getRedirectResult resuelve sin error si no hay redirect pendiente.)
+    auth.getRedirectResult().then(function(result){
+      if(result && result.user){
+        console.log('[auth] redirect login OK:', result.user.email);
+        closeLoginModal();
+      }
+    }).catch(function(err){
+      if(err && err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request'){
+        console.warn('[auth] redirect result error:', err.code, err.message);
+      }
+    });
 
     // ═══ Email Link (passwordless) — permite @carm.es y cualquier otro dominio ═══
     function sendEmailLink(){
