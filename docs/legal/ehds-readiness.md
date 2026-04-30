@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # EHDS Readiness · Cartagenaeste
 
 **Reglamento (UE) 2025/327 · Espacio Europeo de Datos Sanitarios**

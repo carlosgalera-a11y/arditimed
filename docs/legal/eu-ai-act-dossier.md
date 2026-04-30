@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # EU AI Act · Dossier ejecutivo · Cartagenaeste
 
 **Reglamento (UE) 2024/1689 del Parlamento Europeo y del Consejo de 13 de junio de 2024**

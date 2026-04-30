@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # HSTS · estado de Strict-Transport-Security en `area2cartagena.es`
 
 **Hallazgo H-06 de la auditoría 2026-04-28**: ¿hay HSTS activo?

@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # Plantilla de Data Processing Agreement (DPA) · Cartagenaeste
 
 **Plantilla para acuerdos con clientes (B2B sanitario) que actúen como responsable del tratamiento cuando Cartagenaeste actúa como encargado.**

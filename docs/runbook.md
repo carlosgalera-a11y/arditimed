@@ -490,4 +490,98 @@ Antes de habilitar/cambiar TTL por primera vez, ejecutar un backup manual (§9.2
 
 ---
 
+## 11 · Brecha de seguridad (RGPD art. 33-34)
+
+> Seguir este árbol de decisión **antes** de notificar a nadie externamente. Toda la comunicación interna va a `carlos.galera@[correo personal]`. La obligación legal es notificar a la AEPD en **72 horas** desde el conocimiento de la brecha.
+
+### 11.1 Árbol de decisión rápido
+
+```
+¿Se han visto comprometidos datos personales?
+ ├── NO → Incidente de seguridad sin impacto RGPD. Documentar en docs/post-mortems/. FIN.
+ └── SÍ → continuar ↓
+
+¿Hay riesgo para derechos y libertades de los interesados?
+ ├── IMPROBABLE (ej. datos seudonimizados, cifrados, sin identificabilidad real)
+ │    └── Registrar brecha internamente (art. 33.1 in fine). No notificar AEPD. FIN.
+ └── PROBABLE/ALTO → continuar ↓
+
+¿El riesgo es ALTO (filtración de datos sensibles, acceso masivo, exposición de historial clínico)?
+ ├── SÍ → Notificar AEPD (<72 h) + Notificar a interesados afectados (art. 34). → §11.3
+ └── NO → Notificar AEPD (<72 h). No necesario notificar usuarios. → §11.2
+```
+
+### 11.2 Notificación a la AEPD (art. 33)
+
+**Plazo:** 72 horas desde el momento en que Carlos tiene conocimiento.
+
+**Canal:** <https://sedeagpd.gob.es/sede-electronica-web/> → "Notificación de violaciones de datos personales".
+
+**Datos a incluir obligatoriamente:**
+1. Naturaleza de la brecha (qué pasó, cómo, cuándo se detectó).
+2. Categorías y número aproximado de interesados afectados.
+3. Categorías y número aproximado de registros de datos afectados.
+4. DPO o punto de contacto: Carlos Galera Román · `[email en privacy policy]`.
+5. Consecuencias probables de la brecha.
+6. Medidas adoptadas o propuestas para remediar y mitigar.
+
+Si en 72 h no tienes toda la información, notifica con lo disponible e indica "notificación por fases" — la AEPD lo acepta. Completa con información adicional en cuanto esté disponible.
+
+### 11.3 Comunicación a interesados afectados (art. 34)
+
+Obligatorio solo si el riesgo es **alto** (ver árbol §11.1).
+
+**Canal:** email directo al usuario registrado (`uid` → `users/{uid}.email` en Firestore).  
+**Plazo:** sin demora indebida (ASAP, no hay plazo explícito de 72 h pero hay que actuar rápido).
+
+**Contenido mínimo del mensaje:**
+- Descripción clara de la naturaleza de la brecha.
+- Nombre y datos de contacto del responsable (DPO).
+- Consecuencias probables para el interesado.
+- Medidas adoptadas para remediar.
+- Recomendaciones para el interesado (cambiar contraseña, monitorizar cuentas, etc.).
+
+**Plantilla base:**
+
+```
+Asunto: Aviso importante sobre la seguridad de tu cuenta en Cartagenaeste
+
+Estimado/a [nombre o "usuario/a"],
+
+Te informamos de que hemos detectado un incidente de seguridad que puede haber afectado 
+a datos asociados a tu cuenta en Cartagenaeste. 
+
+Qué ocurrió: [descripción concisa].
+Qué datos podrían haberse visto afectados: [lista].
+Qué hemos hecho: [medidas de contención y corrección].
+Qué puedes hacer tú: [recomendaciones].
+
+Puedes ejercer tus derechos en: https://area2cartagena.es/derechos-rgpd.html
+
+Carlos Galera Román · Responsable del tratamiento
+```
+
+### 11.4 Post-mortem (siempre, independientemente de la notificación)
+
+Crear `docs/post-mortems/YYYY-MM-DD-brecha-[descripcion].md` con:
+- Timeline detallado (detección → contención → erradicación → recuperación).
+- Root cause analysis (5 whys).
+- Medidas técnicas y organizativas implementadas post-incidente.
+- Referencia al número de expediente AEPD si se notificó.
+- Lecciones aprendidas y cambios en controles.
+
+Este documento forma parte del RAT (`docs/legal/rgpd-rat.md`) y debe estar disponible ante una inspección AEPD.
+
+### 11.5 Registro interno de brechas (art. 33.5)
+
+Aunque no se notifique a la AEPD, toda brecha (incluso las de bajo riesgo) debe quedar registrada en:
+
+```
+docs/post-mortems/breach-register.md
+```
+
+Con columnas: `fecha | descripción | categorías datos | nº afectados | riesgo | notificado AEPD | notificado interesados | medidas`.
+
+---
+
 _Mantener este runbook al día cada vez que se toque functions o Firestore. Referenciar desde CLAUDE.md._
