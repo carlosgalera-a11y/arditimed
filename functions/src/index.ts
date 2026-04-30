@@ -34,3 +34,5 @@ export { aggregateDailyMetrics } from './aggregateDailyMetrics';
 export { healthCheckAi } from './healthCheckAi';
 export { goldStandardEval } from './goldStandardEval';
 export { fhirExport } from './fhirExport';
+export { getGaReportingHub } from './getGaReportingHub';
+export { getGaSegmentAnalysis } from './getGaSegmentAnalysis';

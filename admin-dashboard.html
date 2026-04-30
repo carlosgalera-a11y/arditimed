@@ -98,6 +98,7 @@ td.num{text-align:right;font-family:var(--mono)}
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
 <script src="recaptcha-key.js"></script>
 <script src="firebase-init.js"></script>
@@ -217,6 +218,207 @@ td.num{text-align:right;font-family:var(--mono)}
   <div class="section">
     <h3>📆 Actividad diaria <span class="meta" id="tlMeta"></span></h3>
     <div class="timeline" id="timeline"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ NUEVAS MÉTRICAS RICAS ════════════════════════════════════════════════ -->
+
+  <!-- Sección: Contaje uso por apartado (Profesionales vs Pacientes) -->
+  <div class="section" id="usoSeccion" style="border-left:4px solid var(--purple)">
+    <h3>🧭 Uso por apartado · Profesionales vs Pacientes <span class="meta" id="usoSeccionMeta">28 días · GA4</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Distribución del tráfico web entre el área para <strong>profesionales sanitarios</strong> (panel-medico, urgencias, casos clínicos, triaje, evidencia, plantillas, notas guardia) y el área para <strong>pacientes</strong> (consejos salud, prepara consulta, recursos, recordatorios, vacunas). Sirve para ver si el producto está "tirando" más por un lado u otro.</div>
+    <div class="kpis" style="margin-bottom:14px">
+      <div class="kpi kpi-a"><div class="lbl">👨‍⚕️ Pageviews Profesionales</div><div class="val" id="usoProViews">—</div><div class="sub" id="usoProSub">28d · GA4</div></div>
+      <div class="kpi kpi-a"><div class="lbl">👨‍⚕️ Usuarios Profesionales</div><div class="val" id="usoProUsers">—</div><div class="sub">activos en sección</div></div>
+      <div class="kpi kpi-d"><div class="lbl">👨‍👩‍👧 Pageviews Pacientes</div><div class="val" id="usoPacViews">—</div><div class="sub" id="usoPacSub">28d · GA4</div></div>
+      <div class="kpi kpi-d"><div class="lbl">👨‍👩‍👧 Usuarios Pacientes</div><div class="val" id="usoPacUsers">—</div><div class="sub">activos en sección</div></div>
+      <div class="kpi kpi-c"><div class="lbl">⚖️ Ratio Pro/Pac</div><div class="val" id="usoRatio">—</div><div class="sub">views profesional ÷ pacientes</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📊 Reparto profesionales / pacientes · 28d</div>
+        <div style="position:relative;height:200px"><canvas id="usoSeccionDonut"></canvas></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🏆 Top páginas Profesionales · 28d</div>
+        <div id="usoTopPro"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🏆 Top páginas Pacientes · 28d</div>
+        <div id="usoTopPac"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: Heatmap horario de uso IA -->
+  <div class="section" style="border-left:4px solid var(--cyan)">
+    <h3>🕐 Heatmap de uso IA · 24h × 7 días <span class="meta" id="heatmapMeta">cuando se está usando</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Llamadas a IA por hora del día y día de la semana del rango seleccionado. Identifica picos (¿guardias de noche? ¿mañanas en consulta?) y franjas muertas. Útil para programar mantenimientos o anunciar nuevas features sin disrupción.</div>
+    <div id="heatmapWrap"><div class="loading"><span class="spin"></span>Calculando heatmap…</div></div>
+  </div>
+
+  <!-- Sección: Funnel de conversión -->
+  <div class="section" style="border-left:4px solid var(--primary)">
+    <h3>🔻 Embudo de conversión · de visitante a usuario activo <span class="meta">GA4 + Firestore</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Cuántos visitantes anónimos pasan a usuarios registrados, y de esos cuántos llegan a usar la IA al menos una vez al mes. Las tasas de conversión típicas en B2B sanidad son 2-5% (anon→registered) y 30-60% (registered→active).</div>
+    <div id="funnelWrap"><div class="loading"><span class="spin"></span>Calculando embudo…</div></div>
+  </div>
+
+  <!-- Sección: Uso por módulo del producto -->
+  <div class="section" style="border-left:4px solid var(--amber)">
+    <h3>🧩 Uso por módulo del producto <span class="meta">contajes Firestore acumulados</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Recuento total de elementos creados por usuarios en cada módulo (acumulado, todo tiempo). Permite ver cuáles módulos están "calientes" y cuáles no se usan. Útil para priorizar mejoras o decidir si un módulo merece seguir vivo.</div>
+    <div id="moduleUsageWrap"><div class="loading"><span class="spin"></span>Contando colecciones…</div></div>
+  </div>
+
+  <!-- Sección: Retención de cohortes -->
+  <div class="section" style="border-left:4px solid var(--blue)">
+    <h3>🔁 Retención de usuarios por cohorte <span class="meta">primer uso → vuelta D1/D7/D14</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">De los usuarios que entraron por primera vez en cada día del rango, ¿cuántos volvieron al día siguiente, a los 7 días y a los 14 días? La retención D7 &gt; 30% es señal de uso profesional. &lt; 10% es exploración esporádica.</div>
+    <div id="cohortWrap"><div class="loading"><span class="spin"></span>Calculando cohortes…</div></div>
+  </div>
+
+  <!-- Sección: Análisis profundo Profesionales vs Pacientes (GA4 segmentado) -->
+  <div class="section" id="segmentAnalysis" style="border-left:4px solid #ec4899;background:linear-gradient(135deg,rgba(236,72,153,.04),rgba(59,130,246,.04))">
+    <h3>🎯 Análisis profundo · Profesionales vs Pacientes <span class="meta" id="segmentMeta">28 días · GA4 segmentado por path</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:14px">Comparativa lado a lado del comportamiento real de visitantes en cada apartado, <strong>incluyendo usuarios anónimos sin registro</strong>. Cada KPI se calcula filtrando GA4 por las páginas de cada apartado. Útil para argumentos comerciales (¿"X profesionales del Área II ya usan la app"?) y para decidir dónde invertir desarrollo.</div>
+
+    <!-- Frases listas para venta -->
+    <div id="segmentInsights" style="background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(59,130,246,.08));border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:14px 18px;margin-bottom:18px;">
+      <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:10px">💡 Frases listas para tu propuesta comercial</div>
+      <div id="segmentInsightsList"><div class="loading"><span class="spin"></span>Generando…</div></div>
+    </div>
+
+    <!-- Comparativa side-by-side de KPIs -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <!-- Profesionales -->
+      <div style="background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(59,130,246,.05));border:1px solid rgba(59,130,246,.4);border-radius:12px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:1.5rem">👨‍⚕️</span>
+          <div>
+            <div style="font-weight:800;color:#93bbfc">Profesionales</div>
+            <div class="small">panel-medico, urgencias, casos, evidencia, plantillas, etc.</div>
+          </div>
+        </div>
+        <div id="segmentProKpis" class="loading"><span class="spin"></span>Cargando…</div>
+      </div>
+      <!-- Pacientes -->
+      <div style="background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(139,92,246,.05));border:1px solid rgba(139,92,246,.4);border-radius:12px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:1.5rem">👨‍👩‍👧</span>
+          <div>
+            <div style="font-weight:800;color:#c4b5fd">Pacientes</div>
+            <div class="small">consejos-salud, prepara-consulta, vacunas, etc.</div>
+          </div>
+        </div>
+        <div id="segmentPacKpis" class="loading"><span class="spin"></span>Cargando…</div>
+      </div>
+    </div>
+
+    <!-- Tablas comparativas en grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:12px">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📱 Dispositivos · Pro vs Pac</div>
+        <div id="segmentDevices"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🔁 Nuevos vs recurrentes · Pro vs Pac</div>
+        <div id="segmentNewRet"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🕐 Hora del día · Profesionales</div>
+        <div id="segmentHourPro" style="position:relative;height:140px"><canvas id="segmentHourProChart"></canvas></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🕐 Hora del día · Pacientes</div>
+        <div id="segmentHourPac" style="position:relative;height:140px"><canvas id="segmentHourPacChart"></canvas></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🔍 Top fuentes · Profesionales</div>
+        <div id="segmentSourcesPro"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🔍 Top fuentes · Pacientes</div>
+        <div id="segmentSourcesPac"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📄 Top páginas · Profesionales (con tiempo medio)</div>
+        <div id="segmentPagesPro"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📄 Top páginas · Pacientes (con tiempo medio)</div>
+        <div id="segmentPagesPac"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🌆 Top ciudades · Profesionales</div>
+        <div id="segmentCitiesPro"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🌆 Top ciudades · Pacientes</div>
+        <div id="segmentCitiesPac"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: GA4 Reporting Hub completo -->
+  <div class="section" id="gaHub" style="border-left:4px solid #f59e0b;background:linear-gradient(135deg,rgba(245,158,11,.04),rgba(34,197,94,.04))">
+    <h3>📊 GA4 Reporting Hub <span class="meta">tiempo real · adquisición · engagement · eventos · geo</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Réplica de los informes principales de GA4 en una sola vista. Incluye <strong>tiempo real</strong> (últimos 30 min), <strong>adquisición por canal</strong>, <strong>engagement</strong> profundo, <strong>top eventos</strong> y desglose <strong>geográfico+idioma</strong>. Latencia GA4 ~24h salvo el bloque realtime.</div>
+
+    <!-- Realtime banner -->
+    <div id="gaRealtimeBox" style="background:linear-gradient(135deg,#0c4a6e,#075985);border-radius:10px;padding:14px 18px;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:14px">
+      <div style="font-size:2rem">🟢</div>
+      <div style="flex:1">
+        <div style="font-size:.78rem;color:#bae6fd;text-transform:uppercase;letter-spacing:.05em;font-weight:700">Tiempo real · últimos 30 minutos</div>
+        <div id="gaRealtimeCount" style="font-size:1.8rem;font-weight:900;font-family:var(--mono);line-height:1.1">—</div>
+        <div id="gaRealtimeBreakdown" style="font-size:.78rem;color:#bae6fd;margin-top:4px">cargando…</div>
+      </div>
+      <button onclick="loadGaReportingHub()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:var(--font);font-size:.78rem;font-weight:700">🔄 Refrescar</button>
+    </div>
+
+    <!-- Engagement KPIs -->
+    <div class="kpis" style="margin-bottom:14px">
+      <div class="kpi kpi-c"><div class="lbl">⏱️ Engagement medio/sesión</div><div class="val" id="gaEngagementTime">—</div><div class="sub">28 días</div></div>
+      <div class="kpi kpi-c"><div class="lbl">📈 Tasa engagement</div><div class="val" id="gaEngagementRate">—</div><div class="sub">% sesiones engaged</div></div>
+      <div class="kpi kpi-c"><div class="lbl">🚪 Bounce rate</div><div class="val" id="gaBounceRate">—</div><div class="sub">% rebotes</div></div>
+      <div class="kpi kpi-c"><div class="lbl">🎯 Eventos/sesión</div><div class="val" id="gaEventsPerSession">—</div><div class="sub">media 28d</div></div>
+      <div class="kpi kpi-c"><div class="lbl">🔁 Sesiones/usuario</div><div class="val" id="gaSessionsPerUser">—</div><div class="sub">28 días</div></div>
+      <div class="kpi kpi-c"><div class="lbl">📄 Páginas/sesión</div><div class="val" id="gaPageviewsPerSession">—</div><div class="sub">28 días</div></div>
+    </div>
+
+    <!-- Tablas en grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📡 Adquisición por canal · 28d</div>
+        <div id="gaAcquisition"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🎯 Top eventos · 28d</div>
+        <div id="gaTopEvents"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🌆 Top ciudades · 28d</div>
+        <div id="gaTopCities"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🗣️ Idiomas · 28d</div>
+        <div id="gaLanguages"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;grid-column:1/-1">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📄 Páginas con más engagement · 28d</div>
+        <div id="gaPagesEngaged"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;grid-column:1/-1">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🌟 Cómo llegan los nuevos usuarios · 28d (first-user source/medium)</div>
+        <div id="gaFirstSource"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: Latencia detallada por modelo -->
+  <div class="section" style="border-left:4px solid var(--red)">
+    <h3>⚡ Latencia detallada por modelo <span class="meta">p50 · p95 · p99 del rango</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Distribución de latencia (en ms) de cada modelo IA usado en el rango. p95 &gt; 5000 ms suele indicar saturación del proveedor o prompts demasiado largos. Útil para detectar antes de que el usuario se queje.</div>
+    <div id="latencyWrap"><div class="loading"><span class="spin"></span>Calculando latencias…</div></div>
   </div>
 
   <div class="section">
@@ -757,6 +959,16 @@ async function loadDashboard(days){
   renderCentros();
   loadSlaPanel();
   loadGaMetrics(__gaFilter);
+
+  // Nuevas métricas ricas (no bloquean el render principal):
+  renderHeatmap(rows);
+  renderModuleUsage();
+  renderCohortRetention(rows);
+  renderModelLatency(rows);
+  renderConversionFunnel(rows);
+  renderUsoSeccion();
+  loadGaReportingHub();
+  loadSegmentAnalysis();
 }
 
 // Segmented control del filtro GA4 (Todos / area2 / github)
@@ -1418,6 +1630,734 @@ async function crearInviteCS(e){
   }
   return false;
 }
+
+// ══════════════════════════════════════════════════════════════
+// MÉTRICAS RICAS (PR · enriquecimiento dashboard)
+// ══════════════════════════════════════════════════════════════
+
+// ── Catálogo de páginas por apartado del producto ────────────
+// Profesionales: panel-medico, urgencias, casos clínicos, triaje, evidencia,
+// plantillas, notas guardia, calculadoras, vademécum, programación, dashboard.
+// Pacientes: consejos-salud, prepara-consulta, recursos-comunitarios,
+// recordatorio-medicacion, vacunas, dejar-fumar, embarazo, dietas, ejercicios,
+// salud-infantil, violencia-genero, factores-riesgo, dentista, pacientes.
+const PAGES_PROFESIONALES = [
+  '/profesionales.html', '/panel-medico.html', '/urgencias.html', '/casos-clinicos.html',
+  '/triaje-ai.html', '/triaje-ficha.html', '/evidencia-ia.html', '/plantillas-informes.html',
+  '/cuadernos-ia.html', '/notebook-local.html', '/calculadoras.html', '/vademecum.html',
+  '/programacion.html', '/dashboard.html', '/agenda-guardia.html', '/proa.html',
+  '/protocolos-atencion.html', '/protocolos-nuevas-especialidades.html',
+  '/corrector-clinico.html', '/scan-upload.html', '/transcripcion.html',
+  '/chatbot-medicacion.html', '/categorias-docs.html', '/categorias.html',
+  '/centros-salud.html', '/integraciones.html', '/citas.html', '/buscas.html',
+  '/admin-dashboard.html', '/analiticas.html', '/camas-y-ambulancias.html',
+  '/docencia.html', '/fichas-consulta-rapida.html', '/fuentes-recursos.html',
+];
+const PAGES_PACIENTES = [
+  '/pacientes.html', '/consejos-salud.html', '/prepara-consulta.html',
+  '/preparacion-consulta.html', '/recursos-comunitarios.html', '/recursos-sociales.html',
+  '/recordatorio-medicacion.html', '/vacunas.html', '/dejar-fumar.html',
+  '/embarazo-postparto.html', '/dietas.html', '/ejercicios.html', '/salud-infantil.html',
+  '/violencia-genero.html', '/factores-riesgo.html', '/dentista.html',
+  '/enfermedades-cronicas.html', '/guia-cuidador.html', '/instrucciones-paciente.html',
+  '/enlaces-interes.html', '/podcast.html', '/multiidioma.html', '/blog-categorias.html',
+];
+
+function classifyPath(path){
+  if(!path) return 'otro';
+  const p = path.split('?')[0].split('#')[0];
+  if(PAGES_PROFESIONALES.indexOf(p) >= 0) return 'profesional';
+  if(PAGES_PACIENTES.indexOf(p) >= 0) return 'paciente';
+  return 'otro';
+}
+
+// ── 1. Uso por sección · Profesionales vs Pacientes ─────────────
+async function renderUsoSeccion(){
+  try {
+    const fns = firebase.app().functions ? firebase.app().functions('europe-west1') : null;
+    if(!fns) {
+      document.getElementById('usoTopPro').innerHTML = '<div class="small" style="color:var(--t3)">SDK Functions no disponible.</div>';
+      return;
+    }
+    const r = await fns.httpsCallable('getGaMetrics')({ hostname:'all' });
+    const d = r.data || {};
+    const topPages = d.topPages28d || [];
+    let proViews = 0, pacViews = 0, otroViews = 0;
+    const proPages = [], pacPages = [];
+    topPages.forEach(function(p){
+      const cls = classifyPath(p.path);
+      if(cls === 'profesional'){ proViews += p.views; proPages.push(p); }
+      else if(cls === 'paciente'){ pacViews += p.views; pacPages.push(p); }
+      else { otroViews += p.views; }
+    });
+    document.getElementById('usoProViews').textContent = fmtNum(proViews);
+    document.getElementById('usoProSub').textContent = proPages.length+' páginas indexadas';
+    document.getElementById('usoPacViews').textContent = fmtNum(pacViews);
+    document.getElementById('usoPacSub').textContent = pacPages.length+' páginas indexadas';
+    document.getElementById('usoRatio').textContent = pacViews > 0 ? (proViews/pacViews).toFixed(2) : '∞';
+
+    // Para usuarios únicos por sección no tenemos datos directos GA4 sin más calls;
+    // dejamos un proxy basado en proporción de views vs usuarios totales 28d.
+    const total28d = (d.ranges && d.ranges.last28d && d.ranges.last28d.users) || 0;
+    const totalViews = proViews + pacViews + otroViews;
+    if(totalViews > 0){
+      document.getElementById('usoProUsers').textContent = '~'+Math.round(total28d * proViews/totalViews);
+      document.getElementById('usoPacUsers').textContent = '~'+Math.round(total28d * pacViews/totalViews);
+    } else {
+      document.getElementById('usoProUsers').textContent = '0';
+      document.getElementById('usoPacUsers').textContent = '0';
+    }
+
+    // Donut
+    const ctx = document.getElementById('usoSeccionDonut').getContext('2d');
+    new Chart(ctx, {
+      type:'doughnut',
+      data:{ labels:['👨‍⚕️ Profesionales','👨‍👩‍👧 Pacientes','Otro / landing'],
+        datasets:[{ data:[proViews, pacViews, otroViews],
+          backgroundColor:['#3b82f6','#8b5cf6','#475569'], borderColor:'#0b1220', borderWidth:2 }] },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ position:'bottom', labels:{ color:'#e6ecf7', font:{ size:11 } } } } }
+    });
+
+    function pageTable(arr, max){
+      if(!arr || !arr.length) return '<div class="empty">Sin datos.</div>';
+      const sorted = arr.sort(function(a,b){ return b.views - a.views; }).slice(0, max||6);
+      return '<table style="width:100%;font-size:.78rem"><tbody>'
+        + sorted.map(function(p){
+          return '<tr><td style="font-family:var(--mono);font-size:.72rem">'
+            + (p.path.length > 32 ? p.path.slice(0,30)+'…' : p.path) + '</td>'
+            + '<td class="num"><strong>'+fmtNum(p.views)+'</strong></td></tr>';
+        }).join('') + '</tbody></table>';
+    }
+    document.getElementById('usoTopPro').innerHTML = pageTable(proPages, 6);
+    document.getElementById('usoTopPac').innerHTML = pageTable(pacPages, 6);
+  } catch(e){
+    document.getElementById('usoTopPro').innerHTML = '<div class="small" style="color:#f87171">Error: '+(e.message||e)+'</div>';
+  }
+}
+
+// ── 2. Heatmap horario 24x7 ──────────────────────────────────────
+function renderHeatmap(rows){
+  const wrap = document.getElementById('heatmapWrap');
+  if(!wrap) return;
+  if(!rows || !rows.length){
+    wrap.innerHTML = '<div class="empty">Sin datos en el rango.</div>';
+    return;
+  }
+  // Matriz 7 días x 24 horas (0=domingo … 6=sábado)
+  const matrix = Array.from({length:7}, function(){ return Array(24).fill(0); });
+  let max = 0;
+  rows.forEach(function(r){
+    if(!r.createdAt) return;
+    const d = r.createdAt;
+    const dow = d.getDay(); // 0-6
+    const hour = d.getHours();
+    matrix[dow][hour] += 1;
+    if(matrix[dow][hour] > max) max = matrix[dow][hour];
+  });
+  const dayLbl = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  function colorFor(v){
+    if(v === 0) return 'rgba(255,255,255,.04)';
+    const intensity = Math.min(1, v/max);
+    // Gradiente azul→amarillo→rojo
+    const r = Math.round(15 + 200*intensity);
+    const g = Math.round(105 + 130*(1-intensity)*intensity*4);
+    const b = Math.round(180 - 160*intensity);
+    return 'rgb('+r+','+g+','+b+')';
+  }
+  let html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:separate;border-spacing:1px;font-size:.7rem;font-family:var(--mono)">';
+  // Cabecera horas
+  html += '<tr><th></th>';
+  for(let h=0; h<24; h++){
+    html += '<th style="font-weight:500;color:var(--t3);font-size:.65rem;padding:2px 0">'+(h<10?'0':'')+h+'</th>';
+  }
+  html += '</tr>';
+  // Filas días
+  for(let dow=1; dow<=7; dow++){
+    const realDow = dow === 7 ? 0 : dow; // Lun primero, Dom al final
+    html += '<tr><td style="color:var(--t3);font-weight:600;padding-right:6px">'+dayLbl[realDow]+'</td>';
+    for(let h=0; h<24; h++){
+      const v = matrix[realDow][h];
+      html += '<td title="'+dayLbl[realDow]+' '+h+'h · '+v+' llamadas" style="background:'+colorFor(v)+';width:18px;height:18px;text-align:center;color:'+(v>max*0.5?'#fff':'rgba(255,255,255,.5)')+';font-size:.6rem">'+(v||'')+'</td>';
+    }
+    html += '</tr>';
+  }
+  html += '</table></div>';
+  // Leyenda
+  html += '<div style="display:flex;gap:14px;align-items:center;margin-top:10px;font-size:.74rem;color:var(--t2)">';
+  html += '<span>Total llamadas: <strong>'+rows.length+'</strong></span>';
+  html += '<span>Pico: <strong>'+max+'</strong> en una hora</span>';
+  // Hora pico global
+  let bestDow=0, bestH=0, bestV=0;
+  for(let d=0; d<7; d++){ for(let h=0; h<24; h++){ if(matrix[d][h] > bestV){ bestV=matrix[d][h]; bestDow=d; bestH=h; } } }
+  if(bestV > 0){
+    html += '<span>Más usado: <strong>'+dayLbl[bestDow]+' '+bestH+':00-'+(bestH+1)+':00</strong></span>';
+  }
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+// ── 3. Funnel de conversión: anon → registered → active ──────────
+async function renderConversionFunnel(rows){
+  const wrap = document.getElementById('funnelWrap');
+  if(!wrap) return;
+  try {
+    // Visitantes anónimos (28d): GA4 last28d.users (vía cache sessionStorage si existe)
+    let anonVisitors = 0;
+    try {
+      const cached = sessionStorage.getItem('cart_ga_metrics_v1_all');
+      if(cached){
+        const parsed = JSON.parse(cached);
+        anonVisitors = parsed.data && parsed.data.ranges && parsed.data.ranges.last28d ? parsed.data.ranges.last28d.users : 0;
+      }
+    }catch(e){}
+    // Si no hay caché, llamar GA4
+    if(!anonVisitors){
+      try {
+        const fns = firebase.app().functions ? firebase.app().functions('europe-west1') : null;
+        if(fns){
+          const r = await fns.httpsCallable('getGaMetrics')({ hostname:'all' });
+          anonVisitors = (r.data && r.data.ranges && r.data.ranges.last28d && r.data.ranges.last28d.users) || 0;
+        }
+      }catch(e){}
+    }
+
+    // Total cuentas registradas (Firestore users)
+    let totalRegistered = 0;
+    try {
+      const snap = await firebase.firestore().collection('users').limit(5000).get();
+      totalRegistered = snap.size;
+    }catch(e){}
+
+    // Usuarios activos del rango (UIDs únicos en aiRequests del rango)
+    const activeUids = {};
+    rows.forEach(function(r){ if(r.uid) activeUids[r.uid] = true; });
+    const activeUsers = Object.keys(activeUids).length;
+
+    // Power users del rango (>5 calls)
+    const callsPerUid = {};
+    rows.forEach(function(r){ if(r.uid){ callsPerUid[r.uid] = (callsPerUid[r.uid]||0)+1; }});
+    const powerUsers = Object.keys(callsPerUid).filter(function(u){ return callsPerUid[u] >= 5; }).length;
+
+    // Render funnel visual
+    const stages = [
+      { lbl:'👁️ Visitantes anónimos · 28d', val:anonVisitors, color:'var(--cyan)', desc:'GA4 active users 28d' },
+      { lbl:'📝 Cuentas registradas · total', val:totalRegistered, color:'var(--blue)', desc:'colección users · acumulado' },
+      { lbl:'💬 Activos · rango', val:activeUsers, color:'var(--primary)', desc:'≥1 llamada IA en rango' },
+      { lbl:'🔥 Power users · rango', val:powerUsers, color:'var(--amber)', desc:'≥5 llamadas IA en rango' },
+    ];
+    const maxVal = Math.max.apply(null, stages.map(function(s){return s.val||0;}).concat([1]));
+    let html = '<div style="display:flex;flex-direction:column;gap:10px">';
+    stages.forEach(function(s, i){
+      const pct = maxVal > 0 ? (s.val/maxVal)*100 : 0;
+      let conversionPct = '';
+      if(i > 0 && stages[i-1].val > 0){
+        conversionPct = ' · <span style="color:var(--t3)">('+((s.val/stages[i-1].val)*100).toFixed(1)+'% del paso anterior)</span>';
+      }
+      html += '<div>';
+      html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;font-size:.84rem">';
+      html += '<span><strong>'+s.lbl+'</strong>'+conversionPct+'</span>';
+      html += '<span style="font-family:var(--mono);font-size:1.1rem;color:'+s.color+';font-weight:700">'+fmtNum(s.val)+'</span>';
+      html += '</div>';
+      html += '<div style="height:18px;background:rgba(255,255,255,.04);border-radius:5px;overflow:hidden">';
+      html += '<div style="height:100%;width:'+pct.toFixed(1)+'%;background:'+s.color+';border-radius:5px;transition:width .4s"></div>';
+      html += '</div>';
+      html += '<div class="small" style="margin-top:2px">'+s.desc+'</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    // KPIs
+    if(anonVisitors > 0 && totalRegistered > 0){
+      const regRate = ((totalRegistered/anonVisitors)*100).toFixed(2);
+      const actRate = totalRegistered > 0 ? ((activeUsers/totalRegistered)*100).toFixed(1) : 0;
+      html += '<div style="display:flex;gap:14px;margin-top:14px;padding:10px 14px;background:rgba(34,197,94,.08);border-radius:8px;font-size:.82rem;flex-wrap:wrap">';
+      html += '<span><strong>Tasa registro:</strong> '+regRate+'%</span>';
+      html += '<span><strong>Tasa activación:</strong> '+actRate+'%</span>';
+      html += '<span style="color:var(--t3)">Benchmark sanidad B2B: 2-5% / 30-60%</span>';
+      html += '</div>';
+    }
+    wrap.innerHTML = html;
+  }catch(e){
+    wrap.innerHTML = '<div class="small" style="color:#f87171">Error: '+(e.message||e)+'</div>';
+  }
+}
+
+// ── 4. Uso por módulo · contajes Firestore acumulados ────────────
+async function renderModuleUsage(){
+  const wrap = document.getElementById('moduleUsageWrap');
+  if(!wrap) return;
+  const db = firebase.firestore();
+  // Tabla de módulos a contar (limit a 1000 por query para no saturar)
+  const modules = [
+    { id:'triajes', icon:'🚦', label:'Triajes IA realizados', desc:'colección triajes (root)' },
+    { id:'informes_ia', icon:'📝', label:'Informes IA generados', desc:'colección informes_ia' },
+    { id:'scan_uploads', icon:'📷', label:'Imágenes ScanIA', desc:'colección scan_uploads' },
+    { id:'mis_plantillas', icon:'📋', label:'Plantillas guardadas', desc:'mis_plantillas' },
+    { id:'mis_notebooks', icon:'📔', label:'Notebooks creados', desc:'mis_notebooks' },
+    { id:'guardia_pacientes', icon:'🏥', label:'Notas de guardia', desc:'guardia_pacientes' },
+    { id:'evidencia_consultas', icon:'🔬', label:'Búsquedas EvidenciaIA', desc:'evidencia_consultas' },
+    { id:'sugerencias', icon:'💡', label:'Sugerencias mejora', desc:'sugerencias' },
+    { id:'documentos_aprobados', icon:'✅', label:'Documentos aprobados', desc:'documentos_aprobados' },
+    { id:'propuestas_contenido', icon:'📤', label:'Propuestas pendientes', desc:'propuestas_contenido' },
+  ];
+  const results = await Promise.all(modules.map(function(m){
+    return db.collection(m.id).limit(1000).get()
+      .then(function(s){ return Object.assign({}, m, { count:s.size, capped:s.size>=1000, error:null }); })
+      .catch(function(e){ return Object.assign({}, m, { count:null, capped:false, error:e.code||e.message||'error' }); });
+  }));
+  // Render tabla
+  const total = results.filter(function(r){ return r.count !== null; }).reduce(function(a,r){ return a+r.count; }, 0);
+  let html = '<table><thead><tr><th>Módulo</th><th class="num">Documentos</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>';
+  results.forEach(function(r){
+    if(r.error){
+      html += '<tr><td>'+r.icon+' <strong>'+r.label+'</strong></td><td class="num">—</td><td><span class="tag tag-err">'+r.error+'</span></td><td class="small">'+r.desc+'</td></tr>';
+    } else {
+      const pct = total > 0 ? ((r.count/total)*100).toFixed(1) : 0;
+      html += '<tr><td>'+r.icon+' <strong>'+r.label+'</strong></td>';
+      html += '<td class="num"><strong>'+fmtNum(r.count)+(r.capped?'+':'')+'</strong></td>';
+      html += '<td><div class="bar-wrap"><div class="bar" style="width:'+(r.count > 0 ? Math.max(2, (r.count/Math.max.apply(null,results.map(function(x){return x.count||0})))*100).toFixed(1) : 0)+'%"></div></div><span class="small" style="margin-left:6px">'+pct+'%</span></td>';
+      html += '<td class="small" style="color:var(--t3)">'+r.desc+'</td></tr>';
+    }
+  });
+  html += '</tbody></table>';
+  html += '<div class="small" style="margin-top:10px;color:var(--t3)">Total documentos contados: <strong>'+fmtNum(total)+'</strong>. Si una colección muestra <code>1000+</code> es que se ha tocado el límite del query (todo bien, pero no se puede saber el total exacto sin paginación).</div>';
+  wrap.innerHTML = html;
+}
+
+// ── 5. Retención por cohorte (D1, D7, D14) ───────────────────────
+function renderCohortRetention(rows){
+  const wrap = document.getElementById('cohortWrap');
+  if(!wrap) return;
+  if(!rows || !rows.length){
+    wrap.innerHTML = '<div class="empty">Sin datos.</div>';
+    return;
+  }
+  // Para cada UID, primer y último día (en formato YYYY-MM-DD)
+  const firstByUid = {};
+  const daysByUid = {};
+  rows.forEach(function(r){
+    if(!r.createdAt || !r.uid) return;
+    const day = r.createdAt.toISOString().slice(0,10);
+    if(!firstByUid[r.uid] || day < firstByUid[r.uid]) firstByUid[r.uid] = day;
+    if(!daysByUid[r.uid]) daysByUid[r.uid] = new Set();
+    daysByUid[r.uid].add(day);
+  });
+  // Cohortes por día de primer uso
+  const cohorts = {};
+  Object.keys(firstByUid).forEach(function(uid){
+    const c = firstByUid[uid];
+    if(!cohorts[c]) cohorts[c] = { d0:[], d1:0, d7:0, d14:0 };
+    cohorts[c].d0.push(uid);
+    const days = daysByUid[uid];
+    const d0 = new Date(c+'T00:00:00Z');
+    days.forEach(function(d){
+      const diff = Math.round((new Date(d+'T00:00:00Z') - d0) / 86400000);
+      if(diff === 1) cohorts[c].d1++;
+      if(diff >= 1 && diff <= 7) cohorts[c].d7++;
+      if(diff >= 1 && diff <= 14) cohorts[c].d14++;
+    });
+  });
+  const cohortDays = Object.keys(cohorts).sort();
+  if(!cohortDays.length){
+    wrap.innerHTML = '<div class="empty">Sin cohortes.</div>';
+    return;
+  }
+  function pctCell(num, total){
+    if(total === 0) return '<td class="num small" style="color:var(--t3)">—</td>';
+    const pct = (num/total)*100;
+    const color = pct >= 50 ? 'var(--primary)' : pct >= 30 ? 'var(--amber)' : pct > 0 ? 'var(--cyan)' : 'var(--t3)';
+    return '<td class="num"><span style="color:'+color+';font-weight:700">'+pct.toFixed(0)+'%</span> <span class="small">('+num+')</span></td>';
+  }
+  let html = '<table><thead><tr><th>Cohorte (primer uso)</th><th class="num">Usuarios</th><th>D1 retención</th><th>D7 retención</th><th>D14 retención</th></tr></thead><tbody>';
+  let totD0=0, totD1=0, totD7=0, totD14=0;
+  cohortDays.forEach(function(c){
+    const co = cohorts[c];
+    const n = co.d0.length;
+    totD0 += n; totD1 += co.d1; totD7 += co.d7; totD14 += co.d14;
+    html += '<tr><td>'+c+'</td>';
+    html += '<td class="num"><strong>'+n+'</strong></td>';
+    html += pctCell(co.d1, n) + pctCell(co.d7, n) + pctCell(co.d14, n);
+    html += '</tr>';
+  });
+  html += '<tr style="border-top:2px solid var(--border2)"><td><strong>TOTAL</strong></td>';
+  html += '<td class="num"><strong>'+totD0+'</strong></td>';
+  html += pctCell(totD1, totD0) + pctCell(totD7, totD0) + pctCell(totD14, totD0);
+  html += '</tr></tbody></table>';
+  html += '<div class="small" style="margin-top:10px;color:var(--t3)">Cada fila = usuarios que aparecieron por primera vez ese día y volvieron a usar la IA en los siguientes D1/D7/D14 días <strong>dentro del rango seleccionado</strong>. Si un día no aparece, no hubo nuevos usuarios. Sube el rango a 30-90d para tener cohortes completas.</div>';
+  wrap.innerHTML = html;
+}
+
+// ── 6. Latencia por modelo (p50, p95, p99) ───────────────────────
+function renderModelLatency(rows){
+  const wrap = document.getElementById('latencyWrap');
+  if(!wrap) return;
+  if(!rows || !rows.length){
+    wrap.innerHTML = '<div class="empty">Sin datos.</div>';
+    return;
+  }
+  function percentile(arr, p){
+    if(!arr.length) return 0;
+    const sorted = arr.slice().sort(function(a,b){ return a-b; });
+    const idx = Math.min(sorted.length-1, Math.floor((p/100)*sorted.length));
+    return sorted[idx];
+  }
+  // Agrupar por modelo, excluir cache hits (latencia engañosamente baja)
+  const byModel = {};
+  rows.forEach(function(r){
+    if(r.cacheHit || !r.latencyMs || r.error) return;
+    if(!byModel[r.model]) byModel[r.model] = [];
+    byModel[r.model].push(r.latencyMs);
+  });
+  const modelKeys = Object.keys(byModel).sort(function(a,b){ return byModel[b].length - byModel[a].length; });
+  if(!modelKeys.length){
+    wrap.innerHTML = '<div class="empty">Sin llamadas no-cacheadas.</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>Modelo</th><th class="num">N llamadas</th><th class="num">p50 (ms)</th><th class="num">p95 (ms)</th><th class="num">p99 (ms)</th><th>Veredicto</th></tr></thead><tbody>';
+  modelKeys.forEach(function(m){
+    const arr = byModel[m];
+    const p50 = percentile(arr, 50);
+    const p95 = percentile(arr, 95);
+    const p99 = percentile(arr, 99);
+    let veredicto, vColor;
+    if(p95 < 5000){ veredicto = '✅ Saludable'; vColor = 'var(--primary)'; }
+    else if(p95 < 15000){ veredicto = '⚠ Aceptable'; vColor = 'var(--amber)'; }
+    else { veredicto = '❌ Lento'; vColor = 'var(--red)'; }
+    html += '<tr><td><code style="font-family:var(--mono);font-size:.74rem">'+m+'</code></td>';
+    html += '<td class="num">'+arr.length+'</td>';
+    html += '<td class="num">'+fmtNum(p50)+'</td>';
+    html += '<td class="num">'+fmtNum(p95)+'</td>';
+    html += '<td class="num">'+fmtNum(p99)+'</td>';
+    html += '<td><span style="color:'+vColor+';font-weight:700;font-size:.78rem">'+veredicto+'</span></td></tr>';
+  });
+  html += '</tbody></table>';
+  html += '<div class="small" style="margin-top:10px;color:var(--t3)">Excluye <code>cacheHit=true</code> y errores. <strong>p95</strong> es el percentil 95: el 95% de los usuarios espera menos de ese tiempo. Si supera 5s sostenidamente: revisar prompt + cadena fallback.</div>';
+  wrap.innerHTML = html;
+}
+
+// ── 7. GA4 Reporting Hub (realtime · adquisición · engagement · eventos · geo) ─
+const CF_BASE_GA = 'https://europe-west1-docenciacartagenaeste.cloudfunctions.net';
+
+async function loadGaReportingHub(){
+  // Realtime placeholders mientras carga
+  const fmtSec = function(s){
+    if(!s || s < 0) return '—';
+    if(s < 60) return s.toFixed(0)+'s';
+    const m = Math.floor(s/60), sec = Math.round(s%60);
+    return m+'m '+sec+'s';
+  };
+  const pct = function(p){ return (p*100).toFixed(1)+'%'; };
+
+  let token;
+  try {
+    const user = firebase.auth().currentUser;
+    if(!user) return;
+    token = await user.getIdToken();
+  }catch(e){ return; }
+
+  let payload;
+  try {
+    const r = await fetch(CF_BASE_GA + '/getGaReportingHub', {
+      headers:{ Authorization:'Bearer '+token }
+    });
+    if(!r.ok){
+      const txt = await r.text();
+      document.getElementById('gaRealtimeBreakdown').textContent = 'Error '+r.status+': '+txt.slice(0,80);
+      return;
+    }
+    payload = await r.json();
+  }catch(e){
+    document.getElementById('gaRealtimeBreakdown').textContent = 'Error: '+(e.message||e);
+    return;
+  }
+
+  // Realtime
+  const rt = payload.realtime || {};
+  document.getElementById('gaRealtimeCount').textContent = (rt.activeUsers || 0) + ' activos';
+  const breakdown = [];
+  if(rt.activeUsersByCountry && rt.activeUsersByCountry.length){
+    breakdown.push('🌍 ' + rt.activeUsersByCountry.slice(0,3).map(function(c){ return c.country+' ('+c.users+')'; }).join(' · '));
+  }
+  if(rt.activeUsersByDevice && rt.activeUsersByDevice.length){
+    breakdown.push('📱 ' + rt.activeUsersByDevice.map(function(d){ return d.device+' ('+d.users+')'; }).join(' · '));
+  }
+  document.getElementById('gaRealtimeBreakdown').innerHTML = breakdown.join(' | ') || 'Sin actividad en este momento.';
+
+  // Engagement KPIs
+  const e = payload.engagement28d || {};
+  document.getElementById('gaEngagementTime').textContent = fmtSec(e.avgEngagementTimePerSessionSec);
+  document.getElementById('gaEngagementRate').textContent = e.engagementRate ? pct(e.engagementRate) : '—';
+  document.getElementById('gaBounceRate').textContent = e.bounceRate ? pct(e.bounceRate) : '—';
+  document.getElementById('gaEventsPerSession').textContent = e.eventsPerSession ? e.eventsPerSession.toFixed(1) : '—';
+  document.getElementById('gaSessionsPerUser').textContent = e.sessionsPerUser ? e.sessionsPerUser.toFixed(2) : '—';
+  document.getElementById('gaPageviewsPerSession').textContent = e.pageviewsPerSession ? e.pageviewsPerSession.toFixed(1) : '—';
+
+  // Adquisición por canal
+  const acq = payload.acquisitionByChannel || [];
+  const acqEl = document.getElementById('gaAcquisition');
+  if(acq.length){
+    acqEl.innerHTML = '<table style="width:100%;font-size:.78rem"><thead><tr><th>Canal</th><th class="num">Sesiones</th><th class="num">Usuarios</th><th class="num">Engagement</th></tr></thead><tbody>'
+      + acq.map(function(a){
+        return '<tr><td><strong>'+a.channel+'</strong></td>'
+          +'<td class="num">'+fmtNum(a.sessions)+'</td>'
+          +'<td class="num">'+fmtNum(a.users)+'</td>'
+          +'<td class="num">'+(a.engagementRate*100).toFixed(0)+'%</td></tr>';
+      }).join('')
+      + '</tbody></table>';
+  } else {
+    acqEl.innerHTML = '<div class="empty">Sin datos.</div>';
+  }
+
+  // Top eventos
+  const evts = payload.topEvents28d || [];
+  const evtsEl = document.getElementById('gaTopEvents');
+  if(evts.length){
+    const max = Math.max.apply(null, evts.map(function(x){ return x.count; }).concat([1]));
+    evtsEl.innerHTML = '<table style="width:100%;font-size:.78rem"><tbody>'
+      + evts.slice(0,12).map(function(ev){
+        const w = (ev.count/max*100).toFixed(1);
+        return '<tr><td><code style="font-family:var(--mono);font-size:.72rem">'+ev.eventName+'</code></td>'
+          +'<td class="num"><strong>'+fmtNum(ev.count)+'</strong></td>'
+          +'<td><div class="bar-wrap"><div class="bar" style="width:'+w+'%"></div></div></td></tr>';
+      }).join('')
+      + '</tbody></table>';
+  } else {
+    evtsEl.innerHTML = '<div class="empty">Sin eventos.</div>';
+  }
+
+  // Top ciudades
+  const cities = payload.topCities28d || [];
+  const citiesEl = document.getElementById('gaTopCities');
+  if(cities.length){
+    citiesEl.innerHTML = '<table style="width:100%;font-size:.78rem"><thead><tr><th>Ciudad</th><th>País</th><th class="num">Usuarios</th></tr></thead><tbody>'
+      + cities.slice(0,10).map(function(c){
+        return '<tr><td><strong>'+c.city+'</strong></td>'
+          +'<td class="small">'+c.country+'</td>'
+          +'<td class="num">'+fmtNum(c.users)+'</td></tr>';
+      }).join('')
+      + '</tbody></table>';
+  } else {
+    citiesEl.innerHTML = '<div class="empty">Sin datos.</div>';
+  }
+
+  // Idiomas
+  const langs = payload.topLanguages28d || [];
+  const langsEl = document.getElementById('gaLanguages');
+  if(langs.length){
+    langsEl.innerHTML = '<table style="width:100%;font-size:.78rem"><tbody>'
+      + langs.map(function(l){
+        return '<tr><td><strong>'+l.language+'</strong></td>'
+          +'<td class="num">'+fmtNum(l.users)+'</td>'
+          +'<td><div class="bar-wrap"><div class="bar" style="width:'+l.pct.toFixed(1)+'%"></div></div></td>'
+          +'<td class="num small">'+l.pct.toFixed(0)+'%</td></tr>';
+      }).join('')
+      + '</tbody></table>';
+  } else {
+    langsEl.innerHTML = '<div class="empty">Sin datos.</div>';
+  }
+
+  // Páginas con engagement
+  const pages = payload.topPagesEngaged28d || [];
+  const pagesEl = document.getElementById('gaPagesEngaged');
+  if(pages.length){
+    pagesEl.innerHTML = '<table style="width:100%;font-size:.78rem"><thead><tr><th>Ruta</th><th>Título</th><th class="num">Vistas</th><th class="num">Tiempo medio</th><th class="num">Bounce</th></tr></thead><tbody>'
+      + pages.slice(0,10).map(function(p){
+        return '<tr><td><code style="font-family:var(--mono);font-size:.72rem">'+(p.path.length>30?p.path.slice(0,28)+'…':p.path)+'</code></td>'
+          +'<td class="small">'+(p.title||'').slice(0,40)+'</td>'
+          +'<td class="num">'+fmtNum(p.views)+'</td>'
+          +'<td class="num">'+fmtSec(p.avgEngagementTimeSec)+'</td>'
+          +'<td class="num">'+(p.bounceRate*100).toFixed(0)+'%</td></tr>';
+      }).join('')
+      + '</tbody></table>';
+  } else {
+    pagesEl.innerHTML = '<div class="empty">Sin datos.</div>';
+  }
+
+  // First user source
+  const firstSrc = payload.firstUserSource28d || [];
+  const firstSrcEl = document.getElementById('gaFirstSource');
+  if(firstSrc.length){
+    firstSrcEl.innerHTML = '<table style="width:100%;font-size:.78rem"><thead><tr><th>Fuente</th><th>Medio</th><th class="num">Nuevos usuarios</th><th>Reparto</th></tr></thead><tbody>'
+      + firstSrc.map(function(s){
+        const total = firstSrc.reduce(function(a,x){ return a+x.newUsers; }, 0);
+        const w = total > 0 ? (s.newUsers/total*100).toFixed(1) : 0;
+        return '<tr><td><strong>'+s.source+'</strong></td>'
+          +'<td class="small">'+s.medium+'</td>'
+          +'<td class="num"><strong>'+fmtNum(s.newUsers)+'</strong></td>'
+          +'<td><div class="bar-wrap"><div class="bar" style="width:'+w+'%"></div></div><span class="small" style="margin-left:6px">'+w+'%</span></td></tr>';
+      }).join('')
+      + '</tbody></table>';
+  } else {
+    firstSrcEl.innerHTML = '<div class="empty">Sin datos.</div>';
+  }
+}
+
+// ── 8. Análisis profundo Pro vs Pac (GA4 segmentado) ─────────────
+async function loadSegmentAnalysis(){
+  const fmtSec = function(s){
+    if(!s || s < 0) return '—';
+    if(s < 60) return s.toFixed(0)+'s';
+    const m = Math.floor(s/60), sec = Math.round(s%60);
+    return m+'m '+sec+'s';
+  };
+  const pct = function(p){ return (p*100).toFixed(1)+'%'; };
+
+  let token;
+  try {
+    const user = firebase.auth().currentUser;
+    if(!user) return;
+    token = await user.getIdToken();
+  }catch(e){ return; }
+
+  let payload;
+  try {
+    const r = await fetch(CF_BASE_GA + '/getGaSegmentAnalysis?days=28', {
+      headers:{ Authorization:'Bearer '+token }
+    });
+    if(!r.ok){
+      const t = await r.text();
+      document.getElementById('segmentInsightsList').innerHTML = '<div class="small" style="color:#f87171">Error '+r.status+': '+t.slice(0,100)+'</div>';
+      return;
+    }
+    payload = await r.json();
+  }catch(e){
+    document.getElementById('segmentInsightsList').innerHTML = '<div class="small" style="color:#f87171">Error: '+(e.message||e)+'</div>';
+    return;
+  }
+
+  const pro = payload.pro || {};
+  const pac = payload.pac || {};
+  const cmp = payload.comparison || {};
+
+  // Insights (frases listas para venta)
+  const insights = cmp.insights || [];
+  const insEl = document.getElementById('segmentInsightsList');
+  if(insights.length){
+    insEl.innerHTML = '<ul style="margin:0;padding-left:20px;line-height:1.7;font-size:.85rem">'
+      + insights.map(function(s){ return '<li style="margin-bottom:6px">'+s+'</li>'; }).join('')
+      + '</ul>'
+      + '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">'
+      + '<button onclick="copyInsightsToClipboard()" style="padding:5px 12px;background:var(--primary);color:#fff;border:0;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--font)">📋 Copiar al portapapeles</button>'
+      + '</div>';
+  } else {
+    insEl.innerHTML = '<div class="empty">Sin insights — necesita más datos GA4 (espera 24-48h tras deploy o aumenta el rango).</div>';
+  }
+
+  // KPIs por segmento
+  function renderKpiBlock(seg, color){
+    if(!seg.users && !seg.views){
+      return '<div class="empty">Sin tráfico medido en este apartado todavía.</div>';
+    }
+    return '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">'
+      +'<div><div class="small" style="color:var(--t3)">Usuarios</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--mono);color:'+color+'">'+fmtNum(seg.users)+'</div></div>'
+      +'<div><div class="small" style="color:var(--t3)">Sesiones</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--mono);color:'+color+'">'+fmtNum(seg.sessions)+'</div></div>'
+      +'<div><div class="small" style="color:var(--t3)">Páginas vistas</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--mono);color:'+color+'">'+fmtNum(seg.views)+'</div></div>'
+      +'<div><div class="small" style="color:var(--t3)">Nuevos</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--mono);color:'+color+'">'+fmtNum(seg.newUsers)+'</div></div>'
+      +'<div><div class="small" style="color:var(--t3)">Tiempo medio/sesión</div><div style="font-size:1.1rem;font-weight:700;font-family:var(--mono)">'+fmtSec(seg.avgEngagementTimeSec)+'</div></div>'
+      +'<div><div class="small" style="color:var(--t3)">Bounce rate</div><div style="font-size:1.1rem;font-weight:700;font-family:var(--mono)">'+pct(seg.bounceRate)+'</div></div>'
+      +'<div><div class="small" style="color:var(--t3)">Páginas/sesión</div><div style="font-size:1.1rem;font-weight:700;font-family:var(--mono)">'+(seg.pageviewsPerSession||0).toFixed(1)+'</div></div>'
+      +'<div><div class="small" style="color:var(--t3)">Sesiones/usuario</div><div style="font-size:1.1rem;font-weight:700;font-family:var(--mono)">'+(seg.sessionsPerUser||0).toFixed(2)+'</div></div>'
+      +'</div>';
+  }
+  document.getElementById('segmentProKpis').innerHTML = renderKpiBlock(pro, '#3b82f6');
+  document.getElementById('segmentPacKpis').innerHTML = renderKpiBlock(pac, '#8b5cf6');
+
+  // Tabla devices comparativa
+  function deviceRow(dev){
+    const proD = (pro.byDevice||[]).find(function(d){return d.device===dev;}) || {users:0,pct:0};
+    const pacD = (pac.byDevice||[]).find(function(d){return d.device===dev;}) || {users:0,pct:0};
+    return '<tr><td><strong>'+dev+'</strong></td>'
+      +'<td class="num"><span style="color:#93bbfc">'+fmtNum(proD.users)+'</span> <span class="small">('+proD.pct.toFixed(0)+'%)</span></td>'
+      +'<td class="num"><span style="color:#c4b5fd">'+fmtNum(pacD.users)+'</span> <span class="small">('+pacD.pct.toFixed(0)+'%)</span></td></tr>';
+  }
+  const allDevices = new Set();
+  (pro.byDevice||[]).forEach(function(d){ allDevices.add(d.device); });
+  (pac.byDevice||[]).forEach(function(d){ allDevices.add(d.device); });
+  const devTable = '<table style="width:100%;font-size:.8rem"><thead><tr><th>Dispositivo</th><th class="num">👨‍⚕️ Profesionales</th><th class="num">👨‍👩‍👧 Pacientes</th></tr></thead><tbody>'
+    + Array.from(allDevices).map(deviceRow).join('')
+    + '</tbody></table>';
+  document.getElementById('segmentDevices').innerHTML = devTable;
+
+  // Nuevos vs recurrentes comparativa
+  function nrRow(type){
+    const proN = (pro.newVsReturning||[]).find(function(n){return n.type===type;}) || {users:0,pct:0};
+    const pacN = (pac.newVsReturning||[]).find(function(n){return n.type===type;}) || {users:0,pct:0};
+    const icon = type==='new' ? '🆕' : '🔁';
+    return '<tr><td>'+icon+' <strong>'+type+'</strong></td>'
+      +'<td class="num"><span style="color:#93bbfc">'+fmtNum(proN.users)+'</span> <span class="small">('+proN.pct.toFixed(0)+'%)</span></td>'
+      +'<td class="num"><span style="color:#c4b5fd">'+fmtNum(pacN.users)+'</span> <span class="small">('+pacN.pct.toFixed(0)+'%)</span></td></tr>';
+  }
+  document.getElementById('segmentNewRet').innerHTML = '<table style="width:100%;font-size:.8rem"><thead><tr><th>Tipo</th><th class="num">👨‍⚕️ Profesionales</th><th class="num">👨‍👩‍👧 Pacientes</th></tr></thead><tbody>'
+    + nrRow('new') + nrRow('returning') + '</tbody></table>';
+
+  // Hour charts (Pro vs Pac)
+  function drawHourChart(canvasId, hourData, color){
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    const labels = hourData.map(function(h){ return (h.hour<10?'0':'')+h.hour+'h'; });
+    const values = hourData.map(function(h){ return h.users; });
+    new Chart(ctx, {
+      type:'bar',
+      data:{ labels:labels, datasets:[{ data:values, backgroundColor:color, borderRadius:3 }] },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false} },
+        scales:{ x:{ ticks:{color:'#67758f',font:{size:9}}, grid:{display:false} },
+                 y:{ beginAtZero:true, ticks:{color:'#67758f',font:{size:9}}, grid:{color:'rgba(255,255,255,.04)'} } } }
+    });
+  }
+  if(pro.byHour) drawHourChart('segmentHourProChart', pro.byHour, '#3b82f6');
+  if(pac.byHour) drawHourChart('segmentHourPacChart', pac.byHour, '#8b5cf6');
+
+  // Sources Pro
+  function sourceTable(sources){
+    if(!sources || !sources.length) return '<div class="empty">Sin datos.</div>';
+    return '<table style="width:100%;font-size:.78rem"><tbody>'
+      + sources.slice(0,6).map(function(s){
+        return '<tr><td><strong>'+s.source+'</strong> <span class="small">/ '+s.medium+'</span></td>'
+          +'<td class="num">'+fmtNum(s.sessions)+' <span class="small">sesiones</span></td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+  document.getElementById('segmentSourcesPro').innerHTML = sourceTable(pro.topSources);
+  document.getElementById('segmentSourcesPac').innerHTML = sourceTable(pac.topSources);
+
+  // Top pages
+  function pageTable(pages){
+    if(!pages || !pages.length) return '<div class="empty">Sin datos.</div>';
+    return '<table style="width:100%;font-size:.78rem"><thead><tr><th>Ruta</th><th class="num">Vistas</th><th class="num">Tiempo medio</th></tr></thead><tbody>'
+      + pages.slice(0,8).map(function(p){
+        return '<tr><td><code style="font-family:var(--mono);font-size:.7rem">'+(p.path.length>26?p.path.slice(0,24)+'…':p.path)+'</code></td>'
+          +'<td class="num">'+fmtNum(p.views)+'</td>'
+          +'<td class="num">'+fmtSec(p.avgTimeSec)+'</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+  document.getElementById('segmentPagesPro').innerHTML = pageTable(pro.topPages);
+  document.getElementById('segmentPagesPac').innerHTML = pageTable(pac.topPages);
+
+  // Cities
+  function cityTable(cities){
+    if(!cities || !cities.length) return '<div class="empty">Sin datos.</div>';
+    return '<table style="width:100%;font-size:.78rem"><tbody>'
+      + cities.slice(0,8).map(function(c){
+        return '<tr><td><strong>'+c.city+'</strong> <span class="small">·'+c.country+'</span></td>'
+          +'<td class="num">'+fmtNum(c.users)+'</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+  document.getElementById('segmentCitiesPro').innerHTML = cityTable(pro.topCities);
+  document.getElementById('segmentCitiesPac').innerHTML = cityTable(pac.topCities);
+
+  // Guardar insights para clipboard
+  window.__segmentInsightsCache = insights.join('\n\n');
+}
+
+window.copyInsightsToClipboard = function(){
+  if(!window.__segmentInsightsCache) return;
+  navigator.clipboard.writeText(window.__segmentInsightsCache).then(function(){
+    alert('✓ Frases copiadas al portapapeles');
+  }, function(){
+    alert('No se pudo copiar. Selecciona el texto manualmente.');
+  });
+};
+
+// ──────────────────────────────────────────────────────────────────
 
 async function cargarInvitesCS(){
   const list = document.getElementById('csInvList');
