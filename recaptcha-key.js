@@ -16,7 +16,23 @@
 // servidor con la secret key, que NO está aquí). Por eso vive en este
 // archivo plano servido por GitHub Pages.
 // ════════════════════════════════════════════════════════════════════
-// Site key reCAPTCHA v3 · proyecto "cartagena" · 2026-04-30
-// Registrada en Firebase Console > App Check con su secret key correspondiente.
-// PÚBLICA por diseño · la verificación se hace en servidor con la secret key.
-window.RECAPTCHA_SITE_KEY = '6LeMI9IsAAAAANIE2jdmccuKKSNWpayWe5yOMBlN';
+// ════════════════════════════════════════════════════════════════════
+// reCAPTCHA / App Check · DESACTIVADO temporalmente (2026-04-30)
+// ════════════════════════════════════════════════════════════════════
+// Motivo: el badge de reCAPTCHA v3 lanzaba el error
+//   "Cannot read properties of null (reading 'appendChild')"
+// que bloqueaba el flujo de Auth en producción para todos los usuarios.
+//
+// Site key generada (queda guardada para reactivación futura):
+//   6LeMI9IsAAAAANIE2jdmccuKKSNWpayWe5yOMBlN
+// Secret key (en Firebase Console · NO modificar aquí):
+//   6LeMI9IsAAAAAEcpObV2MdElaS-0K4P4Szr9yDvP
+//
+// Para reactivar:
+// 1. Investigar por qué el badge falla en appendChild (orden de scripts,
+//    DOM no listo, conflicto con extensiones del navegador, etc.)
+// 2. Restaurar la línea: window.RECAPTCHA_SITE_KEY = '6LeMI9Is...'
+// 3. Verificar en producción con `console.log('[app-check] activado')`
+// 4. Redeploy
+// ════════════════════════════════════════════════════════════════════
+window.RECAPTCHA_SITE_KEY = '';

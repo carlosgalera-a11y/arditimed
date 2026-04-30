@@ -52,15 +52,27 @@
   } catch(e) {}
 
   // reCAPTCHA v3 site key: pública, se define en window antes de cargar
-  // este script. Si no existe, App Check no se activa (ai-client.js
-  // también lo avisa). Ejemplo en el HTML:
-  //   <script>window.RECAPTCHA_SITE_KEY='6Lc…';</script>
-  //   <script src="firebase-init.js"></script>
-  try {
-    var siteKey = (typeof window !== 'undefined' && window.RECAPTCHA_SITE_KEY) || '';
-    if (siteKey && firebase.appCheck) {
+  // este script. Si no existe, App Check no se activa.
+  // IMPORTANTE: la inicialización de App Check se hace defer a DOMContentLoaded
+  // para evitar el error "Cannot read properties of null (reading 'appendChild')"
+  // que sucede si reCAPTCHA intenta insertar su badge antes de que <body> exista.
+  function initAppCheckSafe(){
+    try {
+      var siteKey = (typeof window !== 'undefined' && window.RECAPTCHA_SITE_KEY) || '';
+      if (!siteKey) return; // App Check desactivado intencionalmente
+      if (!firebase.appCheck) return; // SDK no cargado
+      if (!document.body) return; // DOM no listo, no intentar (evita appendChild error)
       var appCheck = firebase.appCheck();
       appCheck.activate(siteKey, /* isTokenAutoRefreshEnabled */ true);
+      console.log('[app-check] activado');
+    } catch(e) {
+      // NO propagar — App Check fallido NO debe bloquear Auth ni Firestore.
+      console.warn('[firebase-init] appCheck (no crítico):', e && e.message);
     }
-  } catch(e) { console.warn('[firebase-init] appCheck:', e && e.message); }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAppCheckSafe);
+  } else {
+    initAppCheckSafe();
+  }
 })();
