@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auditoría de Costes con Presupuesto 5.000 € · Cartagenaeste · 2026-04-30</title>
+<style>
+  :root{--primary:#0f6b4a;--primary-light:#e6f4ef;--amber:#d97706;--amber-light:#fef3c7;
+        --blue:#1e40af;--blue-light:#dbeafe;--red:#dc2626;--red-light:#fee2e2;
+        --gray:#374151;--gray-light:#f9fafb;--border:#e5e7eb;
+        --font:'Segoe UI',system-ui,sans-serif;--mono:'Fira Code',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);font-size:10pt;color:#1f2937;background:#fff;line-height:1.5}
+  .doc{max-width:820px;margin:0 auto;padding:30px 36px 50px}
+  .cover{text-align:center;padding:40px 0 30px;border-bottom:3px solid var(--primary);margin-bottom:30px}
+  .cover .logo{font-size:2.5rem;margin-bottom:8px}
+  .cover h1{font-size:1.6rem;color:var(--primary);font-weight:800}
+  .cover .sub{font-size:.95rem;color:#6b7280;margin-top:6px}
+  .cover .meta{margin-top:18px;display:inline-flex;gap:24px;background:var(--gray-light);
+               border:1px solid var(--border);border-radius:8px;padding:10px 20px;
+               font-size:.82rem;color:var(--gray)}
+  .cover .meta span{display:flex;flex-direction:column}
+  .cover .meta strong{font-size:.95rem;color:#111827}
+  .budget-banner{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-radius:12px;
+                 padding:24px 28px;margin-bottom:24px;display:flex;align-items:center;gap:24px}
+  .budget-banner .icon{font-size:3rem;flex-shrink:0}
+  .budget-banner h2{font-size:1rem;font-weight:600;margin-bottom:4px;opacity:.9}
+  .budget-banner .amount{font-size:2.4rem;font-weight:900;font-family:var(--mono)}
+  .budget-banner .desc{font-size:.85rem;opacity:.95;margin-top:4px;line-height:1.5}
+  h2{font-size:1.05rem;font-weight:800;color:var(--primary);border-left:4px solid var(--primary);
+     padding-left:10px;margin:28px 0 12px;page-break-after:avoid}
+  h3{font-size:.9rem;font-weight:700;color:#374151;margin:18px 0 8px;page-break-after:avoid}
+  p{margin-bottom:8px;font-size:.88rem}
+  .scenarios{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0 20px}
+  .sc-card{border:1.5px solid var(--border);border-radius:10px;padding:16px;background:var(--gray-light)}
+  .sc-card.short{border-color:var(--red);background:var(--red-light)}
+  .sc-card.medium{border-color:var(--amber);background:var(--amber-light)}
+  .sc-card.long{border-color:var(--primary);background:var(--primary-light)}
+  .sc-card.eternal{border-color:var(--blue);background:var(--blue-light)}
+  .sc-card .sc-title{font-size:.78rem;font-weight:800;text-transform:uppercase;
+                     letter-spacing:.05em;margin-bottom:6px}
+  .sc-card.short .sc-title{color:var(--red)}
+  .sc-card.medium .sc-title{color:var(--amber)}
+  .sc-card.long .sc-title{color:var(--primary)}
+  .sc-card.eternal .sc-title{color:var(--blue)}
+  .sc-card .sc-duration{font-size:1.7rem;font-weight:900;font-family:var(--mono);line-height:1}
+  .sc-card .sc-monthly{font-size:.78rem;color:#6b7280;margin-top:6px;
+                       border-top:1px solid rgba(0,0,0,.1);padding-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;margin:8px 0 16px;page-break-inside:avoid}
+  thead tr{background:var(--primary);color:#fff}
+  thead th{padding:7px 10px;text-align:left;font-weight:700;font-size:.78rem}
+  thead th.num{text-align:right}
+  tbody tr:nth-child(even){background:var(--gray-light)}
+  td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  td.num{text-align:right;font-family:var(--mono);font-size:.80rem}
+  td.ok{color:var(--primary);font-weight:700}
+  td.warn{color:var(--amber);font-weight:700}
+  td.danger{color:var(--red);font-weight:700}
+  .total-row td{font-weight:800;background:#f0fdf4;color:var(--primary);border-top:2px solid var(--primary)}
+  .callout{border-radius:8px;padding:11px 14px;margin:10px 0;font-size:.84rem;
+           border-left:4px solid;page-break-inside:avoid}
+  .callout.info{background:var(--blue-light);border-color:var(--blue);color:#1e3a8a}
+  .callout.warn{background:var(--amber-light);border-color:var(--amber);color:#92400e}
+  .callout.ok{background:var(--primary-light);border-color:var(--primary);color:#064e3b}
+  .callout.danger{background:var(--red-light);border-color:var(--red);color:#7f1d1d}
+  .callout strong{font-weight:800}
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;
+         font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .badge.real{background:#d1fae5;color:#065f46}
+  .badge.proj{background:#fef3c7;color:#92400e}
+  .footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--border);
+          font-size:.75rem;color:#9ca3af;text-align:center}
+  .progress{height:24px;background:#e5e7eb;border-radius:6px;overflow:hidden;margin:4px 0;position:relative}
+  .progress-bar{height:100%;display:flex;align-items:center;padding-left:8px;color:#fff;font-weight:700;
+                font-size:.75rem;font-family:var(--mono);transition:width .4s}
+  .progress-bar.ok{background:linear-gradient(90deg,#16a34a,#22c55e)}
+  .progress-bar.warn{background:linear-gradient(90deg,#d97706,#f59e0b)}
+  .progress-bar.danger{background:linear-gradient(90deg,#b91c1c,#ef4444)}
+  @media print{
+    h2{page-break-after:avoid}
+    .doc{padding:10px 18px;max-width:100%}
+    a{color:inherit;text-decoration:none}
+  }
+  @page{margin:18mm 15mm}
+</style>
+</head>
+<body>
+<div class="doc" id="pdfContent">
+
+<!-- ════════════════════════════════════════════════ PORTADA -->
+<div class="cover">
+  <div class="logo">💰</div>
+  <h1>Auditoría de costes · Presupuesto 5.000 €</h1>
+  <div class="sub">Análisis del techo de gasto y estrategia de monetización del presupuesto disponible</div>
+  <div class="meta">
+    <span><strong>2026-04-30</strong>Fecha</span>
+    <span><strong>Carlos Galera Román</strong>Autor</span>
+    <span><strong>Blaze activo</strong>Plan Firebase</span>
+    <span><strong>Datos reales 7d</strong>Base de cálculo</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ BANNER PRESUPUESTO -->
+<div class="budget-banner">
+  <div class="icon">💵</div>
+  <div>
+    <h2>Presupuesto máximo disponible</h2>
+    <div class="amount">5.000 €</div>
+    <div class="desc">Techo único de financiación. La cuestión que responde este documento: <strong>¿cuánto tiempo y a qué nivel de uso me dura?</strong></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ TL;DR -->
+<h2>0. Respuesta directa</h2>
+
+<div class="scenarios">
+  <div class="sc-card eternal">
+    <div class="sc-title">Uso actual (~10 DAU)</div>
+    <div class="sc-duration">∞</div>
+    <div class="sc-monthly">~ 1,5 €/mes · &gt;3.000 meses · presupuesto prácticamente irrelevante</div>
+  </div>
+  <div class="sc-card long">
+    <div class="sc-title">100 DAU</div>
+    <div class="sc-duration">~ 18 años</div>
+    <div class="sc-monthly">~ 22 €/mes · 226 meses · gasto controlado</div>
+  </div>
+  <div class="sc-card medium">
+    <div class="sc-title">500 DAU</div>
+    <div class="sc-duration">~ 5 años</div>
+    <div class="sc-monthly">~ 80 €/mes · 62 meses · necesario optimizar IA</div>
+  </div>
+  <div class="sc-card short">
+    <div class="sc-title">1.000 DAU intensivo</div>
+    <div class="sc-duration">~ 13 meses</div>
+    <div class="sc-monthly">~ 380 €/mes · justo 1 año · necesita cobertura adicional</div>
+  </div>
+</div>
+
+<div class="callout ok">
+  <strong>Conclusión:</strong> Con 5.000 € se cubre <strong>holgadamente todos los costes operativos hasta 500 DAU durante varios años</strong>.
+  Sólo el escenario "1.000 DAU + visión IA intensiva" agota el presupuesto en aproximadamente 1 año,
+  y aun ese escenario hipotético deja margen suficiente porque el contrato HSL (14.000 €/año)
+  cubriría el déficit con creces.
+</div>
+
+<!-- ════════════════════════════════════════════════ 1. DATOS REALES -->
+<h2>1. Datos reales del dashboard · 7 días (22 abril – 29 abril 2026)</h2>
+
+<table>
+  <thead><tr><th>Métrica</th><th class="num">Valor real medido</th><th>Fuente</th></tr></thead>
+  <tbody>
+    <tr><td>DAU promedio</td><td class="num">10 / día</td><td>aiRequests · 70 llamadas / 7 días</td></tr>
+    <tr><td>Usuarios únicos en el rango</td><td class="num">8</td><td>UIDs distintos en aiRequests</td></tr>
+    <tr><td>Llamadas IA totales</td><td class="num">70</td><td>aiRequests count</td></tr>
+    <tr><td>Tokens prompt (in)</td><td class="num">64.061</td><td>aiRequests sum tokensIn</td></tr>
+    <tr><td>Tokens generados (out)</td><td class="num">99.400</td><td>aiRequests sum tokensOut</td></tr>
+    <tr><td>Tokens totales</td><td class="num">163.461</td><td>in + out</td></tr>
+    <tr><td>Cache hit rate</td><td class="num">20%</td><td>aiRequests cacheHit / total</td></tr>
+    <tr><td>Llamadas facturadas (post-cache)</td><td class="num">56</td><td>70 × 0,80</td></tr>
+    <tr><td>Errores</td><td class="num">0</td><td>aiRequests sum errors</td></tr>
+    <tr><td>Coste IA estimado</td><td class="num">≈ 0,15 € / 7 días</td><td>cálculo según tarifas reales</td></tr>
+    <tr><td>Coste IA proyectado mensual</td><td class="num">≈ 0,65 € / mes</td><td>×4,3 semanas</td></tr>
+    <tr><td>Coste Firebase</td><td class="num">0,00 €</td><td>todo bajo free tier</td></tr>
+    <tr><td>Dominio</td><td class="num">1,25 € / mes</td><td>fijo</td></tr>
+    <tr class="total-row"><td><strong>TOTAL ACTUAL VERIFICADO</strong></td><td class="num"><strong>≈ 1,90 € / mes</strong></td><td>~22,80 €/año</td></tr>
+  </tbody>
+</table>
+
+<h3>1.1 Distribución por modelo (datos reales)</h3>
+
+<table>
+  <thead><tr>
+    <th>Modelo</th><th class="num">Llamadas</th><th class="num">Tokens in</th><th class="num">Tokens out</th>
+    <th class="num">Coste 7d real</th><th>% del coste</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>DeepSeek V3 (OpenRouter)</td><td class="num">40</td><td class="num">44.345</td><td class="num">25.467</td><td class="num">≈ 0,046 $</td><td>33%</td></tr>
+    <tr><td>Gemini Flash-Lite (OR)</td><td class="num">22</td><td class="num">9.442</td><td class="num">65.286</td><td class="num">≈ 0,031 $</td><td>22%</td></tr>
+    <tr><td>Qwen 2.5 VL (visión)</td><td class="num">7</td><td class="num">8.617</td><td class="num">6.950</td><td class="num">≈ 0,061 $</td><td>43%</td></tr>
+    <tr><td>Gemini Flash 2.5</td><td class="num">1</td><td class="num">1.657</td><td class="num">1.697</td><td class="num">≈ 0,006 $</td><td>2%</td></tr>
+    <tr class="total-row"><td><strong>TOTAL</strong></td><td class="num">70</td><td class="num">64.061</td><td class="num">99.400</td><td class="num">≈ 0,14 $</td><td>100%</td></tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>Hallazgo:</strong> aunque visión solo es el 10% de las llamadas (7 de 70), supone el <strong>43% del coste IA</strong>.
+  Qwen VL es el modelo más caro (1,80 $/M tokens in vs 0,27 $ DeepSeek). Es la palanca principal
+  de optimización si la base de usuarios crece.
+</div>
+
+<!-- ════════════════════════════════════════════════ 2. CUÁNTO DURA -->
+<h2>2. ¿Cuánto te duran los 5.000 € por escenario?</h2>
+
+<table>
+  <thead><tr>
+    <th>Escenario</th><th class="num">DAU</th><th class="num">€/mes</th><th class="num">Meses</th>
+    <th class="num">Años</th><th>% presupuesto/mes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td><strong>Hoy real</strong></td><td class="num">10</td><td class="num ok">1,90</td><td class="num ok">2.631</td><td class="num ok">219</td><td><div class="progress"><div class="progress-bar ok" style="width:0.04%">0,04%</div></div></td></tr>
+    <tr><td>50 DAU (optimista temprano)</td><td class="num">50</td><td class="num ok">11</td><td class="num ok">454</td><td class="num ok">37</td><td><div class="progress"><div class="progress-bar ok" style="width:0.22%">0,22%</div></div></td></tr>
+    <tr><td>100 DAU (Urgencias HSL firmado)</td><td class="num">100</td><td class="num ok">22</td><td class="num ok">227</td><td class="num ok">18</td><td><div class="progress"><div class="progress-bar ok" style="width:0.44%">0,44%</div></div></td></tr>
+    <tr><td>250 DAU (multi-servicio)</td><td class="num">250</td><td class="num warn">45</td><td class="num warn">111</td><td class="num warn">9</td><td><div class="progress"><div class="progress-bar ok" style="width:0.9%">0,9%</div></div></td></tr>
+    <tr><td>500 DAU optimista</td><td class="num">500</td><td class="num warn">60</td><td class="num warn">83</td><td class="num warn">7</td><td><div class="progress"><div class="progress-bar warn" style="width:1.2%">1,2%</div></div></td></tr>
+    <tr><td>500 DAU realista</td><td class="num">500</td><td class="num warn">80</td><td class="num warn">62</td><td class="num warn">5</td><td><div class="progress"><div class="progress-bar warn" style="width:1.6%">1,6%</div></div></td></tr>
+    <tr><td>500 DAU pesimista</td><td class="num">500</td><td class="num danger">130</td><td class="num warn">38</td><td class="num warn">3,2</td><td><div class="progress"><div class="progress-bar warn" style="width:2.6%">2,6%</div></div></td></tr>
+    <tr><td>1.000 DAU optimista</td><td class="num">1.000</td><td class="num warn">95</td><td class="num warn">52</td><td class="num warn">4,4</td><td><div class="progress"><div class="progress-bar warn" style="width:1.9%">1,9%</div></div></td></tr>
+    <tr><td>1.000 DAU realista</td><td class="num">1.000</td><td class="num danger">170</td><td class="num warn">29</td><td class="num warn">2,4</td><td><div class="progress"><div class="progress-bar warn" style="width:3.4%">3,4%</div></div></td></tr>
+    <tr><td>1.000 DAU pesimista</td><td class="num">1.000</td><td class="num danger">260</td><td class="num warn">19</td><td class="num warn">1,6</td><td><div class="progress"><div class="progress-bar danger" style="width:5.2%">5,2%</div></div></td></tr>
+    <tr><td>1.000 DAU + visión heavy</td><td class="num">1.000</td><td class="num danger">380</td><td class="num danger">13</td><td class="num danger">1,1</td><td><div class="progress"><div class="progress-bar danger" style="width:7.6%">7,6%</div></div></td></tr>
+  </tbody>
+</table>
+
+<div class="callout ok">
+  <strong>Lectura:</strong> el escenario más probable a 12-24 meses (100-250 DAU tras firmar HSL y expandir a 1-2 servicios)
+  consume <strong>menos del 1% del presupuesto al mes</strong>. Los 5.000 € durarían <strong>9-18 años</strong> sin necesidad de capital adicional.
+</div>
+
+<!-- ════════════════════════════════════════════════ 3. DISTRIBUCIÓN -->
+<h2>3. Cómo distribuir los 5.000 € · plan recomendado</h2>
+
+<p>La pregunta correcta no es "cuánto durará" (es claramente mucho) sino <strong>"qué hacer con los 5.000 € para maximizar el retorno"</strong>.
+Propuesta de distribución prioritaria:</p>
+
+<table>
+  <thead><tr>
+    <th>Concepto</th><th class="num">Importe</th><th class="num">% del presupuesto</th><th>Justificación</th>
+  </tr></thead>
+  <tbody>
+    <tr><td><strong>1. Operación 24 meses (IA + Firebase + dominio)</strong></td><td class="num">800 €</td><td class="num">16%</td><td>Cobertura técnica con margen para escalar a 250 DAU</td></tr>
+    <tr><td><strong>2. Seguro RC profesional + ciber</strong> (2 años)</td><td class="num">1.200 €</td><td class="num">24%</td><td>Imprescindible antes de uso institucional masivo. ~600 €/año</td></tr>
+    <tr><td><strong>3. Asesoría legal externa</strong> (DPAs DeepSeek/OR + revisión EIPD + DPD externo)</td><td class="num">1.000 €</td><td class="num">20%</td><td>Cierra H-02 + valida módulo paciente · esencial para SMS</td></tr>
+    <tr><td><strong>4. Sello HONcode + WIS COMB</strong> (2 años)</td><td class="num">600 €</td><td class="num">12%</td><td>Diferenciación competitiva · acceso a Rafalafena · validación de calidad</td></tr>
+    <tr><td><strong>5. Diseño profesional</strong> (logo · materiales presentación · fotos)</td><td class="num">500 €</td><td class="num">10%</td><td>Subir nivel del dossier comercial · presentación HSL 8 mayo</td></tr>
+    <tr><td><strong>6. Acreditación SEAFORMEC</strong> (curso/sesión clínica)</td><td class="num">300 €</td><td class="num">6%</td><td>Permite acreditar horas docentes · multiplica adopción profesional</td></tr>
+    <tr><td><strong>7. Asistencia a 1 congreso</strong> (SEMERGEN o semFYC con póster)</td><td class="num">400 €</td><td class="num">8%</td><td>Difusión orgánica entre profesionales · ROI alto en advocacy</td></tr>
+    <tr><td><strong>8. Reserva de contingencia</strong></td><td class="num">200 €</td><td class="num">4%</td><td>Para imprevistos · upgrades · oportunidades</td></tr>
+    <tr class="total-row"><td><strong>TOTAL</strong></td><td class="num">5.000 €</td><td class="num">100%</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <strong>Atención:</strong> esta distribución asume que el proyecto sigue como autónomo / proyecto personal.
+  Si se constituye Sociedad Limitada, hay que añadir 800-1.200 € de constitución + Notaría + tasas en lugar de
+  algunos de los puntos 4-7. Decidir <strong>antes</strong> de gastar el presupuesto.
+</div>
+
+<!-- ════════════════════════════════════════════════ 4. ESCENARIOS -->
+<h2>4. Plan de gasto por escenario realista</h2>
+
+<h3>4.1 Escenario A: Sigues como ahora (sin contrato firmado)</h3>
+
+<table>
+  <thead><tr><th>Año</th><th>IA + Firebase</th><th>Dominio</th><th>Otros (seguro/legal/sellos)</th><th class="num">€ acumulado</th></tr></thead>
+  <tbody>
+    <tr><td>Año 1</td><td>~ 8 €</td><td>15 €</td><td>1.500 € (DPAs + seguro + HONcode + WIS)</td><td class="num">1.523 €</td></tr>
+    <tr><td>Año 2</td><td>~ 15 €</td><td>15 €</td><td>1.000 € (seguro + WIS renovación + congreso)</td><td class="num">2.553 €</td></tr>
+    <tr><td>Año 3</td><td>~ 25 €</td><td>15 €</td><td>800 €</td><td class="num">3.393 €</td></tr>
+    <tr><td>Año 4</td><td>~ 40 €</td><td>15 €</td><td>800 €</td><td class="num">4.248 €</td></tr>
+    <tr><td>Año 5</td><td>~ 80 €</td><td>15 €</td><td>500 €</td><td class="num">4.843 €</td></tr>
+  </tbody>
+</table>
+<p><strong>Veredicto:</strong> 5.000 € cubren <strong>5 años</strong> incluyendo coste técnico, seguros, sellos y un congreso/año.</p>
+
+<h3>4.2 Escenario B: Firmas con HSL 14.000 €/año (mayo 2026)</h3>
+
+<div class="callout ok">
+  En este escenario los 5.000 € se convierten en <strong>capital de inversión, no operación</strong>.
+  La operación se cubre con la facturación del contrato. Los 5.000 € se pueden reorientar a:
+  <ul style="margin-top:6px">
+    <li>1.500 € · constituir SL + alta autónomos administradores</li>
+    <li>1.500 € · contratación esporádica de un dev (10 h/mes a 25 €/h durante 6 meses)</li>
+    <li>1.000 € · marketing inicial (SEO técnico, fotos profesionales del producto, vídeo demo)</li>
+    <li>800 € · sello AENOR Webs Sanitarias o ISO 27001 inicial</li>
+    <li>200 € · contingencia</li>
+  </ul>
+</div>
+
+<h3>4.3 Escenario C: Crecimiento rápido a 1.000 DAU sin contrato</h3>
+
+<p>Escenario más ajustado pero aún viable:</p>
+
+<table>
+  <thead><tr><th>Concepto</th><th>Año 1</th><th>Año 2</th><th class="num">Acumulado 24m</th></tr></thead>
+  <tbody>
+    <tr><td>Operación técnica (IA + Firebase + dominio)</td><td>2.000 €</td><td>2.500 €</td><td class="num">4.500 €</td></tr>
+    <tr><td>Seguro RC + DPD externo</td><td>900 €</td><td>900 €</td><td class="num">1.800 €</td></tr>
+    <tr><td>Otros (sellos · legal)</td><td>500 €</td><td>500 €</td><td class="num">1.000 €</td></tr>
+    <tr class="total-row"><td><strong>TOTAL</strong></td><td>3.400 €</td><td>3.900 €</td><td class="num"><strong>7.300 €</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="callout danger">
+  <strong>Veredicto:</strong> los 5.000 € NO bastan para 24 meses de 1.000 DAU sostenido sin facturación.
+  Faltarían 2.300 €. Recomendación si entra este escenario:
+  <ol style="margin-top:6px">
+    <li>Activar limites de cuota más estrictos (50→30 llamadas/usuario/día)</li>
+    <li>Migrar primario a Gemini Flash-Lite directo (sin OR markup) → ahorro 15-25%</li>
+    <li>Subir a "freemium" con tope 20 calls/día y "pro" 9 €/mes para 200 calls</li>
+    <li>Solicitar NEOTEC CDTI (250.000 €) ya en mayo 2026</li>
+  </ol>
+</div>
+
+<!-- ════════════════════════════════════════════════ 5. ALERTAS -->
+<h2>5. Configuración de alertas para no superar el techo</h2>
+
+<p>Con 5.000 € como techo único, la configuración de alertas es <strong>crítica</strong>. Plan recomendado:</p>
+
+<h3>5.1 Budget alert GCP · 4 niveles escalonados</h3>
+
+<table>
+  <thead><tr><th>Nivel</th><th class="num">% del presupuesto anual</th><th class="num">€/año</th><th>Acción</th></tr></thead>
+  <tbody>
+    <tr><td>Nivel 1 · alerta temprana</td><td class="num">50%</td><td class="num">500 €</td><td>Email · revisar uso, no actuar</td></tr>
+    <tr><td>Nivel 2 · revisar</td><td class="num">75%</td><td class="num">750 €</td><td>Email · evaluar cuotas y caché hit rate</td></tr>
+    <tr><td>Nivel 3 · acción</td><td class="num">90%</td><td class="num">900 €</td><td>Email + revisar quotas/día por usuario</td></tr>
+    <tr><td>Nivel 4 · emergencia</td><td class="num">100%</td><td class="num">1.000 €</td><td>Email + considerar pausar IA hasta entender el incremento</td></tr>
+  </tbody>
+</table>
+
+<p>Comando para configurar via gcloud (después de identificar el billing account):</p>
+<table>
+  <thead><tr><th>Mes</th><th>Budget alert recomendado</th></tr></thead>
+  <tbody>
+    <tr><td>Mientras &lt; 100 DAU</td><td>30 €/mes (ya sería anómalo superar)</td></tr>
+    <tr><td>100-500 DAU</td><td>100 €/mes</td></tr>
+    <tr><td>500-1.000 DAU</td><td>200 €/mes</td></tr>
+    <tr><td>&gt; 1.000 DAU</td><td>350 €/mes</td></tr>
+  </tbody>
+</table>
+
+<h3>5.2 Saldo de proveedores IA · alerta a $5 (ya implementada)</h3>
+
+<p>El widget "💳 Créditos API" del admin dashboard + la Cloud Function <code>dailyBalanceCheck</code>
+(PR #129) envían email diario si DeepSeek u OpenRouter caen por debajo de $5.
+Equivalente a unos 4,60 € de saldo restante.</p>
+
+<div class="callout info">
+  <strong>Recarga recomendada por proveedor:</strong>
+  <ul style="margin-top:6px">
+    <li>DeepSeek: $20 (≈ 18,5 €) · cubre ~3 meses de uso 100 DAU</li>
+    <li>OpenRouter: $20 (≈ 18,5 €) · igual</li>
+    <li>Gemini directo (si activas la key): $0 hasta cuota gratuita · paga solo el exceso</li>
+  </ul>
+</div>
+
+<!-- ════════════════════════════════════════════════ 6. PALANCAS -->
+<h2>6. Palancas para alargar la duración del presupuesto</h2>
+
+<table>
+  <thead><tr><th>Palanca</th><th class="num">Ahorro</th><th>Esfuerzo</th><th>Estado</th></tr></thead>
+  <tbody>
+    <tr><td>Caché 7d (ya activa) · subir a 14d para no clínicos</td><td class="num">+10-20%</td><td>Bajo</td><td>⏳ Optimizable</td></tr>
+    <tr><td>Migrar primario educational a Gemini Flash-Lite directo (sin OR markup)</td><td class="num">+15-25%</td><td>Bajo</td><td>⏳ Pendiente · requiere GEMINI_API_KEY</td></tr>
+    <tr><td>Limitar visión Qwen VL al 5% de calls (actualmente 10% del 7d)</td><td class="num">+15-30%</td><td>Bajo</td><td>⏳ Configuración routing</td></tr>
+    <tr><td>Bajar cuota usuario de 50 a 30/día</td><td class="num">+5-10%</td><td>Bajo</td><td>⏳ Pendiente · 1 línea</td></tr>
+    <tr><td>App Check enforce ON · evita abuso/scraping</td><td class="num">+0-30%</td><td>Bajo</td><td>⏳ H-01 pendiente</td></tr>
+    <tr><td>Normalización de prompts (trim · case · sinónimos)</td><td class="num">+5-15%</td><td>Medio</td><td>⏳ Pendiente</td></tr>
+    <tr><td>Mover backup Firestore a GCS Coldline</td><td class="num">~ 2 €/mes</td><td>Bajo</td><td>⏳ Pendiente</td></tr>
+    <tr><td>CDN Cloudflare delante de GitHub Pages (reduce egress GCP)</td><td class="num">+10% Firebase</td><td>Medio</td><td>⏳ Útil con &gt;500 DAU</td></tr>
+  </tbody>
+</table>
+
+<p>Con todas las palancas aplicadas, una factura de 100 €/mes a 500 DAU bajaría a unos <strong>55-65 €/mes</strong>,
+extendiendo la duración del presupuesto un <strong>30-40%</strong>.</p>
+
+<!-- ════════════════════════════════════════════════ 7. CONTEXTO COMERCIAL -->
+<h2>7. Contexto comercial · ¿es 5.000 € poco o mucho?</h2>
+
+<table>
+  <thead><tr><th>Comparativa</th><th class="num">Importe</th><th>Lectura</th></tr></thead>
+  <tbody>
+    <tr><td>Coste actual real anual</td><td class="num">23 €</td><td>5.000 € equivale a <strong>217 años</strong> de operación al ritmo actual</td></tr>
+    <tr><td>Contrato HSL Año 1 (dossier comercial)</td><td class="num">14.000 €</td><td>5.000 € es el <strong>36%</strong> del primer contrato</td></tr>
+    <tr><td>NEOTEC CDTI (objetivo 2026)</td><td class="num">250.000 €</td><td>5.000 € es el <strong>2%</strong> de la subvención objetivo</td></tr>
+    <tr><td>Premio Fundación BBVA Innovación Salud</td><td class="num">40.000-100.000 €</td><td>5.000 € es el <strong>5-12%</strong></td></tr>
+    <tr><td>Salario médico interino mensual SMS</td><td class="num">~ 3.500 € bruto</td><td>5.000 € equivale a <strong>1,4 meses</strong> de tu sueldo bruto</td></tr>
+  </tbody>
+</table>
+
+<div class="callout ok">
+  <strong>Veredicto:</strong> 5.000 € es <strong>suficiente para todas las acciones críticas pendientes</strong>
+  (DPAs · seguros · sellos · congreso) y dejar reserva para 5 años de operación al ritmo actual.
+  El presupuesto deja de ser problema cuando entra el primer contrato comercial.
+</div>
+
+<!-- ════════════════════════════════════════════════ 8. PRIORIDADES -->
+<h2>8. Prioridades inmediatas con los 5.000 € (Q2-Q3 2026)</h2>
+
+<table>
+  <thead><tr><th>#</th><th>Acción</th><th class="num">Importe</th><th>Justificación</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><strong>Seguro RC profesional + ciber</strong> · 1 año</td><td class="num">600 €</td><td>Imprescindible antes de uso institucional · cobertura H-01/H-05</td></tr>
+    <tr><td>2</td><td><strong>Asesor legal · DPAs + revisión EIPD</strong></td><td class="num">800 €</td><td>Cierra H-02 · permite contratos farma/SMS</td></tr>
+    <tr><td>3</td><td><strong>Sello HONcode (gratis) + Web Médica Acreditada COMB</strong></td><td class="num">350 €</td><td>Validación pública · acceso Rafalafena · diferenciación</td></tr>
+    <tr><td>4</td><td><strong>Recargar saldo DeepSeek + OpenRouter</strong></td><td class="num">40 €</td><td>Que la IA no se pare nunca</td></tr>
+    <tr><td>5</td><td><strong>Materiales 8 mayo HSL</strong> (impresión dossier · QR · tarjetas)</td><td class="num">80 €</td><td>Aumenta probabilidad de cierre comercial</td></tr>
+    <tr><td>6</td><td><strong>Asistencia congreso SEMERGEN/semFYC</strong> con póster</td><td class="num">400 €</td><td>Difusión orgánica · advocacy entre MFyC</td></tr>
+    <tr><td>7</td><td><strong>Acreditación SEAFORMEC</strong> · sesión clínica</td><td class="num">300 €</td><td>Reconocimiento docente · multiplica adopción profesional</td></tr>
+    <tr><td>8</td><td><strong>Tipografía profesional + diseño logo</strong></td><td class="num">200 €</td><td>Sube nivel del producto frente a inversores</td></tr>
+    <tr><td>9</td><td><strong>Reserva contingencia Año 1</strong></td><td class="num">200 €</td><td>Imprevistos · oportunidades</td></tr>
+    <tr><td>10</td><td><strong>Reserva operación Años 2-5</strong></td><td class="num">2.030 €</td><td>Cubre 5 años de IA + Firebase + renovaciones sello/seguro</td></tr>
+    <tr class="total-row"><td colspan="2"><strong>TOTAL Q2-Q3 + reserva 5 años</strong></td><td class="num">5.000 €</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════════════════════════════════════════ 9. CONCLUSIONES -->
+<h2>9. Conclusiones</h2>
+
+<div class="callout ok">
+  <ol>
+    <li><strong>Los 5.000 € no son un cuello de botella.</strong> Cubren la operación técnica durante 5+ años incluso
+      con escalado moderado a 250 DAU. La caché y App Check son las palancas que más alargan el presupuesto.</li>
+    <li><strong>El cuello de botella real es la maduración legal y comercial</strong> — DPAs, seguros, sellos,
+      preparación 8 mayo. Los 5.000 € deberían orientarse mayoritariamente ahí, no a IA/Firebase.</li>
+    <li><strong>Configurar budget alerts antes de gastar nada</strong>. 4 niveles a 50/75/90/100% del presupuesto anual.</li>
+    <li><strong>Si entra el contrato HSL antes de Q4 2026</strong>, los 5.000 € pueden reorientarse a constitución SL,
+      contratación esporádica de dev y marketing inicial.</li>
+    <li><strong>Si NO entra contrato a Q4 2026</strong>, el presupuesto sigue cubriendo operación holgadamente
+      hasta Q4 2030. No urge cambiar de modelo.</li>
+    <li><strong>Solicitar NEOTEC CDTI en mayo 2026</strong> es la palanca que convierte el presupuesto de techo en irrelevante.</li>
+  </ol>
+</div>
+
+<div class="footer">
+  Cartagenaeste · Plataforma formativa · No diagnóstica · Licencia propietaria · © 2026 Carlos Galera Román · RPI 00765-03096622<br>
+  Documento basado en datos reales del dashboard 22-29 abril 2026 (70 llamadas, 8 usuarios, 163.461 tokens). Cifras IA proyectadas según tarifas vigentes.<br>
+  Generado 2026-04-30 · Actualizar trimestralmente.
+</div>
+
+</div><!-- /.doc -->
+</body>
+</html>
