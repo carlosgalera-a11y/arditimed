@@ -123,6 +123,64 @@ td.num{text-align:right;font-family:var(--mono)}
 
 <div id="dashboard" class="wrap" style="display:none">
 
+  <!-- Alerta de saldo bajo en APIs IA -->
+  <div id="balanceAlert" style="display:none;background:linear-gradient(135deg,#7f1d1d,#991b1b);border:1px solid #ef4444;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.3rem">⚠️</span>
+    <div>
+      <div style="font-weight:700;color:#fca5a5">Saldo bajo en proveedor IA</div>
+      <div id="balanceAlertMsg" style="font-size:.82rem;color:#fecaca;margin-top:2px">Comprobando…</div>
+    </div>
+    <a id="balanceAlertLink" href="#creditosApi" style="margin-left:auto;padding:5px 12px;background:#ef4444;color:#fff;border-radius:6px;font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap">Ver créditos</a>
+  </div>
+
+  <!-- Sección créditos API -->
+  <div class="section" id="creditosApi" style="border-left:4px solid #f59e0b">
+    <h3>💳 Créditos API · saldo en tiempo real <span class="meta">DeepSeek · OpenRouter</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Saldo restante en cada proveedor IA. Aviso automático si baja de $5. Recarga antes de llegar a $0 para evitar interrupciones en guardia.</div>
+    <div id="creditosGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+      <div class="loading"><span class="spin"></span>Consultando APIs…</div>
+    </div>
+    <div id="creditosError" style="display:none;color:#f87171;font-size:.82rem;margin-top:8px"></div>
+    <div style="margin-top:10px;font-size:.75rem;color:var(--t3)">
+      Recarga DeepSeek: <a href="https://platform.deepseek.com/top_up" target="_blank" rel="noopener" style="color:var(--cyan)">platform.deepseek.com/top_up</a> ·
+      Recarga OpenRouter: <a href="https://openrouter.ai/credits" target="_blank" rel="noopener" style="color:var(--cyan)">openrouter.ai/credits</a>
+    </div>
+  </div>
+
+  <!-- Sección audiencia total (anónimos + registrados + pageviews) -->
+  <div class="section" id="audienciaSection" style="border-left:4px solid #8b5cf6">
+    <h3>👥 Audiencia · visitantes y usuarios registrados <span class="meta">GA4 + Firestore</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">
+      Visitantes anónimos (pacientes, curiosos) medidos por GA4 · Profesionales registrados en Firestore · Páginas vistas acumuladas.
+      GA4 tiene latencia ~24 h. Los conteos de Firestore son en tiempo real.
+    </div>
+    <div class="kpis" id="audienciaKpis" style="margin-bottom:14px">
+      <div class="kpi kpi-e"><div class="lbl">Visitantes hoy</div><div class="val" id="audToday">—</div><div class="sub" id="audTodaySub">GA4 · sesiones anónimas</div></div>
+      <div class="kpi kpi-e"><div class="lbl">Visitantes 28 días</div><div class="val" id="aud28d">—</div><div class="sub" id="aud28dSub">usuarios únicos · GA4</div></div>
+      <div class="kpi kpi-e"><div class="lbl">Páginas vistas (28d)</div><div class="val" id="audPageviews">—</div><div class="sub">screenPageViews · GA4</div></div>
+      <div class="kpi kpi-a"><div class="lbl">Profesionales registrados</div><div class="val" id="audProfesionales">—</div><div class="sub">rol profesional · Firestore</div></div>
+      <div class="kpi kpi-a"><div class="lbl">Total cuentas</div><div class="val" id="audTotalUsers">—</div><div class="sub">colección users · Firestore</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">📱 Dispositivos · 28 días</div>
+        <div id="audDevices"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🌍 País de acceso · 28 días</div>
+        <div id="audCountries"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">🔄 Nuevos vs recurrentes · 28 días</div>
+        <div id="audNewReturning"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:10px">👥 Roles en Firestore</div>
+        <div id="audRoles"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+    </div>
+  </div>
+
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px">
     <div class="range-tabs" style="margin:0">
       <button class="range-tab active" data-days="1">Hoy</button>
@@ -969,6 +1027,10 @@ async function loadDashboard(days){
   renderUsoSeccion();
   loadGaReportingHub();
   loadSegmentAnalysis();
+
+  // PR #128: alerta saldo API + audiencia
+  loadApiBalances();
+  loadAudienceStats();
 }
 
 // Segmented control del filtro GA4 (Todos / area2 / github)
@@ -2397,6 +2459,200 @@ window.addEventListener('load', () => {
     if(firebase.auth && firebase.auth().currentUser) cargarInvitesCS();
   }, 1500);
 });
+
+// ══════════════════════════════════════════════════════════════
+// Créditos API · DeepSeek + OpenRouter
+// ══════════════════════════════════════════════════════════════
+const CF_BASE = 'https://europe-west1-docenciacartagenaeste.cloudfunctions.net';
+
+async function getIdToken(){
+  const user = firebase.auth().currentUser;
+  if(!user) return null;
+  return user.getIdToken();
+}
+
+async function loadApiBalances(){
+  const grid = document.getElementById('creditosGrid');
+  const errEl = document.getElementById('creditosError');
+  const alertBanner = document.getElementById('balanceAlert');
+  const alertMsg = document.getElementById('balanceAlertMsg');
+  grid.innerHTML = '<div class="loading"><span class="spin"></span>Consultando saldos…</div>';
+  try{
+    const token = await getIdToken();
+    if(!token){ grid.innerHTML='<div class="empty">Sesión no disponible.</div>'; return; }
+    const r = await fetch(CF_BASE+'/getApiBalances', {
+      headers:{ Authorization:'Bearer '+token }
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+
+    // Alerta banner si alguno está bajo
+    if(d.anyLow){
+      const msgs = [];
+      if(d.deepseek && d.deepseek.lowBalance) msgs.push('DeepSeek: $'+(d.deepseek.remainingUsd||0).toFixed(2));
+      if(d.openrouter && d.openrouter.lowBalance) msgs.push('OpenRouter: $'+(d.openrouter.remainingUsd||0).toFixed(2));
+      alertBanner.style.display='flex';
+      alertMsg.textContent = msgs.join(' · ')+' · Umbral de aviso: $'+d.thresholdUsd;
+    } else {
+      alertBanner.style.display='none';
+    }
+
+    function providerCard(name, icon, data, rechargeUrl){
+      if(!data) return '<div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;opacity:.6"><div style="font-weight:700;margin-bottom:8px">'+icon+' '+name+'</div><div class="small" style="color:var(--t3)">No configurado</div></div>';
+      const ok = data.ok;
+      const low = data.lowBalance;
+      const usd = ok ? data.remainingUsd : null;
+      const pct = (ok && data.detail && data.detail.totalCredits > 0)
+        ? Math.max(0, Math.min(100, ((data.detail.totalCredits - data.detail.totalUsage) / data.detail.totalCredits)*100))
+        : null;
+      const color = !ok ? '#6b7280' : low ? '#ef4444' : usd < 10 ? '#f59e0b' : '#22c55e';
+      const label = !ok ? '⚠ Error: '+(data.error||'?')
+        : low ? '⚠ SALDO BAJO'
+        : usd < 10 ? '⚡ Saldo ajustado'
+        : '✅ OK';
+      return '<div style="background:var(--card2);border:2px solid '+color+';border-radius:12px;padding:14px">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+        +'<span style="font-size:1.3rem">'+icon+'</span>'
+        +'<strong style="flex:1">'+name+'</strong>'
+        +'<span style="background:'+color+'22;color:'+color+';border-radius:5px;padding:2px 8px;font-size:.75rem;font-weight:700">'+label+'</span>'
+        +'</div>'
+        +(ok ? '<div style="font-size:2rem;font-weight:800;font-family:var(--mono);color:'+color+'">$'+usd.toFixed(2)+'</div>'
+          +'<div class="small" style="color:var(--t3);margin:2px 0 8px">restantes</div>'
+          +(pct!==null ? '<div style="background:#1e293b;border-radius:4px;height:6px;overflow:hidden;margin-bottom:10px"><div style="background:'+color+';height:100%;width:'+pct.toFixed(1)+'%;transition:width .4s"></div></div>' : '')
+          +'<a href="'+rechargeUrl+'" target="_blank" rel="noopener" style="display:inline-block;padding:5px 12px;background:'+color+';color:#fff;border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none">Recargar</a>'
+          : '<div class="small" style="color:#f87171;margin-top:6px">'+(data.error||'Error desconocido')+'</div>')
+        +'</div>';
+    }
+
+    grid.innerHTML =
+      providerCard('DeepSeek', '🧠', d.deepseek, 'https://platform.deepseek.com/top_up') +
+      providerCard('OpenRouter', '🔀', d.openrouter, 'https://openrouter.ai/credits');
+
+    if(d.generatedAt){
+      errEl.style.display='none';
+    }
+  }catch(e){
+    grid.innerHTML='';
+    errEl.style.display='block';
+    errEl.textContent='❌ Error consultando saldos: '+(e.message||e);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// Audiencia total · GA4 + Firestore
+// ══════════════════════════════════════════════════════════════
+async function loadAudienceStats(){
+  // — Conteo Firestore: total users + por rol —
+  (async function(){
+    try{
+      const db = firebase.firestore();
+      const snap = await db.collection('users').limit(5000).get();
+      const total = snap.size;
+      const roleCounts = {};
+      snap.forEach(function(doc){
+        const r = (doc.data().role || doc.data().rol || 'sin_rol').toLowerCase();
+        roleCounts[r] = (roleCounts[r]||0) + 1;
+      });
+      const prof = (roleCounts['profesional']||0) + (roleCounts['professional']||0) + (roleCounts['admin']||0);
+      document.getElementById('audTotalUsers').textContent = total >= 5000 ? '5000+' : total;
+      document.getElementById('audProfesionales').textContent = prof > 0 ? prof : (roleCounts['admin'] ? roleCounts['admin'] : '—');
+      // Tabla de roles
+      const rolesEl = document.getElementById('audRoles');
+      if(Object.keys(roleCounts).length === 0){
+        rolesEl.innerHTML = '<div class="empty">Sin datos de roles.</div>';
+      } else {
+        rolesEl.innerHTML = '<table style="width:100%"><thead><tr><th>Rol</th><th class="num">Usuarios</th><th>% del total</th></tr></thead><tbody>'
+          + Object.entries(roleCounts).sort((a,b)=>b[1]-a[1]).map(function([rol,n]){
+            const pct = total > 0 ? ((n/total)*100).toFixed(1) : 0;
+            return '<tr><td><code style="font-family:var(--mono);font-size:.8rem">'+rol+'</code></td>'
+              +'<td class="num">'+n+'</td>'
+              +'<td><div class="bar-wrap"><div class="bar" style="width:'+pct+'%"></div></div>'
+              +'<span class="small" style="margin-left:6px">'+pct+'%</span></td></tr>';
+          }).join('')
+          + '</tbody></table>';
+      }
+    }catch(e){
+      document.getElementById('audRoles').innerHTML='<div class="small" style="color:#f87171">Error Firestore: '+(e.message||e)+'</div>';
+    }
+  })();
+
+  // — GA4: métricas de audiencia extendidas —
+  (async function(){
+    try{
+      const token = await getIdToken();
+      if(!token) return;
+      // Reusa getGaMetrics con filter=all para obtener los datos base
+      const r = await firebase.functions().httpsCallable('getGaMetrics')({ filter:'all' });
+      const d = r.data;
+      if(!d) return;
+
+      // KPIs principales
+      const today = d.ranges && d.ranges.today;
+      const last28 = d.ranges && d.ranges.last28d;
+      if(today){
+        document.getElementById('audToday').textContent = fmtNum(today.users||0);
+        document.getElementById('audTodaySub').textContent = (today.sessions||0)+' sesiones · GA4';
+      }
+      if(last28){
+        document.getElementById('aud28d').textContent = fmtNum(last28.users||0);
+        document.getElementById('aud28dSub').textContent = fmtNum(last28.sessions||0)+' sesiones';
+        document.getElementById('audPageviews').textContent = fmtNum(last28.views||0);
+      }
+    }catch(e){
+      // GA4 no crítico; los datos de Firestore ya se han cargado
+    }
+  })();
+
+  // — GA4 extendido: dispositivos, países, nuevos vs recurrentes (llamada directa GA4 Data API via CF) —
+  (async function(){
+    try{
+      const token = await getIdToken();
+      if(!token) return;
+      const r = await fetch(CF_BASE+'/getAudienceDetail', {
+        headers:{ Authorization:'Bearer '+token }
+      });
+      if(!r.ok) return; // función opcional; falla silenciosamente hasta que exista
+      const d = await r.json();
+
+      if(d.devices && d.devices.length){
+        document.getElementById('audDevices').innerHTML =
+          '<table style="width:100%"><tbody>'
+          + d.devices.map(function(dev){
+            return '<tr><td>'+dev.device+'</td><td class="num">'+fmtNum(dev.users)+'</td>'
+              +'<td><div class="bar-wrap"><div class="bar" style="width:'+dev.pct.toFixed(1)+'%"></div></div></td></tr>';
+          }).join('') + '</tbody></table>';
+      } else {
+        document.getElementById('audDevices').innerHTML='<div class="small" style="color:var(--t3)">Sin datos disponibles todavía.</div>';
+      }
+      if(d.countries && d.countries.length){
+        document.getElementById('audCountries').innerHTML =
+          '<table style="width:100%"><tbody>'
+          + d.countries.slice(0,8).map(function(c){
+            return '<tr><td>'+c.country+'</td><td class="num">'+fmtNum(c.users)+'</td>'
+              +'<td><div class="bar-wrap"><div class="bar" style="width:'+c.pct.toFixed(1)+'%"></div></div></td></tr>';
+          }).join('') + '</tbody></table>';
+      } else {
+        document.getElementById('audCountries').innerHTML='<div class="small" style="color:var(--t3)">Sin datos disponibles todavía.</div>';
+      }
+      if(d.newReturning && d.newReturning.length){
+        document.getElementById('audNewReturning').innerHTML =
+          '<table style="width:100%"><tbody>'
+          + d.newReturning.map(function(nr){
+            const icon = nr.type==='new' ? '🆕' : '🔄';
+            return '<tr><td>'+icon+' '+nr.type+'</td><td class="num">'+fmtNum(nr.users)+'</td>'
+              +'<td><div class="bar-wrap"><div class="bar" style="width:'+nr.pct.toFixed(1)+'%"></div></div></td></tr>';
+          }).join('') + '</tbody></table>';
+      } else {
+        document.getElementById('audNewReturning').innerHTML='<div class="small" style="color:var(--t3)">Sin datos disponibles todavía.</div>';
+      }
+    }catch(e){
+      ['audDevices','audCountries','audNewReturning'].forEach(function(id){
+        const el = document.getElementById(id);
+        if(el && el.querySelector('.loading')) el.innerHTML='<div class="small" style="color:var(--t3)">Pendiente de función getAudienceDetail.</div>';
+      });
+    }
+  })();
+}
 </script>
 </body>
 </html>
