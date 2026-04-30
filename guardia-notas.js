@@ -55,6 +55,7 @@
         '<button onclick="exportGuardiaCSV()" style="padding:8px 16px;background:none;border:1px solid var(--border,#ddd);border-radius:8px;font-size:.82rem;cursor:pointer;color:var(--text,#333);">📥 Exportar CSV</button>' +
         '<button onclick="exportGuardiaPrint()" style="padding:8px 16px;background:none;border:1px solid var(--border,#ddd);border-radius:8px;font-size:.82rem;cursor:pointer;color:var(--text,#333);">🖨️ Imprimir</button>' +
         '<div style="flex:1;"></div>' +
+        '<button onclick="volverInicioGuardia()" style="padding:8px 16px;background:linear-gradient(135deg,#1a6b4a,#0f6b4a);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:.82rem;cursor:pointer;">🏠 Volver a inicio</button>' +
         '<button onclick="closeGuardia()" style="padding:8px 16px;background:none;border:1px solid var(--border,#ddd);border-radius:8px;font-size:.82rem;cursor:pointer;color:var(--text-muted,#888);">✕ Cerrar</button>' +
       '</div>' +
       '<div style="padding:16px 20px;overflow-x:auto;" id="guardiaTableWrap">' +
@@ -192,5 +193,20 @@
     var modal = document.getElementById('guardiaModal');
     if (modal) modal.style.display = 'none';
     if (guardiaListener) { guardiaListener(); guardiaListener = null; }
+  };
+
+  // Cierra el modal y vuelve a la pantalla de inicio (index.html).
+  // Útil cuando el usuario abrió "Mi Guardia" vía deep-link
+  // (?action=mi-guardia) y quiere regresar al landing en lugar de
+  // quedarse en panel-medico.html.
+  window.volverInicioGuardia = function() {
+    window.closeGuardia();
+    // Si el referrer es la propia app, hacer back; si no, ir directo a /
+    if (document.referrer && document.referrer.indexOf(location.origin) === 0
+        && document.referrer.indexOf('panel-medico') < 0) {
+      history.back();
+    } else {
+      location.href = '/index.html';
+    }
   };
 })();

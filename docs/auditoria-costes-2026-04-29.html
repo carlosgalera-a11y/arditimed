@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auditoría de Costes · Cartagenaeste · 2026-04-29</title>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --primary: #0f6b4a;
+    --primary-light: #e6f4ef;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --blue: #1e40af;
+    --blue-light: #dbeafe;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --gray: #374151;
+    --gray-light: #f9fafb;
+    --border: #e5e7eb;
+    --font: 'Segoe UI', system-ui, sans-serif;
+    --mono: 'Fira Code', 'Cascadia Code', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    font-size: 10pt;
+    color: #1f2937;
+    background: #fff;
+    line-height: 1.5;
+  }
+
+  .no-print {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--primary);
+  }
+  .no-print button {
+    padding: 7px 18px;
+    background: var(--primary);
+    color: #fff;
+    border: 0;
+    border-radius: 6px;
+    font-family: var(--font);
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .no-print button:hover { background: #0d5a3e; }
+  .no-print .hint { font-size: .78rem; color: #94a3b8; }
+
+  .doc {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px 36px 50px;
+  }
+
+  /* ── Portada ── */
+  .cover {
+    text-align: center;
+    padding: 40px 0 30px;
+    border-bottom: 3px solid var(--primary);
+    margin-bottom: 30px;
+  }
+  .cover .logo { font-size: 2.5rem; margin-bottom: 8px; }
+  .cover h1 { font-size: 1.6rem; color: var(--primary); font-weight: 800; }
+  .cover .sub { font-size: .95rem; color: #6b7280; margin-top: 6px; }
+  .cover .meta {
+    margin-top: 18px;
+    display: inline-flex;
+    gap: 24px;
+    background: var(--gray-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: .82rem;
+    color: var(--gray);
+  }
+  .cover .meta span { display: flex; flex-direction: column; }
+  .cover .meta strong { font-size: .95rem; color: #111827; }
+
+  /* ── Secciones ── */
+  h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary);
+    border-left: 4px solid var(--primary);
+    padding-left: 10px;
+    margin: 28px 0 12px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #374151;
+    margin: 18px 0 8px;
+    page-break-after: avoid;
+  }
+  p { margin-bottom: 8px; font-size: .88rem; }
+
+  /* ── Escenario cards ── */
+  .scenarios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 14px 0 20px;
+  }
+  .sc-card {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    background: var(--gray-light);
+  }
+  .sc-card.hoy { border-color: var(--primary); background: var(--primary-light); }
+  .sc-card.mid { border-color: var(--amber); background: var(--amber-light); }
+  .sc-card.max { border-color: var(--red); background: var(--red-light); }
+  .sc-card .sc-title { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+  .sc-card.hoy .sc-title { color: var(--primary); }
+  .sc-card.mid .sc-title { color: var(--amber); }
+  .sc-card.max .sc-title { color: var(--red); }
+  .sc-card .sc-price { font-size: 1.6rem; font-weight: 900; font-family: var(--mono); }
+  .sc-card .sc-range { font-size: .75rem; color: #6b7280; margin-top: 2px; }
+  .sc-card .sc-dau { font-size: .78rem; color: #4b5563; margin-top: 6px; border-top: 1px solid rgba(0,0,0,.1); padding-top: 6px; }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .82rem;
+    margin: 8px 0 16px;
+    page-break-inside: avoid;
+  }
+  thead tr { background: var(--primary); color: #fff; }
+  thead th { padding: 7px 10px; text-align: left; font-weight: 700; font-size: .78rem; }
+  thead th.num { text-align: right; }
+  tbody tr:nth-child(even) { background: var(--gray-light); }
+  tbody tr:hover { background: #f0fdf4; }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  td.num { text-align: right; font-family: var(--mono); font-size: .80rem; }
+  td.ok { color: var(--primary); font-weight: 700; }
+  td.warn { color: var(--amber); font-weight: 700; }
+  td.danger { color: var(--red); font-weight: 700; }
+  .total-row td { font-weight: 800; background: #f0fdf4; color: var(--primary); border-top: 2px solid var(--primary); }
+  .total-row td.num { font-size: .92rem; }
+
+  /* ── Alertas / callouts ── */
+  .callout {
+    border-radius: 8px;
+    padding: 11px 14px;
+    margin: 10px 0;
+    font-size: .84rem;
+    border-left: 4px solid;
+    page-break-inside: avoid;
+  }
+  .callout.info  { background: var(--blue-light);   border-color: var(--blue);   color: #1e3a8a; }
+  .callout.warn  { background: var(--amber-light);  border-color: var(--amber);  color: #92400e; }
+  .callout.ok    { background: var(--primary-light); border-color: var(--primary); color: #064e3b; }
+  .callout.danger{ background: var(--red-light);    border-color: var(--red);    color: #7f1d1d; }
+  .callout strong { font-weight: 800; }
+
+  /* ── Billing steps ── */
+  .steps { counter-reset: step; margin: 10px 0 16px; }
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+    font-size: .84rem;
+  }
+  .step-num {
+    min-width: 26px;
+    height: 26px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: .8rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-content strong { display: block; font-weight: 700; color: #111; margin-bottom: 2px; }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .badge.free { background: #d1fae5; color: #065f46; }
+  .badge.paid { background: #fef3c7; color: #92400e; }
+  .badge.bloq { background: #fee2e2; color: #991b1b; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 40px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: .75rem;
+    color: #9ca3af;
+    text-align: center;
+  }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; padding: 0; margin: 8px 0 14px; }
+  .checklist li { padding: 5px 0 5px 22px; position: relative; font-size: .84rem; border-bottom: 1px solid var(--border); }
+  .checklist li::before { content: '☐'; position: absolute; left: 0; color: var(--gray); font-size: .9rem; }
+  .checklist li.done::before { content: '✅'; }
+  .checklist li.pending::before { content: '⏳'; }
+
+  /* Print */
+  @media print {
+    .no-print { display: none !important; }
+    .doc { padding: 10px 18px; max-width: 100%; }
+    h2 { page-break-before: auto; }
+    .cover { padding: 20px 0 16px; }
+    .scenarios { grid-template-columns: repeat(3,1fr); }
+    a { color: inherit; text-decoration: none; }
+  }
+  @page { margin: 18mm 15mm; }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <span style="font-weight:700;font-size:.9rem">📊 Auditoría de Costes · Cartagenaeste</span>
+  <button onclick="exportPdf()">⬇ Descargar PDF</button>
+  <span class="hint">O usa Ctrl+P → Guardar como PDF (sin márgenes)</span>
+</div>
+
+<div class="doc" id="pdfContent">
+
+<!-- ════════════════════════════════════════════════ PORTADA -->
+<div class="cover">
+  <div class="logo">📊</div>
+  <h1>Auditoría de Costes · Cartagenaeste</h1>
+  <div class="sub">Análisis de coste actual + proyecciones 500 y 1.000 usuarios/día · Guía Firebase Billing</div>
+  <div class="meta">
+    <span><strong>2026-04-29</strong>Fecha</span>
+    <span><strong>Carlos Galera Román</strong>Autor</span>
+    <span><strong>europe-west1</strong>Región GCP</span>
+    <span><strong>docenciacartagenaeste</strong>Proyecto Firebase</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ 0. TL;DR -->
+<h2>0. Resumen ejecutivo</h2>
+
+<div class="scenarios">
+  <div class="sc-card hoy">
+    <div class="sc-title">Hoy · uso real</div>
+    <div class="sc-price">≈ 1 €</div>
+    <div class="sc-range">al mes · solo dominio</div>
+    <div class="sc-dau">DAU estimado: &lt;5<br>Todo en free tier</div>
+  </div>
+  <div class="sc-card mid">
+    <div class="sc-title">500 DAU</div>
+    <div class="sc-price">60–130 €</div>
+    <div class="sc-range">al mes · escenario realista</div>
+    <div class="sc-dau">≈ 2.500 MAU<br>✅ Firebase Blaze ya activo</div>
+  </div>
+  <div class="sc-card max">
+    <div class="sc-title">1.000 DAU</div>
+    <div class="sc-price">110–260 €</div>
+    <div class="sc-range">al mes · escenario intensivo</div>
+    <div class="sc-dau">≈ 5.000 MAU<br>Con visión IA: hasta 380 €/mes</div>
+  </div>
+</div>
+
+<div class="callout ok">
+  <strong>Lectura operativa:</strong> Con el contrato HSL (14.000 €/año · 80 profesionales),
+  el coste real de infraestructura incluso a 1.000 DAU (máx. 260 €/mes · 3.120 €/año)
+  deja un <strong>margen operativo del 78%</strong> solo en infraestructura,
+  sin contar licencias ni desarrollo.
+</div>
+
+<!-- ════════════════════════════════════════════════ 1. STACK -->
+<h2>1. Stack actual · inventario y estado de facturación</h2>
+
+<table>
+  <thead><tr>
+    <th>Componente</th><th>Proveedor</th><th>Plan actual</th><th class="num">Coste hoy</th><th>Límite free</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>Dominio <code>area2cartagena.es</code></td><td>Registrador</td><td><span class="badge paid">pagado</span></td><td class="num warn">1,25 €/mes</td><td>—</td></tr>
+    <tr><td>Hosting frontend</td><td>GitHub Pages</td><td><span class="badge free">free</span></td><td class="num ok">0 €</td><td>Sin límite práctico</td></tr>
+    <tr><td>Firestore (base de datos)</td><td>Firebase/GCP</td><td><span class="badge paid">✅ Blaze activo</span></td><td class="num ok">0 €</td><td>50k lect/día · 20k escrit/día · 1 GiB (free tier)</td></tr>
+    <tr><td>Firebase Auth</td><td>Firebase</td><td><span class="badge paid">✅ Blaze activo</span></td><td class="num ok">0 €</td><td>50.000 MAU gratis (free tier)</td></tr>
+    <tr><td>Cloud Functions (14 activas)</td><td>Firebase/GCP</td><td><span class="badge paid">✅ Blaze activo</span></td><td class="num ok">0 €</td><td>2M invoc/mes · 400k GB-s (free tier)</td></tr>
+    <tr><td>Firebase Storage</td><td>Firebase</td><td><span class="badge paid">✅ Blaze activo</span></td><td class="num ok">0 €</td><td>5 GiB · 1 GiB egress/día (free tier)</td></tr>
+    <tr><td>App Check</td><td>Firebase</td><td><span class="badge paid">✅ Blaze activo</span></td><td class="num ok">0 €</td><td>Sin límite</td></tr>
+    <tr><td>DeepSeek API (educational)</td><td>DeepSeek</td><td><span class="badge free">free / testing</span></td><td class="num ok">0 €</td><td>Rate limit severo en free</td></tr>
+    <tr><td>OpenRouter (routing fallback)</td><td>OpenRouter</td><td><span class="badge paid">pay-as-you-go</span></td><td class="num ok">≈ 0 € (saldo testing)</td><td>Sin free tier</td></tr>
+    <tr><td>Sentry (errores + PII scrub)</td><td>Sentry.io</td><td><span class="badge free">Team free</span></td><td class="num ok">0 €</td><td>5.000 errores/mes</td></tr>
+    <tr><td>Google Analytics 4</td><td>Google</td><td><span class="badge free">free</span></td><td class="num ok">0 €</td><td>Sin límite práctico</td></tr>
+    <tr class="total-row"><td colspan="3"><strong>TOTAL ACTUAL</strong></td><td class="num">≈ 1,25 €/mes</td><td>≈ 15 €/año</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════════════════════════════════════════ 2. PRECIOS -->
+<h2>2. Tarifas de referencia · 2026</h2>
+
+<h3>2.1 Firebase / Google Cloud Platform · europe-west1</h3>
+
+<table>
+  <thead><tr>
+    <th>Recurso</th><th>Umbral gratuito mensual</th><th class="num">Precio tras umbral</th><th>Equivalente en usuarios</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>Firestore lecturas</td><td>50.000 / día = 1,5M/mes</td><td class="num">0,06 $/100k</td><td>~2.500 usuarios/día con 20 reads/sesión</td></tr>
+    <tr><td>Firestore escrituras</td><td>20.000 / día = 600k/mes</td><td class="num">0,18 $/100k</td><td>~3.000 usuarios/día con 6 writes/sesión</td></tr>
+    <tr><td>Firestore eliminaciones</td><td>20.000 / día</td><td class="num">0,02 $/100k</td><td>Marginal (TTL automático)</td></tr>
+    <tr><td>Firestore storage</td><td>1 GiB</td><td class="num">0,18 $/GiB·mes</td><td>—</td></tr>
+    <tr><td>Firebase Auth MAU</td><td>50.000 MAU</td><td class="num">0,0055 $/MAU (UE)</td><td>—</td></tr>
+    <tr><td>Cloud Functions invocaciones</td><td>2.000.000 / mes</td><td class="num">0,40 $/M</td><td>~6.700 usuarios/día con 10 CF/sesión</td></tr>
+    <tr><td>Cloud Functions GB·s</td><td>400.000 GB·s/mes</td><td class="num">0,0000025 $/GB·s</td><td>512 MiB × 10s × 2M calls = 10M GB·s (excede a 2M users)</td></tr>
+    <tr><td>Firebase Storage</td><td>5 GiB</td><td class="num">0,026 $/GiB·mes</td><td>—</td></tr>
+    <tr><td>Egress internet</td><td>1 GiB / día free (GA)</td><td class="num">0,12 $/GiB</td><td>~500 usuarios/día · 200 KB promedio/sesión</td></tr>
+    <tr><td>Backups (GCS) · ✅ disponible en Blaze</td><td>0</td><td class="num">0,026 $/GiB·mes</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <strong>✅ Plan Blaze ya activo.</strong> El free tier se mantiene íntegramente — solo se cobra lo que supera el umbral mensual.
+  Los backups automáticos de Firestore, GCS y todos los servicios GCP están disponibles sin fricción adicional.
+  La tarjeta está registrada; el cargo llega el día 1 del mes siguiente solo si hay exceso.
+</div>
+
+<h3>2.2 Proveedores IA · precios por 1M tokens (EUR estimado)</h3>
+
+<table>
+  <thead><tr>
+    <th>Modelo</th><th>Proveedor</th><th class="num">Input $/1M</th><th class="num">Output $/1M</th><th class="num">Coste típico 1 llamada*</th><th>Uso en routing</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>Gemini 2.5 Flash-Lite</td><td>Google (EU directo)</td><td class="num">0,10</td><td class="num">0,40</td><td class="num ok">0,00052 $</td><td>Educational primario fallback</td></tr>
+    <tr><td>DeepSeek V3 (Chat)</td><td>DeepSeek / OR</td><td class="num">0,27</td><td class="num">1,10</td><td class="num ok">0,00127 $</td><td>Educational primario</td></tr>
+    <tr><td>Mistral Small 3.2</td><td>Mistral (EU)</td><td class="num">0,20</td><td class="num">0,60</td><td class="num ok">0,00084 $</td><td>Fallback educational</td></tr>
+    <tr><td>Gemini 2.5 Flash</td><td>Google (EU directo)</td><td class="num">0,30</td><td class="num">2,50</td><td class="num warn">0,00286 $</td><td>Fallback clinical_case</td></tr>
+    <tr><td>Qwen 2.5-VL-72B</td><td>DashScope / OR</td><td class="num">1,80</td><td class="num">5,40</td><td class="num warn">0,00756 $</td><td>Vision primario</td></tr>
+    <tr><td>Claude Haiku 4.5</td><td>Anthropic</td><td class="num">1,00</td><td class="num">5,00</td><td class="num warn">0,00620 $</td><td>Opcional (no activo)</td></tr>
+  </tbody>
+</table>
+<p style="font-size:.75rem;color:#6b7280">* Asume 1.200 tokens in / 1.000 tokens out por llamada media.</p>
+
+<!-- ════════════════════════════════════════════════ 3. ESCENARIOS -->
+<h2>3. Proyección de costes por escenario de uso</h2>
+
+<h3>3.1 Supuestos del modelo</h3>
+
+<table>
+  <thead><tr>
+    <th>Métrica</th><th class="num">Hoy</th><th class="num">500 DAU</th><th class="num">1.000 DAU</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>DAU (usuarios/día activos)</td><td class="num">&lt; 5</td><td class="num">500</td><td class="num">1.000</td></tr>
+    <tr><td>MAU estimado (DAU ÷ 0,20)</td><td class="num">&lt; 25</td><td class="num">2.500</td><td class="num">5.000</td></tr>
+    <tr><td>Peticiones IA / usuario / día</td><td class="num">3–5</td><td class="num">5</td><td class="num">6</td></tr>
+    <tr><td>Llamadas IA totales / mes</td><td class="num">~200</td><td class="num">75.000</td><td class="num">180.000</td></tr>
+    <tr><td>Tokens promedio/llamada (in+out)</td><td class="num">1.100</td><td class="num">2.200</td><td class="num">2.500</td></tr>
+    <tr><td>% cache hit (aiCache 7d)</td><td class="num">~30%</td><td class="num">35%</td><td class="num">40%</td></tr>
+    <tr><td>Llamadas IA facturadas (post-caché)</td><td class="num">~140</td><td class="num">48.750</td><td class="num">108.000</td></tr>
+    <tr><td>% llamadas educational (DeepSeek)</td><td class="num">70%</td><td class="num">65%</td><td class="num">60%</td></tr>
+    <tr><td>% llamadas clinical_case (Gemini/DS)</td><td class="num">28%</td><td class="num">30%</td><td class="num">35%</td></tr>
+    <tr><td>% llamadas vision (Qwen VL)</td><td class="num">2%</td><td class="num">5%</td><td class="num">5%</td></tr>
+    <tr><td>Reads Firestore / mes</td><td class="num">~10k</td><td class="num">350k</td><td class="num">700k</td></tr>
+    <tr><td>Writes Firestore / mes</td><td class="num">~2k</td><td class="num">95k</td><td class="num">200k</td></tr>
+    <tr><td>Invocaciones Cloud Functions / mes</td><td class="num">~500</td><td class="num">850k</td><td class="num">1,8M</td></tr>
+    <tr><td>Egress estimado / mes</td><td class="num">&lt; 200 MiB</td><td class="num">~3 GiB</td><td class="num">~6 GiB</td></tr>
+    <tr><td>Firestore storage</td><td class="num">&lt; 100 MiB</td><td class="num">~1,5 GiB</td><td class="num">~4 GiB</td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 Desglose de coste · escenario HOY</h3>
+
+<div class="callout ok">
+  Plan <strong>Blaze ya activo</strong>. Todo el uso actual está dentro del free tier — la factura GCP es 0 €.
+  El único coste real es el dominio. No hay cargos de ningún proveedor IA.
+</div>
+
+<table>
+  <thead><tr><th>Concepto</th><th class="num">€/mes</th><th>Nota</th></tr></thead>
+  <tbody>
+    <tr><td>Dominio area2cartagena.es</td><td class="num warn">1,25</td><td>Único coste real</td></tr>
+    <tr><td>Firebase (Firestore + Auth + Functions + Storage)</td><td class="num ok">0,00</td><td>Ampliamente bajo umbral free</td></tr>
+    <tr><td>DeepSeek API</td><td class="num ok">0,00</td><td>Free tier / saldo testing</td></tr>
+    <tr><td>OpenRouter</td><td class="num ok">0,00</td><td>Saldo testing</td></tr>
+    <tr><td>Sentry, GA4, GitHub Pages</td><td class="num ok">0,00</td><td>Planes gratuitos</td></tr>
+    <tr class="total-row"><td><strong>TOTAL</strong></td><td class="num">1,25 €/mes</td><td>15 €/año</td></tr>
+  </tbody>
+</table>
+
+<h3>3.3 Desglose de coste · 500 DAU</h3>
+
+<table>
+  <thead><tr><th>Concepto</th><th class="num">Mínimo €/mes</th><th class="num">Realista €/mes</th><th class="num">Pesimista €/mes</th><th>Cálculo</th></tr></thead>
+  <tbody>
+    <tr><td>Dominio</td><td class="num">1,25</td><td class="num">1,25</td><td class="num">1,25</td><td>Fijo</td></tr>
+    <tr><td><strong>Firebase Auth</strong> · 2.500 MAU</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>50k MAU free; 2.500 &lt;&lt; umbral</td></tr>
+    <tr><td><strong>Firestore reads</strong> · 350k/mes</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>1,5M/mes free; 350k está dentro</td></tr>
+    <tr><td><strong>Firestore writes</strong> · 95k/mes</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>600k/mes free; 95k está dentro</td></tr>
+    <tr><td><strong>Cloud Functions</strong> · 850k invocaciones</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>2M/mes free; 850k está dentro</td></tr>
+    <tr><td><strong>Firestore storage</strong> · 1,5 GiB</td><td class="num ok">0</td><td class="num warn">0,09</td><td class="num warn">0,18</td><td>1 GiB free; 0,5 GiB extra × 0,18 $/GiB</td></tr>
+    <tr><td><strong>Egress</strong> · ~3 GiB</td><td class="num warn">0,24</td><td class="num warn">0,36</td><td class="num warn">0,60</td><td>Estimado 2-5 GiB; (GiB−1) × 0,12 $/GiB</td></tr>
+    <tr><td><strong>Backups diarios GCS</strong></td><td class="num warn">0,10</td><td class="num warn">0,20</td><td class="num warn">0,40</td><td>~8 GiB backups × 0,026 $/GiB</td></tr>
+    <tr><td colspan="5" style="background:#f0fdf4;font-size:.75rem;padding:4px 10px;color:#065f46"><strong>Subtotal Firebase:</strong> 0,35 – 1,18 €/mes</td></tr>
+    <tr><td><strong>IA · educational</strong> 65% de 48.750 calls × 0,75 €/1k calls</td><td class="num warn">10</td><td class="num warn">18</td><td class="num warn">28</td><td>DeepSeek mix; con caché 35%</td></tr>
+    <tr><td><strong>IA · clinical_case</strong> 30% · Gemini Flash/DeepSeek mix</td><td class="num warn">8</td><td class="num warn">16</td><td class="num warn">30</td><td>Mix híbrido; Gemini Flash-Lite + DeepSeek</td></tr>
+    <tr><td><strong>IA · vision</strong> 5% · Qwen VL o Gemini Flash</td><td class="num warn">5</td><td class="num warn">10</td><td class="num danger">22</td><td>Qwen VL 7× más caro que text</td></tr>
+    <tr><td colspan="5" style="background:#fef9c3;font-size:.75rem;padding:4px 10px;color:#713f12"><strong>Subtotal IA:</strong> 23 – 80 €/mes (con caché activa)</td></tr>
+    <tr><td><strong>Sentry</strong> (opcional Team+)</td><td class="num ok">0</td><td class="num ok">0</td><td class="num warn">28</td><td>Free plan cubre &lt;5k errores/mes</td></tr>
+    <tr class="total-row"><td><strong>TOTAL 500 DAU</strong></td><td class="num">≈ 25 €</td><td class="num">≈ 60 €</td><td class="num">≈ 130 €</td><td>Buffer × 1,3 aplicado</td></tr>
+  </tbody>
+</table>
+
+<h3>3.4 Desglose de coste · 1.000 DAU</h3>
+
+<table>
+  <thead><tr><th>Concepto</th><th class="num">Mínimo €/mes</th><th class="num">Realista €/mes</th><th class="num">Pesimista €/mes</th><th>Cálculo</th></tr></thead>
+  <tbody>
+    <tr><td>Dominio</td><td class="num">1,25</td><td class="num">1,25</td><td class="num">1,25</td><td>Fijo</td></tr>
+    <tr><td><strong>Firebase Auth</strong> · 5.000 MAU</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>50k MAU free; 5.000 está dentro</td></tr>
+    <tr><td><strong>Firestore reads</strong> · 700k/mes</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>1,5M/mes free; 700k está dentro</td></tr>
+    <tr><td><strong>Firestore writes</strong> · 200k/mes</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>600k/mes free; 200k está dentro</td></tr>
+    <tr><td><strong>Cloud Functions</strong> · 1,8M invoc.</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok">0</td><td>2M/mes free; 1,8M está dentro</td></tr>
+    <tr><td><strong>Firestore storage</strong> · 4 GiB</td><td class="num warn">0,36</td><td class="num warn">0,54</td><td class="num warn">0,90</td><td>3 GiB extra × 0,18 $/GiB</td></tr>
+    <tr><td><strong>Egress</strong> · ~6 GiB</td><td class="num warn">0,48</td><td class="num warn">0,60</td><td class="num warn">1,20</td><td>5 GiB facturable × 0,12 $/GiB</td></tr>
+    <tr><td><strong>Backups diarios GCS</strong></td><td class="num warn">0,30</td><td class="num warn">0,50</td><td class="num warn">0,80</td><td>~20 GiB backups × 0,026 $/GiB</td></tr>
+    <tr><td colspan="5" style="background:#f0fdf4;font-size:.75rem;padding:4px 10px;color:#065f46"><strong>Subtotal Firebase:</strong> 1,14 – 2,90 €/mes · <em>free tier aguanta muy bien</em></td></tr>
+    <tr><td><strong>IA · educational</strong> 60% de 108k calls</td><td class="num warn">18</td><td class="num warn">35</td><td class="num warn">55</td><td>DeepSeek mix con 40% caché</td></tr>
+    <tr><td><strong>IA · clinical_case</strong> 35% · mix premium</td><td class="num warn">20</td><td class="num warn">40</td><td class="num danger">70</td><td>Si Gemini Flash predomina</td></tr>
+    <tr><td><strong>IA · vision</strong> 5% · Qwen VL</td><td class="num warn">9</td><td class="num warn">20</td><td class="num danger">50</td><td>Si todas las imágenes van a Qwen VL</td></tr>
+    <tr><td colspan="5" style="background:#fef9c3;font-size:.75rem;padding:4px 10px;color:#713f12"><strong>Subtotal IA:</strong> 47 – 175 €/mes (con caché; sin caché ×1,7)</td></tr>
+    <tr><td><strong>Sentry Team+</strong></td><td class="num ok">0</td><td class="num warn">28</td><td class="num warn">28</td><td>Recomendado a partir de 500 DAU</td></tr>
+    <tr class="total-row"><td><strong>TOTAL 1.000 DAU</strong></td><td class="num">≈ 50 €</td><td class="num">≈ 110 €</td><td class="num">≈ 260 €</td><td>Buffer × 1,3 aplicado</td></tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>Lever más poderoso para reducir coste IA:</strong> la caché de 7 días (<code>aiCache</code>)
+  ya está activa. A 1.000 DAU con 40% de hits, ahorra ~70 €/mes vs sin caché.
+  Para maximizar: prompts clínicos estandarizados → más hits de caché → menor coste real.
+</div>
+
+<h3>3.5 Comparativa de escenarios · tabla resumen</h3>
+
+<table>
+  <thead><tr>
+    <th>Escenario</th><th class="num">DAU</th><th class="num">MAU</th><th class="num">Calls IA/mes</th><th class="num">Firebase €</th><th class="num">IA €</th><th class="num">TOTAL €/mes</th><th class="num">TOTAL €/año</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>Hoy (real)</td><td class="num">&lt;5</td><td class="num">&lt;25</td><td class="num">~200</td><td class="num ok">0</td><td class="num ok">0</td><td class="num ok"><strong>≈ 1 €</strong></td><td class="num ok">15 €</td></tr>
+    <tr><td>500 DAU · optimista</td><td class="num">500</td><td class="num">2.500</td><td class="num">48.750</td><td class="num warn">0,35</td><td class="num warn">23</td><td class="num warn"><strong>≈ 25 €</strong></td><td class="num warn">300 €</td></tr>
+    <tr><td>500 DAU · realista</td><td class="num">500</td><td class="num">2.500</td><td class="num">48.750</td><td class="num warn">0,65</td><td class="num warn">44</td><td class="num warn"><strong>≈ 60 €</strong></td><td class="num warn">720 €</td></tr>
+    <tr><td>500 DAU · pesimista</td><td class="num">500</td><td class="num">2.500</td><td class="num">48.750</td><td class="num warn">1,18</td><td class="num warn">80</td><td class="num danger"><strong>≈ 130 €</strong></td><td class="num danger">1.560 €</td></tr>
+    <tr><td>1.000 DAU · optimista</td><td class="num">1.000</td><td class="num">5.000</td><td class="num">108.000</td><td class="num warn">1,14</td><td class="num warn">47</td><td class="num warn"><strong>≈ 50 €</strong></td><td class="num warn">600 €</td></tr>
+    <tr><td>1.000 DAU · realista</td><td class="num">1.000</td><td class="num">5.000</td><td class="num">108.000</td><td class="num warn">1,60</td><td class="num warn">95</td><td class="num danger"><strong>≈ 110 €</strong></td><td class="num danger">1.320 €</td></tr>
+    <tr><td>1.000 DAU · pesimista</td><td class="num">1.000</td><td class="num">5.000</td><td class="num">108.000</td><td class="num warn">2,90</td><td class="num danger">175</td><td class="num danger"><strong>≈ 260 €</strong></td><td class="num danger">3.120 €</td></tr>
+    <tr><td style="color:#6b7280">1.000 DAU + vision intensiva</td><td class="num" style="color:#6b7280">1.000</td><td class="num" style="color:#6b7280">5.000</td><td class="num" style="color:#6b7280">108.000</td><td class="num" style="color:#6b7280">2,90</td><td class="num" style="color:#dc2626">350</td><td class="num" style="color:#dc2626"><strong>≈ 380 €</strong></td><td class="num" style="color:#dc2626">4.560 €</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════════════════════════════════════════ 4. FIREBASE BILLING -->
+<h2>4. Cómo y cuándo te cobra Firebase · guía completa</h2>
+
+<h3>4.1 El modelo de facturación Firebase explicado</h3>
+
+<div class="callout warn">
+  <strong>Punto clave:</strong> Firebase tiene <strong>dos planes</strong>:
+  <strong>Spark</strong> (gratis, con límites) y <strong>Blaze</strong> (pay-as-you-go).
+  En Blaze, el free tier se mantiene intacto — <em>solo pagas lo que excede el umbral gratuito</em>.
+  La diferencia es que en Blaze puedes superar esos umbrales.
+</div>
+
+<table>
+  <thead><tr><th>Plan</th><th>Facturación</th><th>Free tier</th><th>Superar límite</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Spark</strong> (actual)</td><td>Gratis</td><td>Sí</td><td>Función bloqueada / error 429</td></tr>
+    <tr><td><strong>Blaze</strong> (necesario para crecer)</td><td>Pay-as-you-go · tarjeta crédito</td><td>Sí (mismo que Spark)</td><td>Se factura el exceso mes a mes</td></tr>
+  </tbody>
+</table>
+
+<h3>4.2 Cuándo te empiezan a cobrar</h3>
+
+<div class="steps">
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <strong>Migras a Blaze (no te cobra nada por el cambio)</strong>
+      Ve a Firebase Console → Project Settings → Usage and Billing → Upgrade to Blaze.
+      Introduces una tarjeta de crédito o cuenta bancaria. En ese momento: 0 € cobrado.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <strong>El uso cae dentro del free tier (meses de bajo volumen)</strong>
+      Si en un mes no superas los umbrales gratuitos (50k lecturas/día, 2M Functions, etc.),
+      la factura de GCP es 0 €. <strong>Solo pagas el dominio.</strong>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <strong>El uso supera algún umbral</strong>
+      GCP calcula el exceso diariamente y lo acumula. Al final del mes (día 1 del mes siguiente),
+      GCP genera una factura y carga automáticamente la tarjeta.
+      Recibes un email de GCP con el detalle de la factura.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <strong>Configuras un budget de alerta (obligatorio antes de subir a Blaze)</strong>
+      GCP Billing → Budgets &amp; Alerts. Pones un límite (ej. 20 €/mes) y GCP te avisa
+      por email al alcanzar el 50%, 90% y 100% del presupuesto. <em>No corta el servicio automáticamente</em>
+      salvo que actives "cap budget actions".
+    </div>
+  </div>
+</div>
+
+<h3>4.3 Cómo configurar alertas de presupuesto GCP</h3>
+
+<div class="callout info">
+  Hacer esto <strong>antes de pasar a Blaze</strong>. Es la red de seguridad contra facturas inesperadas.
+</div>
+
+<p>Vía consola web (más sencillo):</p>
+<ol style="font-size:.84rem;padding-left:18px;margin-bottom:10px;line-height:1.8">
+  <li>Ir a <strong>console.cloud.google.com → Billing → Budgets &amp; Alerts</strong></li>
+  <li>Clic en <strong>Create Budget</strong></li>
+  <li>Seleccionar proyecto <code>docenciacartagenaeste</code></li>
+  <li>Poner importe: <strong>20 EUR</strong> (para el nivel actual)</li>
+  <li>Añadir thresholds: 50% (alerta temprana) · 90% · 100% · 150% (emergencia)</li>
+  <li>Email de alerta: tu email personal</li>
+  <li>Guardar. Recibirás emails cuando alcances cada threshold.</li>
+</ol>
+
+<p>Vía gcloud CLI (para automatizar):</p>
+<table>
+  <thead><tr><th>MAU / DAU esperado</th><th>Budget recomendado</th><th>Acción si superas el 90%</th></tr></thead>
+  <tbody>
+    <tr><td>&lt; 50 MAU / &lt; 10 DAU</td><td class="num">20 €/mes</td><td>Revisar abuso / llamadas anómalas</td></tr>
+    <tr><td>~500 DAU</td><td class="num">120 €/mes</td><td>Verificar caché hit rate; subir si es uso legítimo</td></tr>
+    <tr><td>~1.000 DAU</td><td class="num">280 €/mes</td><td>Escalar memoria CF; revisar egress</td></tr>
+    <tr><td>&gt; 1.000 DAU</td><td class="num">400 €/mes</td><td>Evaluar plan de soporte GCP / CDN Cloudflare</td></tr>
+  </tbody>
+</table>
+
+<h3>4.4 Cómo leer tu factura Firebase / GCP</h3>
+
+<p><strong>Dónde verla:</strong> <a href="https://console.cloud.google.com/billing">console.cloud.google.com/billing</a> → seleccionar billing account → Reports.</p>
+
+<p>Los cargos de Firebase aparecen bajo estos SKUs principales:</p>
+<table>
+  <thead><tr><th>SKU en la factura GCP</th><th>Qué es</th></tr></thead>
+  <tbody>
+    <tr><td><code>Cloud Firestore Document Reads</code></td><td>Lecturas Firestore por encima de 50k/día</td></tr>
+    <tr><td><code>Cloud Firestore Document Writes</code></td><td>Escrituras por encima de 20k/día</td></tr>
+    <tr><td><code>Cloud Functions Invocations</code></td><td>Invocaciones por encima de 2M/mes</td></tr>
+    <tr><td><code>Cloud Functions GB-seconds</code></td><td>Uso memoria × tiempo de ejecución</td></tr>
+    <tr><td><code>Firebase Authentication</code></td><td>MAU por encima de 50k (poco probable en Área II)</td></tr>
+    <tr><td><code>Cloud Storage for Firebase</code></td><td>Storage por encima de 5 GiB</td></tr>
+    <tr><td><code>Cloud Storage Network Egress</code></td><td>Tráfico de salida de GCP</td></tr>
+  </tbody>
+</table>
+
+<div class="callout ok">
+  <strong>Los proveedores IA (DeepSeek, OpenRouter, Gemini) son facturas separadas</strong>, no aparecen en GCP.
+  Cada proveedor tiene su propio portal de billing. El widget "💳 Créditos API" del admin dashboard
+  muestra el saldo en tiempo real.
+</div>
+
+<h3>4.5 Qué pasa si no pagas / qué pasa si te quedas sin saldo IA</h3>
+
+<table>
+  <thead><tr><th>Situación</th><th>Efecto</th><th>Tiempo hasta impacto</th></tr></thead>
+  <tbody>
+    <tr><td>Factura GCP no pagada</td><td>GCP suspende el proyecto tras 30 días de mora</td><td>30 días</td></tr>
+    <tr><td>Saldo DeepSeek agotado</td><td>askAi pasa al siguiente proveedor en la cadena (Gemini fallback)</td><td>Instantáneo · transparente</td></tr>
+    <tr><td>Saldo OpenRouter agotado</td><td>askAi pasa a Gemini directo (si hay GEMINI_API_KEY) o falla con 503</td><td>Instantáneo</td></tr>
+    <tr><td>Todos los proveedores agotados</td><td>askAi devuelve <code>unavailable</code> · el frontend muestra "IA no disponible"</td><td>Instantáneo</td></tr>
+    <tr><td>Functions superan umbral gratuito sin Blaze</td><td>Cloud Functions devuelve 429 · sin factura pero sin servicio</td><td>En el momento del exceso</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════════════════════════════════════════ 5. CHECKLIST -->
+<h2>5. Checklist · qué hacer antes de cada umbral de usuarios</h2>
+
+<h3>Antes de superar 10 DAU (ahora)</h3>
+<ul class="checklist">
+  <li class="done"><strong>Migrar a Blaze</strong> — ✅ ya activo. Backups y GCS disponibles.</li>
+  <li class="pending"><strong>Configurar budget alert a 20 €/mes</strong> en GCP Billing.</li>
+  <li class="pending"><strong>App Check enforce ON</strong> — evita abuso que infle la factura IA.</li>
+  <li class="done"><strong>Rate limit 30/min por IP</strong> — activo en askAi.</li>
+  <li class="done"><strong>Cuota 50 llamadas/usuario/día</strong> — activo.</li>
+  <li class="done"><strong>Caché 7 días por hash</strong> — activo, reduce coste IA.</li>
+  <li class="done"><strong>Widget de saldo API en admin dashboard</strong> — alerta en tiempo real.</li>
+</ul>
+
+<h3>Antes de 100 DAU</h3>
+<ul class="checklist">
+  <li class="pending"><strong>Cuenta DeepSeek con saldo real</strong> (recarga $20-50 para empezar).</li>
+  <li class="pending"><strong>Cuenta OpenRouter con saldo real</strong> (recarga $20-50).</li>
+  <li class="pending"><strong>TTL Firestore activa</strong> en aiRequests y scan_uploads (evita Firestore storage inflado).</li>
+  <li class="pending"><strong>Budget alert a 80 €/mes</strong>.</li>
+  <li class="pending"><strong>Status page /status.html</strong> funcional para comunicar incidencias.</li>
+</ul>
+
+<h3>Antes de 500 DAU</h3>
+<ul class="checklist">
+  <li class="pending"><strong>Prueba de carga con k6</strong> — verificar que 512 MiB en askAi aguanta picos.</li>
+  <li class="pending"><strong>Revisar caché hit rate</strong> en dashboard — si &lt; 20%, revisar prompt normalización.</li>
+  <li class="pending"><strong>Budget alert a 150 €/mes</strong>.</li>
+  <li class="pending"><strong>Cloudflare como CDN proxy</strong> delante de GitHub Pages (reduce egress GCP, activa HSTS preload).</li>
+  <li class="pending"><strong>Seguro RC + ciber</strong> (400-900 €/año — deducible).</li>
+</ul>
+
+<h3>Antes de 1.000 DAU</h3>
+<ul class="checklist">
+  <li class="pending"><strong>Sentry Team+ ($29/mes)</strong> — errores en producción a este volumen requieren tracking serio.</li>
+  <li class="pending"><strong>Budget alert a 300 €/mes</strong>.</li>
+  <li class="pending"><strong>Escalar askAi a 1 GiB</strong> si p95 &gt; 5s (observable en panel SLA del dashboard).</li>
+  <li class="pending"><strong>DPA firmados con DeepSeek + OpenRouter</strong> — imprescindible si hay datos clínicos.</li>
+  <li class="pending"><strong>Plan de contingencia de proveedor IA</strong> — al menos 3 proveedores con saldo activo.</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ 6. PALANCAS DE AHORRO -->
+<h2>6. Palancas de ahorro de coste IA</h2>
+
+<table>
+  <thead><tr><th>Palanca</th><th class="num">Ahorro estimado</th><th>Esfuerzo</th><th>Estado</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Caché 7d por hash de prompt</strong> — respuestas idénticas no se facturan</td><td class="num ok">30–40%</td><td>Bajo</td><td>✅ Activo</td></tr>
+    <tr><td><strong>Gemini Flash-Lite para educational</strong> (0,10 $ input vs 0,27 $ DeepSeek)</td><td class="num ok">20–30%</td><td>Bajo (ya en cadena)</td><td>✅ Fallback activo</td></tr>
+    <tr><td><strong>Normalización de prompts</strong> — tratar "AINEs" y "antiinflamatorios" igual → más cache hits</td><td class="num warn">10–20%</td><td>Medio</td><td>⏳ Pendiente</td></tr>
+    <tr><td><strong>Rate limit usuario en 50/día</strong> — evita un usuario drenando el saldo</td><td class="num warn">5–15%</td><td>Bajo</td><td>✅ Activo</td></tr>
+    <tr><td><strong>Subir cuota a Gemini Flash-Lite</strong> para clinical_case no urgente</td><td class="num warn">15–25%</td><td>Bajo</td><td>⏳ Pendiente</td></tr>
+    <tr><td><strong>Comprar créditos DeepSeek prepago</strong> (vs pay-as-you-go tiene descuento en algunos planes)</td><td class="num warn">5–10%</td><td>Bajo</td><td>⏳ Pendiente</td></tr>
+    <tr><td><strong>Activar App Check</strong> — evita llamadas fraudulentas que inflen la factura</td><td class="num danger">0–100%</td><td>Bajo (espera reCAPTCHA key)</td><td>⏳ H-01 pendiente</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════════════════════════════════════════ 7. MARGEN COMERCIAL -->
+<h2>7. Margen comercial · contexto</h2>
+
+<table>
+  <thead><tr>
+    <th>Escenario</th><th class="num">Factura HSL año 1</th><th class="num">Coste infra/año</th><th class="num">Margen operativo</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>100 DAU · realista</td><td class="num">14.000 €</td><td class="num">720 €</td><td class="num ok">13.280 € <strong>(95%)</strong></td></tr>
+    <tr><td>500 DAU · realista</td><td class="num">14.000 €</td><td class="num">720 €</td><td class="num ok">13.280 € <strong>(95%)</strong></td></tr>
+    <tr><td>1.000 DAU · realista</td><td class="num">14.000 €</td><td class="num">1.320 €</td><td class="num ok">12.680 € <strong>(91%)</strong></td></tr>
+    <tr><td>1.000 DAU · pesimista</td><td class="num">14.000 €</td><td class="num">3.120 €</td><td class="num warn">10.880 € <strong>(78%)</strong></td></tr>
+    <tr><td>1.000 DAU + visión intensiva</td><td class="num">14.000 €</td><td class="num">4.560 €</td><td class="num warn">9.440 € <strong>(67%)</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="callout ok">
+  Incluso en el escenario más pesimista con 1.000 DAU y visión intensiva,
+  el margen es del 67%. El coste de infraestructura no es el riesgo — el riesgo es la velocidad de adopción y las acciones legales pendientes (DPAs, App Check).
+</div>
+
+<!-- ════════════════════════════════════════════════ 8. HISTORIAL -->
+<h2>8. Historial de revisiones</h2>
+<table>
+  <thead><tr><th>Fecha</th><th>Cambios</th></tr></thead>
+  <tbody>
+    <tr><td>2026-04-24</td><td>Documento inicial (MAU) — <code>docs/audit-costes-escalado-1000-usuarios.md</code></td></tr>
+    <tr><td>2026-04-29</td><td>Nuevo documento HTML/PDF. Escenarios en DAU (500/1000). Guía Firebase Billing completa. Widget saldo API activo en admin dashboard. PR #128.</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  Cartagenaeste · Plataforma formativa · No diagnóstica · Licencia propietaria · © 2026 Carlos Galera Román · RPI 00765-03096622<br>
+  Generado 2026-04-29 · Los precios son estimaciones sujetas a cambios en las tarifas de los proveedores · Actualizar trimestralmente.
+</div>
+
+</div><!-- /.doc -->
+
+<script>
+function exportPdf(){
+  const btn = document.querySelector('.no-print button');
+  btn.textContent = '⏳ Generando PDF…';
+  btn.disabled = true;
+  const opt = {
+    margin: [8, 8, 8, 8],
+    filename: 'auditoria-costes-cartagenaeste-2026-04-29.pdf',
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+  html2pdf().set(opt).from(document.getElementById('pdfContent')).save()
+    .then(function(){
+      btn.textContent = '⬇ Descargar PDF';
+      btn.disabled = false;
+    });
+}
+</script>
+</body>
+</html>
