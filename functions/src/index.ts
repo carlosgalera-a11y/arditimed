@@ -36,3 +36,6 @@ export { goldStandardEval } from './goldStandardEval';
 export { fhirExport } from './fhirExport';
 export { getGaReportingHub } from './getGaReportingHub';
 export { getGaSegmentAnalysis } from './getGaSegmentAnalysis';
+export { getApiBalances } from './getApiBalances';
+export { getAudienceDetail } from './getAudienceDetail';
+export { dailyBalanceCheck } from './dailyBalanceCheck';
