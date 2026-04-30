@@ -150,7 +150,9 @@ const CATEGORIAS = [
   {id:'prueb', t:'Pruebas'},
   {id:'vac', t:'Vacunas'},
   {id:'mental', t:'Salud mental'},
-  {id:'herida', t:'Heridas'}
+  {id:'herida', t:'Heridas'},
+  {id:'endo', t:'Endocrino y nutrición'},
+  {id:'cefal', t:'Cefaleas'}
 ];
 
 const CONSEJOS = [
@@ -539,6 +541,191 @@ const CONSEJOS = [
     ],
     fuentes:['Calendario vacunal Región de Murcia 2025','Ministerio de Sanidad · Calendario común','CAV-AEP','AEV · vacunas.org'],
     telefonos:[['🏥 Tu centro de salud (pide cita)','012'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'tiroiditis-hashimoto', cat:['endo'], cc:'cc-fever', icon:'🦋', hc1:'#581c87', hc2:'#7c3aed',
+    titulo:'Tiroiditis de Hashimoto · ¿qué es y cómo se trata?',
+    resumen:'La causa más frecuente de hipotiroidismo. Tratamiento sencillo de por vida con una pastilla en ayunas.',
+    que:'La tiroiditis de Hashimoto es una <strong>enfermedad autoinmune</strong> en la que tu propio sistema defensivo ataca el tiroides (la glándula con forma de mariposa que tienes en el cuello, debajo de la nuez). Es la <strong>causa más frecuente de hipotiroidismo</strong> (tiroides "vago") en países como España, sobre todo en mujeres de 30-50 años. No es contagiosa, no es cáncer y, una vez diagnosticada, se controla muy bien con tratamiento. Lo que pasa es que el tiroides poco a poco produce menos hormona tiroidea, lo que enlentece el metabolismo: por eso aparecen cansancio, frío, aumento de peso, caída de pelo o tristeza sin motivo claro.',
+    hacer:[
+      '<strong>Si te lo han diagnosticado</strong>: el tratamiento es <strong>levotiroxina</strong> (Eutirox®, Levothroid®), una pastilla diaria que sustituye la hormona que tu tiroides ya no fabrica.',
+      '<strong>Cómo tomarla bien</strong>: en ayunas, con un vaso de agua, y <strong>esperar 30-60 minutos antes de desayunar, café o leche</strong>. Si no, se absorbe mal y la dosis no funciona.',
+      'Separarla al menos 4 horas de: <strong>hierro, calcio, omeprazol, soja, suplementos</strong>. Todos reducen su absorción.',
+      'No la abandones nunca por tu cuenta aunque te encuentres bien — es justamente porque funciona.',
+      '<strong>Análisis de control</strong> (TSH y T4 libre) cada 6-12 meses una vez ajustada la dosis, antes si hay cambios de peso o síntomas.',
+      '<strong>Estilo de vida</strong>: ejercicio regular (camina 30 min/día), dieta variada con yodo (pescado, lácteos, sal yodada) y selenio (frutos secos, especialmente nueces de Brasil).',
+      'Si estás embarazada o lo planeas: <strong>avisar al médico inmediatamente</strong>. La dosis se aumenta porque el bebé necesita más hormona tiroidea.',
+      'Sí puedes hacer vida normal, deporte, comer de todo, viajar. La enfermedad <strong>no limita</strong> nada con tratamiento correcto.'
+    ],
+    cita:[
+      'Cansancio extremo sin causa, intolerancia al frío, piel seca, estreñimiento o aumento de peso inexplicable.',
+      'Caída de pelo importante, voz más ronca, sueño excesivo o memoria peor.',
+      'Bocio (notar el cuello más grueso o un bulto en la zona del tiroides).',
+      'Si ya tienes Hashimoto: revisión anual con análisis (TSH).',
+      'Embarazo o deseo gestacional: ajuste rápido de dosis.',
+      'Síntomas que vuelven a pesar de tomar la pastilla: posible necesidad de subir dosis.'
+    ],
+    urgente:[
+      'Muy raro pero posible: <strong>coma mixedematoso</strong> · letargo extremo, hipotermia (&lt;35°C), respiración muy lenta y confusión profunda. <strong>Llama al 112</strong>.',
+      'Dolor súbito e intenso en la zona del tiroides con fiebre alta → puede ser tiroiditis aguda, valorar en Urgencias.'
+    ],
+    fuentes:[
+      'SEEN · Sociedad Española de Endocrinología y Nutrición · Guía de hipotiroidismo 2024',
+      'semFYC · Recomendaciones manejo hipotiroidismo en AP 2023',
+      'SEMERGEN · Documento de consenso tiroiditis autoinmune',
+      'GuíaSalud · Hipotiroidismo del adulto',
+      'AEAT · Asociación Española Cáncer Tiroides (recursos paciente)'
+    ],
+    telefonos:[['🏥 Endocrinología H.G.U. Santa Lucía (cita)','968128600'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'dieta-diabeticos', cat:['endo','med'], cc:'cc-gi', icon:'🥗', hc1:'#14532d', hc2:'#16a34a',
+    titulo:'Dieta para personas con diabetes · qué comer y qué evitar',
+    resumen:'No hay alimentos prohibidos. Hay frecuencias y cantidades adecuadas. Comer bien protege ojos, riñones, pies y corazón.',
+    que:'La diabetes no obliga a una dieta especial separada del resto de la familia: lo que se recomienda a una persona con diabetes es lo que se debería recomendar a cualquiera. Lo único distinto es que <strong>tienes que prestar atención a los hidratos de carbono</strong> (lo que sube el azúcar) y a los horarios. La <strong>dieta mediterránea</strong> es la más estudiada y la que mejor funciona en diabetes tipo 2: pruebas científicas claras de menos infartos, menos ictus, menos complicaciones. La meta no es "no comer dulces nunca", es <strong>mantener glucemias estables</strong> y proteger tu corazón, riñones, ojos y pies a largo plazo.',
+    hacer:[
+      '<strong>Reparto del plato (regla de oro)</strong>:',
+      '½ del plato → <strong>verdura y hortalizas</strong> (sin contar patata).',
+      '¼ del plato → <strong>proteína</strong> (pescado, pollo, huevo, legumbre, marisco).',
+      '¼ del plato → <strong>hidratos integrales</strong> (arroz integral, pasta integral, patata, pan integral, legumbre).',
+      'Postre: <strong>1 fruta entera</strong> (mejor que zumo).',
+      '<strong>5 comidas al día</strong>: desayuno, media mañana, comida, merienda, cena. Evita saltarte ninguna si tomas insulina o sulfonilureas (riesgo hipoglucemia).',
+      '<strong>Aceite de oliva virgen extra</strong> como grasa principal. 3-4 cucharadas al día.',
+      '<strong>Pescado azul</strong> (sardina, caballa, salmón, atún) 2-3 veces por semana.',
+      '<strong>Legumbres</strong> 3-4 veces por semana — saciante y baja el azúcar después de las comidas.',
+      '<strong>Fruta entera</strong>: 2-3 piezas al día, mejor con piel cuando se pueda. NO en zumo.',
+      '<strong>Frutos secos</strong> sin sal (nueces, almendras, avellanas) — un puñado al día (30 g).',
+      '<strong>Bebida</strong>: agua. Té e infusiones sin azúcar libres.',
+      '<strong>EVITAR (no "prohibido", reducir mucho)</strong>:',
+      '<strong>Refrescos, zumos comerciales y energéticas</strong> (incluye "natural" y "zumo recién exprimido": son azúcar líquida).',
+      '<strong>Bollería industrial, galletas, chocolate con leche, helados</strong> y "snacks dulces".',
+      '<strong>Pan blanco, arroz blanco, pasta blanca</strong> en grandes cantidades — preferir integrales.',
+      '<strong>Carne procesada</strong> (salchichas, embutido graso, beicon).',
+      '<strong>Alcohol</strong>: como mucho 1 copa/día (vino tinto en comida) si no hay contraindicación. Cero si toma insulina por la noche → riesgo hipoglucemia.',
+      '<strong>Productos "para diabéticos"</strong> con fructosa o polialcoholes: <strong>NO son sanos</strong>, suelen tener calorías y grasa similar a los normales. Engañan.',
+      '<strong>Ojo con etiquetas</strong>: "0% azúcar" puede tener edulcorantes que provocan picos. Mira ingredientes, no eslogan.',
+      '<strong>Ejercicio</strong>: 30 min diarios, idealmente caminar rápido tras las comidas. Baja el azúcar y mejora la sensibilidad a la insulina.',
+      '<strong>Hidratación</strong>: 1,5-2 litros agua al día.'
+    ],
+    cita:[
+      'Glucemia &gt; 200 mg/dl repetida fuera de comidas o &gt; 140 en ayunas mantenida.',
+      'Hipoglucemias frecuentes (sudor frío, temblor, mareo) — quizás falta cambiar dosis.',
+      'Si la HbA1c sube a pesar de cumplir dieta: revisar tratamiento.',
+      'Si vas a una boda, viaje o cambio de rutina importante: planifica con tu enfermera.',
+      'Pies con heridas que no curan, hormigueos persistentes, problemas de visión.',
+      'Si tienes dudas sobre si un alimento concreto es adecuado: enfermería de AP atiende este tipo de consultas.'
+    ],
+    urgente:[
+      '<strong>Cetoacidosis</strong> (sobre todo diabetes tipo 1): glucemia &gt; 250 + náuseas, vómitos, dolor abdominal, respiración rápida, aliento "afrutado". <strong>Urgencias inmediatas</strong>.',
+      '<strong>Hipoglucemia grave</strong> (&lt; 50 mg/dl) que no recupera con azúcar oral, confusión profunda, convulsión o pérdida de conciencia → <strong>112</strong>.',
+      '<strong>Glucosa muy alta sostenida (&gt; 400)</strong> con mucha sed, mucho pis y mucho cansancio.',
+      'Pie con herida, supuración o color negruzco (pie diabético en riesgo de gangrena).'
+    ],
+    fuentes:[
+      'SEEN · Sociedad Española de Endocrinología y Nutrición · Recomendaciones nutricionales en diabetes 2024',
+      'semFYC · Diabetes mellitus tipo 2 · Guía de práctica clínica',
+      'SEMERGEN · Manejo nutricional del paciente diabético en AP',
+      'redGDPS · Recomendaciones de práctica clínica',
+      'Estudio PREDIMED · NEJM 2018 (dieta mediterránea reduce eventos cardiovasculares)',
+      'ADA Standards of Care 2025 · adaptados a contexto español'
+    ],
+    telefonos:[['🏥 Endocrinología H.G.U. Santa Lucía','968128600'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'dieta-hipertrigliceridemia', cat:['endo'], cc:'cc-gi', icon:'🩸', hc1:'#7c2d12', hc2:'#c2410c',
+    titulo:'Triglicéridos altos · cómo bajarlos con la dieta',
+    resumen:'Lo más efectivo es reducir alcohol, azúcares y bollería, y aumentar pescado azul.',
+    que:'Los triglicéridos son <strong>grasas que circulan por la sangre</strong>. Tener cifras altas de forma mantenida (&gt; 150 mg/dl) aumenta el riesgo de infarto, ictus y, si suben mucho (&gt; 500-1000 mg/dl), de pancreatitis aguda. La buena noticia: los triglicéridos <strong>responden muy bien a cambios de dieta y estilo de vida</strong>, mucho mejor que el colesterol LDL. En 4-6 semanas se ven resultados con cambios sencillos.',
+    hacer:[
+      '<strong>Las 3 palancas más potentes (por orden)</strong>:',
+      '<strong>1. Quitar el alcohol</strong> o limitarlo a la mínima expresión. El alcohol dispara los triglicéridos como ningún otro alimento. Solo con esto puedes bajar 30-50% en 2-4 semanas.',
+      '<strong>2. Quitar azúcares libres</strong>: refrescos, zumos, bollería, helados, dulces, miel, mermelada, "zumos detox" caseros. El cuerpo convierte el exceso de azúcar en triglicéridos directamente.',
+      '<strong>3. Quitar carbohidratos refinados</strong> en exceso: pan blanco, arroz blanco, pasta blanca, harinas refinadas, cereales de desayuno azucarados. Pasa a integrales.',
+      '<strong>Aumentar</strong>:',
+      '<strong>Pescado azul</strong> (sardinas, caballa, atún, salmón, boquerón, anchoa) 3-4 veces por semana — el omega-3 baja triglicéridos.',
+      '<strong>Frutos secos</strong> sin sal (nueces sobre todo) — 30 g/día.',
+      '<strong>Verdura y fruta entera</strong> en cada comida (5 raciones día).',
+      '<strong>Aceite de oliva virgen extra</strong> como única grasa de cocción.',
+      '<strong>Legumbres</strong> 3-4 veces por semana.',
+      '<strong>Ejercicio aeróbico</strong>: 150 min/semana (caminar rápido, bici, natación). Baja TG entre 20-30%.',
+      '<strong>Bajar peso</strong> 5-10% si hay sobrepeso. Cada kilo perdido cuenta.',
+      '<strong>Evitar específicamente</strong>:',
+      'Alcohol (todo tipo: cerveza, vino, destilados — el "vino es sano" NO compensa si tienes TG altos).',
+      'Refrescos azucarados y zumos (incluso 100% naturales).',
+      'Bollería industrial y casera con harina blanca y azúcar.',
+      'Mantequilla, nata, embutidos grasos, productos ultraprocesados.',
+      'Salsas comerciales (kétchup, mahonesa industrial, salsa rosa).',
+      'Fritos abundantes y rebozados.',
+      '<strong>Si TG &gt; 500 mg/dl</strong>: dieta MUY estricta + valoración médica. Suele requerirse fármaco (fibratos, omega-3 en alta dosis).'
+    ],
+    cita:[
+      'Triglicéridos &gt; 200 mg/dl en analítica de control.',
+      'TG altos a pesar de 3 meses de cambios dietéticos serios.',
+      'Antecedentes familiares de hipertrigliceridemia o pancreatitis.',
+      'Si te van a poner anticonceptivos hormonales o iniciar tamoxifeno (suben TG).',
+      'Dolor abdominal recurrente sin causa clara con TG conocidos altos.'
+    ],
+    urgente:[
+      '<strong>Pancreatitis aguda</strong> (riesgo cuando TG &gt; 1000): dolor intenso en boca del estómago que se va a la espalda en cinturón, náuseas, vómitos, no mejora con nada. <strong>Urgencias inmediatas</strong>.',
+      'Dolor abdominal intenso con fiebre y vómitos persistentes.'
+    ],
+    fuentes:[
+      'SEEN · Sociedad Española de Endocrinología y Nutrición · Guía dislipemias 2024',
+      'semFYC · Manejo de las dislipemias en AP',
+      'SEMERGEN · Documento de consenso hipertrigliceridemia',
+      'ESC/EAS Guidelines 2024 · Dyslipidaemias',
+      'GuíaSalud · Hipercolesterolemia e hipertrigliceridemia',
+      'SEA · Sociedad Española de Arteriosclerosis · Recomendaciones'
+    ],
+    telefonos:[['🏥 Endocrinología H.G.U. Santa Lucía','968128600'],['🚨 Emergencias','112']]
+  },
+
+  {
+    id:'toxina-botulinica-cefaleas', cat:['cefal','med'], cc:'cc-med', icon:'💉', hc1:'#1e3a8a', hc2:'#3b82f6',
+    titulo:'Toxina botulínica para cefaleas · cuándo se usa',
+    resumen:'Tratamiento aprobado solo para migraña crónica. Se inyecta cada 12 semanas en cabeza y cuello.',
+    que:'La toxina botulínica tipo A (Botox®) es un tratamiento <strong>aprobado por la EMA y la AEMPS</strong> para una indicación muy concreta: la <strong>migraña crónica</strong>. Eso significa migraña con dolor de cabeza al menos 15 días al mes durante más de 3 meses, de los cuales 8 o más son migraña típica. NO sirve para cefaleas tensionales, ni para migrañas episódicas (menos de 15 días al mes), ni para "dolores de cabeza por estrés" puntuales. Cuando se cumplen los criterios y los preventivos previos no han funcionado, la toxina botulínica reduce los días con dolor en aproximadamente la mitad de las personas que la prueban.',
+    hacer:[
+      '<strong>Cómo se administra</strong>: el neurólogo inyecta en consulta <strong>31 puntos</strong> repartidos en frente, sienes, parte de atrás de la cabeza, cuello y hombros — protocolo PREEMPT estandarizado.',
+      '<strong>Cada cuánto</strong>: 1 sesión cada <strong>12 semanas</strong> (3 meses).',
+      '<strong>Cuándo se ve resultado</strong>: a partir del <strong>2.º o 3.er ciclo</strong> (6-9 meses). No se valora si funciona antes de eso.',
+      '<strong>Quién es candidato</strong>:',
+      '15 o más días con dolor de cabeza al mes durante &gt; 3 meses, con &gt; 8 días de migraña.',
+      'Haber probado al menos <strong>2 tratamientos preventivos</strong> orales (topiramato, propranolol, amitriptilina, candesartán) durante 2-3 meses cada uno sin éxito o con efectos secundarios.',
+      'No estar en abuso de analgésicos (cefalea por abuso requiere desintoxicación primero).',
+      '<strong>Efectos secundarios</strong>: dolor en el punto de inyección, caída leve de párpado o ceja (transitoria, semanas), rigidez de cuello las primeras horas, dolor de cabeza el día de la sesión.',
+      '<strong>NO se administra en</strong>: embarazo, lactancia, infección activa en zona de inyección, miastenia gravis o trastornos neuromusculares similares, alergia a la toxina o albúmina humana.',
+      '<strong>Cobertura SNS</strong>: financiada por el sistema sanitario español cuando se cumplen los criterios. La consulta es Neurología (de zona, no privada).',
+      '<strong>NO sirve para</strong>: cefalea tensional, migraña episódica, cefalea en racimos, neuralgia trigémino. Para esas hay otros tratamientos específicos.',
+      '<strong>Alternativas modernas (también para migraña crónica)</strong>: anticuerpos monoclonales anti-CGRP (erenumab, fremanezumab, galcanezumab) que se ponen subcutáneos mensuales — tu neurólogo decidirá entre toxina o anti-CGRP según tu caso.'
+    ],
+    cita:[
+      'Dolor de cabeza &gt; 15 días al mes durante &gt; 3 meses.',
+      'Migrañas que no responden a 2 o más tratamientos preventivos orales.',
+      'Necesitas tomar analgésicos casi todos los días para el dolor de cabeza (alerta abuso).',
+      'Quieres preguntar a tu médico de cabecera si es momento de derivar a Neurología.',
+      'Si ya estás en tratamiento con toxina botulínica: cita programada cada 12 semanas con neurología.'
+    ],
+    urgente:[
+      '<strong>NUNCA</strong> se trata una crisis aguda de migraña con toxina botulínica. Es solo preventivo.',
+      'Cefalea súbita, intensa, "la peor de mi vida" (en segundos) → posible hemorragia subaracnoidea → <strong>112 inmediato</strong>.',
+      'Cefalea con fiebre alta y rigidez de cuello → posible meningitis → <strong>112 o Urgencias</strong>.',
+      'Cefalea nueva con déficit neurológico (debilidad, dificultad para hablar, alteración de la visión) → <strong>112</strong>.',
+      'Cefalea progresiva en mayores de 50 años con dolor de mandíbula al masticar o pérdida de visión → posible arteritis temporal → Urgencias.'
+    ],
+    fuentes:[
+      'SEN · Sociedad Española de Neurología · Guía oficial cefaleas 2020',
+      'AEMPS · Ficha técnica Botox® · indicación migraña crónica',
+      'PREEMPT trial · Headache 2010 (Aurora et al · Diener et al)',
+      'semFYC · Cefaleas en AP · cuándo derivar',
+      'SEMERGEN · Documento de consenso migraña crónica',
+      'EHF · European Headache Federation · Guidelines 2019',
+      'NICE NG150 · Headaches · diagnosis and management'
+    ],
+    telefonos:[['🏥 Neurología H.G.U. Santa Lucía','968128600'],['🚨 Emergencias','112']]
   }
 ];
 
