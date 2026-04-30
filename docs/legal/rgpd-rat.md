@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # Registro de Actividades de Tratamiento (RAT) · Cartagenaeste
 
 **Reglamento General de Protección de Datos (UE) 2016/679 · Art. 30**

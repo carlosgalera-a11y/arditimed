@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # Risk Register · Scan IA de Cartagenaeste
 
 **EU AI Act 2024/1689 · art. 9 · Sistema de gestión de riesgos**

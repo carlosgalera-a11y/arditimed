@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # Ficha técnica del sistema de IA · Cartagenaeste
 
 **Reglamento (UE) 2024/1689 · EU AI Act · Art. 11**

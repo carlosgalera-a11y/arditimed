@@ -1,6 +1,12 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # Auditoría legal interna · Cartagenaeste
 
-**Fecha:** 2026-04-28 (actualizada 2026-04-29 con cierre H-03/04/05/06/07/08)
+**Fecha:** 2026-04-28 (actualizada 2026-04-29 con cierre H-03/04/05/06/07/08/09/10/11)
 **Auditor:** Carlos Galera Román (con asistente Claude Code) · barrido sistemático del repo
 **Alcance:** RGPD/LOPDGDD · EU AI Act 2024/1689 · MDR 2017/745 · LPI · OWASP top 10 (aplicado) · WCAG 2.1 AA · ePrivacy/cookies
 **Estado del repo en la auditoría:** main @ commit posterior a PR #123 · sw.js v145
@@ -17,9 +23,9 @@
 | H-06 | 🟡 | ✅ Cerrado · HSTS ya activo en GitHub Pages | [hsts-status.md](hsts-status.md) |
 | H-07 | 🟡 | ✅ Cerrado | PR #126 |
 | H-08 | 🟡 | ✅ Cerrado | PR #126 |
-| H-09 | 🟢 | ⏳ Pendiente | — |
-| H-10 | 🟢 | ⏳ Pendiente | — |
-| H-11 | 🟢 | ⏳ Pendiente | — |
+| H-09 | 🟢 | ✅ Cerrado · last-reviewed bumpeado a 2026-04-29 en 79 HTMLs | PR #127 |
+| H-10 | 🟢 | ✅ Cerrado · front-matter version/commit en 11 docs legales | PR #127 |
+| H-11 | 🟢 | ✅ Cerrado · protocolo brecha §11 en runbook + breach-register.md | PR #127 |
 
 > Este documento es una auditoría **interna**, no sustituye dictamen de letrado. Es deliberadamente directo: los hallazgos están priorizados por riesgo legal real (no por percepción).
 > Sirve como input para (a) revisión externa con asesor legal o `alexlegal.ai`, (b) entrega a CDTI/AstraZeneca/SMS en due diligence, (c) cierre interno de los hallazgos resolubles sin abogado.

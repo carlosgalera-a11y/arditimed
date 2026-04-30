@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # Evaluación de Impacto en Protección de Datos (EIPD/DPIA) · Cartagenaeste
 
 **RGPD art. 35 · LOPDGDD art. 28**

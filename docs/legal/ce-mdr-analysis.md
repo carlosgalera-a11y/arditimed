@@ -1,3 +1,9 @@
+---
+version: 1.0
+date: 2026-04-29
+commit: 1b9505b
+---
+
 # Análisis CE / MDR · ¿Es Cartagenaeste un dispositivo médico?
 
 **Reglamento (UE) 2017/745 (MDR) · Reglamento (UE) 2017/746 (IVDR)**
