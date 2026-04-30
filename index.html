@@ -453,14 +453,34 @@ footer a:hover{color:#ffd54f}
     }
     function closeLoginModal(){ document.getElementById('loginModal').classList.remove('show'); pendingRedirect = null; }
 
+    var __signInInFlight = false;
     function signInWithGoogle(){
+      // Evita doble click → causa raíz de auth/cancelled-popup-request:
+      // si el usuario pulsa dos veces el botón, el segundo signInWithPopup
+      // cancela al primero. Bloqueamos hasta que termine.
+      if(__signInInFlight){ console.log('[auth] login ya en curso, ignorando click'); return; }
+      __signInInFlight = true;
+      var btn = document.querySelector('[onclick*="signInWithGoogle"]');
+      if(btn){ btn.disabled = true; btn.style.opacity = '0.6'; btn.style.cursor = 'wait'; }
+
       var provider = new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       auth.signInWithPopup(provider).then(function(){
         closeLoginModal();
       }).catch(function(err){
+        // Estos códigos son benignos: el usuario cerró el popup o se canceló
+        // por otro popup. NO mostrar alert al usuario.
+        if(err && (err.code === 'auth/cancelled-popup-request'
+                || err.code === 'auth/popup-closed-by-user'
+                || err.code === 'auth/popup-blocked')){
+          console.log('[auth] popup cancelado/cerrado por el usuario:', err.code);
+          return;
+        }
         console.error('Login error:', err);
         alert('No se pudo iniciar sesión: ' + (err.message || err.code));
+      }).finally(function(){
+        __signInInFlight = false;
+        if(btn){ btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; }
       });
     }
 
