@@ -16,4 +16,7 @@
 // servidor con la secret key, que NO está aquí). Por eso vive en este
 // archivo plano servido por GitHub Pages.
 // ════════════════════════════════════════════════════════════════════
-window.RECAPTCHA_SITE_KEY = '';
+// Site key reCAPTCHA v3 · proyecto "cartagena" · 2026-04-30
+// Registrada en Firebase Console > App Check con su secret key correspondiente.
+// PÚBLICA por diseño · la verificación se hace en servidor con la secret key.
+window.RECAPTCHA_SITE_KEY = '6LeMI9IsAAAAANIE2jdmccuKKSNWpayWe5yOMBlN';
