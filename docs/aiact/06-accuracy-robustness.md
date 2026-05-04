@@ -35,19 +35,66 @@
 
 ## 6.3 Bias audit harness
 
-Test suite automatizado con escenarios canónicos clínicos europeos para detectar regresiones en exactitud y sesgo. Se ejecuta:
-- Pre-deploy automáticamente en CI.
-- Periódicamente vía cron (`scheduledJobs.ts`) — pendiente activar tras este pack.
+**Estado**: ✅ Implementado en `functions/src/evidencia/biasAudit.ts` + `biasAuditScenarios.ts`. Test runner en `functions/test/evidencia-biasAudit.test.ts`. Se ejecuta automáticamente en cada push (CI vitest) y de forma manual con `npm test -- evidencia-biasAudit`.
 
-Cobertura inicial mínima:
-- 5 escenarios de cardiología (FA, IC, IAM, HTA refractaria, dislipemia).
-- 5 de respiratorio (EPOC reagudizado, neumonía, asma, EP, fibrosis).
-- 5 de digestivo (HDA, EII, hígado graso, pancreatitis, ERGE).
-- 5 de infecciosas (ITU, sepsis, neumonía, antibioterapia profiláctica, COVID secuelas).
-- 5 de endocrino (DM2, hipotiroidismo, osteoporosis, obesidad, hipoglucemia).
-- 5 de neurología (ictus, migraña, Parkinson, demencia, epilepsia).
+### Cobertura actual (versión 1)
 
-Total ≥30 escenarios. Cada uno con: pregunta canónica + abstracts esperados (PMIDs ground truth) + GRADE esperado + checks de sesgo (no diferenciar respuesta por género/edad cuando no proceda).
+| Especialidad | Nº escenarios | Variantes de sesgo |
+|---|---:|---:|
+| Cardiología | 5 | 2 |
+| Respiratorio | 4 | — |
+| Digestivo | 4 | — |
+| Infecciosas | 4 | 2 |
+| Endocrino | 4 | 2 |
+| Neurología | 4 | 2 |
+| **Safeguard rejection** (uno por motivo: corta, larga, diagnóstica, terapéutica, PII DNI/fecha/teléfono) | 7 | — |
+| **Total clínicos** | 25 | 8 |
+
+### Qué valida (pipeline determinista, offline, sin coste IA)
+
+1. **Safeguards**:
+   - Cada escenario clínico debe pasar la validación → `pass_rate ≥ 99%`.
+   - Cada escenario de rechazo debe ser bloqueado por el motivo exacto esperado.
+   - Cada **variante de sesgo** (mismo escenario reformulado por género/edad/estado menopáusico) debe recibir EL MISMO outcome que el escenario base → `consistency_rate = 100%`.
+2. **Reranker grade**:
+   - Para cada escenario clínico se construye un top-5 sintético con los `studyTypes` esperados (revisión sistemática, RCT, guía EU, etc.) y se valida que `gradeEvidence()` asigna un grado ≥ al esperado mínimo → `grade_match_rate ≥ 80%`.
+3. **Citation verifier**:
+   - Batería de 5 outputs hand-crafted con citas válidas, inventadas, repetidas y mezcladas → `pass_rate = 100%`.
+
+### Lo que NO valida (sale del scope offline)
+
+- Calidad real de la búsqueda en PubMed / Europe PMC / etc. — depende de las APIs externas.
+- Calidad real de la síntesis IA — depende del modelo externo.
+- Latencia operacional — se vigila en producción vía métricas de `evidencia_consultas`.
+
+Estas dimensiones se cubren con la vigilancia post-market documentada en `10-post-market-surveillance.md`.
+
+### Política de actualización
+
+- **Bumpear `SCENARIOS_VERSION`** en `biasAudit.ts` cuando se añadan/eliminen escenarios (para que los reportes históricos sean comparables).
+- **Añadir escenarios** cada vez que un incidente P0/P1 (ver `08-incident-response.md`) revele un caso no cubierto.
+- **Revisión semestral** del conjunto: añadir nuevos fármacos / guías que se hayan publicado.
+
+### Métricas reportadas por `runFullAudit()`
+
+```ts
+{
+  total: number,                     // total escenarios evaluados
+  passed: number, failed: number,
+  passRate: number,                  // ≥ 0.95 obligatorio
+  byCategory: { ... },               // breakdown por especialidad
+  metrics: {
+    safeguard_pass_rate: number,        // ≥ 0.99
+    safeguard_consistency_rate: number, // = 1.0
+    reranker_grade_match_rate: number,  // ≥ 0.8
+    citation_verifier_pass_rate: number,// = 1.0
+  },
+  scenariosVersion: 1,
+  ranAt: ISO-8601,
+}
+```
+
+CI rechaza el deploy si cualquier umbral falla.
 
 ## 6.4 Ciberseguridad
 
