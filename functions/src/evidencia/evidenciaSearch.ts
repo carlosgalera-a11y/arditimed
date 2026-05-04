@@ -240,9 +240,18 @@ export const evidenciaSearch = onCall(
 
     const errors: Record<string, string> = {};
     const safeSecret = (s: ReturnType<typeof defineSecret>): string | undefined => {
+      // Devuelve undefined si la secret no existe, está vacía, contiene
+      // solo whitespace, o es el sentinel "__DISABLED__" (placeholder
+      // explícito para mantener defineSecret() satisfecho cuando aún
+      // no hemos conseguido API key real). Esto permite desplegar la
+      // función sin claves reales y activarlas más tarde con
+      // `firebase functions:secrets:set <NAME>` sin redeploy del código.
       try {
-        const v = s.value();
-        return v && v.length > 0 ? v : undefined;
+        const raw = s.value();
+        if (!raw) return undefined;
+        const trimmed = raw.trim();
+        if (!trimmed || trimmed === '__DISABLED__') return undefined;
+        return raw;
       } catch {
         return undefined;
       }
