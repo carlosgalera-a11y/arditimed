@@ -22,7 +22,13 @@ import { searchPubmed, type PubmedAbstract } from './pubmed';
 import { searchEuropePMC, type EpmcAbstract } from './europepmc';
 import { searchOpenAlex, type OpenAlexAbstract } from './openalex';
 import { searchAemps, type AempsMedicamento } from './aemps';
-import { rerank, type ScoredAbstract } from './reranker';
+import { searchClinicalTrials, type ClinicalTrial } from './clinicalTrials';
+import { resolveManyDois } from './unpaywall';
+import { searchCore, type CoreWork } from './core';
+import { searchSemanticScholar, enrichTldrs, type S2Paper } from './semanticScholar';
+import { enrichCrossref, type CrossrefMeta } from './crossref';
+import { currentPromptVersions } from './promptRegistry';
+import { rerank, gradeEvidence, type ScoredAbstract, type EvidenceGradeResult } from './reranker';
 import { extractPico, type PicoExtraction } from './picoExtractor';
 import { synthesize, type SynthOutput } from './ragSynthesizer';
 import { hashEviKey, getEviCached, setEviCached, bumpEviCacheHit } from './cache';
@@ -33,6 +39,10 @@ const NCBI_API_KEY = defineSecret('NCBI_API_KEY');
 // Secretos IA — reusados de askAi para extracción PICO + síntesis RAG.
 const DEEPSEEK_API_KEY = defineSecret('DEEPSEEK_API_KEY');
 const OPENROUTER_API_KEY = defineSecret('OPENROUTER_API_KEY');
+// Secretos OPCIONALES de fuentes externas. Si no existen el provider
+// correspondiente queda desactivado silenciosamente.
+const CORE_API_KEY = defineSecret('CORE_API_KEY');           // CORE OA aggregator
+const S2_API_KEY = defineSecret('S2_API_KEY');               // Semantic Scholar (sin clave: rate compartido)
 
 const REGION = 'europe-west1';
 const CORS = [
@@ -48,6 +58,16 @@ interface SearchRequest {
     soloRevisiones?: boolean;
     incluirAemps?: boolean;
     priorizarGuiasEU?: boolean;
+    incluirEnsayos?: boolean;       // añade ClinicalTrials.gov
+    soloEnsayosActivos?: boolean;   // recruiting / active not recruiting
+    soloEnsayosUE?: boolean;        // sesgo UE en trials
+    priorizarCochrane?: boolean;    // segunda búsqueda PubMed restringida a Cochrane Database Syst Rev
+    enriquecerOA?: boolean;         // resolver DOIs vía Unpaywall (full-text OA)
+    incluirCore?: boolean;          // añade CORE como fuente OA (requiere CORE_API_KEY)
+    incluirS2?: boolean;            // añade Semantic Scholar como fuente
+    enriquecerTLDR?: boolean;       // batch TLDR de S2 sobre el top reranqueado
+    enriquecerCrossref?: boolean;   // licencia + tipo desde Crossref para top reranqueado
+    incluirPreprints?: boolean;     // segunda búsqueda Europe PMC con SRC:PPR (medRxiv/bioRxiv)
   };
   // Si true, ejecuta extracción PICO + síntesis RAG con citas verificadas.
   // Si false, devuelve solo los abstracts re-rankeados (modo PR-1).
@@ -61,14 +81,27 @@ interface SearchResponse {
   pregunta: string;
   fuentes: ScoredAbstract[];
   aemps: AempsMedicamento[];
+  ensayos: ClinicalTrial[];
+  crossref_meta: Record<string, CrossrefMeta>; // por DOI lowercase
   pico: PicoExtraction | null;
   sintesis: SynthOutput | null;
+  evidence_grade: EvidenceGradeResult;
+  prompt_version_pico: string;
+  prompt_version_synth: string;
   cached: boolean;
   meta: {
     pubmed_count: number;
     europepmc_count: number;
     openalex_count: number;
     aemps_count: number;
+    cochrane_count: number;
+    ensayos_count: number;
+    oa_enrichments: number;
+    core_count: number;
+    s2_count: number;
+    preprints_count: number;
+    tldr_enrichments: number;
+    crossref_enrichments: number;
     duracion_ms: number;
     errors: Record<string, string>;
   };
@@ -77,7 +110,7 @@ interface SearchResponse {
 export const evidenciaSearch = onCall(
   {
     region: REGION,
-    secrets: [NCBI_API_KEY, DEEPSEEK_API_KEY, OPENROUTER_API_KEY],
+    secrets: [NCBI_API_KEY, DEEPSEEK_API_KEY, OPENROUTER_API_KEY, CORE_API_KEY, S2_API_KEY],
     enforceAppCheck: false, // se flipa cuando reCAPTCHA esté en producción
     memory: '512MiB',
     timeoutSeconds: 90,
@@ -125,9 +158,20 @@ export const evidenciaSearch = onCall(
       anios,
       soloRevisiones: !!filtros.soloRevisiones,
       incluirAemps: !!filtros.incluirAemps,
+      incluirEnsayos: !!filtros.incluirEnsayos,
+      soloEnsayosActivos: !!filtros.soloEnsayosActivos,
+      soloEnsayosUE: !!filtros.soloEnsayosUE,
+      priorizarCochrane: !!filtros.priorizarCochrane,
+      enriquecerOA: !!filtros.enriquecerOA,
+      incluirCore: !!filtros.incluirCore,
+      incluirS2: !!filtros.incluirS2,
+      enriquecerTLDR: !!filtros.enriquecerTLDR,
+      enriquecerCrossref: !!filtros.enriquecerCrossref,
+      incluirPreprints: !!filtros.incluirPreprints,
     });
     const cached = await getEviCached(db, cacheKey).catch(() => null);
     if (cached) {
+      const cachedGrade = gradeEvidence(cached.fuentes);
       // Log mínimo de cache hit para auditoría AI Act art. 12.
       const refHit = db.collection('evidencia_consultas').doc();
       try {
@@ -161,14 +205,27 @@ export const evidenciaSearch = onCall(
         pregunta: v.sanitized,
         fuentes: cached.fuentes,
         aemps: cached.aemps,
+        ensayos: cached.ensayos ?? [],
+        crossref_meta: {},
         pico: cached.pico,
         sintesis: cached.sintesis,
+        evidence_grade: cachedGrade,
+        prompt_version_pico: currentPromptVersions().pico,
+        prompt_version_synth: currentPromptVersions().synth,
         cached: true,
         meta: {
           pubmed_count: cached.meta.pubmed_count,
           europepmc_count: cached.meta.europepmc_count,
           openalex_count: cached.meta.openalex_count,
           aemps_count: cached.meta.aemps_count,
+          cochrane_count: cached.meta.cochrane_count ?? 0,
+          ensayos_count: cached.meta.ensayos_count ?? 0,
+          oa_enrichments: cached.meta.oa_enrichments ?? 0,
+          core_count: cached.meta.core_count ?? 0,
+          s2_count: cached.meta.s2_count ?? 0,
+          preprints_count: cached.meta.preprints_count ?? 0,
+          tldr_enrichments: cached.meta.tldr_enrichments ?? 0,
+          crossref_enrichments: cached.meta.crossref_enrichments ?? 0,
           duracion_ms: Date.now() - start,
           errors: {},
         },
@@ -182,13 +239,17 @@ export const evidenciaSearch = onCall(
       : undefined;
 
     const errors: Record<string, string> = {};
-    const ncbiKey = (() => {
+    const safeSecret = (s: ReturnType<typeof defineSecret>): string | undefined => {
       try {
-        return NCBI_API_KEY.value();
+        const v = s.value();
+        return v && v.length > 0 ? v : undefined;
       } catch {
         return undefined;
       }
-    })();
+    };
+    const ncbiKey = safeSecret(NCBI_API_KEY);
+    const coreKey = safeSecret(CORE_API_KEY);
+    const s2Key = safeSecret(S2_API_KEY);
     const aiSecrets = {
       deepseekKey: DEEPSEEK_API_KEY.value(),
       openrouterKey: OPENROUTER_API_KEY.value(),
@@ -252,9 +313,187 @@ export const evidenciaSearch = onCall(
         })
       : Promise.resolve([] as AempsMedicamento[]);
 
-    const [pubmed, epmc, openalex, aemps] = await Promise.all([pubmedP, epmcP, openalexP, aempsP]);
+    // Búsqueda extra dirigida a Cochrane Database Syst Rev — alta calidad,
+    // típicamente devuelve 1-3 SR muy relevantes que sumamos al pool antes
+    // de re-ranquear (no duplica si ya estaba via PubMed normal).
+    const cochraneP: Promise<PubmedAbstract[]> = filtros.priorizarCochrane
+      ? searchPubmed(queryPubmed, {
+          maxResults: 5,
+          dateFrom,
+          journals: ['Cochrane Database Syst Rev'],
+          apiKey: ncbiKey || undefined,
+          timeoutMs: 8000,
+        }).catch((e: Error) => {
+          errors['cochrane'] = e.message ?? String(e);
+          return [] as PubmedAbstract[];
+        })
+      : Promise.resolve([] as PubmedAbstract[]);
 
-    const reranked = rerank([...pubmed, ...epmc, ...openalex], { maxResults: 8 });
+    // ClinicalTrials.gov — ensayos en marcha o completados (NIH, gratis,
+    // sin auth). Se devuelve aparte de los abstracts (no se rerankea).
+    const ensayosP: Promise<ClinicalTrial[]> = filtros.incluirEnsayos
+      ? searchClinicalTrials(queryEpmc, {
+          pageSize: 8,
+          dateFrom,
+          onlyActive: !!filtros.soloEnsayosActivos,
+          onlyEUorSpain: !!filtros.soloEnsayosUE,
+          timeoutMs: 8000,
+        }).catch((e: Error) => {
+          errors['clinicaltrials'] = e.message ?? String(e);
+          return [] as ClinicalTrial[];
+        })
+      : Promise.resolve([] as ClinicalTrial[]);
+
+    // CORE — agregador OA (Open University UK). Solo si hay CORE_API_KEY.
+    const coreP: Promise<CoreWork[]> = filtros.incluirCore && coreKey
+      ? searchCore(queryEpmc, { limit: 8, dateFrom, apiKey: coreKey, timeoutMs: 8000 })
+          .catch((e: Error) => {
+            errors['core'] = e.message ?? String(e);
+            return [] as CoreWork[];
+          })
+      : Promise.resolve([] as CoreWork[]);
+
+    // Semantic Scholar — fuente complementaria con TLDR.
+    const s2P: Promise<S2Paper[]> = filtros.incluirS2
+      ? searchSemanticScholar(queryEpmc, {
+          limit: 8,
+          yearFrom: dateFrom,
+          apiKey: s2Key,
+          timeoutMs: 8000,
+        }).catch((e: Error) => {
+          errors['s2'] = e.message ?? String(e);
+          return [] as S2Paper[];
+        })
+      : Promise.resolve([] as S2Paper[]);
+
+    // Preprints (medRxiv/bioRxiv vía Europe PMC SRC:PPR). Penalizados en
+    // rerank pero útiles para evidencia muy reciente.
+    const preprintsP: Promise<EpmcAbstract[]> = filtros.incluirPreprints
+      ? searchEuropePMC(queryEpmc, {
+          pageSize: 6,
+          resultType: 'core',
+          dateFrom,
+          onlyPreprints: true,
+          timeoutMs: 8000,
+          email: 'carlosgalera2roman@gmail.com',
+        }).catch((e: Error) => {
+          errors['preprints'] = e.message ?? String(e);
+          return [] as EpmcAbstract[];
+        })
+      : Promise.resolve([] as EpmcAbstract[]);
+
+    const [pubmed, epmc, openalex, aemps, cochrane, ensayos, core, s2, preprints] = await Promise.all([
+      pubmedP, epmcP, openalexP, aempsP, cochraneP, ensayosP, coreP, s2P, preprintsP,
+    ]);
+
+    const reranked = rerank(
+      [...pubmed, ...cochrane, ...epmc, ...openalex, ...core, ...s2, ...preprints],
+      { maxResults: 8 },
+    );
+    const evidenceGrade = gradeEvidence(reranked);
+
+    // ─── Enriquecimiento Semantic Scholar (TLDRs) ────────────────────
+    // Para cada fuente top con DOI o PMID, batch 1-shot a S2 para
+    // recuperar el TLDR (1 frase generada por IA) y mutarlo en el campo
+    // abstract (prepend) — así la síntesis RAG tiene un contexto más
+    // denso y el clínico ve un resumen rápido en la UI. Best-effort.
+    let tldrEnrichments = 0;
+    if (filtros.enriquecerTLDR && reranked.length > 0) {
+      try {
+        const dois = reranked
+          .map((s) => (s.ref as { doi?: string | null }).doi ?? null)
+          .filter((x): x is string => typeof x === 'string' && x.length > 0);
+        const pmids = reranked
+          .map((s) => (s.ref as { pmid?: string | null }).pmid ?? null)
+          .filter((x): x is string => typeof x === 'string' && x.length > 0);
+        const { tldrByDoi, tldrByPmid } = await enrichTldrs(
+          { dois, pmids },
+          { apiKey: s2Key, timeoutMs: 6000 },
+        );
+        for (const s of reranked) {
+          const ref = s.ref as { doi?: string | null; pmid?: string | null; abstract?: string };
+          let tldr: string | undefined;
+          if (ref.doi) tldr = tldrByDoi.get(ref.doi.toLowerCase());
+          if (!tldr && ref.pmid) tldr = tldrByPmid.get(ref.pmid);
+          if (tldr) {
+            s.reasons.push('TLDR Semantic Scholar');
+            // Prependemos al abstract (no lo sobrescribimos para conservar
+            // el original como verificable).
+            if (typeof ref.abstract === 'string') {
+              ref.abstract = `[TLDR] ${tldr}\n\n${ref.abstract}`;
+            }
+            tldrEnrichments++;
+          }
+        }
+      } catch (e: unknown) {
+        errors['s2_tldr'] = (e as Error).message ?? String(e);
+      }
+    }
+
+    // ─── Enriquecimiento Crossref (licencia + tipo) ───────────────────
+    // Añade `crossref` con info de licencia (CC-BY, propietaria…) y tipo
+    // canónico para mostrar badges en UI. Best-effort.
+    let crossrefEnrichments = 0;
+    const crossrefByDoi = new Map<string, CrossrefMeta>();
+    if (filtros.enriquecerCrossref && reranked.length > 0) {
+      try {
+        const dois = reranked
+          .map((s) => (s.ref as { doi?: string | null }).doi ?? null)
+          .filter((x): x is string => typeof x === 'string' && x.length > 0);
+        if (dois.length) {
+          const map = await enrichCrossref(dois, {
+            concurrency: 4,
+            perRequestTimeoutMs: 3500,
+            totalBudgetMs: 5000,
+          });
+          for (const [k, m] of map) crossrefByDoi.set(k, m);
+          for (const s of reranked) {
+            const doi = (s.ref as { doi?: string | null }).doi;
+            if (doi && map.has(doi.toLowerCase())) {
+              const m = map.get(doi.toLowerCase());
+              if (m?.license_name) s.reasons.push(`licencia ${m.license_name}`);
+              crossrefEnrichments++;
+            }
+          }
+        }
+      } catch (e: unknown) {
+        errors['crossref'] = (e as Error).message ?? String(e);
+      }
+    }
+
+    // ─── Enriquecimiento Unpaywall ────────────────────────────────────
+    // Para cada fuente top con DOI, intentamos resolver versión OA. Si la
+    // hay, mutamos full_text_url. Best-effort con presupuesto 6s — si
+    // Unpaywall tarda, no bloquea la respuesta.
+    let oaEnrichments = 0;
+    if (filtros.enriquecerOA) {
+      const dois = reranked
+        .map((s) => (s.ref as { doi?: string | null }).doi ?? null)
+        .filter((x): x is string => typeof x === 'string' && x.length > 0);
+      if (dois.length) {
+        try {
+          const resMap = await resolveManyDois(dois, {
+            concurrency: 4,
+            perRequestTimeoutMs: 3500,
+            totalBudgetMs: 6000,
+          });
+          for (const s of reranked) {
+            const ref = s.ref as { doi?: string | null; full_text_url?: string | null };
+            if (!ref.doi) continue;
+            const oa = resMap.get(ref.doi);
+            if (!oa) continue;
+            const url = oa.oa_url_for_pdf || oa.oa_url;
+            if (url && !ref.full_text_url) {
+              ref.full_text_url = url;
+              s.reasons.push('full text OA (Unpaywall)');
+              oaEnrichments++;
+            }
+          }
+        } catch (e: unknown) {
+          errors['unpaywall'] = (e as Error).message ?? String(e);
+        }
+      }
+    }
 
     // Síntesis RAG opcional con verificación de citas.
     let sintesis: SynthOutput | null = null;
@@ -281,9 +520,14 @@ export const evidenciaSearch = onCall(
         rechazada: false,
         fuentes_consultadas: [
           ...(pubmed.length ? ['pubmed'] : []),
+          ...(cochrane.length ? ['cochrane'] : []),
           ...(epmc.length ? ['europepmc'] : []),
           ...(openalex.length ? ['openalex'] : []),
+          ...(core.length ? ['core'] : []),
+          ...(s2.length ? ['s2'] : []),
+          ...(preprints.length ? ['preprints'] : []),
           ...(aemps.length ? ['aemps'] : []),
+          ...(ensayos.length ? ['clinicaltrials'] : []),
         ],
         num_abstracts_recuperados: reranked.length,
         abstracts_pmids: reranked
@@ -298,6 +542,19 @@ export const evidenciaSearch = onCall(
         sintesis_citas_emitidas: sintesis ? sintesis.verificacion.citationsEmitted : 0,
         sintesis_citas_verificadas: sintesis ? sintesis.verificacion.citationsVerified : 0,
         sintesis_citas_ratio: sintesis ? sintesis.verificacion.ratio : 0,
+        sintesis_follow_ups: sintesis ? sintesis.follow_ups.length : 0,
+        // Versionado prompts (AI Act art. 12 — reproducibilidad).
+        prompt_version_pico: currentPromptVersions().pico,
+        prompt_version_synth: currentPromptVersions().synth,
+        evidence_grade: evidenceGrade.grade,
+        cochrane_count: cochrane.length,
+        ensayos_count: ensayos.length,
+        oa_enrichments: oaEnrichments,
+        core_count: core.length,
+        s2_count: s2.length,
+        preprints_count: preprints.length,
+        tldr_enrichments: tldrEnrichments,
+        crossref_enrichments: crossrefEnrichments,
         ai_act_disclaimer_shown: true,
         duracion_ms: Date.now() - start,
         timestamp: FieldValue.serverTimestamp(),
@@ -313,6 +570,14 @@ export const evidenciaSearch = onCall(
       epmc: epmc.length,
       openalex: openalex.length,
       aemps: aemps.length,
+      cochrane: cochrane.length,
+      ensayos: ensayos.length,
+      core: core.length,
+      s2: s2.length,
+      preprints: preprints.length,
+      oa_enrichments: oaEnrichments,
+      tldr_enrichments: tldrEnrichments,
+      crossref_enrichments: crossrefEnrichments,
       reranked: reranked.length,
       duracion_ms: Date.now() - start,
       errors: Object.keys(errors),
@@ -324,6 +589,7 @@ export const evidenciaSearch = onCall(
         pregunta: v.sanitized,
         fuentes: reranked,
         aemps,
+        ensayos,
         pico,
         sintesis,
         meta: {
@@ -331,10 +597,22 @@ export const evidenciaSearch = onCall(
           europepmc_count: epmc.length,
           openalex_count: openalex.length,
           aemps_count: aemps.length,
+          cochrane_count: cochrane.length,
+          ensayos_count: ensayos.length,
+          oa_enrichments: oaEnrichments,
+          core_count: core.length,
+          s2_count: s2.length,
+          preprints_count: preprints.length,
+          tldr_enrichments: tldrEnrichments,
+          crossref_enrichments: crossrefEnrichments,
           duracion_ms: Date.now() - start,
         },
       }).catch((e) => logger.warn('evidencia.cache.set.failed', { err: (e as Error).message }));
     }
+
+    // Crossref meta serializable por DOI lowercase para el frontend.
+    const crossrefMetaOut: Record<string, CrossrefMeta> = {};
+    for (const [k, m] of crossrefByDoi) crossrefMetaOut[k] = m;
 
     return {
       ok: true,
@@ -342,14 +620,27 @@ export const evidenciaSearch = onCall(
       pregunta: v.sanitized,
       fuentes: reranked,
       aemps,
+      ensayos,
+      crossref_meta: crossrefMetaOut,
       pico,
       sintesis,
+      evidence_grade: evidenceGrade,
+      prompt_version_pico: currentPromptVersions().pico,
+      prompt_version_synth: currentPromptVersions().synth,
       cached: false,
       meta: {
         pubmed_count: pubmed.length,
         europepmc_count: epmc.length,
         openalex_count: openalex.length,
         aemps_count: aemps.length,
+        cochrane_count: cochrane.length,
+        ensayos_count: ensayos.length,
+        oa_enrichments: oaEnrichments,
+        core_count: core.length,
+        s2_count: s2.length,
+        preprints_count: preprints.length,
+        tldr_enrichments: tldrEnrichments,
+        crossref_enrichments: crossrefEnrichments,
         duracion_ms: Date.now() - start,
         errors,
       },
