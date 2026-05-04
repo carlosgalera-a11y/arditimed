@@ -27,6 +27,7 @@ import { resolveManyDois } from './unpaywall';
 import { searchCore, type CoreWork } from './core';
 import { searchSemanticScholar, enrichTldrs, type S2Paper } from './semanticScholar';
 import { enrichCrossref, type CrossrefMeta } from './crossref';
+import { currentPromptVersions } from './promptRegistry';
 import { rerank, gradeEvidence, type ScoredAbstract, type EvidenceGradeResult } from './reranker';
 import { extractPico, type PicoExtraction } from './picoExtractor';
 import { synthesize, type SynthOutput } from './ragSynthesizer';
@@ -85,6 +86,8 @@ interface SearchResponse {
   pico: PicoExtraction | null;
   sintesis: SynthOutput | null;
   evidence_grade: EvidenceGradeResult;
+  prompt_version_pico: string;
+  prompt_version_synth: string;
   cached: boolean;
   meta: {
     pubmed_count: number;
@@ -207,6 +210,8 @@ export const evidenciaSearch = onCall(
         pico: cached.pico,
         sintesis: cached.sintesis,
         evidence_grade: cachedGrade,
+        prompt_version_pico: currentPromptVersions().pico,
+        prompt_version_synth: currentPromptVersions().synth,
         cached: true,
         meta: {
           pubmed_count: cached.meta.pubmed_count,
@@ -538,6 +543,9 @@ export const evidenciaSearch = onCall(
         sintesis_citas_verificadas: sintesis ? sintesis.verificacion.citationsVerified : 0,
         sintesis_citas_ratio: sintesis ? sintesis.verificacion.ratio : 0,
         sintesis_follow_ups: sintesis ? sintesis.follow_ups.length : 0,
+        // Versionado prompts (AI Act art. 12 — reproducibilidad).
+        prompt_version_pico: currentPromptVersions().pico,
+        prompt_version_synth: currentPromptVersions().synth,
         evidence_grade: evidenceGrade.grade,
         cochrane_count: cochrane.length,
         ensayos_count: ensayos.length,
@@ -617,6 +625,8 @@ export const evidenciaSearch = onCall(
       pico,
       sintesis,
       evidence_grade: evidenceGrade,
+      prompt_version_pico: currentPromptVersions().pico,
+      prompt_version_synth: currentPromptVersions().synth,
       cached: false,
       meta: {
         pubmed_count: pubmed.length,

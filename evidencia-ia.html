@@ -141,6 +141,15 @@ main{flex:1;padding:24px 22px 40px;max-width:980px;width:100%;margin:0 auto}
 .tldr-box{margin-top:6px;padding:6px 9px;background:rgba(59,130,246,.08);border-left:3px solid rgba(59,130,246,.50);border-radius:4px;font-size:.78rem;line-height:1.4;color:#cbd5e1;font-style:italic}
 .tldr-box::before{content:"TL;DR · ";font-weight:800;color:#93bbfc;font-style:normal}
 
+/* Banner formativo permanente — visible siempre, fricción saludable */
+.formative-strip{position:sticky;top:0;z-index:50;background:rgba(212,168,83,.18);border-bottom:1px solid rgba(212,168,83,.40);color:#f3d98a;padding:6px 14px;font-size:.74rem;font-weight:700;text-align:center;letter-spacing:.02em;backdrop-filter:blur(6px)}
+.formative-strip a{color:#f3d98a;text-decoration:underline}
+.formative-strip strong{color:#fff}
+
+/* Aviso post-respuesta: empuja al usuario a verificar */
+.verify-nudge{margin-top:14px;padding:10px 14px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.32);border-left:4px solid #93bbfc;border-radius:8px;font-size:.82rem;color:#cbd5e1;line-height:1.5}
+.verify-nudge strong{color:#93bbfc}
+
 /* Ensayo clínico card */
 .ensayo{padding:10px 12px;border-bottom:1px dashed rgba(255,255,255,.12);font-size:.86rem;line-height:1.5}
 .ensayo:last-child{border-bottom:0}
@@ -186,6 +195,11 @@ footer a{text-decoration:underline;color:#d4a853}
     <button class="tb-btn" data-cart-update type="button">🔄 Actualizar</button>
     <button class="tb-btn" onclick="firebase.auth().signOut()">Salir</button>
   </div>
+</div>
+
+<div class="formative-strip" role="note" aria-label="Aviso de uso formativo permanente">
+  📚 <strong>Herramienta formativa</strong> · NO es producto sanitario (SaMD) · NO sustituye juicio clínico ·
+  <a href="docs/aiact/" target="_blank" rel="noopener">Dossier AI Act ↗</a>
 </div>
 
 <main>
@@ -274,6 +288,9 @@ footer a{text-decoration:underline;color:#d4a853}
       </div>
       <article class="sint" id="eviSintesis"></article>
       <div class="sint-warn" id="eviSintWarn" style="display:none"></div>
+      <div class="verify-nudge" id="eviVerifyNudge" style="display:none">
+        <strong>Verifica antes de aplicar.</strong> Esta síntesis es un resumen IA del contenido de los abstracts mostrados. Pasa el ratón por encima de cada <code>[n]</code> para ver el extracto original, o abre la fuente directamente. Para decisiones individualizadas: consulta las guías oficiales y aplica tu juicio clínico.
+      </div>
       <section class="sugerencias" id="eviFollowupsBox" style="display:none">
         <h4>↪ Preguntas relacionadas</h4>
         <div class="chips" id="eviFollowups"></div>
@@ -307,7 +324,7 @@ footer a{text-decoration:underline;color:#d4a853}
 
 <footer>
   <div>© 2026 Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622</div>
-  <div style="margin-top:4px"><a href="profesionales.html">Profesionales</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="docs/aiact/">AI Act compliance</a></div>
+  <div style="margin-top:4px"><a href="profesionales.html">Profesionales</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="docs/aiact/index.md">📋 Dossier AI Act</a> · <a href="derechos-rgpd.html">Derechos RGPD</a></div>
 </footer>
 
 <script>
@@ -479,9 +496,11 @@ function renderResultado(d){
     } else {
       $('eviSintWarn').style.display = 'none';
     }
+    $('eviVerifyNudge').style.display = 'block';
   } else {
     sintEl.innerHTML = '<em style="opacity:.7">Sin síntesis IA — solo se muestran las fuentes recuperadas.</em>';
     $('eviSintWarn').style.display = 'none';
+    $('eviVerifyNudge').style.display = 'none';
   }
 
   // Preguntas relacionadas (follow-ups extraídos por el splitter del backend).
@@ -650,7 +669,8 @@ function renderResultado(d){
     'crossref=' + (meta.crossref_enrichments||0) + ' · ' +
     'duración=' + (meta.duracion_ms||0) + 'ms' +
     (s.provider ? ' · synth=' + s.provider + '/' + s.model : '') +
-    (s.verificacion ? ' · citas=' + s.verificacion.citationsVerified + '/' + s.verificacion.citationsEmitted : '');
+    (s.verificacion ? ' · citas=' + s.verificacion.citationsVerified + '/' + s.verificacion.citationsEmitted : '') +
+    (d.prompt_version_synth ? ' · prompt=' + d.prompt_version_synth : '');
 
   // Reset feedback buttons
   Array.prototype.forEach.call(document.querySelectorAll('.feedback button'), function(b){
