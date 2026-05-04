@@ -12,8 +12,10 @@
 import type { PubmedAbstract } from './pubmed';
 import type { EpmcAbstract } from './europepmc';
 import type { OpenAlexAbstract } from './openalex';
+import type { CoreWork } from './core';
+import type { S2Paper } from './semanticScholar';
 
-export type Abstract = PubmedAbstract | EpmcAbstract | OpenAlexAbstract;
+export type Abstract = PubmedAbstract | EpmcAbstract | OpenAlexAbstract | CoreWork | S2Paper;
 
 export interface ScoredAbstract {
   ref: Abstract;
@@ -49,6 +51,7 @@ const EU_GUIDELINE_KEYWORDS = [
 const SR_TYPES = ['systematic review', 'meta-analysis', 'meta analysis', 'cochrane'];
 const RCT_TYPES = ['randomized controlled trial', 'randomised controlled trial', 'clinical trial, phase iii'];
 const CASE_REPORT_TYPES = ['case reports', 'case report'];
+const PREPRINT_TYPES = ['preprint', 'medrxiv', 'biorxiv'];
 
 function lower(s: string): string {
   return (s || '').toLowerCase();
@@ -87,6 +90,10 @@ export function scoreAbstract(a: Abstract, currentYear: number = new Date().getF
   if (types.some((t) => CASE_REPORT_TYPES.some((cr) => t.includes(cr)))) {
     score -= 2;
     reasons.push('case report (penalización)');
+  }
+  if (types.some((t) => PREPRINT_TYPES.some((pp) => t.includes(pp)))) {
+    score -= 2;
+    reasons.push('preprint sin revisión por pares (penalización)');
   }
   if ('is_open_access' in a && a.is_open_access) {
     score += 1;

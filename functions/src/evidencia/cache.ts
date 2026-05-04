@@ -33,6 +33,11 @@ export interface CachedEvidencia {
     cochrane_count: number;
     ensayos_count: number;
     oa_enrichments: number;
+    core_count: number;
+    s2_count: number;
+    preprints_count: number;
+    tldr_enrichments: number;
+    crossref_enrichments: number;
     duracion_ms: number;
   };
   createdAt: FirebaseFirestore.Timestamp;
@@ -51,6 +56,11 @@ export interface EviCacheKeyParts {
   soloEnsayosUE: boolean;
   priorizarCochrane: boolean;
   enriquecerOA: boolean;
+  incluirCore: boolean;
+  incluirS2: boolean;
+  enriquecerTLDR: boolean;
+  enriquecerCrossref: boolean;
+  incluirPreprints: boolean;
 }
 
 /**
@@ -89,6 +99,16 @@ export function hashEviKey(parts: EviCacheKeyParts): string {
   h.update(parts.priorizarCochrane ? '1' : '0');
   h.update('\x00');
   h.update(parts.enriquecerOA ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.incluirCore ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.incluirS2 ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.enriquecerTLDR ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.enriquecerCrossref ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.incluirPreprints ? '1' : '0');
   return h.digest('hex');
 }
 
