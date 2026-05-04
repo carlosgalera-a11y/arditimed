@@ -25,7 +25,9 @@ export interface PicoExtraction {
   raw_model: string;
 }
 
-const SYSTEM_PROMPT = [
+// Exportado para promptRegistry.ts — no modificar el contenido sin
+// actualizar 02-risk-assessment.md (cambio sustancial de prompt).
+export const SYSTEM_PROMPT = [
   'Eres un asistente que extrae componentes PICO de preguntas clínicas.',
   'PICO = Population, Intervention, Comparison, Outcome.',
   'Output: JSON estricto, sin texto extra, sin markdown.',
