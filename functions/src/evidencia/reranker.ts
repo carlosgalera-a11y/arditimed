@@ -102,6 +102,51 @@ export function scoreAbstract(a: Abstract, currentYear: number = new Date().getF
   return { ref: a, score, reasons };
 }
 
+// Grado de evidencia GRADE-like calculado a partir de los tipos de estudio
+// de las fuentes top. Heurística conservadora pensada para ofrecer un
+// indicador visual al clínico (NO sustituye una valoración GRADE formal).
+export type EvidenceGrade = 'A' | 'B' | 'C' | 'D' | 'insuficiente';
+
+export interface EvidenceGradeResult {
+  grade: EvidenceGrade;
+  label: string;          // texto legible en español
+  rationale: string;      // explicación breve del porqué
+}
+
+export function gradeEvidence(scored: ScoredAbstract[]): EvidenceGradeResult {
+  if (!scored.length) {
+    return { grade: 'insuficiente', label: 'Insuficiente', rationale: 'No hay fuentes recuperadas.' };
+  }
+  const top = scored.slice(0, 5);
+  const reasons = top.flatMap((s) => s.reasons.map((r) => r.toLowerCase()));
+  const hasSR = reasons.some((r) => r.includes('revisión sistemática') || r.includes('metaanálisis'));
+  const hasRCT = reasons.some((r) => r.includes('ensayo clínico'));
+  const hasGuide = reasons.some((r) => r.includes('guía europea'));
+  const hasTier1 = reasons.some((r) => r.includes('tier-1'));
+  const allCaseReports = top.every((s) => s.reasons.some((r) => /case report/i.test(r)));
+  const onlyOldOrCase = top.every((s) =>
+    s.reasons.some((r) => /case report/i.test(r) || /antiguo/i.test(r)),
+  );
+
+  if ((hasSR || hasGuide) && (hasTier1 || hasRCT)) {
+    return {
+      grade: 'A',
+      label: 'Alta',
+      rationale: 'Revisiones sistemáticas, guías europeas o RCT en revistas tier-1 entre las fuentes top.',
+    };
+  }
+  if (hasSR || hasGuide || (hasRCT && hasTier1)) {
+    return { grade: 'B', label: 'Moderada', rationale: 'Hay revisiones, guías o RCT, pero con limitaciones.' };
+  }
+  if (hasRCT) {
+    return { grade: 'C', label: 'Baja', rationale: 'Solo ensayos individuales sin revisiones que sinteticen.' };
+  }
+  if (allCaseReports || onlyOldOrCase) {
+    return { grade: 'D', label: 'Muy baja', rationale: 'Predominan case reports o evidencia antigua.' };
+  }
+  return { grade: 'C', label: 'Baja', rationale: 'Estudios observacionales o serie de casos.' };
+}
+
 export function rerank(
   abstracts: Abstract[],
   opts: { maxResults?: number; currentYear?: number } = {},

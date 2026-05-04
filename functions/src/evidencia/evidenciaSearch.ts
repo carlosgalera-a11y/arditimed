@@ -22,7 +22,7 @@ import { searchPubmed, type PubmedAbstract } from './pubmed';
 import { searchEuropePMC, type EpmcAbstract } from './europepmc';
 import { searchOpenAlex, type OpenAlexAbstract } from './openalex';
 import { searchAemps, type AempsMedicamento } from './aemps';
-import { rerank, type ScoredAbstract } from './reranker';
+import { rerank, gradeEvidence, type ScoredAbstract, type EvidenceGradeResult } from './reranker';
 import { extractPico, type PicoExtraction } from './picoExtractor';
 import { synthesize, type SynthOutput } from './ragSynthesizer';
 import { hashEviKey, getEviCached, setEviCached, bumpEviCacheHit } from './cache';
@@ -63,6 +63,7 @@ interface SearchResponse {
   aemps: AempsMedicamento[];
   pico: PicoExtraction | null;
   sintesis: SynthOutput | null;
+  evidence_grade: EvidenceGradeResult;
   cached: boolean;
   meta: {
     pubmed_count: number;
@@ -128,6 +129,7 @@ export const evidenciaSearch = onCall(
     });
     const cached = await getEviCached(db, cacheKey).catch(() => null);
     if (cached) {
+      const cachedGrade = gradeEvidence(cached.fuentes);
       // Log mínimo de cache hit para auditoría AI Act art. 12.
       const refHit = db.collection('evidencia_consultas').doc();
       try {
@@ -163,6 +165,7 @@ export const evidenciaSearch = onCall(
         aemps: cached.aemps,
         pico: cached.pico,
         sintesis: cached.sintesis,
+        evidence_grade: cachedGrade,
         cached: true,
         meta: {
           pubmed_count: cached.meta.pubmed_count,
@@ -255,6 +258,7 @@ export const evidenciaSearch = onCall(
     const [pubmed, epmc, openalex, aemps] = await Promise.all([pubmedP, epmcP, openalexP, aempsP]);
 
     const reranked = rerank([...pubmed, ...epmc, ...openalex], { maxResults: 8 });
+    const evidenceGrade = gradeEvidence(reranked);
 
     // Síntesis RAG opcional con verificación de citas.
     let sintesis: SynthOutput | null = null;
@@ -298,6 +302,8 @@ export const evidenciaSearch = onCall(
         sintesis_citas_emitidas: sintesis ? sintesis.verificacion.citationsEmitted : 0,
         sintesis_citas_verificadas: sintesis ? sintesis.verificacion.citationsVerified : 0,
         sintesis_citas_ratio: sintesis ? sintesis.verificacion.ratio : 0,
+        sintesis_follow_ups: sintesis ? sintesis.follow_ups.length : 0,
+        evidence_grade: evidenceGrade.grade,
         ai_act_disclaimer_shown: true,
         duracion_ms: Date.now() - start,
         timestamp: FieldValue.serverTimestamp(),
@@ -344,6 +350,7 @@ export const evidenciaSearch = onCall(
       aemps,
       pico,
       sintesis,
+      evidence_grade: evidenceGrade,
       cached: false,
       meta: {
         pubmed_count: pubmed.length,
