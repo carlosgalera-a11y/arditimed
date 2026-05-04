@@ -21,13 +21,17 @@ export const SYNTH_SYSTEM_PROMPT = [
   '5. Si la evidencia es limitada, contradictoria o ausente, dilo explícitamente.',
   '6. NUNCA inventas referencias. Si no puedes citar, no afirmes.',
   '7. Respondes en español salvo que se te pida lo contrario.',
-  '8. Estructura tu respuesta exactamente con estas tres secciones:',
+  '8. Estructura tu respuesta EXACTAMENTE con estas cuatro secciones, en este orden:',
   '   ### Síntesis de la evidencia',
   '   (3-6 frases con citas [n])',
   '   ### Calidad de la evidencia',
   '   (tipo de estudios, tamaño, limitaciones metodológicas)',
   '   ### Brechas / consideraciones',
   '   (qué NO responde la evidencia disponible)',
+  '   ### Preguntas relacionadas',
+  '   (exactamente 3 preguntas de evidencia que un clínico podría querer explorar a continuación,',
+  '    cada una en una línea propia comenzando con "- ", formuladas como búsqueda bibliográfica',
+  '    y NUNCA como solicitud de diagnóstico/tratamiento individual)',
   '',
   'Si la pregunta solicita diagnóstico o tratamiento de un paciente concreto, responde:',
   '"Esta consulta requiere juicio clínico individualizado y queda fuera del alcance de EvidenciaIA. ',
@@ -51,11 +55,37 @@ export interface SynthInput {
 }
 
 export interface SynthOutput {
-  texto_sintetizado: string; // ya saneado por citationVerifier
+  texto_sintetizado: string; // ya saneado por citationVerifier (sin la sección "Preguntas relacionadas")
   texto_crudo: string;        // raw del modelo, para auditoría
   verificacion: VerificationResult;
+  follow_ups: string[];       // hasta 3 preguntas relacionadas extraídas de la última sección
   provider: string;
   model: string;
+}
+
+// Extrae la sección "### Preguntas relacionadas" del texto crudo del modelo
+// y devuelve hasta 3 preguntas limpias. También devuelve el texto sin esa
+// sección para que la verificación de citas trabaje sobre el cuerpo principal.
+export function splitFollowUps(text: string): { body: string; followUps: string[] } {
+  const rx = /^###\s+Preguntas\s+relacionadas\s*$/im;
+  const m = rx.exec(text);
+  if (!m || m.index === undefined) return { body: text, followUps: [] };
+  const body = text.slice(0, m.index).trimEnd();
+  const tail = text.slice(m.index + m[0].length).trim();
+  const lines = tail.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const followUps: string[] = [];
+  for (const line of lines) {
+    // Acepta "- ", "* ", "1. ", "1) " o líneas sueltas razonables.
+    const cleaned = line.replace(/^[-*•]\s+/, '').replace(/^\d+[.)]\s+/, '').trim();
+    if (cleaned.length < 8) continue;
+    if (cleaned.length > 240) continue;
+    // Filtra preguntas que pidan diagnóstico/tratamiento individual.
+    if (/\bmi\s+paciente\b/i.test(cleaned)) continue;
+    if (/\b(receto|prescribo|administro)\b/i.test(cleaned)) continue;
+    followUps.push(cleaned);
+    if (followUps.length === 3) break;
+  }
+  return { body, followUps };
 }
 
 function buildContext(fuentes: ScoredAbstract[]): string {
@@ -87,6 +117,7 @@ export async function synthesize(input: SynthInput): Promise<SynthOutput> {
         ratio: 0,
         warning: 'Sin fuentes — no se ha llamado al modelo.',
       },
+      follow_ups: [],
       provider: 'none',
       model: 'none',
     };
@@ -110,12 +141,16 @@ export async function synthesize(input: SynthInput): Promise<SynthOutput> {
   });
   const r = await tryProviderChain(chain);
   const crudo = r.result.text || '';
-  const verif = verifyCitations(crudo, input.fuentes.length);
+  // Aísla la sección "Preguntas relacionadas" antes de verificar citas
+  // (esa sección es de navegación, no debe contar para el ratio de citas).
+  const { body, followUps } = splitFollowUps(crudo);
+  const verif = verifyCitations(body, input.fuentes.length);
 
   return {
     texto_sintetizado: verif.text,
     texto_crudo: crudo,
     verificacion: verif,
+    follow_ups: followUps,
     provider: r.provider,
     model: r.result.model,
   };
