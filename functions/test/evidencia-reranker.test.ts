@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { rerank, scoreAbstract } from '../src/evidencia/reranker';
+import { rerank, scoreAbstract, gradeEvidence } from '../src/evidencia/reranker';
 import type { PubmedAbstract } from '../src/evidencia/pubmed';
 import type { EpmcAbstract } from '../src/evidencia/europepmc';
 import type { OpenAlexAbstract } from '../src/evidencia/openalex';
@@ -80,6 +80,13 @@ describe('reranker.scoreAbstract', () => {
     expect(s.reasons).toContain('case report (penalización)');
   });
 
+  it('penaliza preprints (medRxiv/bioRxiv/Preprint)', () => {
+    const pp = epmc({ publication_types: ['Preprint'] });
+    const reg = epmc();
+    expect(scoreAbstract(pp, baseYear).score).toBeLessThan(scoreAbstract(reg, baseYear).score);
+    expect(scoreAbstract(pp, baseYear).reasons.join(' ')).toMatch(/preprint sin revisión/);
+  });
+
   it('marca tier-1 (NEJM)', () => {
     const a = pubmed({ journal: 'New England Journal of Medicine' });
     const s = scoreAbstract(a, baseYear);
@@ -148,5 +155,37 @@ describe('reranker.rerank', () => {
     const out = rerank(arr);
     expect(out[0]?.ref.title).toBe('SR');
     expect(out[2]?.ref.title).toBe('Case');
+  });
+});
+
+describe('reranker.gradeEvidence', () => {
+  it('insuficiente cuando no hay fuentes', () => {
+    const g = gradeEvidence([]);
+    expect(g.grade).toBe('insuficiente');
+  });
+
+  it('grado A con SR + tier-1', () => {
+    const sr = pubmed({
+      publication_types: ['Systematic Review', 'Meta-Analysis'],
+      journal: 'New England Journal of Medicine',
+    });
+    const out = rerank([sr]);
+    const g = gradeEvidence(out);
+    expect(g.grade).toBe('A');
+  });
+
+  it('grado D cuando todo son case reports', () => {
+    const cr1 = pubmed({ pmid: '1', publication_types: ['Case Reports'], title: 'CR1' });
+    const cr2 = pubmed({ pmid: '2', publication_types: ['Case Reports'], title: 'CR2' });
+    const out = rerank([cr1, cr2]);
+    const g = gradeEvidence(out);
+    expect(g.grade).toBe('D');
+  });
+
+  it('grado C con un RCT aislado en revista no tier-1', () => {
+    const rct = pubmed({ publication_types: ['Randomized Controlled Trial'] });
+    const out = rerank([rct]);
+    const g = gradeEvidence(out);
+    expect(g.grade).toBe('C');
   });
 });

@@ -11,6 +11,7 @@ import type { Firestore } from 'firebase-admin/firestore';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { ScoredAbstract } from './reranker';
 import type { AempsMedicamento } from './aemps';
+import type { ClinicalTrial } from './clinicalTrials';
 import type { PicoExtraction } from './picoExtractor';
 import type { SynthOutput } from './ragSynthesizer';
 
@@ -21,6 +22,7 @@ export interface CachedEvidencia {
   pregunta: string;
   fuentes: ScoredAbstract[];
   aemps: AempsMedicamento[];
+  ensayos: ClinicalTrial[];
   pico: PicoExtraction | null;
   sintesis: SynthOutput | null;
   meta: {
@@ -28,6 +30,14 @@ export interface CachedEvidencia {
     europepmc_count: number;
     openalex_count: number;
     aemps_count: number;
+    cochrane_count: number;
+    ensayos_count: number;
+    oa_enrichments: number;
+    core_count: number;
+    s2_count: number;
+    preprints_count: number;
+    tldr_enrichments: number;
+    crossref_enrichments: number;
     duracion_ms: number;
   };
   createdAt: FirebaseFirestore.Timestamp;
@@ -41,6 +51,16 @@ export interface EviCacheKeyParts {
   anios: number;
   soloRevisiones: boolean;
   incluirAemps: boolean;
+  incluirEnsayos: boolean;
+  soloEnsayosActivos: boolean;
+  soloEnsayosUE: boolean;
+  priorizarCochrane: boolean;
+  enriquecerOA: boolean;
+  incluirCore: boolean;
+  incluirS2: boolean;
+  enriquecerTLDR: boolean;
+  enriquecerCrossref: boolean;
+  incluirPreprints: boolean;
 }
 
 /**
@@ -69,6 +89,26 @@ export function hashEviKey(parts: EviCacheKeyParts): string {
   h.update(parts.soloRevisiones ? '1' : '0');
   h.update('\x00');
   h.update(parts.incluirAemps ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.incluirEnsayos ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.soloEnsayosActivos ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.soloEnsayosUE ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.priorizarCochrane ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.enriquecerOA ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.incluirCore ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.incluirS2 ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.enriquecerTLDR ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.enriquecerCrossref ? '1' : '0');
+  h.update('\x00');
+  h.update(parts.incluirPreprints ? '1' : '0');
   return h.digest('hex');
 }
 
