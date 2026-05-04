@@ -29,6 +29,7 @@ interface SearchOpts {
   dateFrom?: number; // year
   dateTo?: number;   // year
   pubTypes?: string[]; // ['Randomized Controlled Trial', 'Meta-Analysis', ...]
+  journals?: string[]; // ej: ['Cochrane Database Syst Rev'] → AND ("...[journal]")
   apiKey?: string;
   timeoutMs?: number;
 }
@@ -38,6 +39,10 @@ function buildSearchUrl(query: string, opts: SearchOpts): string {
   if (opts.pubTypes && opts.pubTypes.length) {
     const pt = opts.pubTypes.map((t) => `"${t}"[ptyp]`).join(' OR ');
     term = `(${term}) AND (${pt})`;
+  }
+  if (opts.journals && opts.journals.length) {
+    const jr = opts.journals.map((j) => `"${j}"[Journal]`).join(' OR ');
+    term = `(${term}) AND (${jr})`;
   }
   if (opts.dateFrom || opts.dateTo) {
     const from = opts.dateFrom ?? 1900;
