@@ -31,6 +31,10 @@ interface EpmcOpts {
   dateFrom?: number;
   dateTo?: number;
   pubTypes?: string[];
+  // Si onlyPreprints=true, restringe a SRC:PPR (medRxiv/bioRxiv/ChemRxiv/arXiv).
+  // Útil para una segunda búsqueda paralela que recupere preprints muy
+  // recientes; los marcamos visualmente y los penalizamos en el rerank.
+  onlyPreprints?: boolean;
 }
 
 async function fetchWithTimeout(url: string, ms: number): Promise<Response> {
@@ -53,6 +57,9 @@ function buildQuery(q: string, opts: EpmcOpts): string {
     const from = opts.dateFrom ?? 1900;
     const to = opts.dateTo ?? new Date().getFullYear();
     term = `(${term}) AND (PUB_YEAR:[${from} TO ${to}])`;
+  }
+  if (opts.onlyPreprints) {
+    term = `(${term}) AND (SRC:PPR)`;
   }
   return term;
 }
@@ -82,6 +89,12 @@ function mapResult(d: Record<string, unknown>): EpmcAbstract {
   const ftUrl = ftList && ftList.length ? ftList[0].url : null;
 
   const pubTypeRaw = (d['pubTypeList'] as { pubType?: string[] } | undefined)?.pubType ?? [];
+  const types = Array.isArray(pubTypeRaw) ? pubTypeRaw : [String(pubTypeRaw)];
+  // Si la fuente es PPR (preprint server), inyectamos "preprint" en types
+  // para que el reranker lo penalice y la UI pueda mostrar el badge.
+  if (String(d['source'] ?? '') === 'PPR' && !types.some((t) => /preprint/i.test(t))) {
+    types.push('Preprint');
+  }
 
   return {
     id: String(d['id'] ?? ''),
@@ -93,7 +106,7 @@ function mapResult(d: Record<string, unknown>): EpmcAbstract {
     journal: String(d['journalTitle'] ?? ''),
     year: yearStr ? parseInt(yearStr, 10) : null,
     doi: (d['doi'] as string | undefined) ?? null,
-    publication_types: Array.isArray(pubTypeRaw) ? pubTypeRaw : [String(pubTypeRaw)],
+    publication_types: types,
     is_open_access: String(d['isOpenAccess'] ?? '') === 'Y',
     full_text_url: ftUrl,
     source: 'europepmc',

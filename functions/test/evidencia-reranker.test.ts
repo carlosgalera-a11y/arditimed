@@ -80,6 +80,13 @@ describe('reranker.scoreAbstract', () => {
     expect(s.reasons).toContain('case report (penalización)');
   });
 
+  it('penaliza preprints (medRxiv/bioRxiv/Preprint)', () => {
+    const pp = epmc({ publication_types: ['Preprint'] });
+    const reg = epmc();
+    expect(scoreAbstract(pp, baseYear).score).toBeLessThan(scoreAbstract(reg, baseYear).score);
+    expect(scoreAbstract(pp, baseYear).reasons.join(' ')).toMatch(/preprint sin revisión/);
+  });
+
   it('marca tier-1 (NEJM)', () => {
     const a = pubmed({ journal: 'New England Journal of Medicine' });
     const s = scoreAbstract(a, baseYear);

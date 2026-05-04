@@ -134,8 +134,12 @@ main{flex:1;padding:24px 22px 40px;max-width:980px;width:100%;margin:0 auto}
 .cite-pop a{color:#93bbfc;text-decoration:underline;font-weight:700;font-size:.74rem;display:inline-block;margin-top:6px}
 .sint .cite{position:relative}
 
-/* Badge full-text OA */
+/* Badges varios */
 .oa-badge{display:inline-block;background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.40);font-size:.66rem;font-weight:800;padding:1px 7px;border-radius:8px;margin-left:6px;letter-spacing:.04em;text-transform:uppercase}
+.preprint-badge{display:inline-block;background:rgba(239,68,68,.16);color:#fca5a5;border:1px solid rgba(239,68,68,.40);font-size:.66rem;font-weight:800;padding:1px 7px;border-radius:8px;margin-left:6px;letter-spacing:.04em;text-transform:uppercase}
+.lic-badge{display:inline-block;background:rgba(212,168,83,.14);color:#f3d98a;border:1px solid rgba(212,168,83,.32);font-size:.64rem;font-weight:700;padding:1px 6px;border-radius:6px;margin-left:5px}
+.tldr-box{margin-top:6px;padding:6px 9px;background:rgba(59,130,246,.08);border-left:3px solid rgba(59,130,246,.50);border-radius:4px;font-size:.78rem;line-height:1.4;color:#cbd5e1;font-style:italic}
+.tldr-box::before{content:"TL;DR · ";font-weight:800;color:#93bbfc;font-style:normal}
 
 /* Ensayo clínico card */
 .ensayo{padding:10px 12px;border-bottom:1px dashed rgba(255,255,255,.12);font-size:.86rem;line-height:1.5}
@@ -235,6 +239,11 @@ footer a{text-decoration:underline;color:#d4a853}
         <label><input type="checkbox" id="eviTrials"> Ensayos clínicos (ClinicalTrials.gov)</label>
         <label style="opacity:.85"><input type="checkbox" id="eviTrialsActivos"> · solo activos</label>
         <label style="opacity:.85"><input type="checkbox" id="eviTrialsUE"> · solo UE/ES</label>
+        <label><input type="checkbox" id="eviCore"> CORE OA (~300M papers)</label>
+        <label><input type="checkbox" id="eviS2"> Semantic Scholar</label>
+        <label><input type="checkbox" id="eviTLDR" checked> TLDR (S2)</label>
+        <label><input type="checkbox" id="eviCrossref" checked> Licencias (Crossref)</label>
+        <label><input type="checkbox" id="eviPreprints"> Preprints (medRxiv/bioRxiv)</label>
         <label><input type="checkbox" id="eviSint" checked> Sintetizar con IA</label>
       </div>
       <div class="row-buttons">
@@ -395,6 +404,11 @@ async function buscar(){
       incluirEnsayos: $('eviTrials').checked,
       soloEnsayosActivos: $('eviTrialsActivos').checked,
       soloEnsayosUE: $('eviTrialsUE').checked,
+      incluirCore: $('eviCore').checked,
+      incluirS2: $('eviS2').checked,
+      enriquecerTLDR: $('eviTLDR').checked,
+      enriquecerCrossref: $('eviCrossref').checked,
+      incluirPreprints: $('eviPreprints').checked,
     },
   };
 
@@ -494,22 +508,47 @@ function renderResultado(d){
   }
 
   // Fuentes
+  var crossrefMeta = d.crossref_meta || {};
   var ol = $('eviFuentes');
   ol.innerHTML = (d.fuentes || []).map(function(s, i){
     var a = s.ref;
     var src = a.source === 'pubmed' ? 'PubMed'
             : a.source === 'europepmc' ? 'Europe PMC'
             : a.source === 'openalex' ? 'OpenAlex'
+            : a.source === 'core' ? 'CORE'
+            : a.source === 's2' ? 'Semantic Scholar'
             : a.source;
     var primaryUrl = a.doi ? 'https://doi.org/' + a.doi
       : (a.pmid ? 'https://pubmed.ncbi.nlm.nih.gov/' + a.pmid + '/'
       : (a.full_text_url || ''));
     var oaUrl = a.full_text_url || '';
-    var hasOA = (s.reasons||[]).some(function(r){ return /full text OA \(Unpaywall\)/i.test(r); });
-    var reasons = (s.reasons||[]).map(function(r){ return '<span>'+esc(r)+'</span>'; }).join('');
+    var rs = s.reasons || [];
+    var hasOA = rs.some(function(r){ return /full text OA \(Unpaywall\)/i.test(r); });
+    var isPreprint = rs.some(function(r){ return /preprint/i.test(r); });
+    // Extraer TLDR del abstract (lo prependemos en backend con [TLDR] prefix).
+    var tldr = '';
+    if (typeof a.abstract === 'string') {
+      var m = /^\[TLDR\]\s*([^\n]+)/.exec(a.abstract);
+      if (m) tldr = m[1] || '';
+    }
+    // Crossref licencia.
+    var lic = '';
+    if (a.doi && crossrefMeta[a.doi.toLowerCase()]) {
+      var cr = crossrefMeta[a.doi.toLowerCase()];
+      if (cr.license_name) lic = cr.license_name;
+    }
+    // Reasons sin las que ya pintamos como badge (preprint, OA, licencia, TLDR).
+    var reasons = rs.filter(function(r){
+      return !/full text OA \(Unpaywall\)/i.test(r)
+          && !/preprint/i.test(r)
+          && !/^licencia /i.test(r)
+          && !/TLDR Semantic Scholar/i.test(r);
+    }).map(function(r){ return '<span>'+esc(r)+'</span>'; }).join('');
     return '<li class="fuente">'
       + '<span class="num">['+(i+1)+']</span><strong>'+esc(a.title)+'</strong>'
       + (hasOA ? '<span class="oa-badge" title="Full text Open Access vía Unpaywall">📖 Full text OA</span>' : '')
+      + (isPreprint ? '<span class="preprint-badge" title="Preprint sin revisión por pares">⚠️ Preprint</span>' : '')
+      + (lic ? '<span class="lic-badge" title="Licencia (Crossref)">'+esc(lic)+'</span>' : '')
       + '<div class="meta">' + esc((a.authors||[]).slice(0,5).join(', '))
       + (a.year ? ' · ' + esc(String(a.year)) : '')
       + (a.journal ? ' · ' + esc(a.journal) : '')
@@ -517,6 +556,7 @@ function renderResultado(d){
       + (primaryUrl ? ' · <a href="'+esc(primaryUrl)+'" target="_blank" rel="noopener">enlace ↗</a>' : '')
       + (hasOA && oaUrl && oaUrl !== primaryUrl ? ' · <a href="'+esc(oaUrl)+'" target="_blank" rel="noopener">📖 leer OA ↗</a>' : '')
       + '</div>'
+      + (tldr ? '<div class="tldr-box">'+esc(tldr)+'</div>' : '')
       + (reasons ? '<div class="reasons">'+reasons+'</div>' : '')
       + '</li>';
   }).join('') || '<li class="fuente"><em>Sin resultados.</em></li>';
@@ -563,14 +603,20 @@ function renderResultado(d){
   var qEnc = encodeURIComponent(d.pregunta || '');
   var ext = $('eviExternas');
   ext.innerHTML = [
+    // Preevid (SMS Murcia) primero — autoridad local máxima.
+    { label: '⭐ Preevid · SMS Murcia', url: 'https://www.murciasalud.es/preevid/buscador?q=' + qEnc, featured: true },
+    { label: '🇪🇸 GuíaSalud', url: 'https://portal.guiasalud.es/?s=' + qEnc },
     { label: '🇬🇧 NICE Evidence', url: 'https://www.nice.org.uk/search?q=' + qEnc },
     { label: '💊 EMA medicines', url: 'https://www.ema.europa.eu/en/medicines/field_ema_web_categories%253Aname_field/Human?search_api_views_fulltext=' + qEnc },
-    { label: '🇪🇸 GuíaSalud', url: 'https://portal.guiasalud.es/?s=' + qEnc },
     { label: '🇪🇺 EU Clinical Trials', url: 'https://www.clinicaltrialsregister.eu/ctr-search/search?query=' + qEnc },
     { label: '📚 Cochrane Library', url: 'https://www.cochranelibrary.com/search?q=' + qEnc },
     { label: '💊 AEMPS CIMA', url: 'https://cima.aemps.es/cima/publico/buscador.html?nombre=' + qEnc },
+    { label: '📖 MEDES (es)', url: 'https://www.medes.com/Public/ResultSearch.aspx?Texto=' + qEnc },
+    { label: '🌎 SciELO', url: 'https://search.scielo.org/?q=' + qEnc },
+    { label: '🌍 WHO IRIS', url: 'https://iris.who.int/discover?query=' + qEnc },
   ].map(function(l){
-    return '<a class="chip" target="_blank" rel="noopener" href="'+esc(l.url)+'">'+esc(l.label)+'</a>';
+    var cls = l.featured ? 'chip followup' : 'chip';
+    return '<a class="'+cls+'" target="_blank" rel="noopener" href="'+esc(l.url)+'">'+esc(l.label)+'</a>';
   }).join('');
 
   // AEMPS
@@ -594,9 +640,14 @@ function renderResultado(d){
     'cochrane=' + (meta.cochrane_count||0) + ' · ' +
     'epmc=' + (meta.europepmc_count||0) + ' · ' +
     'openalex=' + (meta.openalex_count||0) + ' · ' +
+    'core=' + (meta.core_count||0) + ' · ' +
+    's2=' + (meta.s2_count||0) + ' · ' +
+    'preprints=' + (meta.preprints_count||0) + ' · ' +
     'aemps=' + (meta.aemps_count||0) + ' · ' +
     'trials=' + (meta.ensayos_count||0) + ' · ' +
     'oa=' + (meta.oa_enrichments||0) + ' · ' +
+    'tldr=' + (meta.tldr_enrichments||0) + ' · ' +
+    'crossref=' + (meta.crossref_enrichments||0) + ' · ' +
     'duración=' + (meta.duracion_ms||0) + 'ms' +
     (s.provider ? ' · synth=' + s.provider + '/' + s.model : '') +
     (s.verificacion ? ' · citas=' + s.verificacion.citationsVerified + '/' + s.verificacion.citationsEmitted : '');

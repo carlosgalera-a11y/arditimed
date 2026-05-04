@@ -12,6 +12,11 @@ const BASE: EviCacheKeyParts = {
   soloEnsayosUE: false,
   priorizarCochrane: false,
   enriquecerOA: false,
+  incluirCore: false,
+  incluirS2: false,
+  enriquecerTLDR: false,
+  enriquecerCrossref: false,
+  incluirPreprints: false,
 };
 
 describe('evidencia.cache.hashEviKey', () => {
@@ -62,5 +67,16 @@ describe('evidencia.cache.hashEviKey', () => {
     const a = hashEviKey({ ...BASE, enriquecerOA: false });
     const b = hashEviKey({ ...BASE, enriquecerOA: true });
     expect(a).not.toBe(b);
+  });
+
+  it('cambia el hash si cambia incluirCore / incluirS2 / preprints', () => {
+    expect(hashEviKey(BASE)).not.toBe(hashEviKey({ ...BASE, incluirCore: true }));
+    expect(hashEviKey(BASE)).not.toBe(hashEviKey({ ...BASE, incluirS2: true }));
+    expect(hashEviKey(BASE)).not.toBe(hashEviKey({ ...BASE, incluirPreprints: true }));
+  });
+
+  it('cambia el hash si cambia enriquecerTLDR / enriquecerCrossref', () => {
+    expect(hashEviKey(BASE)).not.toBe(hashEviKey({ ...BASE, enriquecerTLDR: true }));
+    expect(hashEviKey(BASE)).not.toBe(hashEviKey({ ...BASE, enriquecerCrossref: true }));
   });
 });
