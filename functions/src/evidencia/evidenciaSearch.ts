@@ -22,6 +22,8 @@ import { searchPubmed, type PubmedAbstract } from './pubmed';
 import { searchEuropePMC, type EpmcAbstract } from './europepmc';
 import { searchOpenAlex, type OpenAlexAbstract } from './openalex';
 import { searchAemps, type AempsMedicamento } from './aemps';
+import { searchClinicalTrials, type ClinicalTrial } from './clinicalTrials';
+import { resolveManyDois } from './unpaywall';
 import { rerank, gradeEvidence, type ScoredAbstract, type EvidenceGradeResult } from './reranker';
 import { extractPico, type PicoExtraction } from './picoExtractor';
 import { synthesize, type SynthOutput } from './ragSynthesizer';
@@ -48,6 +50,11 @@ interface SearchRequest {
     soloRevisiones?: boolean;
     incluirAemps?: boolean;
     priorizarGuiasEU?: boolean;
+    incluirEnsayos?: boolean;       // añade ClinicalTrials.gov
+    soloEnsayosActivos?: boolean;   // recruiting / active not recruiting
+    soloEnsayosUE?: boolean;        // sesgo UE en trials
+    priorizarCochrane?: boolean;    // segunda búsqueda PubMed restringida a Cochrane Database Syst Rev
+    enriquecerOA?: boolean;         // resolver DOIs vía Unpaywall (full-text OA)
   };
   // Si true, ejecuta extracción PICO + síntesis RAG con citas verificadas.
   // Si false, devuelve solo los abstracts re-rankeados (modo PR-1).
@@ -61,6 +68,7 @@ interface SearchResponse {
   pregunta: string;
   fuentes: ScoredAbstract[];
   aemps: AempsMedicamento[];
+  ensayos: ClinicalTrial[];
   pico: PicoExtraction | null;
   sintesis: SynthOutput | null;
   evidence_grade: EvidenceGradeResult;
@@ -70,6 +78,9 @@ interface SearchResponse {
     europepmc_count: number;
     openalex_count: number;
     aemps_count: number;
+    cochrane_count: number;
+    ensayos_count: number;
+    oa_enrichments: number;
     duracion_ms: number;
     errors: Record<string, string>;
   };
@@ -126,6 +137,11 @@ export const evidenciaSearch = onCall(
       anios,
       soloRevisiones: !!filtros.soloRevisiones,
       incluirAemps: !!filtros.incluirAemps,
+      incluirEnsayos: !!filtros.incluirEnsayos,
+      soloEnsayosActivos: !!filtros.soloEnsayosActivos,
+      soloEnsayosUE: !!filtros.soloEnsayosUE,
+      priorizarCochrane: !!filtros.priorizarCochrane,
+      enriquecerOA: !!filtros.enriquecerOA,
     });
     const cached = await getEviCached(db, cacheKey).catch(() => null);
     if (cached) {
@@ -163,6 +179,7 @@ export const evidenciaSearch = onCall(
         pregunta: v.sanitized,
         fuentes: cached.fuentes,
         aemps: cached.aemps,
+        ensayos: cached.ensayos ?? [],
         pico: cached.pico,
         sintesis: cached.sintesis,
         evidence_grade: cachedGrade,
@@ -172,6 +189,9 @@ export const evidenciaSearch = onCall(
           europepmc_count: cached.meta.europepmc_count,
           openalex_count: cached.meta.openalex_count,
           aemps_count: cached.meta.aemps_count,
+          cochrane_count: cached.meta.cochrane_count ?? 0,
+          ensayos_count: cached.meta.ensayos_count ?? 0,
+          oa_enrichments: cached.meta.oa_enrichments ?? 0,
           duracion_ms: Date.now() - start,
           errors: {},
         },
@@ -255,10 +275,77 @@ export const evidenciaSearch = onCall(
         })
       : Promise.resolve([] as AempsMedicamento[]);
 
-    const [pubmed, epmc, openalex, aemps] = await Promise.all([pubmedP, epmcP, openalexP, aempsP]);
+    // Búsqueda extra dirigida a Cochrane Database Syst Rev — alta calidad,
+    // típicamente devuelve 1-3 SR muy relevantes que sumamos al pool antes
+    // de re-ranquear (no duplica si ya estaba via PubMed normal).
+    const cochraneP: Promise<PubmedAbstract[]> = filtros.priorizarCochrane
+      ? searchPubmed(queryPubmed, {
+          maxResults: 5,
+          dateFrom,
+          journals: ['Cochrane Database Syst Rev'],
+          apiKey: ncbiKey || undefined,
+          timeoutMs: 8000,
+        }).catch((e: Error) => {
+          errors['cochrane'] = e.message ?? String(e);
+          return [] as PubmedAbstract[];
+        })
+      : Promise.resolve([] as PubmedAbstract[]);
 
-    const reranked = rerank([...pubmed, ...epmc, ...openalex], { maxResults: 8 });
+    // ClinicalTrials.gov — ensayos en marcha o completados (NIH, gratis,
+    // sin auth). Se devuelve aparte de los abstracts (no se rerankea).
+    const ensayosP: Promise<ClinicalTrial[]> = filtros.incluirEnsayos
+      ? searchClinicalTrials(queryEpmc, {
+          pageSize: 8,
+          dateFrom,
+          onlyActive: !!filtros.soloEnsayosActivos,
+          onlyEUorSpain: !!filtros.soloEnsayosUE,
+          timeoutMs: 8000,
+        }).catch((e: Error) => {
+          errors['clinicaltrials'] = e.message ?? String(e);
+          return [] as ClinicalTrial[];
+        })
+      : Promise.resolve([] as ClinicalTrial[]);
+
+    const [pubmed, epmc, openalex, aemps, cochrane, ensayos] = await Promise.all([
+      pubmedP, epmcP, openalexP, aempsP, cochraneP, ensayosP,
+    ]);
+
+    const reranked = rerank([...pubmed, ...cochrane, ...epmc, ...openalex], { maxResults: 8 });
     const evidenceGrade = gradeEvidence(reranked);
+
+    // ─── Enriquecimiento Unpaywall ────────────────────────────────────
+    // Para cada fuente top con DOI, intentamos resolver versión OA. Si la
+    // hay, mutamos full_text_url. Best-effort con presupuesto 6s — si
+    // Unpaywall tarda, no bloquea la respuesta.
+    let oaEnrichments = 0;
+    if (filtros.enriquecerOA) {
+      const dois = reranked
+        .map((s) => (s.ref as { doi?: string | null }).doi ?? null)
+        .filter((x): x is string => typeof x === 'string' && x.length > 0);
+      if (dois.length) {
+        try {
+          const resMap = await resolveManyDois(dois, {
+            concurrency: 4,
+            perRequestTimeoutMs: 3500,
+            totalBudgetMs: 6000,
+          });
+          for (const s of reranked) {
+            const ref = s.ref as { doi?: string | null; full_text_url?: string | null };
+            if (!ref.doi) continue;
+            const oa = resMap.get(ref.doi);
+            if (!oa) continue;
+            const url = oa.oa_url_for_pdf || oa.oa_url;
+            if (url && !ref.full_text_url) {
+              ref.full_text_url = url;
+              s.reasons.push('full text OA (Unpaywall)');
+              oaEnrichments++;
+            }
+          }
+        } catch (e: unknown) {
+          errors['unpaywall'] = (e as Error).message ?? String(e);
+        }
+      }
+    }
 
     // Síntesis RAG opcional con verificación de citas.
     let sintesis: SynthOutput | null = null;
@@ -285,9 +372,11 @@ export const evidenciaSearch = onCall(
         rechazada: false,
         fuentes_consultadas: [
           ...(pubmed.length ? ['pubmed'] : []),
+          ...(cochrane.length ? ['cochrane'] : []),
           ...(epmc.length ? ['europepmc'] : []),
           ...(openalex.length ? ['openalex'] : []),
           ...(aemps.length ? ['aemps'] : []),
+          ...(ensayos.length ? ['clinicaltrials'] : []),
         ],
         num_abstracts_recuperados: reranked.length,
         abstracts_pmids: reranked
@@ -304,6 +393,9 @@ export const evidenciaSearch = onCall(
         sintesis_citas_ratio: sintesis ? sintesis.verificacion.ratio : 0,
         sintesis_follow_ups: sintesis ? sintesis.follow_ups.length : 0,
         evidence_grade: evidenceGrade.grade,
+        cochrane_count: cochrane.length,
+        ensayos_count: ensayos.length,
+        oa_enrichments: oaEnrichments,
         ai_act_disclaimer_shown: true,
         duracion_ms: Date.now() - start,
         timestamp: FieldValue.serverTimestamp(),
@@ -319,6 +411,9 @@ export const evidenciaSearch = onCall(
       epmc: epmc.length,
       openalex: openalex.length,
       aemps: aemps.length,
+      cochrane: cochrane.length,
+      ensayos: ensayos.length,
+      oa_enrichments: oaEnrichments,
       reranked: reranked.length,
       duracion_ms: Date.now() - start,
       errors: Object.keys(errors),
@@ -330,6 +425,7 @@ export const evidenciaSearch = onCall(
         pregunta: v.sanitized,
         fuentes: reranked,
         aemps,
+        ensayos,
         pico,
         sintesis,
         meta: {
@@ -337,6 +433,9 @@ export const evidenciaSearch = onCall(
           europepmc_count: epmc.length,
           openalex_count: openalex.length,
           aemps_count: aemps.length,
+          cochrane_count: cochrane.length,
+          ensayos_count: ensayos.length,
+          oa_enrichments: oaEnrichments,
           duracion_ms: Date.now() - start,
         },
       }).catch((e) => logger.warn('evidencia.cache.set.failed', { err: (e as Error).message }));
@@ -348,6 +447,7 @@ export const evidenciaSearch = onCall(
       pregunta: v.sanitized,
       fuentes: reranked,
       aemps,
+      ensayos,
       pico,
       sintesis,
       evidence_grade: evidenceGrade,
@@ -357,6 +457,9 @@ export const evidenciaSearch = onCall(
         europepmc_count: epmc.length,
         openalex_count: openalex.length,
         aemps_count: aemps.length,
+        cochrane_count: cochrane.length,
+        ensayos_count: ensayos.length,
+        oa_enrichments: oaEnrichments,
         duracion_ms: Date.now() - start,
         errors,
       },
