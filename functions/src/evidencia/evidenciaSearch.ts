@@ -223,6 +223,11 @@ export const evidenciaSearch = onCall(
         rechazada: true,
         motivo_rechazo: v.motivo,
         ai_act_disclaimer_shown: true,
+        // Evidencia procedimental de la Estrategia 3 (vínculo IA→paciente
+        // roto). El rechazo prueba que el sistema NO procesó datos
+        // individualizados — refuerza la posición de "no SaMD" bajo MDR.
+        // Ver docs/aiact/12-mdr-classification-rationale.md.
+        patient_link_broken: true,
         timestamp: FieldValue.serverTimestamp(),
       });
       throw new HttpsError('invalid-argument', v.mensaje);
@@ -269,6 +274,7 @@ export const evidenciaSearch = onCall(
           filtros_aplicados: filtros,
           sintetizar: data.sintetizar === true,
           ai_act_disclaimer_shown: true,
+          patient_link_broken: true,
           cache_hit: true,
           cache_key: cacheKey,
           duracion_ms: Date.now() - start,
@@ -695,6 +701,10 @@ export const evidenciaSearch = onCall(
         // sin tener que cargar el texto sintetizado completo.
         sintesis_resumen: sintesis ? sintesis.texto_sintetizado.replace(/\s+/g, ' ').slice(0, 360) : '',
         ai_act_disclaimer_shown: true,
+        // Evidencia procedimental de la Estrategia 3 (vínculo roto). La
+        // pregunta llegó al modelo IA sanitizada y sin PII por construcción.
+        // Ver docs/aiact/12-mdr-classification-rationale.md.
+        patient_link_broken: true,
         duracion_ms: Date.now() - start,
         timestamp: FieldValue.serverTimestamp(),
       });
