@@ -175,8 +175,29 @@ footer a{text-decoration:underline;color:#d4a853}
 </section>
 
 <section>
+  <h2>⚖️ ¿Por qué EvidenciaIA NO es un producto sanitario?</h2>
+  <p>OpenEvidence y herramientas similares operan en USA como software de soporte a decisión clínica. En Europa, eso requeriría marcado CE bajo MDR + clasificación de alto riesgo bajo AI Act. EvidenciaIA evita ese encuadre legal combinando dos estrategias reconocidas en la doctrina:</p>
+
+  <h3>1️⃣ Consulta de evidencia, NO diagnóstico</h3>
+  <p>EvidenciaIA <strong>recupera y resume literatura científica</strong> sobre condiciones o fármacos. NO te dice qué tiene tu paciente ni qué tratamiento darle. El médico hace la pregunta, recibe literatura sintetizada y aplica su criterio. Modelo legal idéntico a UpToDate o Consensus.</p>
+  <p style="font-size:.86rem;opacity:.78">⚙️ <strong>Implementación técnica</strong>: las salvaguardas (<code>safeguards.ts</code>) rechazan en tiempo de ejecución preguntas como "qué tiene mi paciente con X" o "qué dosis le pongo a Y" antes de invocar al modelo IA.</p>
+
+  <h3>3️⃣ Sin vínculo IA → paciente concreto</h3>
+  <p>El sistema <strong>nunca toca datos del paciente real</strong>: no se cargan historiales clínicos, no se aceptan DNI/NIE/fechas/teléfonos. La pregunta llega anónima al modelo IA por construcción. El nexo entre la IA y el paciente <strong>se rompe legalmente</strong> — el médico es quien hace la conexión mental, no el sistema. Modelo legal idéntico a MDCalc.</p>
+  <p style="font-size:.86rem;opacity:.78">⚙️ <strong>Implementación técnica</strong>: regex pre-modelo bloquea PII; cada consulta loguea <code>patient_link_broken: true</code> como evidencia procedimental. El system prompt instruye al modelo a NO procesar contenido individualizado.</p>
+
+  <h3>Resultado</h3>
+  <p><strong>Funcionalmente</strong> EvidenciaIA se siente como OpenEvidence para el médico. <strong>Jurídicamente</strong> es muy diferente: NO es producto sanitario bajo MDR 2017/745, NO entra en el Anexo III del AI Act como sistema de alto riesgo, queda como <strong>sistema IA de riesgo limitado</strong> bajo art. 50 (transparencia).</p>
+
+  <h3>¿Y si mañana el SMS Murcia quiere usarla oficialmente?</h3>
+  <p>Existe una cuarta vía: art. 5(5) MDR. Una herramienta IA desplegada como uso interno por un centro sanitario para sus propios profesionales NO requiere marcado CE — la responsabilidad clínica recae en el centro. Vía abierta para una posible adopción institucional formal.</p>
+
+  <p style="margin-top:14px"><a href="docs/aiact/12-mdr-classification-rationale.md">Justificación legal completa →</a></p>
+</section>
+
+<section>
   <h2>📋 Documentación regulatoria</h2>
-  <p>Toda la documentación de cumplimiento (AI Act, RGPD, ISO 42001 readiness) es pública en <a href="docs/aiact/">docs/aiact/</a>. Útil para auditorías, presentación a SMS Murcia / UMU, o simplemente entender por qué hacemos las cosas como las hacemos.</p>
+  <p>Toda la documentación de cumplimiento (AI Act, RGPD, ISO 42001 readiness, MDR rationale) es pública en <a href="docs/aiact/">docs/aiact/</a>. Útil para auditorías, presentación a SMS Murcia / UMU, o simplemente entender por qué hacemos las cosas como las hacemos.</p>
 </section>
 
 </main>

@@ -253,9 +253,12 @@ footer a{text-decoration:underline;color:#d4a853}
       <strong data-i18n="disclaimer_title">⚠️ Aviso de transparencia (EU AI Act art. 50).</strong>
       <span data-i18n="disclaimer_body">Este sistema usa IA para extraer la pregunta PICO y para sintetizar
       abstracts. La síntesis NO constituye diagnóstico ni recomendación
-      terapéutica para un paciente concreto. Cada cita debe verificarse
-      en la fuente original antes de aplicarla. El sistema rechaza
-      preguntas que pidan diagnóstico/tratamiento individual.</span>
+      terapéutica para un paciente concreto. Tú describes el caso de forma
+      anónima y el sistema responde con literatura general — la conexión
+      IA→paciente la haces tú, no el software (modelo MDCalc / UpToDate).
+      Cada cita debe verificarse en la fuente original antes de aplicarla.
+      El sistema rechaza automáticamente preguntas con PII (DNI/NIE/fecha/teléfono)
+      o que pidan diagnóstico/tratamiento individual.</span>
       <div class="acept">
         <input type="checkbox" id="eviAcept">
         <label for="eviAcept" data-i18n="acept_label">He leído el aviso y entiendo que EvidenciaIA es una herramienta de búsqueda bibliográfica formativa.</label>
@@ -456,7 +459,7 @@ var I18N = {
     badge_formative: 'Uso formativo',
     hero_lead: 'Búsqueda bibliográfica clínica en PubMed, Europe PMC y AEMPS, con re-ranking europeo (Cochrane · NICE · ESC · ESMO · GuíaSalud) y síntesis IA con citas verificadas. Pensado como apoyo a la lectura crítica, no como soporte a decisión clínica.',
     disclaimer_title: '⚠️ Aviso de transparencia (EU AI Act art. 50).',
-    disclaimer_body: 'Este sistema usa IA para extraer la pregunta PICO y para sintetizar abstracts. La síntesis NO constituye diagnóstico ni recomendación terapéutica para un paciente concreto. Cada cita debe verificarse en la fuente original antes de aplicarla. El sistema rechaza preguntas que pidan diagnóstico/tratamiento individual.',
+    disclaimer_body: 'Este sistema usa IA para extraer la pregunta PICO y para sintetizar abstracts. La síntesis NO constituye diagnóstico ni recomendación terapéutica para un paciente concreto. Tú describes el caso de forma anónima y el sistema responde con literatura general — la conexión IA→paciente la haces tú, no el software (modelo MDCalc / UpToDate). Cada cita debe verificarse en la fuente original antes de aplicarla. El sistema rechaza automáticamente preguntas con PII (DNI/NIE/fecha/teléfono) o que pidan diagnóstico/tratamiento individual.',
     acept_label: 'He leído el aviso y entiendo que EvidenciaIA es una herramienta de búsqueda bibliográfica formativa.',
     btn_search: '🔍 Buscar evidencia',
     hint_accept: 'Acepta el aviso para activar.',
@@ -475,7 +478,7 @@ var I18N = {
     badge_formative: 'Educational use',
     hero_lead: 'Clinical literature search across PubMed, Europe PMC and AEMPS, with European re-ranking (Cochrane · NICE · ESC · ESMO · GuíaSalud) and AI synthesis with verified citations. Designed as critical reading aid, not as clinical decision support.',
     disclaimer_title: '⚠️ Transparency notice (EU AI Act art. 50).',
-    disclaimer_body: 'This system uses AI to extract the PICO question and synthesize abstracts. The synthesis is NOT a diagnosis or therapeutic recommendation for a specific patient. Every citation must be verified at the original source before applying it. The system refuses questions asking for individual diagnosis or treatment.',
+    disclaimer_body: 'This system uses AI to extract the PICO question and synthesize abstracts. The synthesis is NOT a diagnosis or therapeutic recommendation for a specific patient. You describe the case anonymously and the system answers with general literature — the AI→patient link is made by you, not by the software (MDCalc / UpToDate model). Every citation must be verified at the original source before applying it. The system automatically refuses questions containing PII (national ID / date / phone) or asking for individual diagnosis or treatment.',
     acept_label: 'I have read this notice and I understand that EvidenciaIA is an educational literature search tool.',
     btn_search: '🔍 Search evidence',
     hint_accept: 'Accept the notice to enable.',
