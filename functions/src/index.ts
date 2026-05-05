@@ -17,6 +17,8 @@ export { foroNotifyOnRespuesta } from './foroNotify';
 export { evidenciaSearch } from './evidencia/evidenciaSearch';
 export { evidenciaFeedback } from './evidencia/evidenciaFeedback';
 export { evidenciaHealthCheck } from './evidencia/healthCheck';
+export { evidenciaToggleFavorite, evidenciaListFavorites } from './evidencia/evidenciaFavorites';
+export { evidenciaCreateShareToken, evidenciaGetShared, evidenciaSaveShareSnapshot } from './evidencia/evidenciaShared';
 
 export {
   auditCases,

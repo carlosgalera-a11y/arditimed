@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="/console-guard.js"></script>
+<meta charset="UTF-8">
+<meta name="author" content="Carlos Galera Román, MFyC">
+<meta name="compliance" content="RGPD · EU AI Act 2024/1689 art. 50 · LPI Art. 51">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0a1f14">
+<meta name="description" content="EvidenciaIA · Vista compartida (solo lectura) de una consulta de evidencia con síntesis IA y citas verificadas.">
+<meta name="robots" content="noindex,nofollow">
+<title>EvidenciaIA · Vista compartida</title>
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.cloudfunctions.net https://www.gstatic.com;">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="firebase-init.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{font-family:'Source Sans 3',-apple-system,sans-serif;background:#0a1f14;color:#e9f5ee;display:flex;flex-direction:column;min-height:100vh;line-height:1.6}
+a{color:#d4a853}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;background:rgba(0,0,0,.32);border-bottom:1px solid rgba(255,255,255,.08)}
+.brand{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.brand-emblem{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d3d26,#1a6b4a);display:inline-flex;align-items:center;justify-content:center;font-size:1.25rem;border:1px solid rgba(255,255,255,.15)}
+.brand-name{font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem}
+.brand-name em{font-style:normal;color:#d4a853;margin-left:2px}
+.tb-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(255,255,255,.18);border-radius:16px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.08);text-decoration:none}
+
+.formative-strip{position:sticky;top:0;z-index:50;background:rgba(212,168,83,.18);border-bottom:1px solid rgba(212,168,83,.40);color:#f3d98a;padding:6px 14px;font-size:.74rem;font-weight:700;text-align:center;backdrop-filter:blur(6px)}
+.formative-strip a{color:#f3d98a;text-decoration:underline}
+.formative-strip strong{color:#fff}
+
+main{flex:1;padding:26px 22px 40px;max-width:880px;width:100%;margin:0 auto}
+.shared-tag{display:inline-block;background:rgba(59,130,246,.18);color:#93bbfc;border:1px solid rgba(59,130,246,.40);padding:3px 10px;border-radius:12px;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+
+.pregunta{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:16px 18px;margin-bottom:20px}
+.pregunta-label{font-size:.72rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px}
+.pregunta-texto{font-size:1.05rem;color:#fff;font-weight:600}
+
+.grade-row{display:flex;align-items:center;gap:10px;margin:0 0 16px;flex-wrap:wrap}
+.grade{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:14px;font-size:.78rem;font-weight:800;letter-spacing:.04em}
+.grade .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.grade-A{background:rgba(34,197,94,.16);color:#86efac;border:1px solid rgba(34,197,94,.40)}
+.grade-B{background:rgba(59,130,246,.16);color:#93bbfc;border:1px solid rgba(59,130,246,.40)}
+.grade-C{background:rgba(212,168,83,.18);color:#f3d98a;border:1px solid rgba(212,168,83,.40)}
+.grade-D{background:rgba(239,68,68,.14);color:#fca5a5;border:1px solid rgba(239,68,68,.40)}
+
+.sint{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:18px 22px;line-height:1.65;font-size:.95rem;white-space:pre-wrap;margin-bottom:20px}
+.sint h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:#d4a853;margin:14px 0 6px}
+.sint h3:first-child{margin-top:0}
+.sint .cite{display:inline-block;background:rgba(212,168,83,.18);border:1px solid rgba(212,168,83,.35);color:#f3d98a;padding:0 6px;border-radius:6px;margin:0 2px;font-weight:700;font-size:.75rem;text-decoration:none}
+
+.fuentes h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:#fff;margin-bottom:10px}
+.fuente{padding:12px 14px;border-bottom:1px dashed rgba(255,255,255,.12);font-size:.88rem;line-height:1.5}
+.fuente:last-child{border-bottom:0}
+.fuente .num{display:inline-block;background:rgba(212,168,83,.16);color:#f3d98a;border-radius:8px;padding:2px 8px;font-weight:800;margin-right:6px}
+.fuente .meta{font-size:.78rem;opacity:.75;margin-top:3px}
+.fuente .meta a{color:#93bbfc;text-decoration:underline}
+
+.followups{margin-top:18px;padding:14px 16px;background:rgba(13,148,136,.10);border:1px solid rgba(13,148,136,.32);border-radius:10px}
+.followups h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.65);margin-bottom:8px;font-weight:700}
+.followups ul{list-style:none;padding:0;margin:0}
+.followups li{padding:6px 11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:14px;margin-bottom:6px;font-size:.84rem}
+
+.cta{margin-top:26px;padding:18px 20px;text-align:center;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.40);border-radius:14px}
+.cta h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:#fff;margin-bottom:8px}
+.cta p{opacity:.82;font-size:.92rem;margin-bottom:12px}
+.cta a.btn{display:inline-block;padding:10px 18px;background:linear-gradient(135deg,#0d9488,#0f766e);border:0;border-radius:10px;color:#fff;font-weight:800;text-decoration:none}
+
+.meta-info{margin-top:14px;font-size:.7rem;opacity:.55;font-family:monospace}
+
+.error-box{margin:30px auto;max-width:520px;padding:18px;background:rgba(239,68,68,.10);border:1px solid rgba(239,68,68,.40);border-radius:12px;color:#fca5a5;text-align:center}
+
+footer{padding:14px 22px;text-align:center;font-size:.7rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.08)}
+footer a{text-decoration:underline;color:#d4a853}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="evidencia-ia.html" class="brand">
+    <span class="brand-emblem">🔬</span>
+    <span class="brand-name">EvidenciaIA<em>Área II</em></span>
+  </a>
+  <div>
+    <a class="tb-btn" href="evidencia-ia.html">Hacer mi propia búsqueda →</a>
+  </div>
+</div>
+
+<div class="formative-strip" role="note">
+  📚 <strong>Vista compartida solo-lectura</strong> · Herramienta formativa · NO sustituye juicio clínico ·
+  <a href="docs/aiact/" target="_blank" rel="noopener">Dossier AI Act ↗</a>
+</div>
+
+<main>
+  <span class="shared-tag">🔗 Enlace compartido</span>
+  <div id="loading" style="text-align:center;padding:40px 0;opacity:.7">Cargando…</div>
+  <div id="content" style="display:none">
+    <div class="pregunta">
+      <div class="pregunta-label">Pregunta</div>
+      <div class="pregunta-texto" id="sPregunta"></div>
+    </div>
+    <div class="grade-row" id="sGradeRow" style="display:none">
+      <span class="grade" id="sGrade"><span class="dot"></span><span id="sGradeLabel"></span></span>
+    </div>
+    <article class="sint" id="sSint"></article>
+    <div class="followups" id="sFollowupsBox" style="display:none">
+      <h4>↪ Preguntas relacionadas</h4>
+      <ul id="sFollowups"></ul>
+    </div>
+    <section class="fuentes" style="margin-top:22px">
+      <h2>📚 Fuentes</h2>
+      <ol id="sFuentes" style="list-style:none;padding-left:0"></ol>
+    </section>
+    <div class="cta">
+      <h3>¿Quieres tu propia búsqueda?</h3>
+      <p>EvidenciaIA es gratuita para profesionales sanitarios autenticados del Área II. Síntesis IA, citas verificables, GRADE, deep-links a fuentes europeas oficiales.</p>
+      <a class="btn" href="evidencia-ia.html">Empezar →</a>
+    </div>
+    <div class="meta-info" id="sMeta"></div>
+  </div>
+  <div id="error" class="error-box" style="display:none"></div>
+</main>
+
+<footer>
+  <div>© 2026 Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622</div>
+  <div style="margin-top:4px"><a href="evidencia-ia.html">EvidenciaIA</a> · <a href="evidencia-help.html">Ayuda</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="docs/aiact/">📋 Dossier AI Act</a></div>
+</footer>
+
+<script>
+'use strict';
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+  return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+}); }
+
+function showError(msg){
+  $('loading').style.display = 'none';
+  $('error').style.display = 'block';
+  $('error').innerHTML = '<strong>No se pudo cargar:</strong> ' + esc(msg);
+}
+
+function formatSintesis(txt){
+  var html = esc(txt);
+  html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/\[(\d+)\]/g, '<a class="cite" href="#fuente-$1" data-cite="$1">[$1]</a>');
+  return html;
+}
+
+function gradeClass(g){
+  return g === 'A' ? 'grade-A' : g === 'B' ? 'grade-B' : g === 'C' ? 'grade-C' : g === 'D' ? 'grade-D' : '';
+}
+function gradeLabel(g){
+  return g === 'A' ? 'Calidad alta (A)'
+       : g === 'B' ? 'Calidad moderada (B)'
+       : g === 'C' ? 'Calidad baja (C)'
+       : g === 'D' ? 'Calidad muy baja (D)'
+       : 'Insuficiente';
+}
+
+(async function init(){
+  try {
+    var params = new URLSearchParams(location.search);
+    var token = (params.get('t') || '').trim();
+    if (!/^[0-9a-f]{48}$/i.test(token)) {
+      showError('Enlace inválido o malformado.');
+      return;
+    }
+    var fns = firebase.app().functions('europe-west1');
+    var call = fns.httpsCallable('evidenciaGetShared');
+    var res = await call({ token: token });
+    var d = res && res.data || {};
+    if (!d.ok) throw new Error('Respuesta inesperada del servidor.');
+
+    $('sPregunta').textContent = d.pregunta || '(sin pregunta)';
+    if (d.evidence_grade && d.evidence_grade.grade) {
+      $('sGradeRow').style.display = 'flex';
+      $('sGrade').className = 'grade ' + gradeClass(d.evidence_grade.grade);
+      $('sGradeLabel').textContent = gradeLabel(d.evidence_grade.grade);
+    }
+    if (d.texto_sintetizado) {
+      $('sSint').innerHTML = formatSintesis(d.texto_sintetizado);
+    } else {
+      $('sSint').innerHTML = '<em style="opacity:.7">Esta consulta no tiene síntesis IA almacenada (búsqueda solo de fuentes).</em>';
+    }
+    if (d.follow_ups && d.follow_ups.length) {
+      $('sFollowupsBox').style.display = 'block';
+      $('sFollowups').innerHTML = d.follow_ups.map(function(q){ return '<li>↪ ' + esc(q) + '</li>'; }).join('');
+    }
+    var ol = $('sFuentes');
+    var fuentes = d.fuentes || [];
+    if (fuentes.length === 0) {
+      ol.innerHTML = '<li class="fuente"><em style="opacity:.7">Sin fuentes en el snapshot compartido.</em></li>';
+    } else {
+      ol.innerHTML = fuentes.map(function(f, i){
+        var url = f.doi ? 'https://doi.org/' + f.doi
+          : (f.pmid ? 'https://pubmed.ncbi.nlm.nih.gov/' + f.pmid + '/' : '');
+        return '<li class="fuente" id="fuente-' + (i+1) + '">'
+          + '<span class="num">[' + (i+1) + ']</span><strong>' + esc(f.title || '(sin título)') + '</strong>'
+          + '<div class="meta">' + esc((f.authors||[]).slice(0,5).join(', '))
+          + (f.year ? ' · ' + esc(String(f.year)) : '')
+          + (f.journal ? ' · ' + esc(f.journal) : '')
+          + (f.source ? ' · ' + esc(f.source) : '')
+          + (url ? ' · <a href="' + esc(url) + '" target="_blank" rel="noopener">enlace ↗</a>' : '')
+          + '</div></li>';
+      }).join('');
+    }
+    var dStr = '';
+    if (d.sharedAt) {
+      var dt = new Date(d.sharedAt);
+      dStr = 'Compartido: ' + dt.toLocaleString('es-ES');
+    }
+    $('sMeta').textContent = dStr +
+      (d.prompt_version_synth ? ' · prompt=' + d.prompt_version_synth : '') +
+      (d.sintesis_provider ? ' · synth=' + d.sintesis_provider : '');
+
+    $('loading').style.display = 'none';
+    $('content').style.display = 'block';
+  } catch (e) {
+    var msg = (e && (e.message || e.code)) || String(e);
+    if (/not-found/i.test(msg)) msg = 'Este enlace no es válido o ha sido revocado.';
+    showError(msg);
+  }
+})();
+</script>
+</body>
+</html>

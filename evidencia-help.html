@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="/console-guard.js"></script>
+<meta charset="UTF-8">
+<meta name="author" content="Carlos Galera Román, MFyC">
+<meta name="compliance" content="RGPD · EU AI Act 2024/1689 art. 50 · LPI Art. 51">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0a1f14">
+<meta name="description" content="EvidenciaIA · Centro de ayuda y FAQ — cómo usar la herramienta formativa de búsqueda de evidencia con IA del Área II Cartagena.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://area2cartagena.es/evidencia-help.html">
+<title>EvidenciaIA · Centro de ayuda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{font-family:'Source Sans 3',-apple-system,sans-serif;background:#0a1f14;color:#e9f5ee;display:flex;flex-direction:column;min-height:100vh;line-height:1.6}
+a{color:#d4a853}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;background:rgba(0,0,0,.32);border-bottom:1px solid rgba(255,255,255,.08)}
+.brand{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.brand-emblem{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d3d26,#1a6b4a);display:inline-flex;align-items:center;justify-content:center;font-size:1.25rem;border:1px solid rgba(255,255,255,.15)}
+.brand-name{font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem}
+.brand-name em{font-style:normal;color:#d4a853;margin-left:2px}
+.tb-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(255,255,255,.18);border-radius:16px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.08);text-decoration:none}
+
+main{flex:1;padding:28px 22px;max-width:840px;width:100%;margin:0 auto}
+h1{font-family:'Playfair Display',serif;font-size:2rem;color:#fff;margin-bottom:8px}
+.lead{opacity:.82;margin-bottom:30px;max-width:640px}
+section{margin-bottom:30px;padding:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:14px}
+section h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:#d4a853;margin-bottom:12px}
+section h3{font-size:1rem;color:#86efac;margin:14px 0 6px;font-weight:700}
+section p{margin-bottom:10px;font-size:.94rem}
+section ul{padding-left:22px;margin-bottom:10px;font-size:.94rem}
+section li{margin-bottom:6px}
+.faq-q{font-weight:700;color:#fff;cursor:pointer;padding:10px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
+.faq-q:hover{color:#d4a853}
+.faq-a{padding:10px 0 14px;opacity:.85;font-size:.92rem;display:none}
+.faq-a.show{display:block}
+code{background:rgba(0,0,0,.32);padding:1px 6px;border-radius:4px;font-size:.86rem}
+.formative-strip{background:rgba(212,168,83,.18);border-bottom:1px solid rgba(212,168,83,.40);color:#f3d98a;padding:6px 14px;font-size:.74rem;font-weight:700;text-align:center}
+.formative-strip a{color:#f3d98a}
+
+footer{padding:14px 22px;text-align:center;font-size:.7rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.08)}
+footer a{text-decoration:underline;color:#d4a853}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="evidencia-ia.html" class="brand">
+    <span class="brand-emblem">🔬</span>
+    <span class="brand-name">EvidenciaIA<em>Área II</em></span>
+  </a>
+  <div>
+    <a class="tb-btn" href="evidencia-ia.html">← Volver a la herramienta</a>
+  </div>
+</div>
+
+<div class="formative-strip">
+  📚 <strong>Herramienta formativa</strong> · NO es producto sanitario (SaMD) · NO sustituye juicio clínico ·
+  <a href="docs/aiact/" target="_blank" rel="noopener">Dossier AI Act ↗</a>
+</div>
+
+<main>
+
+<h1>📘 Centro de ayuda</h1>
+<p class="lead">Cómo aprovechar EvidenciaIA al máximo: filtros, casos de uso, limitaciones reconocidas y cuándo NO usarla. Si echas algo en falta, escríbenos a <a href="mailto:carlosgalera2roman@gmail.com">carlosgalera2roman@gmail.com</a>.</p>
+
+<section>
+  <h2>🧭 ¿Qué es EvidenciaIA?</h2>
+  <p>Es una herramienta <strong>formativa</strong> de búsqueda bibliográfica con síntesis IA, dirigida a profesionales sanitarios autenticados del Área II de Cartagena.</p>
+  <p>Funciona en tres pasos:</p>
+  <ol style="padding-left:22px">
+    <li><strong>Recupera</strong> abstracts de PubMed, Europe PMC, OpenAlex, Cochrane, CORE, Semantic Scholar, AEMPS y ClinicalTrials.gov.</li>
+    <li><strong>Re-ranquea</strong> con sesgo europeo (Cochrane · NICE · ESC · ESMO · GuíaSalud) y asigna un grado heurístico de calidad de la evidencia (A/B/C/D).</li>
+    <li><strong>Sintetiza</strong> la respuesta con citas verificables clic-a-clic.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>🎙️ Cómo formular tu pregunta</h2>
+  <h3>✅ Bien formuladas (de evidencia, generales)</h3>
+  <ul>
+    <li>"¿Qué dice la evidencia sobre apixaban vs warfarina en FA no valvular mayores de 75 años?"</li>
+    <li>"¿Cuál es la duración óptima de antibioterapia en NAC no grave?"</li>
+    <li>"¿Qué evidencia hay sobre iSGLT2 en IC con fracción preservada?"</li>
+  </ul>
+  <h3>❌ Mal formuladas (rechazadas por las salvaguardas)</h3>
+  <ul>
+    <li>"¿Qué tiene mi paciente con dolor torácico?" → consulta diagnóstica individual</li>
+    <li>"¿Qué dosis le pongo a mi paciente con FA?" → consulta terapéutica individual</li>
+    <li>"Apixaban en paciente DNI 12345678X y FA" → contiene PII</li>
+  </ul>
+  <p>Si el sistema rechaza tu pregunta, sale un mensaje claro con sugerencia de reformulación. <strong>Reformúlala como pregunta de evidencia general</strong>.</p>
+</section>
+
+<section>
+  <h2>🎛️ Filtros disponibles</h2>
+  <ul>
+    <li><strong>Especialidad</strong>: afina la síntesis IA con contexto de tu ámbito (MFyC, urgencias, cardio…). Persistido en tu navegador.</li>
+    <li><strong>Solo revisiones / RCT</strong>: descarta case reports y estudios observacionales.</li>
+    <li><strong>Priorizar Cochrane</strong>: lanza una segunda búsqueda dirigida a Cochrane Database Syst Rev.</li>
+    <li><strong>Buscar full-text OA (Unpaywall)</strong>: enriquece las fuentes con PDF abierto cuando existe.</li>
+    <li><strong>Ensayos clínicos (ClinicalTrials.gov)</strong>: añade ensayos en marcha o completados (subfiltros: solo activos, solo UE/ES).</li>
+    <li><strong>CORE OA</strong>: agregador de ~300M papers con full-text abierto.</li>
+    <li><strong>Semantic Scholar + TLDR</strong>: añade resumen IA de 1 frase por cada fuente top.</li>
+    <li><strong>Licencias (Crossref)</strong>: muestra badges con la licencia de cada fuente (CC-BY, propietaria…).</li>
+    <li><strong>Preprints</strong>: medRxiv/bioRxiv con badge ⚠️ y penalización en el rerank.</li>
+    <li><strong>Sintetizar con IA</strong>: si lo desactivas, solo recuperas las fuentes re-rankeadas (más rápido, sin coste IA).</li>
+    <li><strong>AEMPS automático</strong>: si tu pregunta menciona un fármaco (heurística), el sistema activa AEMPS sin que marques nada.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>🔍 Cómo verificar las citas</h2>
+  <p>Tras la síntesis, cada cita aparece como <code>[1]</code>, <code>[2]</code>, etc. Hay 3 formas de verificar:</p>
+  <ul>
+    <li><strong>Hover</strong> sobre <code>[n]</code> → tooltip con título, autores, revista, año y extracto del abstract.</li>
+    <li><strong>Clic</strong> sobre <code>[n]</code> → la página hace scroll a la fuente correspondiente.</li>
+    <li>Cada fuente lleva enlace directo al DOI / PubMed y, si la opción está activa, al PDF OA.</li>
+  </ul>
+  <p>Las citas que el modelo IA inventa (apuntan a un número que no existe en la lista de fuentes) se marcan automáticamente en rojo como <code>[cita no verificable]</code>.</p>
+</section>
+
+<section>
+  <h2>🌐 Fuentes externas para verificación cruzada</h2>
+  <p>Bajo cada respuesta hay una sección "🌐 Buscar también en fuentes europeas" con deep-links pre-rellenados. <strong>Si una respuesta IA es importante para tu reflexión, contrastarla en al menos una de estas fuentes oficiales es buena práctica</strong>:</p>
+  <ul>
+    <li>⭐ <strong>Preevid (SMS Murcia)</strong> — autoridad local máxima.</li>
+    <li>🇪🇸 GuíaSalud (catálogo SNS de guías).</li>
+    <li>🇬🇧 NICE Evidence (UK).</li>
+    <li>💊 EMA medicines + AEMPS CIMA.</li>
+    <li>🇪🇺 EU Clinical Trials Register.</li>
+    <li>📚 Cochrane Library.</li>
+    <li>📖 MEDES (literatura biomédica en español).</li>
+    <li>🌎 SciELO + 🌍 WHO IRIS.</li>
+    <li>🤖 Kleia (iDoctus) — alternativa IA con ISO 27001 + 42001 si tienes cuenta.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>❓ Preguntas frecuentes</h2>
+
+  <div class="faq-q" data-faq>¿Esto es un dispositivo médico?<span>+</span></div>
+  <div class="faq-a"><strong>No.</strong> EvidenciaIA NO es un producto sanitario (SaMD) bajo MDR 2017/745. Es una herramienta formativa de riesgo limitado bajo AI Act art. 50. NO sustituye el juicio clínico ni se debe usar para diagnosticar o tratar a un paciente concreto.</div>
+
+  <div class="faq-q" data-faq>¿Qué modelos de IA usa por debajo?<span>+</span></div>
+  <div class="faq-a">Una cadena de fallback: DeepSeek V3 (síntesis educativa primaria), Gemini 2.5 Flash-Lite EU, Mistral Small, OpenRouter como respaldo. La meta-info de cada respuesta muestra el provider/modelo concreto utilizado y el hash de versión del system prompt para trazabilidad AI Act art. 12.</div>
+
+  <div class="faq-q" data-faq>¿Mis datos se quedan en la UE?<span>+</span></div>
+  <div class="faq-a">Sí, todo el procesamiento server-side ocurre en region <code>europe-west1</code> (Bélgica). Las llamadas a APIs externas (PubMed, ClinicalTrials.gov…) van a USA pero <strong>nunca contienen datos personales del paciente</strong> — solo la pregunta validada por las salvaguardas anti-PII.</div>
+
+  <div class="faq-q" data-faq>¿Por qué a veces aparece "cita no verificable"?<span>+</span></div>
+  <div class="faq-a">Significa que el modelo IA escribió un número de cita <code>[n]</code> que NO se corresponde con ninguna fuente real de la lista. El verificador post-hoc lo detecta y lo marca para que NO confíes en esa afirmación. La métrica de "ratio de citas verificadas" se muestra en cada respuesta.</div>
+
+  <div class="faq-q" data-faq>¿Qué significa el grado A/B/C/D?<span>+</span></div>
+  <div class="faq-a">Es una <strong>heurística GRADE-like</strong> calculada del top-5 reranqueado: A si hay revisiones sistemáticas + revistas tier-1, B si hay SR/guías o RCT+tier-1, C si solo RCTs aislados, D si solo case reports o evidencia antigua. <strong>NO sustituye una valoración GRADE formal</strong>.</div>
+
+  <div class="faq-q" data-faq>¿Qué pasa si pregunto en inglés?<span>+</span></div>
+  <div class="faq-a">El sistema acepta inglés. La síntesis seguirá en español por defecto salvo que se le pida explícitamente otra cosa. El botón 🌐 ES/EN del topbar cambia el idioma de la UI.</div>
+
+  <div class="faq-q" data-faq>¿Cómo reporto un problema?<span>+</span></div>
+  <div class="faq-a">Bajo cada respuesta tienes botones de feedback estructurado: 👍 Útil, 👎 Incorrecto, ⚠️ Cita no verificable, 🚩 Sesgo. Para reports más complejos: <a href="mailto:carlosgalera2roman@gmail.com">carlosgalera2roman@gmail.com</a>.</div>
+
+  <div class="faq-q" data-faq>¿Quién paga esto?<span>+</span></div>
+  <div class="faq-a">EvidenciaIA es <strong>gratuita</strong> para profesionales sanitarios autenticados. Se financia con recursos personales del autor. Sin publicidad, sin pasarela de pago, sin co-branding farmacéutico.</div>
+
+  <div class="faq-q" data-faq>¿Puedo usarlo si soy enfermería / residente?<span>+</span></div>
+  <div class="faq-a">Sí. Cualquier profesional sanitario autenticado del Área II puede usarlo en modo formativo. Selecciona tu rol en el filtro "Especialidad" para que la síntesis priorice aspectos prácticos.</div>
+
+  <div class="faq-q" data-faq>¿Existe app móvil?<span>+</span></div>
+  <div class="faq-a">Es una PWA: instálala desde el menú del navegador (Chrome → "Añadir a pantalla de inicio", iOS Safari → "Añadir a pantalla de inicio"). Funciona offline para navegación; las búsquedas requieren conexión.</div>
+</section>
+
+<section>
+  <h2>📋 Documentación regulatoria</h2>
+  <p>Toda la documentación de cumplimiento (AI Act, RGPD, ISO 42001 readiness) es pública en <a href="docs/aiact/">docs/aiact/</a>. Útil para auditorías, presentación a SMS Murcia / UMU, o simplemente entender por qué hacemos las cosas como las hacemos.</p>
+</section>
+
+</main>
+
+<footer>
+  <div>© 2026 Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622</div>
+  <div style="margin-top:4px"><a href="evidencia-ia.html">EvidenciaIA</a> · <a href="profesionales.html">Profesionales</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="docs/aiact/">📋 Dossier AI Act</a></div>
+</footer>
+
+<script>
+// FAQ accordion
+Array.prototype.forEach.call(document.querySelectorAll('[data-faq]'), function(q){
+  q.addEventListener('click', function(){
+    var a = q.nextElementSibling;
+    if (!a) return;
+    a.classList.toggle('show');
+    q.querySelector('span').textContent = a.classList.contains('show') ? '−' : '+';
+  });
+});
+</script>
+</body>
+</html>

@@ -26,6 +26,7 @@ Bajo el **Reglamento (UE) 2024/1689 (AI Act)**, EvidenciaIA se clasifica como **
 | 08 | [Incident Response](./08-incident-response.md) | Procedimiento ante síntesis dañinas o sesgadas |
 | 09 | [Model & Prompt Versioning](./09-model-versioning.md) | Trazabilidad de versiones de modelo y prompts |
 | 10 | [Post-Market Surveillance](./10-post-market-surveillance.md) | Vigilancia voluntaria post-despliegue |
+| 11 | [ISO/IEC 42001 Readiness](./11-iso-42001-readiness.md) | Mapeo de controles del estándar AIMS para alineamiento voluntario |
 
 ## Cumplimiento RGPD
 
