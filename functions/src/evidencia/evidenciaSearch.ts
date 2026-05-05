@@ -28,6 +28,7 @@ import { searchCore, type CoreWork } from './core';
 import { searchSemanticScholar, enrichTldrs, type S2Paper } from './semanticScholar';
 import { enrichCrossref, type CrossrefMeta } from './crossref';
 import { currentPromptVersions } from './promptRegistry';
+import { detectDrugQuery } from './drugDetection';
 import { rerank, gradeEvidence, type ScoredAbstract, type EvidenceGradeResult } from './reranker';
 import { extractPico, type PicoExtraction } from './picoExtractor';
 import { synthesize, type SynthOutput } from './ragSynthesizer';
@@ -51,8 +52,65 @@ const CORS = [
   'http://localhost:5000',
 ];
 
+// Lista cerrada de especialidades reconocidas. Mantenerla cerrada evita
+// que un usuario malicioso meta texto arbitrario en el system prompt
+// (anti prompt-injection): cualquier valor fuera de esta lista se descarta
+// silenciosamente y se trata como "general".
+const ESPECIALIDADES_VALIDAS = new Set<string>([
+  'general',
+  'mfyc',           // Medicina Familiar y Comunitaria
+  'urgencias',
+  'medicina_interna',
+  'cardiologia',
+  'neumologia',
+  'digestivo',
+  'neurologia',
+  'endocrinologia',
+  'nefrologia',
+  'infecciosas',
+  'oncologia',
+  'hematologia',
+  'reumatologia',
+  'psiquiatria',
+  'pediatria',
+  'ginecologia',
+  'traumatologia',
+  'enfermeria',
+]);
+
+const ESPECIALIDAD_LABELS: Record<string, string> = {
+  general: 'profesional sanitario general',
+  mfyc: 'médico de Atención Primaria (MFyC)',
+  urgencias: 'médico de urgencias hospitalarias',
+  medicina_interna: 'internista',
+  cardiologia: 'cardiólogo/a',
+  neumologia: 'neumólogo/a',
+  digestivo: 'especialista en aparato digestivo',
+  neurologia: 'neurólogo/a',
+  endocrinologia: 'endocrinólogo/a',
+  nefrologia: 'nefrólogo/a',
+  infecciosas: 'especialista en enfermedades infecciosas',
+  oncologia: 'oncólogo/a',
+  hematologia: 'hematólogo/a',
+  reumatologia: 'reumatólogo/a',
+  psiquiatria: 'psiquiatra',
+  pediatria: 'pediatra',
+  ginecologia: 'ginecólogo/a',
+  traumatologia: 'traumatólogo/a',
+  enfermeria: 'enfermero/a',
+};
+
 interface SearchRequest {
   pregunta: string;
+  /** Especialidad del usuario, valor cerrado de ESPECIALIDADES_VALIDAS. */
+  especialidad?: string;
+  /**
+   * Si está presente y pertenece al usuario, la consulta forma parte de
+   * un hilo conversacional. Las 2 búsquedas previas del hilo se añaden
+   * como contexto blando al user prompt (sin inflar excesivamente).
+   * Si no está, se genera un threadId nuevo automáticamente.
+   */
+  threadId?: string;
   filtros?: {
     anios?: number;          // años hacia atrás (5, 10, 20)
     soloRevisiones?: boolean;
@@ -88,6 +146,8 @@ interface SearchResponse {
   evidence_grade: EvidenceGradeResult;
   prompt_version_pico: string;
   prompt_version_synth: string;
+  threadId: string;
+  threadTurnIndex: number;
   cached: boolean;
   meta: {
     pubmed_count: number;
@@ -123,6 +183,28 @@ export const evidenciaSearch = onCall(
 
     const data = (request.data ?? {}) as Partial<SearchRequest>;
 
+    // Especialidad: la validamos contra la lista cerrada server-side
+    // (anti prompt-injection). Cualquier valor desconocido se reduce a
+    // 'general'. La etiqueta legible se construye de ESPECIALIDAD_LABELS
+    // y SOLO esa etiqueta se inyecta en el prompt — nunca el texto crudo
+    // recibido del cliente.
+    const especialidadKey = (typeof data.especialidad === 'string' && ESPECIALIDADES_VALIDAS.has(data.especialidad))
+      ? data.especialidad
+      : 'general';
+    const especialidadLabel = ESPECIALIDAD_LABELS[especialidadKey] ?? ESPECIALIDAD_LABELS['general'];
+
+    // Thread handling. Si el cliente envía un threadId, validamos formato
+    // (24-48 hex chars) y propiedad antes de usarlo. Si no, generamos uno
+    // nuevo. El threadId NO incluye PII y es opaco — pensado solo para
+    // agrupar turnos conversacionales del mismo uid.
+    let threadId: string = '';
+    if (typeof data.threadId === 'string' && /^[0-9a-f]{24,48}$/i.test(data.threadId.trim())) {
+      threadId = data.threadId.trim();
+    } else {
+      // SHA-1-like 32-char hex random.
+      threadId = (Math.random().toString(16).slice(2, 18) + Math.random().toString(16).slice(2, 18)).padEnd(32, '0').slice(0, 32);
+    }
+
     if (data.ai_act_disclaimer_shown !== true) {
       throw new HttpsError(
         'failed-precondition',
@@ -141,6 +223,11 @@ export const evidenciaSearch = onCall(
         rechazada: true,
         motivo_rechazo: v.motivo,
         ai_act_disclaimer_shown: true,
+        // Evidencia procedimental de la Estrategia 3 (vínculo IA→paciente
+        // roto). El rechazo prueba que el sistema NO procesó datos
+        // individualizados — refuerza la posición de "no SaMD" bajo MDR.
+        // Ver docs/aiact/12-mdr-classification-rationale.md.
+        patient_link_broken: true,
         timestamp: FieldValue.serverTimestamp(),
       });
       throw new HttpsError('invalid-argument', v.mensaje);
@@ -187,6 +274,7 @@ export const evidenciaSearch = onCall(
           filtros_aplicados: filtros,
           sintetizar: data.sintetizar === true,
           ai_act_disclaimer_shown: true,
+          patient_link_broken: true,
           cache_hit: true,
           cache_key: cacheKey,
           duracion_ms: Date.now() - start,
@@ -212,6 +300,8 @@ export const evidenciaSearch = onCall(
         evidence_grade: cachedGrade,
         prompt_version_pico: currentPromptVersions().pico,
         prompt_version_synth: currentPromptVersions().synth,
+        threadId,
+        threadTurnIndex: 0,
         cached: true,
         meta: {
           pubmed_count: cached.meta.pubmed_count,
@@ -315,7 +405,16 @@ export const evidenciaSearch = onCall(
       return [] as OpenAlexAbstract[];
     });
 
-    const aempsP: Promise<AempsMedicamento[]> = filtros.incluirAemps
+    // Auto-AEMPS: si el usuario no pidió explícitamente AEMPS, activamos
+    // la búsqueda automáticamente cuando la pregunta tiene marcadores
+    // farmacológicos claros (heurística determinista en drugDetection.ts
+    // O señal positiva del PICO extractor). Paridad con la auto-detección
+    // de Kleia. Cero fricción para el clínico que pregunta sobre medicación.
+    const aempsAutoTriggered = !filtros.incluirAemps && (
+      (pico?.contiene_farmaco === true) || detectDrugQuery(v.sanitized)
+    );
+    const aempsActive = !!filtros.incluirAemps || aempsAutoTriggered;
+    const aempsP: Promise<AempsMedicamento[]> = aempsActive
       ? searchAemps(terminoFarmaco, { timeoutMs: 5000, pageSize: 5 }).catch((e: Error) => {
           errors['aemps'] = e.message ?? String(e);
           return [] as AempsMedicamento[];
@@ -504,6 +603,34 @@ export const evidenciaSearch = onCall(
       }
     }
 
+    // Si la consulta forma parte de un hilo conversacional, recuperar
+    // las 2 últimas turns de ese hilo para inyectarlas como contexto al
+    // synth. Best-effort: si falla, seguimos sin historial.
+    let threadHistory: Array<{ pregunta: string; sintesis: string }> = [];
+    if (data.sintetizar === true && data.threadId) {
+      try {
+        const histSnap = await db
+          .collection('evidencia_consultas')
+          .where('uid', '==', uid)
+          .where('threadId', '==', threadId)
+          .orderBy('timestamp', 'desc')
+          .limit(2)
+          .get();
+        threadHistory = histSnap.docs.map((d) => {
+          const x = d.data() as { pregunta_original?: string; sintesis_resumen?: string };
+          return {
+            pregunta: x.pregunta_original ?? '',
+            sintesis: x.sintesis_resumen ?? '',
+          };
+        });
+      } catch (e: unknown) {
+        // El error típico aquí es "índice compuesto requerido". No bloquea
+        // la búsqueda — solo significa que esta turn no tendrá contexto.
+        logger.warn('evidencia.thread.history.failed', { err: (e as Error).message });
+      }
+    }
+    const threadTurnIndex = threadHistory.length; // 0=primera turn
+
     // Síntesis RAG opcional con verificación de citas.
     let sintesis: SynthOutput | null = null;
     if (data.sintetizar === true && reranked.length > 0) {
@@ -511,6 +638,8 @@ export const evidenciaSearch = onCall(
         sintesis = await synthesize({
           pregunta: v.sanitized,
           fuentes: reranked,
+          especialidadLabel: especialidadKey !== 'general' ? especialidadLabel : undefined,
+          threadHistory: threadHistory.length ? threadHistory : undefined,
           secrets: aiSecrets,
         });
       } catch (e: unknown) {
@@ -564,7 +693,18 @@ export const evidenciaSearch = onCall(
         preprints_count: preprints.length,
         tldr_enrichments: tldrEnrichments,
         crossref_enrichments: crossrefEnrichments,
+        aemps_auto_triggered: aempsAutoTriggered,
+        especialidad: especialidadKey,
+        threadId,
+        threadTurnIndex,
+        // Resumen corto para que la siguiente turn del hilo tenga contexto
+        // sin tener que cargar el texto sintetizado completo.
+        sintesis_resumen: sintesis ? sintesis.texto_sintetizado.replace(/\s+/g, ' ').slice(0, 360) : '',
         ai_act_disclaimer_shown: true,
+        // Evidencia procedimental de la Estrategia 3 (vínculo roto). La
+        // pregunta llegó al modelo IA sanitizada y sin PII por construcción.
+        // Ver docs/aiact/12-mdr-classification-rationale.md.
+        patient_link_broken: true,
         duracion_ms: Date.now() - start,
         timestamp: FieldValue.serverTimestamp(),
       });
@@ -636,6 +776,8 @@ export const evidenciaSearch = onCall(
       evidence_grade: evidenceGrade,
       prompt_version_pico: currentPromptVersions().pico,
       prompt_version_synth: currentPromptVersions().synth,
+      threadId,
+      threadTurnIndex,
       cached: false,
       meta: {
         pubmed_count: pubmed.length,
