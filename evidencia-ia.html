@@ -68,8 +68,14 @@ main{flex:1;padding:24px 22px 40px;max-width:980px;width:100%;margin:0 auto}
 .disclaimer .acept label{font-size:.82rem;cursor:pointer}
 
 .search-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:18px;backdrop-filter:blur(10px)}
-.search-card textarea{width:100%;min-height:90px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:12px 14px;color:#fff;font-family:inherit;font-size:.95rem;resize:vertical}
+.textarea-wrap{position:relative}
+.search-card textarea{width:100%;min-height:90px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:12px 46px 12px 14px;color:#fff;font-family:inherit;font-size:.95rem;resize:vertical}
 .search-card textarea:focus{outline:none;border-color:#d4a853}
+.mic-btn{position:absolute;right:8px;bottom:10px;width:34px;height:34px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.32);border-radius:50%;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.mic-btn:hover{background:rgba(212,168,83,.20);border-color:#d4a853}
+.mic-btn.recording{background:rgba(239,68,68,.30);border-color:#fca5a5;animation:micPulse 1.2s ease-in-out infinite}
+.mic-btn[disabled]{opacity:.45;cursor:not-allowed}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.40)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
 .filters{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
 .filters select,.filters label{font-size:.84rem;color:#fff}
 .filters select{padding:7px 10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.18);border-radius:8px;font-family:inherit}
@@ -150,6 +156,22 @@ main{flex:1;padding:24px 22px 40px;max-width:980px;width:100%;margin:0 auto}
 .verify-nudge{margin-top:14px;padding:10px 14px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.32);border-left:4px solid #93bbfc;border-radius:8px;font-size:.82rem;color:#cbd5e1;line-height:1.5}
 .verify-nudge strong{color:#93bbfc}
 
+/* Modal genérico (favoritos / compartir) */
+.evi-modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.evi-modal-card{background:#0e2a1c;border:1px solid rgba(255,255,255,.18);border-radius:14px;max-width:560px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+.evi-modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18)}
+.evi-modal-head h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:#d4a853;margin:0}
+.evi-modal-head button{background:transparent;border:0;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1;padding:0 4px}
+.evi-modal-head button:hover{color:#d4a853}
+.evi-modal-body{padding:16px 18px;overflow:auto;font-size:.9rem;line-height:1.55}
+.evi-modal-body ul{list-style:none;padding:0;margin:0}
+.evi-modal-body li{padding:10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);margin-bottom:8px;display:flex;flex-direction:column;gap:4px}
+.evi-modal-body li .pregunta{color:#fff;font-weight:600;cursor:pointer}
+.evi-modal-body li .pregunta:hover{color:#d4a853}
+.evi-modal-body li .meta-fav{font-size:.74rem;opacity:.65}
+.share-url{width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.32);border-radius:8px;color:#fff;font-family:monospace;font-size:.82rem}
+#eviFavBtn.starred{background:rgba(212,168,83,.20);border-color:#d4a853;color:#f3d98a}
+
 /* Ensayo clínico card */
 .ensayo{padding:10px 12px;border-bottom:1px dashed rgba(255,255,255,.12);font-size:.86rem;line-height:1.5}
 .ensayo:last-child{border-bottom:0}
@@ -191,15 +213,18 @@ footer a{text-decoration:underline;color:#d4a853}
     <span class="brand-name">EvidenciaIA<em>Área II</em></span>
   </a>
   <div class="toolbar">
-    <button class="tb-btn" onclick="location.href='profesionales.html'">← Profesionales</button>
-    <button class="tb-btn" data-cart-update type="button">🔄 Actualizar</button>
-    <button class="tb-btn" onclick="firebase.auth().signOut()">Salir</button>
+    <button class="tb-btn" onclick="location.href='profesionales.html'" data-i18n="back_pro">← Profesionales</button>
+    <button class="tb-btn" id="eviThreadBtn" type="button" title="Hilo de conversación" style="display:none">🧵 <span id="eviThreadTurn">1</span></button>
+    <button class="tb-btn" id="eviFavListBtn" type="button" title="Mis favoritos">⭐</button>
+    <button class="tb-btn" id="eviLang" type="button" title="Cambiar idioma · Toggle language">🌐 ES</button>
+    <button class="tb-btn" data-cart-update type="button">🔄 <span data-i18n="refresh">Actualizar</span></button>
+    <button class="tb-btn" onclick="firebase.auth().signOut()" data-i18n="signout">Salir</button>
   </div>
 </div>
 
 <div class="formative-strip" role="note" aria-label="Aviso de uso formativo permanente">
-  📚 <strong>Herramienta formativa</strong> · NO es producto sanitario (SaMD) · NO sustituye juicio clínico ·
-  <a href="docs/aiact/" target="_blank" rel="noopener">Dossier AI Act ↗</a>
+  📚 <strong data-i18n="strip_strong">Herramienta formativa</strong> <span data-i18n="strip_body">· NO es producto sanitario (SaMD) · NO sustituye juicio clínico ·</span>
+  <a href="docs/aiact/" target="_blank" rel="noopener" data-i18n="strip_link">Dossier AI Act ↗</a>
 </div>
 
 <main>
@@ -216,30 +241,54 @@ footer a{text-decoration:underline;color:#d4a853}
   <div id="eviApp" style="display:none">
     <div class="hero">
       <h1>🔬 EvidenciaIA</h1>
-      <p>Búsqueda bibliográfica clínica en PubMed, Europe PMC y AEMPS, con re-ranking europeo (Cochrane · NICE · ESC · ESMO · GuíaSalud) y síntesis IA con citas verificadas. Pensado como apoyo a la lectura crítica, no como soporte a decisión clínica.</p>
+      <p data-i18n="hero_lead">Búsqueda bibliográfica clínica en PubMed, Europe PMC y AEMPS, con re-ranking europeo (Cochrane · NICE · ESC · ESMO · GuíaSalud) y síntesis IA con citas verificadas. Pensado como apoyo a la lectura crítica, no como soporte a decisión clínica.</p>
       <div class="badges">
         <span class="badge badge-eu">🇪🇺 europe-west1</span>
         <span class="badge badge-art50">EU AI Act art. 50</span>
-        <span class="badge badge-formativo">Uso formativo</span>
+        <span class="badge badge-formativo" data-i18n="badge_formative">Uso formativo</span>
       </div>
     </div>
 
     <div class="disclaimer">
-      <strong>⚠️ Aviso de transparencia (EU AI Act art. 50).</strong>
-      Este sistema usa IA para extraer la pregunta PICO y para sintetizar
+      <strong data-i18n="disclaimer_title">⚠️ Aviso de transparencia (EU AI Act art. 50).</strong>
+      <span data-i18n="disclaimer_body">Este sistema usa IA para extraer la pregunta PICO y para sintetizar
       abstracts. La síntesis NO constituye diagnóstico ni recomendación
       terapéutica para un paciente concreto. Cada cita debe verificarse
       en la fuente original antes de aplicarla. El sistema rechaza
-      preguntas que pidan diagnóstico/tratamiento individual.
+      preguntas que pidan diagnóstico/tratamiento individual.</span>
       <div class="acept">
         <input type="checkbox" id="eviAcept">
-        <label for="eviAcept">He leído el aviso y entiendo que EvidenciaIA es una herramienta de búsqueda bibliográfica formativa.</label>
+        <label for="eviAcept" data-i18n="acept_label">He leído el aviso y entiendo que EvidenciaIA es una herramienta de búsqueda bibliográfica formativa.</label>
       </div>
     </div>
 
     <div class="search-card">
-      <textarea id="eviInput" maxlength="500" placeholder="Ej: ¿Qué dice la evidencia sobre apixaban vs warfarina en pacientes con FA no valvular mayores de 75 años en términos de mortalidad y sangrado?"></textarea>
+      <div class="textarea-wrap">
+        <textarea id="eviInput" maxlength="500" placeholder="Ej: ¿Qué dice la evidencia sobre apixaban vs warfarina en pacientes con FA no valvular mayores de 75 años en términos de mortalidad y sangrado?"></textarea>
+        <button type="button" id="eviMic" class="mic-btn" aria-label="Dictar pregunta por voz" title="Dictar pregunta por voz">🎙️</button>
+      </div>
       <div class="filters">
+        <select id="eviEspecialidad" title="Tu especialidad — afina la síntesis IA">
+          <option value="general" selected>👤 Especialidad: General</option>
+          <option value="mfyc">🩺 MFyC (Atención Primaria)</option>
+          <option value="urgencias">🚑 Urgencias hospitalarias</option>
+          <option value="medicina_interna">🏥 Medicina Interna</option>
+          <option value="cardiologia">❤️ Cardiología</option>
+          <option value="neumologia">🫁 Neumología</option>
+          <option value="digestivo">🍽️ Digestivo</option>
+          <option value="neurologia">🧠 Neurología</option>
+          <option value="endocrinologia">⚖️ Endocrinología</option>
+          <option value="nefrologia">🩸 Nefrología</option>
+          <option value="infecciosas">🦠 Infecciosas</option>
+          <option value="oncologia">🎗️ Oncología</option>
+          <option value="hematologia">🩸 Hematología</option>
+          <option value="reumatologia">🦴 Reumatología</option>
+          <option value="psiquiatria">🧠 Psiquiatría</option>
+          <option value="pediatria">👶 Pediatría</option>
+          <option value="ginecologia">🤰 Ginecología</option>
+          <option value="traumatologia">🦴 Traumatología</option>
+          <option value="enfermeria">💉 Enfermería</option>
+        </select>
         <select id="eviAnios">
           <option value="3">Últimos 3 años</option>
           <option value="5" selected>Últimos 5 años</option>
@@ -261,8 +310,8 @@ footer a{text-decoration:underline;color:#d4a853}
         <label><input type="checkbox" id="eviSint" checked> Sintetizar con IA</label>
       </div>
       <div class="row-buttons">
-        <button class="btn-primary" id="eviGo" disabled>🔍 Buscar evidencia</button>
-        <span id="eviHint" style="font-size:.8rem;opacity:.7">Acepta el aviso para activar.</span>
+        <button class="btn-primary" id="eviGo" disabled data-i18n="btn_search">🔍 Buscar evidencia</button>
+        <span id="eviHint" style="font-size:.8rem;opacity:.7" data-i18n="hint_accept">Acepta el aviso para activar.</span>
       </div>
 
       <div class="sugerencias" id="eviSugerencias">
@@ -292,11 +341,11 @@ footer a{text-decoration:underline;color:#d4a853}
         <strong>Verifica antes de aplicar.</strong> Esta síntesis es un resumen IA del contenido de los abstracts mostrados. Pasa el ratón por encima de cada <code>[n]</code> para ver el extracto original, o abre la fuente directamente. Para decisiones individualizadas: consulta las guías oficiales y aplica tu juicio clínico.
       </div>
       <section class="sugerencias" id="eviFollowupsBox" style="display:none">
-        <h4>↪ Preguntas relacionadas</h4>
+        <h4 data-i18n="followups_title">↪ Preguntas relacionadas</h4>
         <div class="chips" id="eviFollowups"></div>
       </section>
       <section class="fuentes">
-        <h2>📚 Fuentes consultadas</h2>
+        <h2 data-i18n="sources_title">📚 Fuentes consultadas</h2>
         <ol id="eviFuentes" style="list-style:none;padding-left:0"></ol>
       </section>
 
@@ -306,7 +355,7 @@ footer a{text-decoration:underline;color:#d4a853}
       </section>
 
       <section class="fuentes" id="eviExternasBox">
-        <h2>🌐 Buscar también en fuentes europeas</h2>
+        <h2 data-i18n="external_title">🌐 Buscar también en fuentes europeas</h2>
         <div class="chips" id="eviExternas"></div>
       </section>
       <div class="feedback">
@@ -314,9 +363,22 @@ footer a{text-decoration:underline;color:#d4a853}
         <button data-fb="incorrecto">👎 Incorrecto</button>
         <button data-fb="cita_falsa">⚠️ Cita no verificable</button>
         <button data-fb="sesgo">🚩 Sesgo</button>
+        <button id="eviFavBtn" type="button" title="Guardar en favoritos">☆ Favorito</button>
+        <button id="eviShareBtn" type="button" title="Generar enlace para compartir">🔗 Compartir</button>
         <button id="eviExportPdf" onclick="exportarEvidenciaPDF()" type="button">📄 Exportar PDF</button>
       </div>
       <div class="meta-info" id="eviMeta"></div>
+    </div>
+  </div>
+
+  <!-- Modal favoritos / compartir -->
+  <div id="eviModal" class="evi-modal" style="display:none">
+    <div class="evi-modal-card" role="dialog" aria-modal="true" aria-labelledby="eviModalTitle">
+      <div class="evi-modal-head">
+        <h3 id="eviModalTitle">Diálogo</h3>
+        <button id="eviModalClose" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <div class="evi-modal-body" id="eviModalBody"></div>
     </div>
   </div>
 
@@ -324,7 +386,7 @@ footer a{text-decoration:underline;color:#d4a853}
 
 <footer>
   <div>© 2026 Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622</div>
-  <div style="margin-top:4px"><a href="profesionales.html">Profesionales</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="docs/aiact/index.md">📋 Dossier AI Act</a> · <a href="derechos-rgpd.html">Derechos RGPD</a></div>
+  <div style="margin-top:4px"><a href="evidencia-help.html">📘 Centro de ayuda</a> · <a href="profesionales.html">Profesionales</a> · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="docs/aiact/index.md">📋 Dossier AI Act</a> · <a href="derechos-rgpd.html">Derechos RGPD</a></div>
 </footer>
 
 <script>
@@ -338,6 +400,21 @@ var currentConsultaId = null;
 // Cache local de los abstracts de la última búsqueda — se usa para los
 // tooltips inline al hacer hover sobre [n] (no requiere otra request).
 var currentFuentes = [];
+// Hilo conversacional activo. Si está, lo enviamos al backend para que
+// inyecte las 2 turns previas como contexto del synth.
+var currentThreadId = null;
+var currentThreadTurn = 0;
+function setThreadIndicator(){
+  var btn = document.getElementById('eviThreadBtn');
+  if (!btn) return;
+  if (currentThreadId) {
+    btn.style.display = '';
+    var label = document.getElementById('eviThreadTurn');
+    if (label) label.textContent = String(currentThreadTurn + 1);
+  } else {
+    btn.style.display = 'none';
+  }
+}
 
 // Sugerencias clínicas predefinidas (siempre formuladas como búsqueda
 // bibliográfica para cumplir art. 50 + safeguards de evidenciaSearch).
@@ -366,6 +443,91 @@ auth.onAuthStateChanged(function(u){
   $('eviApp').style.display = u ? 'block' : 'none';
 });
 
+// ─── i18n light (es/en) ──────────────────────────────────────────
+// Diccionario mínimo de strings clave para alcanzar paridad multi-idioma
+// con Kleia (es/en). Marcamos elementos con `data-i18n="key"` y aplicamos
+// el diccionario al cargar y al cambiar idioma. Persistencia localStorage.
+// Sin librería externa para mantener bundle ligero.
+var I18N = {
+  es: {
+    back_pro: '← Profesionales',
+    refresh: 'Actualizar',
+    signout: 'Salir',
+    badge_formative: 'Uso formativo',
+    hero_lead: 'Búsqueda bibliográfica clínica en PubMed, Europe PMC y AEMPS, con re-ranking europeo (Cochrane · NICE · ESC · ESMO · GuíaSalud) y síntesis IA con citas verificadas. Pensado como apoyo a la lectura crítica, no como soporte a decisión clínica.',
+    disclaimer_title: '⚠️ Aviso de transparencia (EU AI Act art. 50).',
+    disclaimer_body: 'Este sistema usa IA para extraer la pregunta PICO y para sintetizar abstracts. La síntesis NO constituye diagnóstico ni recomendación terapéutica para un paciente concreto. Cada cita debe verificarse en la fuente original antes de aplicarla. El sistema rechaza preguntas que pidan diagnóstico/tratamiento individual.',
+    acept_label: 'He leído el aviso y entiendo que EvidenciaIA es una herramienta de búsqueda bibliográfica formativa.',
+    btn_search: '🔍 Buscar evidencia',
+    hint_accept: 'Acepta el aviso para activar.',
+    followups_title: '↪ Preguntas relacionadas',
+    sources_title: '📚 Fuentes consultadas',
+    external_title: '🌐 Buscar también en fuentes europeas',
+    strip_strong: 'Herramienta formativa',
+    strip_body: '· NO es producto sanitario (SaMD) · NO sustituye juicio clínico ·',
+    strip_link: 'Dossier AI Act ↗',
+    placeholder: 'Ej: ¿Qué dice la evidencia sobre apixaban vs warfarina en pacientes con FA no valvular mayores de 75 años en términos de mortalidad y sangrado?',
+  },
+  en: {
+    back_pro: '← Professionals',
+    refresh: 'Refresh',
+    signout: 'Sign out',
+    badge_formative: 'Educational use',
+    hero_lead: 'Clinical literature search across PubMed, Europe PMC and AEMPS, with European re-ranking (Cochrane · NICE · ESC · ESMO · GuíaSalud) and AI synthesis with verified citations. Designed as critical reading aid, not as clinical decision support.',
+    disclaimer_title: '⚠️ Transparency notice (EU AI Act art. 50).',
+    disclaimer_body: 'This system uses AI to extract the PICO question and synthesize abstracts. The synthesis is NOT a diagnosis or therapeutic recommendation for a specific patient. Every citation must be verified at the original source before applying it. The system refuses questions asking for individual diagnosis or treatment.',
+    acept_label: 'I have read this notice and I understand that EvidenciaIA is an educational literature search tool.',
+    btn_search: '🔍 Search evidence',
+    hint_accept: 'Accept the notice to enable.',
+    followups_title: '↪ Related questions',
+    sources_title: '📚 Sources consulted',
+    external_title: '🌐 Also search in European sources',
+    strip_strong: 'Educational tool',
+    strip_body: '· NOT a medical device (SaMD) · does NOT replace clinical judgement ·',
+    strip_link: 'AI Act dossier ↗',
+    placeholder: 'E.g.: What does the evidence say about apixaban vs warfarin in non-valvular AF patients over 75 in terms of mortality and bleeding?',
+  },
+};
+function applyI18n(lang){
+  var dict = I18N[lang] || I18N.es;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function(el){
+    var key = el.getAttribute('data-i18n');
+    if (key && dict[key] != null) el.textContent = dict[key];
+  });
+  var input = $('eviInput');
+  if (input && dict.placeholder) input.setAttribute('placeholder', dict.placeholder);
+  var btn = $('eviLang');
+  if (btn) btn.textContent = lang === 'en' ? '🌐 EN' : '🌐 ES';
+  document.documentElement.lang = lang;
+}
+(function initI18n(){
+  var btn = $('eviLang');
+  if (!btn) return;
+  var saved = 'es';
+  try { saved = localStorage.getItem('evi_lang_v1') || 'es'; } catch(e) {}
+  applyI18n(saved);
+  btn.addEventListener('click', function(){
+    var current = (function(){ try { return localStorage.getItem('evi_lang_v1') || 'es'; } catch(e) { return 'es'; } })();
+    var next = current === 'es' ? 'en' : 'es';
+    try { localStorage.setItem('evi_lang_v1', next); } catch(e) {}
+    applyI18n(next);
+  });
+})();
+
+// Persistencia local de la especialidad — sin enviar a Firestore aún;
+// solo viaja al backend en el payload de cada búsqueda.
+(function persistEspecialidad(){
+  var sel = $('eviEspecialidad');
+  if (!sel) return;
+  try {
+    var saved = localStorage.getItem('evi_especialidad_v1');
+    if (saved) sel.value = saved;
+  } catch(e) {}
+  sel.addEventListener('change', function(){
+    try { localStorage.setItem('evi_especialidad_v1', sel.value); } catch(e) {}
+  });
+})();
+
 $('eviAcept').addEventListener('change', function(e){
   var on = e.target.checked;
   $('eviGo').disabled = !on;
@@ -391,6 +553,69 @@ $('eviAcept').addEventListener('change', function(e){
 
 $('eviGo').addEventListener('click', buscar);
 
+// ─── Voice input (Web Speech API) ─────────────────────────────────
+// Útil en urgencias móvil donde teclear es engorroso. La transcripción
+// pasa por las MISMAS safeguards que cualquier input por teclado, así
+// que no debilita el filtro PII / consultas individuales del backend.
+// Si el navegador no soporta SpeechRecognition (Safari iOS sin permisos,
+// Firefox), el botón queda desactivado silenciosamente.
+(function voiceInput(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var btn = $('eviMic');
+  if (!btn) return;
+  if (!SR) {
+    btn.disabled = true;
+    btn.title = 'Tu navegador no soporta dictado por voz';
+    btn.textContent = '🎙️';
+    btn.style.opacity = '.4';
+    return;
+  }
+  var recog = new SR();
+  recog.lang = 'es-ES';
+  recog.interimResults = true;
+  recog.continuous = false;
+  recog.maxAlternatives = 1;
+  var recording = false;
+  var baseValue = '';
+
+  function start(){
+    if (recording) return;
+    baseValue = ($('eviInput').value || '').trim();
+    if (baseValue) baseValue = baseValue + ' ';
+    try { recog.start(); } catch (e) { /* ignore double-start */ }
+  }
+  function stop(){ try { recog.stop(); } catch (e) {} }
+  function setRecording(on){
+    recording = on;
+    btn.classList.toggle('recording', on);
+    btn.textContent = on ? '⏹️' : '🎙️';
+    btn.title = on ? 'Detener dictado' : 'Dictar pregunta por voz';
+  }
+
+  recog.onstart = function(){ setRecording(true); };
+  recog.onend = function(){ setRecording(false); };
+  recog.onerror = function(ev){
+    setRecording(false);
+    if (ev && ev.error === 'not-allowed') {
+      alert('Permiso de micrófono denegado. Habilítalo en los ajustes del navegador para dictar preguntas.');
+    } else if (ev && ev.error === 'no-speech') {
+      // silencioso — usuario no dijo nada
+    }
+  };
+  recog.onresult = function(ev){
+    var transcript = '';
+    for (var i = ev.resultIndex; i < ev.results.length; i++) {
+      transcript += ev.results[i][0].transcript;
+    }
+    var combined = (baseValue + transcript).slice(0, 500);
+    $('eviInput').value = combined;
+  };
+
+  btn.addEventListener('click', function(){
+    if (recording) stop(); else start();
+  });
+})();
+
 async function buscar(){
   var pregunta = $('eviInput').value.trim();
   if (pregunta.length < 15) {
@@ -412,6 +637,8 @@ async function buscar(){
     pregunta: pregunta,
     ai_act_disclaimer_shown: true,
     sintetizar: $('eviSint').checked,
+    especialidad: $('eviEspecialidad').value,
+    threadId: currentThreadId || undefined,
     filtros: {
       anios: parseInt($('eviAnios').value, 10),
       soloRevisiones: $('eviSoloRev').checked,
@@ -472,6 +699,15 @@ function hideError(){ $('eviError').style.display = 'none'; }
 function renderResultado(d){
   currentConsultaId = d.consultaId;
   currentFuentes = d.fuentes || [];
+  currentFavorited = false;
+  refreshFavBtn();
+  // Capturar el threadId devuelto por el backend (si era nuevo, ahora
+  // pasa a ser nuestro hilo activo; si veníamos de un hilo, se confirma).
+  if (d.threadId) {
+    currentThreadId = d.threadId;
+    currentThreadTurn = typeof d.threadTurnIndex === 'number' ? d.threadTurnIndex : 0;
+    setThreadIndicator();
+  }
 
   // Grado de evidencia (GRADE-like). Solo se pinta si el backend lo envió.
   var gradeRow = $('eviGradeRow');
@@ -792,6 +1028,163 @@ Array.prototype.forEach.call(document.querySelectorAll('.feedback button'), func
       alert('No se pudo enviar feedback: ' + (e.message||e.code));
     }
   });
+});
+
+// ─── Modal genérico ──────────────────────────────────────────────
+function openModal(title, bodyHtml){
+  $('eviModalTitle').textContent = title;
+  $('eviModalBody').innerHTML = bodyHtml;
+  $('eviModal').style.display = 'flex';
+}
+function closeModal(){ $('eviModal').style.display = 'none'; }
+$('eviModalClose').addEventListener('click', closeModal);
+$('eviModal').addEventListener('click', function(e){ if (e.target === $('eviModal')) closeModal(); });
+
+// ─── Favoritos ──────────────────────────────────────────────────
+// Marca/desmarca la consulta actual y permite listar favoritos del uid.
+var currentFavorited = false;
+function refreshFavBtn(){
+  var btn = $('eviFavBtn');
+  if (!btn) return;
+  btn.textContent = currentFavorited ? '★ Favorito' : '☆ Favorito';
+  btn.classList.toggle('starred', currentFavorited);
+}
+// Botón hilo: muestra modal con opción de cerrar el hilo o continuar.
+document.getElementById('eviThreadBtn').addEventListener('click', function(){
+  var bodyHtml = ''
+    + '<p style="margin-bottom:10px">Estás en un <strong>hilo conversacional</strong> activo (turno ' + (currentThreadTurn + 1) + '). Las próximas búsquedas reciben las 2 últimas como contexto.</p>'
+    + '<p style="margin-bottom:14px;font-size:.84rem;opacity:.7">Si tu próxima pregunta es de un tema distinto, cierra el hilo para empezar uno nuevo.</p>'
+    + '<button class="tb-btn" id="threadCloseBtn" type="button" style="background:rgba(239,68,68,.18);border-color:#fca5a5">✕ Cerrar hilo y empezar uno nuevo</button>';
+  openModal('🧵 Hilo activo', bodyHtml);
+  setTimeout(function(){
+    var b = document.getElementById('threadCloseBtn');
+    if (b) b.addEventListener('click', function(){
+      currentThreadId = null;
+      currentThreadTurn = 0;
+      setThreadIndicator();
+      closeModal();
+    });
+  }, 0);
+});
+
+$('eviFavBtn').addEventListener('click', async function(){
+  if (!currentConsultaId) return;
+  $('eviFavBtn').disabled = true;
+  try {
+    var call = fns.httpsCallable('evidenciaToggleFavorite');
+    var res = await call({ consultaId: currentConsultaId });
+    if (res && res.data && typeof res.data.favorited === 'boolean') {
+      currentFavorited = res.data.favorited;
+      refreshFavBtn();
+    }
+  } catch(e) {
+    alert('No se pudo actualizar favorito: ' + (e.message || e.code));
+  } finally {
+    $('eviFavBtn').disabled = false;
+  }
+});
+// ─── Compartir (SharedThread) ───────────────────────────────────
+$('eviShareBtn').addEventListener('click', async function(){
+  if (!currentConsultaId) return;
+  $('eviShareBtn').disabled = true;
+  try {
+    // 1) Persistimos snapshot de la respuesta IA actual para que el
+    //    visor público no necesite re-llamar al modelo.
+    var fuentesSnap = (currentFuentes || []).map(function(s){
+      var a = s.ref || {};
+      return {
+        title: a.title || '',
+        authors: (a.authors || []).slice(0, 5),
+        journal: a.journal || '',
+        year: typeof a.year === 'number' ? a.year : null,
+        doi: a.doi || null,
+        pmid: a.pmid || null,
+        source: a.source || '',
+      };
+    });
+    var saveCall = fns.httpsCallable('evidenciaSaveShareSnapshot');
+    await saveCall({
+      consultaId: currentConsultaId,
+      texto_sintetizado: ($('eviSintesis').textContent || '').slice(0, 12000),
+      follow_ups: Array.prototype.map.call(document.querySelectorAll('#eviFollowups .chip'), function(c){
+        return (c.getAttribute('data-q') || '').slice(0, 240);
+      }),
+      fuentes: fuentesSnap,
+    });
+    // 2) Generar/recuperar el token y mostrar la URL.
+    var tokenCall = fns.httpsCallable('evidenciaCreateShareToken');
+    var res = await tokenCall({ consultaId: currentConsultaId });
+    var url = (res && res.data && res.data.url) || '';
+    if (!url) throw new Error('No se generó URL.');
+    var bodyHtml = ''
+      + '<p style="margin-bottom:12px">Cualquiera con este enlace verá la <strong>respuesta tal cual está ahora</strong> en modo solo-lectura, con disclaimer formativo.</p>'
+      + '<input class="share-url" id="shareUrlField" readonly value="' + esc(url) + '">'
+      + '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">'
+      +   '<button class="tb-btn" id="shareCopyBtn" type="button">📋 Copiar</button>'
+      +   '<a class="tb-btn" target="_blank" rel="noopener" href="' + esc(url) + '">↗ Abrir</a>'
+      +   '<a class="tb-btn" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent('Te comparto evidencia: ' + url) + '">💬 WhatsApp</a>'
+      +   '<a class="tb-btn" target="_blank" rel="noopener" href="mailto:?subject=' + encodeURIComponent('EvidenciaIA · consulta compartida') + '&body=' + encodeURIComponent(url) + '">📧 Email</a>'
+      + '</div>'
+      + '<p style="margin-top:14px;font-size:.78rem;opacity:.7">El enlace es estable y permanece activo hasta que elimines la consulta. La pregunta queda visible (sin PII por construcción), el uid del autor NO se expone.</p>';
+    openModal('🔗 Compartir consulta', bodyHtml);
+    setTimeout(function(){
+      var copyBtn = document.getElementById('shareCopyBtn');
+      if (copyBtn) copyBtn.addEventListener('click', function(){
+        var fld = document.getElementById('shareUrlField');
+        if (!fld) return;
+        fld.select();
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(fld.value);
+          } else {
+            document.execCommand('copy');
+          }
+          copyBtn.textContent = '✓ Copiado';
+          setTimeout(function(){ copyBtn.textContent = '📋 Copiar'; }, 1800);
+        } catch(_) {}
+      });
+    }, 0);
+  } catch(e) {
+    alert('No se pudo compartir: ' + (e.message || e.code));
+  } finally {
+    $('eviShareBtn').disabled = false;
+  }
+});
+
+$('eviFavListBtn').addEventListener('click', async function(){
+  $('eviFavListBtn').disabled = true;
+  try {
+    var call = fns.httpsCallable('evidenciaListFavorites');
+    var res = await call({});
+    var items = (res && res.data && res.data.items) || [];
+    var html;
+    if (items.length === 0) {
+      html = '<p style="opacity:.7">Aún no has guardado favoritos. Haz una búsqueda y pulsa <strong>☆ Favorito</strong> para empezar.</p>';
+    } else {
+      html = '<ul>' + items.map(function(it){
+        var d = it.createdAt ? new Date(it.createdAt) : null;
+        var dStr = d ? d.toLocaleDateString('es-ES') + ' ' + d.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'}) : '';
+        var grade = it.evidence_grade ? ' · grado ' + it.evidence_grade : '';
+        return '<li>'
+          + '<span class="pregunta" data-q="'+esc(it.pregunta)+'">'+esc(it.pregunta)+'</span>'
+          + '<span class="meta-fav">'+esc(dStr)+esc(grade)+'</span>'
+          + '</li>';
+      }).join('') + '</ul>';
+    }
+    openModal('⭐ Mis favoritos', html);
+    Array.prototype.forEach.call(document.querySelectorAll('#eviModalBody .pregunta'), function(p){
+      p.addEventListener('click', function(){
+        var q = p.getAttribute('data-q') || '';
+        $('eviInput').value = q;
+        closeModal();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  } catch(e) {
+    alert('No se pudo cargar favoritos: ' + (e.message || e.code));
+  } finally {
+    $('eviFavListBtn').disabled = false;
+  }
 });
 
 // ─── Export PDF ────────────────────────────────────────────────────
