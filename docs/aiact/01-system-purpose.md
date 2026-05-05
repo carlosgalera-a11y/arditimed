@@ -9,7 +9,7 @@
 | Producto madre | Cartagenaeste PWA (`area2cartagena.es`) |
 | Responsable | Carlos Galera Román, MFyC · Reg. PI 00765-03096622 |
 | Tecnología | Firebase Cloud Functions (`europe-west1`) + LLM RAG sobre PubMed/EuropePMC/OpenAlex/Cochrane/AEMPS/CORE/Semantic Scholar/ClinicalTrials.gov |
-| Categoría regulatoria | **NO es producto sanitario (SaMD)**. Sistema IA de **riesgo limitado** según AI Act (UE) 2024/1689 |
+| Categoría regulatoria | **NO es producto sanitario (SaMD)**. Sistema IA de **riesgo limitado** según AI Act (UE) 2024/1689. Justificación legal completa en [`12-mdr-classification-rationale.md`](./12-mdr-classification-rationale.md) — combinación de Estrategia 1 (consulta de evidencia, no diagnóstico) + Estrategia 3 (vínculo IA→paciente roto por construcción técnica). |
 
 ## 1.2 Uso previsto (intended use)
 

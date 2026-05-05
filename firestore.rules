@@ -346,6 +346,15 @@ service cloud.firestore {
       allow read: if signedIn();
       allow create, update, delete: if false;
     }
+    // Favoritos por usuario: el propio dueño lee la lista. La escritura
+    // siempre pasa por Cloud Function `evidenciaToggleFavorite` (Admin
+    // SDK), que valida que el dueño sea quien marca y que la consulta
+    // exista — desde cliente directo no se permite para evitar que un
+    // usuario se favorite consultas inexistentes o de otros.
+    match /users/{uid}/evidenciaFavoritos/{consultaId} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update, delete: if false;
+    }
 
     // ══ Solicitudes RGPD (derechos arts. 15-22) ═════════════════════
     // Cualquier autenticado crea su propia solicitud (uid debe coincidir

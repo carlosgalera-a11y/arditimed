@@ -45,6 +45,22 @@ export const SYNTH_SYSTEM_PROMPT = [
 export interface SynthInput {
   pregunta: string;
   fuentes: ScoredAbstract[];
+  /**
+   * Etiqueta legible de la especialidad del clínico (ej. "médico de
+   * Atención Primaria (MFyC)"). Si está, se incluye en el user prompt
+   * como contexto blando para que la síntesis priorice aspectos
+   * relevantes a esa especialidad. NO modifica el system prompt
+   * (mantener el hash estable). NO se inyecta texto libre del usuario:
+   * solo etiquetas de la lista cerrada server-side.
+   */
+  especialidadLabel?: string;
+  /**
+   * Turnos previos del mismo hilo conversacional (los más recientes
+   * primero). Cada turno aporta su pregunta + síntesis breve. Se
+   * inyectan en el user prompt como contexto, no en el system prompt
+   * (mantenemos hash estable). Limitar a 2 turnos máx en el caller.
+   */
+  threadHistory?: Array<{ pregunta: string; sintesis: string }>;
   secrets: {
     deepseekKey: string;
     openrouterKey: string;
@@ -124,14 +140,41 @@ export async function synthesize(input: SynthInput): Promise<SynthOutput> {
   }
 
   const context = buildContext(input.fuentes);
-  const userPrompt = [
+  const userPromptLines: string[] = [];
+  if (input.threadHistory && input.threadHistory.length) {
+    userPromptLines.push('Turnos previos de la conversación (más reciente primero):');
+    input.threadHistory.slice(0, 2).forEach((t, i) => {
+      const p = (t.pregunta || '').slice(0, 240);
+      const s = (t.sintesis || '').replace(/\s+/g, ' ').slice(0, 360);
+      userPromptLines.push(`[Turno -${i + 1}] Pregunta: ${p}`);
+      if (s) userPromptLines.push(`              Resumen: ${s}…`);
+    });
+    userPromptLines.push(
+      '',
+      'Si la pregunta actual es seguimiento de los turnos previos, conserva el hilo. ' +
+      'Si cambia de tema, ignora el historial.',
+      '',
+    );
+  }
+  if (input.especialidadLabel && input.especialidadLabel.length > 0) {
+    userPromptLines.push(
+      `Contexto del usuario: el profesional que pregunta es ${input.especialidadLabel}. ` +
+      `Si procede, prioriza en la síntesis los aspectos prácticos para esa especialidad ` +
+      `(diagnóstico diferencial habitual en su ámbito, primera línea de derivación, ` +
+      `umbral de derivación a hospital o atención especializada). NUNCA recomiendes ` +
+      `actuaciones individualizadas — sigue siendo síntesis de evidencia, no decisión clínica.`,
+      '',
+    );
+  }
+  userPromptLines.push(
     `Pregunta del profesional: ${input.pregunta}`,
     '',
     'Abstracts disponibles:',
     context,
     '',
     'Sintetiza la evidencia siguiendo las reglas del system prompt.',
-  ].join('\n');
+  );
+  const userPrompt = userPromptLines.join('\n');
 
   const chain = buildProviderChain({
     type: 'educational',
