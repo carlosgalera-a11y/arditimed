@@ -3041,10 +3041,19 @@ function megaDispatch(question) {
     var btn = document.getElementById("megaBtn");
     if (btn) { btn.disabled = true; btn.textContent = "Pensando..."; }
 
-    var sp = "Eres un asistente clinico del Centro de Salud Area II Cartagena (SMS). " +
+    var sp = "Eres el asistente clínico del Área II Cartagena (HGU Santa Lucía + centros de salud, SMS). " +
+             "Tu base de conocimiento cubre los cuatro apartados que el usuario tiene en pestañas: " +
+             "Urgencias (manual de guardia, protocolos hospitalarios, exploración, sueroterapia, plantillas), " +
+             "Atención Primaria (protocolos AP), Farmacología (dosis, vías, duración) y Guía Hospitalaria de Terapéutica " +
+             "Antimicrobiana en Adultos del SMS (4ª ed., abril 2025). " +
              "Uso exclusivamente DOCENTE e INFORMATIVO. Responde en español, claro y estructurado. " +
-             "Cita protocolos cuando corresponda. Para fármacos indica dosis, vía y duración. " +
-             "Si no tienes info, indícalo claramente.";
+             "Cita el protocolo o sección concreta cuando esté en tu base. " +
+             "Para fármacos indica dosis, vía y duración. " +
+             "Si la pregunta está fuera de los protocolos locales aportados, da una orientación clínica general " +
+             "razonable (basada en práctica habitual y guías españolas/europeas) e indica claramente que NO está " +
+             "en el protocolo local del Área II y que conviene confirmar con guía específica de la especialidad. " +
+             "No respondas nunca diciendo solo \"no está en mi base de conocimiento\" si la pregunta es clínica razonable: " +
+             "ofrece la orientación general y avisa de la limitación.";
 
     var recent = megaHistory.length > 2 ? megaHistory.slice(-6, -1) : [];
     var historyBlock = "";
@@ -3060,9 +3069,13 @@ function megaDispatch(question) {
         return;
     }
 
-    var KB_MAX = 3000;
+    // KB_MAX subido de 3000 → 80000 chars (~20K tokens). Los modelos del
+    // route 'educational' (DeepSeek V3 / Gemini 2.5 Flash-Lite) admiten
+    // 128K+ tokens de contexto, así que cabe holgado y la IA tiene acceso
+    // al contenido completo de Urgencias + AP + Farmacología + Antibióticos.
+    var KB_MAX = 80000;
     var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
-    var fullPrompt = "CONOCIMIENTO BASE:\n" + kb + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
+    var fullPrompt = "CONOCIMIENTO BASE (protocolos locales Área II Cartagena):\n" + kb + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
 
     window.askAi({ type: "educational", systemPrompt: sp, prompt: fullPrompt })
         .then(function(res){
@@ -3267,9 +3280,11 @@ window.ckGenerate=function(fromChat){
 
     // Build context from protocolos + MegaCuaderno history
     var context="";
-    // Add MEGA_KB (protocolos locales)
+    // Add MEGA_KB (protocolos locales) — antes 3000 chars, ahora 60000 para
+    // que el checklist tenga acceso real al manual completo de urgencias,
+    // AP, exploración y antibióticos del Área II.
     if(typeof MEGA_KB!=="undefined" && MEGA_KB){
-        context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,3000)+"\n\n";
+        context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,60000)+"\n\n";
     }
     // Add MegaCuaderno conversation if available
     if(fromChat && typeof megaHistory!=="undefined" && megaHistory.length>0){
@@ -3455,9 +3470,14 @@ function esc(s){if(!s)return"";var d=document.createElement("div");d.textContent
 </script>
 
 <script>
-// Extended knowledge base — appended to MEGA_KB defined above
+// Extended knowledge base — appended to MEGA_KB defined above.
+// IMPORTANTE: usar `+=`, NO `=`. Antes había `MEGA_KB = '...'` y eso
+// machacaba el KB compacto inicial (urgencias, AP, exploración, sueros,
+// plantillas) dejando solo la guía de antibióticos, lo que provocaba
+// respuestas tipo "según mi base de conocimiento (Antimicrobiana 2025)
+// no se incluye…" para preguntas fuera de antibióticos.
 if(typeof MEGA_KB !== 'undefined') {
-    MEGA_KB = '=== 🦠 Guía Antibióticos HSL 2025 ===\n' +
+    MEGA_KB += '\n\n=== 🦠 Guía Antibióticos HSL 2025 ===\n' +
     'Edición nº: Elaborado: Última revisión: Modificaciones Próxima revisión:\n' +
     '1 01.11.2020 26.11.2020 Edición inicial 2023\n' +
     '4.1 Infecciones en vías respiratorias\n' +
