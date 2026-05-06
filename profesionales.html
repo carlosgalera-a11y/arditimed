@@ -229,10 +229,10 @@ footer a:hover{color:#ffd54f}
     </div>
 
     <div id="hub" class="tiles-grid" style="display:none">
-      <button type="button" class="tile" data-k="ap" onclick="location.href='panel-medico.html?page=pageProtocolosAP'" aria-label="Atención Primaria">
+      <button type="button" class="tile" data-k="ap" onclick="openAPMenu()" aria-haspopup="dialog" aria-label="Atención Primaria — abre menú con Protocolos AP y Centros de Salud">
         <div class="tile-head"><span class="tile-icon">🏘️</span><span class="tile-title">Atención Primaria</span></div>
-        <div class="tile-desc">Protocolos de Atención Primaria, guías clínicas, algoritmos de decisión.</div>
-        <span class="tile-badge">Protocolos AP</span>
+        <div class="tile-desc">Protocolos de Atención Primaria · Centros de Salud del Área II.</div>
+        <span class="tile-badge">2 apartados ▾</span>
       </button>
 
       <button type="button" class="tile" data-k="hospitalaria" onclick="location.href='panel-medico.html?page=pageProfessionals'" aria-label="Atención Hospitalaria">
@@ -271,12 +271,6 @@ footer a:hover{color:#ffd54f}
         <span class="tile-badge">Casos + MIR</span>
       </button>
 
-      <button type="button" class="tile" data-k="centros-salud" onclick="location.href='centros-salud.html'" aria-label="Centros de Salud">
-        <div class="tile-head"><span class="tile-icon">🏥</span><span class="tile-title">Centros de Salud</span></div>
-        <div class="tile-desc">Directorio interactivo del Área II · horarios, recursos, calendarios, particularidades de cada zona básica.</div>
-        <span class="tile-badge">Área II · 14 centros</span>
-      </button>
-
       <button type="button" class="tile" data-k="evidencia-ia" onclick="location.href='evidencia-ia.html'" aria-label="EvidenciaIA">
         <div class="tile-head"><span class="tile-icon">🔬</span><span class="tile-title">EvidenciaIA</span></div>
         <div class="tile-desc">Búsqueda bibliográfica clínica con síntesis IA y citas verificadas. PubMed · Europe PMC · AEMPS · sesgo europeo.</div>
@@ -297,6 +291,36 @@ footer a:hover{color:#ffd54f}
       <a href="status.html">Estado</a>
     </div>
   </footer>
+
+  <!-- Modal desplegable de Atención Primaria: Protocolos AP + Centros de Salud -->
+  <div class="modal-backdrop" id="apMenu" role="dialog" aria-modal="true" aria-labelledby="apMenuTitle" onclick="if(event.target===this)closeAPMenu()">
+    <div class="modal urg-menu" style="max-width:560px;padding:26px 24px;text-align:left;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <span style="font-size:1.6rem;line-height:1;">🏘️</span>
+        <h3 id="apMenuTitle" style="margin:0;font-size:1.15rem;">Atención Primaria</h3>
+        <button type="button" onclick="closeAPMenu()" aria-label="Cerrar" style="margin-left:auto;border:none;background:transparent;color:#64748b;font-size:1.3rem;cursor:pointer;padding:4px 8px;line-height:1;">✕</button>
+      </div>
+      <p style="margin:0 0 16px;font-size:.88rem;color:#64748b;line-height:1.55;">Elige el apartado al que quieres acceder.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a class="urg-menu-item" href="panel-medico.html?page=pageProtocolosAP">
+          <span class="urg-menu-icon" style="background:rgba(125,211,252,.16);color:#0284c7;">📋</span>
+          <span class="urg-menu-text">
+            <strong>Protocolos de AP</strong>
+            <span>9 áreas · guías clínicas, algoritmos de decisión</span>
+          </span>
+          <span class="urg-menu-arrow">→</span>
+        </a>
+        <a class="urg-menu-item" href="centros-salud.html">
+          <span class="urg-menu-icon" style="background:rgba(13,148,136,.16);color:#0d9488;">🏥</span>
+          <span class="urg-menu-text">
+            <strong>Centros de Salud</strong>
+            <span>Área II · 14 centros · horarios, recursos, calendarios</span>
+          </span>
+          <span class="urg-menu-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal desplegable de Urgencias: 3 sub-apartados -->
   <div class="modal-backdrop" id="urgenciasMenu" role="dialog" aria-modal="true" aria-labelledby="urgMenuTitle" onclick="if(event.target===this)closeUrgenciasMenu()">
@@ -445,8 +469,21 @@ footer a:hover{color:#ffd54f}
       if(m) m.classList.remove('show');
     }
 
+    // Menú desplegable de Atención Primaria: Protocolos AP + Centros de Salud.
+    function openAPMenu(){
+      var m = document.getElementById('apMenu');
+      if(!m) return;
+      m.classList.add('show');
+      var firstItem = m.querySelector('.urg-menu-item');
+      if(firstItem) setTimeout(function(){ firstItem.focus(); }, 50);
+    }
+    function closeAPMenu(){
+      var m = document.getElementById('apMenu');
+      if(m) m.classList.remove('show');
+    }
+
     document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape') closeUrgenciasMenu();
+      if(e.key === 'Escape'){ closeUrgenciasMenu(); closeAPMenu(); }
     });
 
     if('serviceWorker' in navigator){
