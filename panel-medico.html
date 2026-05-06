@@ -3673,12 +3673,11 @@ function megaDispatch(question) {
     var btn = document.getElementById("megaBtn");
     if (btn) { btn.disabled = true; btn.textContent = "Pensando..."; }
 
-    var sp = "Eres un asistente clinico del Centro de Salud Area II Cartagena (SMS). " +
-             "Uso exclusivamente DOCENTE e INFORMATIVO. Responde en español, claro y estructurado. " +
-             "Cita protocolos cuando corresponda. Para fármacos indica dosis, vía y duración. " +
-             "Si no tienes info, indícalo claramente.";
-
-    // MEGA_KB va en el prompt (límite 8000) porque no cabe en systemPrompt (límite 4000).
+    // Herramienta personal del autor (Carlos Galera Román, MFyC) para uso
+    // formativo en su guardia. El modelo debe responder siempre como asistente
+    // clínico con conocimiento médico general; los protocolos locales se
+    // aportan como CONTEXTO PRIORITARIO, no como límite duro. Nunca debe
+    // responder solo "no está en mi base" — siempre da orientación útil.
     var recent = megaHistory.length > 2 ? megaHistory.slice(-6, -1) : [];
     var historyBlock = "";
     if (recent.length > 0) {
@@ -3693,10 +3692,36 @@ function megaDispatch(question) {
         return;
     }
 
-    // Construir prompt: KB + (Visados si aplica) + historial + pregunta.
-    // KB cap 3000 chars (latencia IA). Prompt máx total 8000 (validación backend).
-    var KB_MAX = 3000;
-    var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
+    // El KB completo (~45 KB tras fix) cabe en systemPrompt (límite 100 000
+    // chars en functions/src/validation.ts). El user prompt queda corto
+    // (historia + pregunta + visados puntuales) y respeta el límite de 8 000.
+    var KB_MAX_SYSPROMPT = 90000;
+    var kb = MEGA_KB.length > KB_MAX_SYSPROMPT ? MEGA_KB.substring(0, KB_MAX_SYSPROMPT) : MEGA_KB;
+
+    var sp =
+      "Eres el asistente clínico personal de Carlos Galera Román (médico de familia, " +
+      "Área II Cartagena, HGU Santa Lucía + centros de salud SMS). Es una herramienta " +
+      "DOCENTE de uso individual del autor en sus guardias, no un servicio público. " +
+      "Responde con rigor clínico, claro y estructurado, en español. Cubres Urgencias " +
+      "(manual de guardia + protocolos hospitalarios + plantillas de exploración, " +
+      "sueroterapia y oxigenoterapia), Atención Primaria (9 áreas), Farmacología y " +
+      "la Guía Hospitalaria de Terapéutica Antimicrobiana en Adultos del SMS (4ª ed., " +
+      "abril 2025).\n\n" +
+      "REGLAS DE RESPUESTA:\n" +
+      "1. Si la pregunta está cubierta por el CONOCIMIENTO BASE de abajo, prioriza esa " +
+      "pauta y cítala (\"Manual de Guardia\", \"Protocolo AP\", \"Guía Antibióticos HSL 2025\").\n" +
+      "2. Si NO está cubierta, responde igualmente con tu conocimiento médico general " +
+      "y guías españolas/europeas habituales (SEMFyC, SEMES, SEMICYUC, SEPAR, AEMPS, " +
+      "ESC, ERS/ATS). Avisa al final con una línea: \"Pauta no específica del Área II " +
+      "— confirmar con guía local antes de aplicar.\"\n" +
+      "3. NUNCA respondas solo \"no está en mi base de conocimiento\" o \"esta guía no " +
+      "incluye…\". Eso no sirve a Carlos. Da siempre la mejor orientación clínica posible.\n" +
+      "4. Para fármacos: principio activo + dosis + vía + frecuencia + duración. Sin " +
+      "marcas comerciales (clase terapéutica + DCI siempre).\n" +
+      "5. Para urgencias: orden Anamnesis → Exploración → Pruebas → Tto Hospital → Tto " +
+      "Domicilio cuando aplique.\n\n" +
+      "=== CONOCIMIENTO BASE — Protocolos locales Área II Cartagena ===\n" +
+      kb;
 
     // Detectar si la pregunta parece relativa a visados y, en tal caso,
     // inyectar los extractos más relevantes de la Guía 457-2023.
@@ -3711,12 +3736,13 @@ function megaDispatch(question) {
     _visadosPrep.then(function(visChunks){
         var visBlock = '';
         if(visChunks && visChunks.length){
-            visBlock = '\n\nEXTRACTOS DE GUÍA DE VISADO (SMS · 457-2023):\n' +
-                       visChunks.map(function(c){ return '[pág '+c.page+'] '+c.text; }).join('\n');
+            visBlock = 'EXTRACTOS DE GUÍA DE VISADO (SMS · 457-2023):\n' +
+                       visChunks.map(function(c){ return '[pág '+c.page+'] '+c.text; }).join('\n') + '\n\n';
         }
-        var fullPrompt = "CONOCIMIENTO BASE:\n" + kb + visBlock + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
-        // Tope defensivo para no sobrepasar 8000 chars.
-        if(fullPrompt.length > 7900) fullPrompt = fullPrompt.substring(0, 7900) + '\n[…truncado]';
+        // KB ya va en systemPrompt; el user prompt solo lleva visados puntuales,
+        // historia y la pregunta — bien por debajo del límite de 8000 chars.
+        var fullPrompt = visBlock + historyBlock + (historyBlock ? "\n\n---\n\n" : "") + "PREGUNTA: " + question;
+        if(fullPrompt.length > 7800) fullPrompt = fullPrompt.substring(0, 7800) + '\n[…truncado]';
         return window.askAi({ type: "educational", systemPrompt: sp, prompt: fullPrompt });
     })
     .then(function(res){
@@ -3924,7 +3950,9 @@ window.ckGenerate=function(fromChat){
     var context="";
     // Add MEGA_KB (protocolos locales)
     if(typeof MEGA_KB!=="undefined" && MEGA_KB){
-        context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,3000)+"\n\n";
+        // Subido de 3000 → 60000 chars para que el Checklist Clínico IA
+        // tenga acceso al manual completo de urgencias, AP, exploración y ATB.
+        context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,60000)+"\n\n";
     }
     // Add MegaCuaderno conversation if available
     if(fromChat && typeof megaHistory!=="undefined" && megaHistory.length>0){
@@ -4146,9 +4174,14 @@ function esc(s){if(!s)return"";var d=document.createElement("div");d.textContent
 </script>
 
 <script>
-// Extended knowledge base — appended to MEGA_KB defined above
+// Extended knowledge base — appended to MEGA_KB defined above.
+// IMPORTANTE: usar `+=`, no `=`. Antes había `MEGA_KB = '...'` y eso
+// SOBRESCRIBÍA el KB compacto inicial (urgencias, AP, exploración,
+// sueros, plantillas) dejando solo la portada del PDF de antibióticos,
+// lo que provocaba respuestas tipo "según la Guía Antimicrobiana 2025
+// no se incluye…" para preguntas fuera de antibióticos.
 if(typeof MEGA_KB !== 'undefined') {
-    MEGA_KB = '=== 🦠 Guía Antibióticos HSL 2025 ===\n' +
+    MEGA_KB += '\n\n=== 🦠 Guía Antibióticos HSL 2025 ===\n' +
     'Edición nº: Elaborado: Última revisión: Modificaciones Próxima revisión:\n' +
     '1 01.11.2020 26.11.2020 Edición inicial 2023\n' +
     '4.1 Infecciones en vías respiratorias\n' +
