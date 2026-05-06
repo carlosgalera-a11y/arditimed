@@ -935,6 +935,75 @@
                     </div>
                 </div>
 
+                <!-- ═══ ¿QUÉ SABE ESTA IA? — Inventario del KB ═══ -->
+                <details style="margin-bottom:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                    <summary style="cursor:pointer;padding:12px 16px;font-weight:700;font-size:.88rem;color:var(--text);display:flex;align-items:center;gap:10px;list-style:none;background:linear-gradient(135deg,rgba(13,71,161,.06),rgba(21,101,192,.06));">
+                        <span style="font-size:1.1rem;">📚</span>
+                        <span style="flex:1;">¿Qué sabe esta IA? — Contenido al que tiene acceso</span>
+                        <span style="font-size:.7rem;background:rgba(13,71,161,.12);color:#0d47a1;padding:3px 9px;border-radius:10px;font-weight:600;">DeepSeek V3 · ~11K tokens · Pulsa para ver</span>
+                    </summary>
+                    <div style="padding:14px 18px;font-size:.82rem;line-height:1.6;color:var(--text);">
+                        <p style="margin:0 0 12px;font-size:.78rem;color:var(--text-muted);line-height:1.5;">
+                            <strong>Modelo:</strong> DeepSeek V3 (primario) → Gemini 2.5 Flash-Lite EU (fallback). Ruta <code>educational</code>.
+                            <strong>Contexto enviado:</strong> ~45.000 caracteres (~11.300 tokens) en cada pregunta. KB_MAX = 80.000.
+                        </p>
+
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:14px;">
+
+                            <div style="background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.25);border-radius:8px;padding:10px 12px;">
+                                <div style="font-weight:800;color:#dc2626;font-size:.82rem;margin-bottom:6px;">🚨 Urgencias — Manual Guardias de Puerta</div>
+                                <div style="font-size:.76rem;line-height:1.55;opacity:.92;">Pauta concreta de urgencia + alta para 25+ patologías:<br>
+                                Artritis microcristalina/gota · Broncoespasmo · Cefalea/Migraña · Celulitis · Cervicalgia/Dorsalgia/Lumbalgia · Cetoacidosis diabética · Cólico biliar · Cólico renoureteral · Conjuntivitis · Crisis ansiedad · Crisis asmática · Crisis HTA · Diarrea/GEA · Epigastralgia · Esguince tobillo · Faringoamigdalitis · Flemón dental · ICC leve · ITU inferior · Lumbociática · Mastitis aguda · NAC típica/atípica · Neutropenia febril · Mordedura animal.</div>
+                            </div>
+
+                            <div style="background:rgba(124,58,237,.05);border:1px solid rgba(124,58,237,.25);border-radius:8px;padding:10px 12px;">
+                                <div style="font-weight:800;color:#7c3aed;font-size:.82rem;margin-bottom:6px;">⚡ Urgencias críticas y plantillas</div>
+                                <div style="font-size:.76rem;line-height:1.55;opacity:.92;">
+                                Dolor torácico · Anafilaxia · Sepsis (qSOFA).<br>
+                                <strong>Plantilla exploración por aparatos</strong> (general · AC · AP · abdomen · TR · MMII · neuro · ORL · columna · hombro · rodilla).<br>
+                                <strong>Sueroterapia</strong> según edad/comorbilidad.<br>
+                                <strong>Oxigenoterapia</strong> (FiO₂ en gafas y Ventimask).<br>
+                                <strong>Plantilla de ingreso</strong> estándar.</div>
+                            </div>
+
+                            <div style="background:rgba(13,148,136,.05);border:1px solid rgba(13,148,136,.25);border-radius:8px;padding:10px 12px;">
+                                <div style="font-weight:800;color:#0d9488;font-size:.82rem;margin-bottom:6px;">🩺 Atención Primaria — 9 áreas</div>
+                                <div style="font-size:.76rem;line-height:1.55;opacity:.92;">
+                                📋 Generales (fiebre, palidez, astenia, pérdida de peso)<br>
+                                🩺 Digestivo · 🫁 Respiratorio/Cardio<br>
+                                🫘 Urología/Nefrología · 🦴 Musculoesquelético<br>
+                                🧠 Neurología · 🧘 Salud Mental<br>
+                                👂 ORL · 💊 Crónicas/Farmacología<br>
+                                <span style="opacity:.75;">+ resumen rápido HTA · EPOC · DM2.</span></div>
+                            </div>
+
+                            <div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:10px 12px;">
+                                <div style="font-weight:800;color:#d97706;font-size:.82rem;margin-bottom:6px;">🏥 Especialidades hospitalarias — 12 secciones</div>
+                                <div style="font-size:.76rem;line-height:1.55;opacity:.92;">
+                                Alergología · Cirugía menor · Hematología · Infecciosas · Nefrología · Oftalmología · ORL · <strong>Paliativos</strong> (escalera OMS, sedación paliativa, vía SC) · Psiquiatría · Reumatología · Urología · Urgencias avanzado.</div>
+                            </div>
+
+                            <div style="background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:10px 12px;grid-column:1/-1;">
+                                <div style="font-weight:800;color:#059669;font-size:.82rem;margin-bottom:6px;">🦠 Guía Hospitalaria de Terapéutica Antimicrobiana en Adultos · 4ª ed., abril 2025 · SMS</div>
+                                <div style="font-size:.76rem;line-height:1.55;opacity:.92;">
+                                Recomendaciones generales de uso de antibióticos · categorías EUCAST (S/I/R) · alergia a betalactámicos · dosificación en IRC, diálisis y obesidad · alertas de seguridad · resumen por aparato (respiratorio, urinario, piel, digestivo) con dosis y duración. Coordinador regional Programa IRAS-PROA, SMS.</div>
+                            </div>
+
+                        </div>
+
+                        <div style="background:rgba(239,68,68,.06);border-left:3px solid #ef4444;padding:10px 14px;font-size:.76rem;line-height:1.55;border-radius:4px;">
+                            <strong style="color:#dc2626;">⚠️ Lo que la IA NO ve directamente</strong> (puedes preguntar igual y dará orientación general avisando de la limitación):<br>
+                            • Los 132 documentos clínicos embebidos en otras pestañas (deliberado, ahorra lecturas Firestore).<br>
+                            • PDFs del repositorio (<code>protocolos-1.pdf</code>…<code>protocolos-10.pdf</code>, dietas, vacunas, violencia de género, etc.) — para preguntar sobre ellos usa <strong>Scan IA</strong> y súbelos como contexto.<br>
+                            • Manual Paratus (ambulancias) comprimido en <code>camas-y-ambulancias.html</code> — accesible navegando esa página.
+                        </div>
+
+                        <p style="margin:12px 0 0;font-size:.7rem;color:var(--text-muted);line-height:1.4;">
+                            <strong>Material formativo.</strong> No diagnóstico. No sustituye el juicio clínico profesional. Cero marcas comerciales farma — siempre clase terapéutica + principio activo. Datos en UE (region europe-west1).
+                        </p>
+                    </div>
+                </details>
+
                 <!-- Sugerencias rápidas -->
                 <div style="margin-bottom:14px;">
                     <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px;font-weight:600;">💡 Preguntas frecuentes:</p>
