@@ -335,6 +335,11 @@ footer a:hover{color:#ffd54f}
         <span>Continuar con Google</span>
       </button>
 
+      <button class="btn-google" onclick="signInWithMicrosoft()" style="margin-top:10px;background:#fff;color:#1f2937;border:1.5px solid #cbd5e1;">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M2 2h9.5v9.5H2z"/><path fill="#7FBA00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00A4EF" d="M2 12.5h9.5V22H2z"/><path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/></svg>
+        <span>Continuar con Microsoft (Hotmail · Outlook)</span>
+      </button>
+
       <div style="display:flex;align-items:center;gap:10px;margin:14px 0 10px;color:#94a3b8;font-size:.78rem;">
         <div style="flex:1;height:1px;background:#e2e8f0;"></div>
         <span>o con tu email profesional (@carm.es, @sms.es, …)</span>
@@ -498,6 +503,43 @@ footer a:hover{color:#ffd54f}
           msg = 'Sin conexión o algo bloquea las peticiones a Google. Comprueba tu red y desactiva extensiones bloqueadoras de anuncios para esta web.';
         } else if(err && err.code === 'auth/internal-error'){
           msg = 'Error interno de Firebase. Refresca la página (Cmd+Shift+R) y reintenta. Si persiste, prueba en otro navegador.';
+        }
+        alert(msg);
+      }).finally(function(){
+        __signInInFlight = false;
+        if(btn){ btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; }
+      });
+    }
+
+    // Login con Microsoft (Hotmail/Outlook/Live + Microsoft 365).
+    // Requiere proveedor microsoft.com habilitado en Firebase Console
+    // (Authentication → Sign-in method) con credenciales de Azure AD,
+    // tenant 'common' para aceptar cuentas personales y de organización.
+    function signInWithMicrosoft(){
+      if(__signInInFlight){ console.log('[auth] login ya en curso, ignorando click'); return; }
+      __signInInFlight = true;
+      var btn = document.querySelector('[onclick*="signInWithMicrosoft"]');
+      if(btn){ btn.disabled = true; btn.style.opacity = '0.6'; btn.style.cursor = 'wait'; }
+
+      var provider = new firebase.auth.OAuthProvider('microsoft.com');
+      provider.setCustomParameters({ prompt: 'select_account', tenant: 'common' });
+      provider.addScope('email');
+      provider.addScope('openid');
+      provider.addScope('profile');
+      auth.signInWithPopup(provider).then(function(result){
+        console.log('[auth] login Microsoft OK:', result.user && result.user.email);
+        closeLoginModal();
+      }).catch(function(err){
+        console.error('[auth] error Microsoft:', err && err.code, err && err.message);
+        if(err && (err.code === 'auth/cancelled-popup-request' || err.code === 'auth/popup-closed-by-user')) return;
+        if(err && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment')){
+          try { auth.signInWithRedirect(provider); return; } catch(e){}
+        }
+        var msg = 'No se pudo iniciar sesión:\n' + (err.message || err.code || 'Error desconocido');
+        if(err && err.code === 'auth/operation-not-allowed'){
+          msg = 'El acceso con Microsoft aún no está habilitado en Firebase Auth. Avisa al administrador para activar el proveedor microsoft.com.';
+        } else if(err && err.code === 'auth/account-exists-with-different-credential'){
+          msg = 'Ya existe una cuenta con este email vinculada a otro proveedor (p. ej. Google). Inicia sesión con el método original y vincula Microsoft desde tu perfil.';
         }
         alert(msg);
       }).finally(function(){

@@ -1099,6 +1099,133 @@
               <div style="background:rgba(255,255,255,.04);border-left:3px solid #0ea5e9;padding:10px 14px;font-size:.82rem;line-height:1.55;opacity:.92;">
                 <strong>Monitorización (primera hora):</strong> FR, SatO₂, TA, FC cada 5 min; GSA a los 60 min. Si no mejora → <strong>considerar IOT</strong>.
               </div>
+
+              <!-- ─── Bloque V60 Philips · presiones por situación ─── -->
+              <div style="margin-top:14px;background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.35);border-radius:10px;padding:14px;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                  <span style="font-size:1.05rem;">🖥️</span>
+                  <strong style="color:#bae6fd;font-size:.95rem;">Monitor V60 — presiones recomendadas según situación</strong>
+                  <span style="font-size:.72rem;background:rgba(14,165,233,.18);color:#bae6fd;padding:2px 8px;border-radius:10px;">VMNI hospitalaria · ambulancia medicalizada</span>
+                </div>
+                <p style="font-size:.78rem;line-height:1.5;opacity:.82;margin:0 0 10px;">Rangos orientativos para el ventilador V60 (rango operativo <strong>IPAP 4–40 · EPAP/CPAP 4–25 cmH₂O · FR backup 0–40 rpm</strong>). Adulto 70–80 kg como referencia. Individualizar siempre, monitorizar fugas (objetivo &lt;40 L/min) y reevaluar a los 30–60 min.</p>
+
+                <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:.8rem;line-height:1.45;min-width:680px;">
+                  <thead>
+                    <tr style="background:rgba(255,255,255,.08);color:#fde68a;">
+                      <th style="text-align:left;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.12);">Situación</th>
+                      <th style="text-align:left;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.12);">Modo V60</th>
+                      <th style="text-align:left;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.12);">EPAP / CPAP</th>
+                      <th style="text-align:left;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.12);">IPAP (PS = IPAP−EPAP)</th>
+                      <th style="text-align:left;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.12);">FR backup · Rise · Ti</th>
+                      <th style="text-align:left;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.12);">FiO₂ inicial · objetivo SpO₂</th>
+                    </tr>
+                  </thead>
+                  <tbody style="opacity:.95;">
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>Edema agudo de pulmón cardiogénico (EAP)</strong></td>
+                      <td style="padding:7px 9px;">CPAP</td>
+                      <td style="padding:7px 9px;"><strong>10 cmH₂O</strong> (8–12)</td>
+                      <td style="padding:7px 9px;">— (modo CPAP)</td>
+                      <td style="padding:7px 9px;">—</td>
+                      <td style="padding:7px 9px;">FiO₂ 50–100% → SpO₂ ≥94%</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>EPOC reagudizado · acidosis hipercápnica</strong> (pH 7,25–7,35)</td>
+                      <td style="padding:7px 9px;">S/T</td>
+                      <td style="padding:7px 9px;">EPAP <strong>4–6</strong></td>
+                      <td style="padding:7px 9px;">IPAP <strong>12–14</strong> inicial → titular hasta 18–22 (subir 2 cmH₂O cada 5–10 min). PS ≥8</td>
+                      <td style="padding:7px 9px;">FR 12–14 · Rise 2–3 · Ti<sub>max</sub> 1,0–1,2 s</td>
+                      <td style="padding:7px 9px;">FiO₂ mín. para <strong>SpO₂ 88–92%</strong></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>IRA hipoxémica de novo</strong> (no SDRA grave)</td>
+                      <td style="padding:7px 9px;">S/T</td>
+                      <td style="padding:7px 9px;">EPAP <strong>6–10</strong></td>
+                      <td style="padding:7px 9px;">IPAP <strong>14–18</strong> (PS 8). Vigilar Vt &gt;9 mL/kg → riesgo P-SILI → IOT precoz.</td>
+                      <td style="padding:7px 9px;">FR 14–16 · Rise 2 · Ti 1,0 s</td>
+                      <td style="padding:7px 9px;">FiO₂ ajustada → SpO₂ ≥92%</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>Síndrome de hipoventilación-obesidad / SAHS agudizado</strong></td>
+                      <td style="padding:7px 9px;">S/T (o AVAPS)</td>
+                      <td style="padding:7px 9px;">EPAP <strong>8–12</strong></td>
+                      <td style="padding:7px 9px;">IPAP <strong>16–22</strong> (PS ≥6, hasta normalizar PaCO₂)</td>
+                      <td style="padding:7px 9px;">FR 12–14 · Rise 3 · Ti 1,0–1,2 s</td>
+                      <td style="padding:7px 9px;">FiO₂ mín. → SpO₂ 90–94%</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>Asma grave</strong> (uso muy seleccionado)</td>
+                      <td style="padding:7px 9px;">S/T</td>
+                      <td style="padding:7px 9px;">EPAP <strong>4–5</strong></td>
+                      <td style="padding:7px 9px;">IPAP <strong>10–14</strong>. Vigilar atrapamiento aéreo, no aumentar EPAP por encima de auto-PEEP.</td>
+                      <td style="padding:7px 9px;">FR 8–10 · Rise 1–2 · Ti 0,8–1,0 s</td>
+                      <td style="padding:7px 9px;">FiO₂ → SpO₂ ≥94%</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>Inmunodeprimido / IRA hipoxémica</strong></td>
+                      <td style="padding:7px 9px;">S/T</td>
+                      <td style="padding:7px 9px;">EPAP <strong>8–10</strong></td>
+                      <td style="padding:7px 9px;">IPAP <strong>14–18</strong> (PS 6–8). Considerar HFNC alternativa.</td>
+                      <td style="padding:7px 9px;">FR 14–16 · Rise 2 · Ti 1,0 s</td>
+                      <td style="padding:7px 9px;">FiO₂ → SpO₂ ≥92%</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>Post-extubación de alto riesgo</strong> (≥65 a, IC, EPOC, &gt;24 h VMI)</td>
+                      <td style="padding:7px 9px;">S/T</td>
+                      <td style="padding:7px 9px;">EPAP <strong>5–8</strong></td>
+                      <td style="padding:7px 9px;">IPAP <strong>10–14</strong> (PS 5–6). Tandas 1–2 h las primeras 24–48 h.</td>
+                      <td style="padding:7px 9px;">FR 12 · Rise 2 · Ti 1,0 s</td>
+                      <td style="padding:7px 9px;">FiO₂ → SpO₂ ≥92% (88–92% si EPOC)</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                      <td style="padding:7px 9px;"><strong>Paciente con orden de no intubar</strong> (techo terapéutico)</td>
+                      <td style="padding:7px 9px;">CPAP / S/T (confort)</td>
+                      <td style="padding:7px 9px;">EPAP/CPAP <strong>5–8</strong></td>
+                      <td style="padding:7px 9px;">IPAP <strong>10–14</strong> mínimo eficaz. Priorizar disnea y confort.</td>
+                      <td style="padding:7px 9px;">FR 10–12 · Rise 2 · Ti 1,0 s</td>
+                      <td style="padding:7px 9px;">FiO₂ → SpO₂ ≥90%</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:7px 9px;"><strong>Traslado en ambulancia · paciente ya con VMNI</strong></td>
+                      <td style="padding:7px 9px;">Mantener modo previo</td>
+                      <td style="padding:7px 9px;">No bajar EPAP</td>
+                      <td style="padding:7px 9px;">Mantener IPAP. Tener parámetros de IOT preparados (etomidato + rocuronio + tubo + capnografía).</td>
+                      <td style="padding:7px 9px;">Mantener FR backup</td>
+                      <td style="padding:7px 9px;">Mantener FiO₂; revisar reservas O₂ del transporte (≥30 min de margen).</td>
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px;font-size:.8rem;line-height:1.55;">
+                  <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px 12px;">
+                    <strong style="color:#86efac;">Ajustes finos V60</strong><br>
+                    <strong>Rise time</strong> 1 (rápido) en disnea/EPOC; 3 en confort/obesidad.<br>
+                    <strong>Ti<sub>max</sub></strong> 0,8–1,0 s en obstructivos para evitar atrapamiento.<br>
+                    <strong>Trigger inspiratorio</strong> auto (default); en EPOC verificar autotriggering.<br>
+                    <strong>Modo AVAPS</strong> si necesitas Vt objetivo (8–10 mL/kg) en SHO/neuromuscular.
+                  </div>
+                  <div style="background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);border-radius:8px;padding:10px 12px;">
+                    <strong style="color:#fde68a;">Alarmas mínimas a configurar</strong><br>
+                    Vt<sub>esp</sub> bajo (&lt;4 mL/kg PBW) · alta (&gt;10 mL/kg).<br>
+                    FR alta (&gt;30) · apnea (15–20 s).<br>
+                    Fuga &gt;40 L/min (reajustar mascarilla).<br>
+                    Desconexión (caída brusca de Vt y presión).
+                  </div>
+                  <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;">
+                    <strong style="color:#fca5a5;">Criterios de fracaso de VMNI (→ IOT)</strong><br>
+                    No mejora del pH/PaCO₂ en 1–2 h en EPOC.<br>
+                    SpO₂ &lt;90% con FiO₂ &gt;60% pese a EPAP 10.<br>
+                    Bajada de Glasgow, agitación, intolerancia.<br>
+                    Vt espontáneo &gt;9,5 mL/kg PBW persistente (P-SILI).
+                  </div>
+                </div>
+
+                <p style="margin:10px 0 0;font-size:.74rem;line-height:1.5;opacity:.72;">
+                  <strong>Material formativo.</strong> Rangos orientativos basados en consenso público (ERS/ATS 2017, BTS/ICS 2016, SEPAR-SEMICYUC, manual del operador V60). No sustituye el juicio clínico ni los protocolos del HGU Santa Lucía. Verificar siempre con la guía local antes de aplicar.
+                </p>
+              </div>
             </div>
 
             <!-- IOT / ISR -->
