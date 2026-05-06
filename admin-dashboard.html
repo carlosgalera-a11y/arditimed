@@ -181,6 +181,85 @@ td.num{text-align:right;font-family:var(--mono)}
     </div>
   </div>
 
+  <!-- Sección directorio de usuarios registrados -->
+  <div class="section" id="userDirectorySection" style="border-left:4px solid var(--cyan)">
+    <h3>📋 Directorio de usuarios registrados <span class="meta">Firestore · users</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">
+      Listado completo de cuentas registradas con fecha de alta, último acceso y dominio. Permite identificar usuarios que se registraron antes de una versión concreta.
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <input id="userDirSearch" type="text" placeholder="🔍 Filtrar por email, nombre o UID…" style="flex:1;min-width:200px;padding:6px 10px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:7px;font-family:var(--font);font-size:.82rem">
+      <select id="userDirVersionFilter" style="padding:6px 10px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:7px;font-family:var(--font);font-size:.82rem">
+        <option value="">Todos los usuarios</option>
+        <option value="pre-v157">Registrados antes de v157 (2026-05-05)</option>
+        <option value="pre-v149">Registrados antes de v149 (2026-04-29)</option>
+        <option value="pre-v129">Registrados antes de v129 (2026-04-24)</option>
+      </select>
+    </div>
+    <div id="userDirTable"><div class="loading"><span class="spin"></span>Cargando directorio…</div></div>
+    <div id="userDirCount" style="font-size:.78rem;color:var(--t3);margin-top:8px"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       Auditoría de costes IA
+       — Routing DeepSeek vs OpenRouter (oportunidad ahorro)
+       — Cuota Google AI Studio (Gemini gratuito)
+       — SLA latencia por proveedor (alerta visión Qwen)
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="costAuditSection" style="border-left:4px solid #f59e0b">
+    <h3>💰 Auditoría de costes IA <span class="meta">routing · cuotas · SLA</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:14px">
+      Análisis ejecutivo de costes y SLA por proveedor IA. Identifica oportunidades de ahorro (routing
+      óptimo educational vs clinical), cuotas free-tier en riesgo de saturación, y proveedores con
+      latencia por encima del umbral.
+    </div>
+
+    <div class="kpis" id="costAuditKpis" style="margin-bottom:14px">
+      <div class="kpi kpi-c"><div class="lbl">Coste mes (€)</div><div class="val" id="caCostMonth">—</div><div class="sub" id="caCostMonthSub">—</div></div>
+      <div class="kpi kpi-b"><div class="lbl">Ahorro potencial (€)</div><div class="val" id="caSavingPotential">—</div><div class="sub">re-routing educational → OpenRouter free</div></div>
+      <div class="kpi kpi-d"><div class="lbl">Cuota Gemini · mes</div><div class="val" id="caGeminiQuota">—</div><div class="sub" id="caGeminiQuotaSub">free tier 1500/día (45k/mes)</div></div>
+      <div class="kpi kpi-f"><div class="lbl">P95 visión (s)</div><div class="val" id="caVisionP95">—</div><div class="sub" id="caVisionP95Sub">Qwen visión · OpenRouter</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px">
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.82rem;color:var(--tx);font-weight:700;margin-bottom:6px">🔀 Routing DeepSeek vs OpenRouter</div>
+        <div style="font-size:.74rem;color:var(--t3);margin-bottom:10px">Distribución llamadas y coste por proveedor en el último mes. Si DeepSeek directo concentra >80% del coste y existen modelos free-tier equivalentes en OpenRouter, hay oportunidad de ahorro.</div>
+        <div id="caRoutingTable"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+        <div id="caRoutingRecommendation" style="font-size:.78rem;color:var(--t2);margin-top:10px;padding:8px 12px;background:rgba(245,158,11,.08);border-left:3px solid var(--amber);border-radius:6px"></div>
+      </div>
+
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.82rem;color:var(--tx);font-weight:700;margin-bottom:6px">📊 Cuota Google AI Studio · Gemini</div>
+        <div style="font-size:.74rem;color:var(--t3);margin-bottom:10px">Llamadas gratuitas a Gemini este mes vs límite free-tier (1500/día = ~45.000/mes para gemini-2.5-flash-lite). Al pasar 50 usuarios activos, aumentar prioridad de monitorización para evitar cortes.</div>
+        <div id="caQuotaBar" style="margin-bottom:8px"></div>
+        <div id="caQuotaDetail" style="font-size:.78rem;color:var(--t2)"></div>
+        <div style="font-size:.72rem;color:var(--t3);margin-top:10px">
+          Documentación cuotas: <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener" style="color:var(--cyan)">ai.google.dev/gemini-api/docs/rate-limits</a>
+        </div>
+      </div>
+
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.82rem;color:var(--tx);font-weight:700;margin-bottom:6px">⏱️ SLA latencia · alerta visión</div>
+        <div style="font-size:.74rem;color:var(--t3);margin-bottom:10px">P50/P95/P99 latencia por proveedor (último mes). Visión vía Qwen+OpenRouter es free pero suele dar P95 &gt; 30s. Al superar 200 llamadas/mes evaluar Google Cloud Vision API por SLA.</div>
+        <div id="caSlaTable"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+        <div id="caSlaRecommendation" style="font-size:.78rem;color:var(--t2);margin-top:10px;padding:8px 12px;background:rgba(239,68,68,.08);border-left:3px solid var(--red);border-radius:6px;display:none"></div>
+      </div>
+
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="font-size:.82rem;color:var(--tx);font-weight:700;margin-bottom:6px">📈 Proyección coste mensual</div>
+        <div style="font-size:.74rem;color:var(--t3);margin-bottom:10px">Coste mensualizado actual + proyección a 30/60/90 días manteniendo el ritmo del último mes. Útil para anticipar recargas de DeepSeek y comunicar burn-rate a dirección médica.</div>
+        <div id="caForecastTable"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;font-size:.74rem;color:var(--t3);padding:8px 12px;background:#0f1c38;border-radius:6px">
+      <strong style="color:var(--tx)">📋 Informe ejecutivo para dirección médica:</strong>
+      el botón "Exportar informe PDF del mes" (arriba) ya incluye estos KPIs en formato clínico-legible.
+      Próxima iteración: envío automático mensual por email (Cloud Function programada).
+    </div>
+  </div>
+
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px">
     <div class="range-tabs" style="margin:0">
       <button class="range-tab active" data-days="1">Hoy</button>
@@ -1031,6 +1110,8 @@ async function loadDashboard(days){
   // PR #128: alerta saldo API + audiencia
   loadApiBalances();
   loadAudienceStats();
+  loadUserDirectory();
+  loadCostAudit();
 }
 
 // Segmented control del filtro GA4 (Todos / area2 / github)
@@ -1583,8 +1664,40 @@ async function exportMonthlyPdf(){
       '</div>';
 
     document.body.appendChild(container);
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
+    container.style.position = 'fixed';
+    container.style.left = '0';
+    container.style.top = '0';
+    container.style.zIndex = '-1';
+    container.style.opacity = '0.01';
+    container.style.width = '760px';
+
+    // Incluir directorio de usuarios registrados en el PDF
+    try {
+      const userSnap = await db.collection('users').orderBy('lastSeen','desc').limit(500).get();
+      if (userSnap.size > 0) {
+        const userRows = [];
+        userSnap.forEach(function(d){
+          const u = d.data();
+          const created = u.createdAt && u.createdAt.toDate ? u.createdAt.toDate().toLocaleDateString('es-ES') : '—';
+          const lastSeen = u.lastSeen && u.lastSeen.toDate ? u.lastSeen.toDate().toLocaleDateString('es-ES') : '—';
+          userRows.push({
+            uid: d.id.slice(0,8)+'…',
+            email: u.email || '—',
+            name: u.displayName || '—',
+            role: u.role || u.rol || '—',
+            created: created,
+            lastSeen: lastSeen
+          });
+        });
+        container.innerHTML += '<h2 style="font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:4px;margin:18px 0 10px;page-break-before:always">Directorio de usuarios registrados</h2>'
+          + '<div style="font-size:11px;color:#64748b;margin-bottom:8px">Total: ' + userSnap.size + ' cuentas</div>'
+          + '<table style="width:100%;border-collapse:collapse;font-size:11px">'
+          + '<thead><tr style="background:#f1f5f9"><th style="padding:4px 6px;text-align:left">UID</th><th style="padding:4px 6px;text-align:left">Email</th><th style="padding:4px 6px;text-align:left">Nombre</th><th style="padding:4px 6px;text-align:left">Rol</th><th style="padding:4px 6px;text-align:left">Registro</th><th style="padding:4px 6px;text-align:left">Último acceso</th></tr></thead><tbody>'
+          + userRows.map(function(r){
+              return '<tr><td style="padding:3px 6px;border-bottom:1px solid #f1f5f9"><code style="font-size:10px">'+r.uid+'</code></td><td style="padding:3px 6px;border-bottom:1px solid #f1f5f9">'+r.email+'</td><td style="padding:3px 6px;border-bottom:1px solid #f1f5f9">'+r.name+'</td><td style="padding:3px 6px;border-bottom:1px solid #f1f5f9">'+r.role+'</td><td style="padding:3px 6px;border-bottom:1px solid #f1f5f9">'+r.created+'</td><td style="padding:3px 6px;border-bottom:1px solid #f1f5f9">'+r.lastSeen+'</td></tr>';
+          }).join('') + '</tbody></table>';
+      }
+    } catch(e) { /* best-effort: si falla el listado de usuarios, el PDF sale igualmente con las métricas */ }
 
     const filename = 'cartagenaeste-informe-' + now.toISOString().substring(0,7) + '.pdf';
     status.textContent = 'renderizando PDF…';
@@ -1593,7 +1706,7 @@ async function exportMonthlyPdf(){
       margin: [12, 10, 12, 10],
       filename: filename,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true },
+      html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'] }
     }).from(container).save();
@@ -2652,6 +2765,311 @@ async function loadAudienceStats(){
       });
     }
   })();
+}
+
+// ══════════════════════════════════════════════════════════════
+// Directorio de usuarios registrados
+// ══════════════════════════════════════════════════════════════
+var _userDirCache = [];
+var VERSION_DATES = {
+  'pre-v129': new Date('2026-04-24T00:00:00Z'),
+  'pre-v149': new Date('2026-04-29T00:00:00Z'),
+  'pre-v157': new Date('2026-05-05T00:00:00Z'),
+};
+
+async function loadUserDirectory(){
+  var tableEl = document.getElementById('userDirTable');
+  var countEl = document.getElementById('userDirCount');
+  if(!tableEl) return;
+  try {
+    var db = firebase.firestore();
+    var snap = await db.collection('users').limit(5000).get();
+    _userDirCache = [];
+    snap.forEach(function(doc){
+      var d = doc.data();
+      _userDirCache.push({
+        uid: doc.id,
+        email: d.email || '',
+        displayName: d.displayName || '',
+        role: (d.role || d.rol || 'sin_rol').toLowerCase(),
+        emailDomain: d.emailDomain || (d.email ? d.email.split('@')[1] : ''),
+        createdAt: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null,
+        lastSeen: d.lastSeen && d.lastSeen.toDate ? d.lastSeen.toDate() : null
+      });
+    });
+    _userDirCache.sort(function(a,b){
+      var ta = a.lastSeen ? a.lastSeen.getTime() : 0;
+      var tb = b.lastSeen ? b.lastSeen.getTime() : 0;
+      return tb - ta;
+    });
+    renderUserDirectory();
+  } catch(e){
+    tableEl.innerHTML = '<div class="small" style="color:#f87171">Error: '+(e.message||e)+'</div>';
+  }
+}
+
+function renderUserDirectory(){
+  var tableEl = document.getElementById('userDirTable');
+  var countEl = document.getElementById('userDirCount');
+  var searchVal = (document.getElementById('userDirSearch').value || '').toLowerCase().trim();
+  var versionFilter = document.getElementById('userDirVersionFilter').value;
+  var cutoff = versionFilter ? VERSION_DATES[versionFilter] : null;
+
+  var filtered = _userDirCache.filter(function(u){
+    if(searchVal){
+      var haystack = (u.email + ' ' + u.displayName + ' ' + u.uid).toLowerCase();
+      if(haystack.indexOf(searchVal) === -1) return false;
+    }
+    if(cutoff){
+      if(!u.createdAt) return true;
+      if(u.createdAt >= cutoff) return false;
+    }
+    return true;
+  });
+
+  countEl.textContent = 'Mostrando ' + filtered.length + ' de ' + _userDirCache.length + ' usuarios';
+
+  if(!filtered.length){
+    tableEl.innerHTML = '<div class="empty">Sin usuarios que coincidan con el filtro.</div>';
+    return;
+  }
+
+  var shown = filtered.slice(0, 200);
+  tableEl.innerHTML =
+    '<div style="overflow-x:auto"><table><thead><tr>'
+    + '<th>Usuario</th><th>Email</th><th>Rol</th><th>Registrado</th><th>Último acceso</th><th>Dominio</th>'
+    + '</tr></thead><tbody>'
+    + shown.map(function(u){
+        var nameCell = u.displayName
+          ? '<strong>' + u.displayName + '</strong><br><code style="font-family:var(--mono);font-size:.68rem;color:var(--t3)">' + u.uid.slice(0,10) + '…</code>'
+          : '<code style="font-family:var(--mono);font-size:.78rem;color:var(--t2)">' + u.uid.slice(0,10) + '…</code>';
+        var emailCell = u.email
+          ? '<span style="font-family:var(--mono);font-size:.76rem">' + u.email + '</span>'
+          : '<span class="small" style="color:var(--t3)">—</span>';
+        var roleTag = u.role === 'admin' ? '<span class="tag tag-clinical">admin</span>'
+          : u.role === 'profesional' || u.role === 'professional' ? '<span class="tag tag-ok">profesional</span>'
+          : '<span class="tag" style="background:rgba(255,255,255,.06);color:var(--t3)">' + u.role + '</span>';
+        var createdCell = u.createdAt ? u.createdAt.toLocaleDateString('es-ES') : '<span class="small" style="color:var(--t3)">pre-v157</span>';
+        var lastCell = u.lastSeen ? u.lastSeen.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}) + ' ' + u.lastSeen.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) : '—';
+        var domainCell = u.emailDomain ? '<code style="font-family:var(--mono);font-size:.72rem">'+u.emailDomain+'</code>' : '—';
+        return '<tr><td>'+nameCell+'</td><td>'+emailCell+'</td><td>'+roleTag+'</td><td class="small">'+createdCell+'</td><td class="small">'+lastCell+'</td><td class="small">'+domainCell+'</td></tr>';
+    }).join('')
+    + '</tbody></table></div>'
+    + (filtered.length > 200 ? '<div class="small" style="color:var(--t3);margin-top:6px">Mostrando los primeros 200. Usa el filtro para acotar.</div>' : '');
+}
+
+// Bind search & filter
+document.addEventListener('DOMContentLoaded', function(){
+  var searchEl = document.getElementById('userDirSearch');
+  var filterEl = document.getElementById('userDirVersionFilter');
+  if(searchEl) searchEl.addEventListener('input', function(){ renderUserDirectory(); });
+  if(filterEl) filterEl.addEventListener('change', function(){ renderUserDirectory(); });
+});
+
+// ══════════════════════════════════════════════════════════════
+// Auditoría de costes IA · routing, cuotas, SLA
+// ══════════════════════════════════════════════════════════════
+// Quota free-tier Gemini (gemini-2.5-flash-lite): 1500 requests/día = ~45000/mes
+var GEMINI_FREE_TIER_MONTHLY = 45000;
+var VISION_LATENCY_ALERT_MS = 30000; // P95 > 30s = alerta amarilla
+var VISION_VOLUME_ALERT_MONTH = 200; // si > 200 llamadas/mes evaluar Google Vision
+
+async function loadCostAudit(){
+  try {
+    var db = firebase.firestore();
+    // Tomamos los últimos 30 snapshots diarios (~1 mes natural).
+    var snap = await db.collection('metrics_snapshots')
+      .where('kind','==','daily')
+      .orderBy('day','desc')
+      .limit(30)
+      .get();
+    var docs = [];
+    snap.forEach(function(d){ docs.push(d.data()); });
+
+    if(!docs.length){
+      document.getElementById('caRoutingTable').innerHTML = '<div class="empty">Sin snapshots todavía.</div>';
+      document.getElementById('caSlaTable').innerHTML = '<div class="empty">Sin snapshots todavía.</div>';
+      document.getElementById('caForecastTable').innerHTML = '<div class="empty">Sin snapshots todavía.</div>';
+      return;
+    }
+
+    // ── Agregado por proveedor ──────────────────────────────────
+    var byProvider = {};
+    docs.forEach(function(s){
+      var bp = s.byProvider || {};
+      Object.keys(bp).forEach(function(name){
+        var p = bp[name];
+        if(!byProvider[name]) byProvider[name] = { count:0, cache:0, errorSum:0, p50Sum:0, p95Max:0, p99Max:0, cost:0 };
+        byProvider[name].count += p.count || 0;
+        byProvider[name].cache += p.cacheHits || 0;
+        byProvider[name].errorSum += Math.round((p.errorRate||0) * (p.count||0));
+        byProvider[name].p50Sum += (p.p50Ms||0) * (p.count||0);
+        byProvider[name].p95Max = Math.max(byProvider[name].p95Max, p.p95Ms||0);
+        byProvider[name].p99Max = Math.max(byProvider[name].p99Max, p.p99Ms||0);
+        byProvider[name].cost += p.costEur || 0;
+      });
+    });
+
+    var totalCalls = Object.values(byProvider).reduce(function(a,p){return a+p.count;},0);
+    var totalCost = Object.values(byProvider).reduce(function(a,p){return a+p.cost;},0);
+
+    // KPIs cabecera
+    document.getElementById('caCostMonth').textContent = '€'+totalCost.toFixed(4);
+    document.getElementById('caCostMonthSub').textContent = fmtNum(totalCalls)+' llamadas · '+docs.length+' días';
+
+    // ── Routing DeepSeek vs OpenRouter ──────────────────────────
+    var deepseekCost = 0, openrouterCost = 0, geminiCost = 0;
+    var deepseekCalls = 0, openrouterCalls = 0;
+    Object.keys(byProvider).forEach(function(name){
+      var n = name.toLowerCase();
+      if(n.indexOf('deepseek') === 0) { deepseekCost += byProvider[name].cost; deepseekCalls += byProvider[name].count; }
+      else if(n.indexOf('openrouter') === 0) { openrouterCost += byProvider[name].cost; openrouterCalls += byProvider[name].count; }
+      else if(n.indexOf('gemini') === 0 || n.indexOf('google') === 0) { geminiCost += byProvider[name].cost; }
+    });
+
+    // Sub-buckets dentro de OpenRouter para identificar lo que ya es free.
+    // Los providers free tienen cost == 0 incluso con count > 0.
+    var rRows = Object.keys(byProvider).map(function(name){
+      var p = byProvider[name];
+      return {
+        name: name,
+        count: p.count,
+        pctCalls: totalCalls > 0 ? (p.count/totalCalls)*100 : 0,
+        cost: p.cost,
+        pctCost: totalCost > 0 ? (p.cost/totalCost)*100 : 0,
+        avgPerCall: p.count > 0 ? p.cost/p.count : 0,
+        isFree: p.cost === 0 && p.count > 0
+      };
+    }).sort(function(a,b){ return b.cost - a.cost; });
+
+    var routingHtml = '<table style="width:100%;font-size:.78rem"><thead><tr><th>Proveedor</th><th class="num">Llamadas</th><th class="num">% del total</th><th class="num">Coste (€)</th><th class="num">€/llamada</th></tr></thead><tbody>';
+    rRows.forEach(function(r){
+      var freeTag = r.isFree ? ' <span class="tag tag-ok" style="font-size:.65rem">free</span>' : '';
+      routingHtml += '<tr>'
+        + '<td><code style="font-family:var(--mono);font-size:.74rem">'+r.name+'</code>'+freeTag+'</td>'
+        + '<td class="num">'+fmtNum(r.count)+'</td>'
+        + '<td class="num">'+r.pctCalls.toFixed(1)+'%</td>'
+        + '<td class="num"><strong>€'+r.cost.toFixed(4)+'</strong></td>'
+        + '<td class="num">€'+r.avgPerCall.toFixed(6)+'</td>'
+        + '</tr>';
+    });
+    routingHtml += '</tbody></table>';
+    document.getElementById('caRoutingTable').innerHTML = routingHtml;
+
+    // Recomendación routing — solo aparece si DeepSeek directo > 80% del coste
+    var dsCostPct = totalCost > 0 ? (deepseekCost/totalCost)*100 : 0;
+    var savingPotential = 0;
+    var recoText = '';
+    if(dsCostPct > 80 && deepseekCost > 0.10) {
+      // Estimación: si las llamadas educational fueran a OpenRouter (Gemini Flash-Lite)
+      // que es free hasta 1500/día, ahorraríamos ~80% del coste DeepSeek mensual.
+      savingPotential = deepseekCost * 0.8;
+      recoText = '⚠️ <strong>Oportunidad:</strong> '+dsCostPct.toFixed(0)+'% del coste viene de DeepSeek directo. '
+        + 'Re-rutar peticiones <code>educational</code> a OpenRouter (Gemini Flash-Lite, free) '
+        + 'puede ahorrar ~€'+savingPotential.toFixed(4)+'/mes ('+(savingPotential*12).toFixed(2)+'€/año). '
+        + 'Editar <code>functions/src/routing.ts</code> para invertir el orden de la cadena educational.';
+    } else if (totalCost === 0) {
+      recoText = '✅ Coste cero este periodo (cadena 100% en free-tier o sin llamadas).';
+    } else {
+      recoText = '✅ Routing equilibrado: DeepSeek '+dsCostPct.toFixed(0)+'% del coste. Sin acción urgente.';
+    }
+    document.getElementById('caRoutingRecommendation').innerHTML = recoText;
+    document.getElementById('caSavingPotential').textContent = '€'+savingPotential.toFixed(4);
+
+    // ── Cuota Gemini ────────────────────────────────────────────
+    var geminiCalls = 0;
+    Object.keys(byProvider).forEach(function(name){
+      var n = name.toLowerCase();
+      if(n.indexOf('gemini') >= 0 || (n.indexOf('google') === 0)) {
+        geminiCalls += byProvider[name].count;
+      }
+    });
+    var quotaPct = (geminiCalls / GEMINI_FREE_TIER_MONTHLY) * 100;
+    var quotaColor = quotaPct < 50 ? '#22c55e' : quotaPct < 80 ? '#f59e0b' : '#ef4444';
+    document.getElementById('caGeminiQuota').textContent = fmtNum(geminiCalls);
+    document.getElementById('caGeminiQuotaSub').textContent = quotaPct.toFixed(1)+'% del free tier ('+fmtNum(GEMINI_FREE_TIER_MONTHLY)+'/mes)';
+    document.getElementById('caQuotaBar').innerHTML = '<div style="background:#1e293b;border-radius:6px;height:14px;overflow:hidden">'
+      + '<div style="background:'+quotaColor+';height:100%;width:'+Math.min(100,quotaPct).toFixed(1)+'%;transition:width .4s"></div>'
+      + '</div>';
+    var quotaWarn = '';
+    if(quotaPct >= 80) {
+      quotaWarn = '<div style="color:#fca5a5;margin-top:8px"><strong>⚠️ Riesgo de saturación.</strong> Activar billing en Google AI Studio o reducir uso de Gemini en routing.</div>';
+    } else if(quotaPct >= 50) {
+      quotaWarn = '<div style="color:#fde68a;margin-top:8px"><strong>⚡ Aviso:</strong> consumo elevado. Monitorizar al pasar 50 usuarios activos.</div>';
+    } else {
+      quotaWarn = '<div style="color:#86efac;margin-top:8px">✅ Holgura amplia. Sin acción.</div>';
+    }
+    document.getElementById('caQuotaDetail').innerHTML = '<strong>'+fmtNum(geminiCalls)+'</strong> llamadas Gemini · '+quotaPct.toFixed(1)+'% del cupo mensual estimado'+quotaWarn;
+
+    // ── SLA latencia ────────────────────────────────────────────
+    var slaHtml = '<table style="width:100%;font-size:.76rem"><thead><tr><th>Proveedor</th><th class="num">Llamadas</th><th class="num">P50</th><th class="num">P95</th><th class="num">P99</th><th>Veredicto</th></tr></thead><tbody>';
+    var visionP95 = 0;
+    var visionCount = 0;
+    rRows.forEach(function(r){
+      var p = byProvider[r.name];
+      var p50 = p.count > 0 ? Math.round(p.p50Sum/p.count) : 0;
+      var verdict;
+      if(p.p95Max > 30000) verdict = '<span class="tag tag-err">>30s lento</span>';
+      else if(p.p95Max > 10000) verdict = '<span class="tag" style="background:rgba(245,158,11,.18);color:#fde68a">10-30s</span>';
+      else verdict = '<span class="tag tag-ok">OK</span>';
+      var nameLo = r.name.toLowerCase();
+      if(nameLo.indexOf('qwen') >= 0 || nameLo.indexOf('vl') >= 0) {
+        visionP95 = Math.max(visionP95, p.p95Max);
+        visionCount += p.count;
+      }
+      slaHtml += '<tr>'
+        + '<td><code style="font-family:var(--mono);font-size:.72rem">'+r.name+'</code></td>'
+        + '<td class="num">'+fmtNum(r.count)+'</td>'
+        + '<td class="num">'+fmtNum(p50)+'ms</td>'
+        + '<td class="num">'+fmtNum(p.p95Max)+'ms</td>'
+        + '<td class="num">'+fmtNum(p.p99Max)+'ms</td>'
+        + '<td>'+verdict+'</td>'
+        + '</tr>';
+    });
+    slaHtml += '</tbody></table>';
+    document.getElementById('caSlaTable').innerHTML = slaHtml;
+
+    // KPI visión P95
+    document.getElementById('caVisionP95').textContent = visionP95 > 0 ? (visionP95/1000).toFixed(1) : '—';
+    document.getElementById('caVisionP95Sub').textContent = visionCount > 0 ? fmtNum(visionCount)+' llamadas mes' : 'sin datos';
+
+    // Recomendación visión
+    var slaReco = document.getElementById('caSlaRecommendation');
+    if(visionP95 > VISION_LATENCY_ALERT_MS && visionCount > VISION_VOLUME_ALERT_MONTH) {
+      slaReco.style.display = 'block';
+      slaReco.innerHTML = '⚠️ <strong>Visión Qwen via OpenRouter:</strong> P95='+(visionP95/1000).toFixed(1)+'s con '+visionCount+' llamadas/mes. '
+        + 'Superados los umbrales (>30s P95, >'+VISION_VOLUME_ALERT_MONTH+'/mes). '
+        + 'Evaluar migrar a Google Cloud Vision API (~$1.50 por 1000 imágenes, P95 <2s) para garantizar SLA en producción.';
+    } else if(visionP95 > VISION_LATENCY_ALERT_MS) {
+      slaReco.style.display = 'block';
+      slaReco.innerHTML = '⚡ <strong>Visión:</strong> latencia alta (P95='+(visionP95/1000).toFixed(1)+'s) pero volumen aún bajo ('+visionCount+'/mes). Monitorizar al pasar '+VISION_VOLUME_ALERT_MONTH+' llamadas/mes.';
+    } else {
+      slaReco.style.display = 'none';
+    }
+
+    // ── Forecast 30/60/90 días ──────────────────────────────────
+    var dailyAvg = totalCost / docs.length;
+    var dailyAvgCalls = totalCalls / docs.length;
+    var fHtml = '<table style="width:100%;font-size:.76rem"><thead><tr><th>Horizonte</th><th class="num">Coste estimado</th><th class="num">Llamadas estimadas</th></tr></thead><tbody>';
+    [30, 60, 90].forEach(function(d){
+      fHtml += '<tr>'
+        + '<td><strong>'+d+' días</strong></td>'
+        + '<td class="num"><strong>€'+(dailyAvg*d).toFixed(4)+'</strong></td>'
+        + '<td class="num">'+fmtNum(Math.round(dailyAvgCalls*d))+'</td>'
+        + '</tr>';
+    });
+    fHtml += '<tr style="border-top:2px solid var(--border2)"><td><em>1 año</em></td><td class="num">€'+(dailyAvg*365).toFixed(2)+'</td><td class="num">'+fmtNum(Math.round(dailyAvgCalls*365))+'</td></tr>';
+    fHtml += '</tbody></table>';
+    document.getElementById('caForecastTable').innerHTML = fHtml;
+
+  } catch(e) {
+    console.error('loadCostAudit error', e);
+    var ids = ['caRoutingTable','caSlaTable','caForecastTable'];
+    ids.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.innerHTML = '<div class="small" style="color:#f87171">Error: '+(e.message||e)+'</div>';
+    });
+  }
 }
 </script>
 </body>

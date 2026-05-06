@@ -88,21 +88,28 @@ service cloud.firestore {
     }
 
     // ══ Informes IA — cada usuario CRUD de los suyos ═══════════════
+    // El admin puede LEER (no escribir) para conteos/auditoría en el panel.
     match /informes_ia/{docId} {
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
-      allow read, delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
       allow update: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
     // ══ Per-user docs donde el docId == uid ════════════════════════
+    // Admin tiene LEctura para auditoría/conteos del panel; escritura sigue
+    // siendo exclusiva del dueño (privacidad por defecto).
     match /mis_plantillas/{docId} {
-      allow read, write: if signedIn() && docId == request.auth.uid;
+      allow read: if signedIn() && (docId == request.auth.uid || isAdmin());
+      allow write: if signedIn() && docId == request.auth.uid;
     }
     match /mis_notebooks/{docId} {
-      allow read, write: if signedIn() && docId == request.auth.uid;
+      allow read: if signedIn() && (docId == request.auth.uid || isAdmin());
+      allow write: if signedIn() && docId == request.auth.uid;
     }
     match /megacuaderno_backups/{docId} {
-      allow read, write: if signedIn() && docId == request.auth.uid;
+      allow read: if signedIn() && (docId == request.auth.uid || isAdmin());
+      allow write: if signedIn() && docId == request.auth.uid;
     }
     // Boletín diario agregado por el cron `megaCuadernoDailyDigest`.
     // Lectura abierta a profesionales autenticados (lo muestra Hub Pro).
@@ -115,15 +122,20 @@ service cloud.firestore {
     }
 
     // ══ Scan uploads ═══════════════════════════════════════════════
+    // Admin tiene LECTURA para conteos/auditoría panel; escritura/borrado
+    // siguen siendo exclusivas del dueño.
     match /scan_uploads/{docId} {
       allow create: if signedIn();
-      allow read, update, delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
     // ══ Guardia pacientes (CRUD propio) ════════════════════════════
+    // Admin tiene LECTURA para conteos/auditoría panel.
     match /guardia_pacientes/{docId} {
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
-      allow read, update, delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
     // ══ Triajes (QR) ═══════════════════════════════════════════════
