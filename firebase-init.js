@@ -37,15 +37,22 @@
       firebase.auth().onAuthStateChanged(function(user){
         if(!user) return;
         try {
+          var ref = firebase.firestore().collection('users').doc(user.uid);
           var update = {
             email: user.email || null,
             displayName: user.displayName || null,
             emailDomain: (user.email || '').split('@')[1] || null,
             lastSeen: firebase.firestore.FieldValue.serverTimestamp()
           };
-          firebase.firestore().collection('users').doc(user.uid)
-            .set(update, { merge: true })
-            .catch(function(){ /* best-effort, rules pueden bloquear en ciertos estados */ });
+          ref.get().then(function(snap){
+            if (!snap.exists || !snap.data().createdAt) {
+              update.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            }
+            ref.set(update, { merge: true })
+              .catch(function(){});
+          }).catch(function(){
+            ref.set(update, { merge: true }).catch(function(){});
+          });
         } catch(e) {}
       });
     }
