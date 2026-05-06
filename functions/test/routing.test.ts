@@ -29,17 +29,19 @@ describe('buildProviderChain — modo mínimo (solo DeepSeek + OpenRouter)', () 
     expect(chain[2]!.model).toBe('mistralai/mistral-small-3.2-24b-instruct');
   });
 
-  it('educational → DeepSeek directo → OpenRouter deepseek-v3 → OpenRouter gemini-flash-lite', () => {
+  it('educational sin geminiKey → OpenRouter gemini-flash-lite primario → DeepSeek directo → OpenRouter deepseek-v3', () => {
+    // Sin geminiKey, OpenRouter Gemini Flash-Lite es la primera opción (más
+    // rápida/barata que DeepSeek). DeepSeek queda como fallback profundo.
     const chain = buildProviderChain({
       type: 'educational',
       userPrompt: 'u',
       systemPrompt: 's',
       secrets: minimalSecrets,
     });
-    expect(chain.map((c) => c.name)).toEqual(['deepseek', 'openrouter', 'openrouter']);
-    expect(chain[0]!.model).toBe('deepseek-chat');
-    expect(chain[1]!.model).toBe('deepseek/deepseek-chat-v3-0324');
-    expect(chain[2]!.model).toBe('google/gemini-2.5-flash-lite');
+    expect(chain.map((c) => c.name)).toEqual(['openrouter', 'deepseek', 'openrouter']);
+    expect(chain[0]!.model).toBe('google/gemini-2.5-flash-lite');
+    expect(chain[1]!.model).toBe('deepseek-chat');
+    expect(chain[2]!.model).toBe('deepseek/deepseek-chat-v3-0324');
   });
 
   it('vision → OpenRouter Qwen2.5-VL-72B primario → OpenRouter Gemini fallback', () => {
@@ -90,7 +92,10 @@ describe('buildProviderChain — direct keys preferidas', () => {
     expect(chain[3]!.model).toBe('google/gemini-2.5-flash');
   });
 
-  it('modelOverride se aplica al provider directo cuando existe', () => {
+  it('modelOverride deepseek-reasoner reordena para que DeepSeek sea primario', () => {
+    // Si el frontend pide explícitamente deepseek-* via modelOverride, el
+    // primario debe ser DeepSeek directo (no Gemini Flash-Lite). El override
+    // sigue prevaleciendo sobre la nueva política por defecto.
     const chain = buildProviderChain({
       type: 'educational',
       userPrompt: 'u',
@@ -98,8 +103,28 @@ describe('buildProviderChain — direct keys preferidas', () => {
       modelOverride: 'deepseek-reasoner',
       secrets: minimalSecrets,
     });
-    expect(chain[0]!.name).toBe('deepseek');
-    expect(chain[0]!.model).toBe('deepseek-reasoner');
+    // Sin geminiKey: openrouter gemini → deepseek directo (con modelOverride
+    // aplicado) → openrouter deepseek-v3.
+    const deepseekIdx = chain.findIndex((c) => c.name === 'deepseek');
+    expect(deepseekIdx).toBeGreaterThanOrEqual(0);
+    expect(chain[deepseekIdx]!.model).toBe('deepseek-reasoner');
+  });
+
+  it('educational con geminiKey → Gemini directo primario (EU residency, low latency)', () => {
+    const chain = buildProviderChain({
+      type: 'educational',
+      userPrompt: 'u',
+      systemPrompt: 's',
+      secrets: fullSecrets,
+    });
+    expect(chain[0]!.name).toBe('gemini');
+    expect(chain[0]!.model).toBe('gemini-2.5-flash-lite');
+    expect(chain[1]!.name).toBe('openrouter');
+    expect(chain[1]!.model).toBe('google/gemini-2.5-flash-lite');
+    expect(chain[2]!.name).toBe('deepseek');
+    expect(chain[2]!.model).toBe('deepseek-chat');
+    expect(chain[3]!.name).toBe('openrouter');
+    expect(chain[3]!.model).toBe('deepseek/deepseek-chat-v3-0324');
   });
 });
 
