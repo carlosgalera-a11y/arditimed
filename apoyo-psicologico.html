@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="/console-guard.js"></script>
+  <meta charset="UTF-8">
+  <meta name="author" content="Carlos Galera Román, MFyC">
+  <meta name="medical-organization" content="H.G.U. Santa Lucía · Área II · Servicio Murciano de Salud">
+  <meta name="compliance" content="RGPD · EU AI Act 2024/1689 · LPI Art. 51">
+  <meta name="last-reviewed" content="2026-05-01">
+  <meta name="generator" content="Cartagenaeste PWA">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apoyo psicológico — Cartagenaeste · Área II Cartagena</title>
+  <meta name="description" content="Recursos de atención psicológica y salud mental en Cartagena: teléfonos de crisis (024, Esperanza, Cruz Roja, 112), Servicios Sociales, Salud Mental SMS, Espacio Salud para jóvenes.">
+  <link rel="canonical" href="https://carlosgalera-a11y.github.io/Cartagenaeste/apoyo-psicologico.html">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-96x96.png">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f4f6f8;--card:#fff;--border:#e2e8f0;--t1:#1a1f2e;--t2:#475569;--t3:#94a3b8;--purple:#5e35b1;--purple-light:#ede7f6;--purple-dark:#4527a0;--red:#c62828;--red-light:#ffebee;--green:#25d366;--shadow:0 2px 8px rgba(0,0,0,.06)}
+    @media(prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--t1:#e2e8f0;--t2:#cbd5e1;--t3:#94a3b8;--purple-light:rgba(94,53,177,.12);--red-light:rgba(198,40,40,.12)}}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55}
+    .nav{background:var(--card);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+    .nav a{color:var(--t2);text-decoration:none;font-size:.88rem;font-weight:500}
+    .nav a:hover{color:var(--purple)}
+    .nav h1{margin:0;font-size:1rem;font-weight:600;flex:1}
+    .wrap{max-width:880px;margin:0 auto;padding:18px}
+    .hero{background:linear-gradient(135deg,#5e35b1,#7e57c2);color:#fff;border-radius:14px;padding:22px 24px;margin-bottom:18px;box-shadow:0 6px 20px rgba(94,53,177,.3)}
+    .hero h2{margin:0;font-size:1.35rem;display:flex;align-items:center;gap:10px}
+    .hero p{margin:6px 0 0;font-size:.92rem;opacity:.92}
+    .disclaimer{background:#fef3c7;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:.84rem;color:#78350f}
+    @media(prefers-color-scheme:dark){.disclaimer{background:#451a03;border-color:#92400e;color:#fde68a}}
+    .section-title{font-weight:700;font-size:.92rem;color:var(--purple);margin:18px 0 10px;padding-left:4px}
+    .section-title.crisis{color:var(--red)}
+    .crisis-block{background:var(--red-light);border:2px solid #ef5350;border-radius:12px;padding:16px;margin-bottom:14px}
+    .crisis-block .crisis-title{font-weight:800;font-size:.95rem;color:var(--red);margin-bottom:10px}
+    .crisis-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:var(--card);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+    .crisis-row .name{font-weight:700;font-size:.88rem;color:var(--red)}
+    .crisis-row .desc{font-size:.74rem;color:var(--t2)}
+    .btn-tel{background:var(--red);color:#fff;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;white-space:nowrap;display:inline-block}
+    .btn-tel.purple{background:var(--purple)}
+    .btn-tel.green{background:var(--green)}
+    .btn-tel.orange{background:#e65100}
+    .btn-tel:hover{filter:brightness(.92)}
+    .res-card{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--purple-light);margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
+    .res-card .res-name{font-weight:700;font-size:.88rem;color:var(--purple-dark)}
+    .res-card .res-meta{font-size:.74rem;color:var(--t2);margin-top:2px}
+    .res-card .res-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+    .quick-guide{background:#e8eaf6;border:2px solid #7986cb;border-radius:12px;padding:16px;margin-top:14px}
+    .quick-guide .qg-title{font-weight:800;font-size:.92rem;color:#283593;margin-bottom:10px}
+    .quick-guide .qg-line{font-size:.86rem;color:var(--t1);line-height:1.7;margin-bottom:8px}
+    .quick-guide a{font-weight:700;text-decoration:none}
+    .quick-guide a.t-purple{color:var(--purple)}
+    .quick-guide a.t-red{color:var(--red)}
+    .quick-guide a.t-green{color:var(--green)}
+    @media(prefers-color-scheme:dark){.quick-guide{background:rgba(121,134,203,.1);color:var(--t1)}}
+    .footer-note{font-size:.78rem;color:var(--t3);margin-top:18px;text-align:center}
+    .footer-note a{color:var(--purple)}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="pacientes.html">← Pacientes</a>
+  <h1>🧠 Apoyo psicológico · salud mental</h1>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <h2>🧠 Atención Psicológica y Salud Mental</h2>
+    <p>Recursos públicos y gratuitos en Cartagena y Área II. Si no sabes por dónde empezar, los teléfonos de crisis están disponibles 24 horas, todos los días, sin coste.</p>
+  </section>
+
+  <div class="disclaimer">
+    <strong>📌 Material orientativo.</strong> Esta página recopila recursos públicos disponibles en Cartagena. <strong>No es un servicio de atención psicológica</strong> — sirve para que sepas a dónde acudir. Si estás en peligro inmediato, llama al <strong>112</strong> o al <strong>024</strong>.
+  </div>
+
+  <!-- ═══ TELÉFONOS DE CRISIS ═══ -->
+  <div class="crisis-block">
+    <div class="crisis-title">🆘 Teléfonos de ayuda inmediata (gratuitos, 24h)</div>
+
+    <div class="crisis-row">
+      <div>
+        <div class="name">024 — Línea de conducta suicida</div>
+        <div class="desc">Ministerio de Sanidad · Confidencial · 24/7</div>
+      </div>
+      <a href="tel:024" class="btn-tel">📞 024</a>
+    </div>
+
+    <div class="crisis-row">
+      <div>
+        <div class="name">Teléfono de la Esperanza</div>
+        <div class="desc">Apoyo emocional permanente</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <a href="tel:717003717" class="btn-tel">📞 717 003 717</a>
+        <a href="tel:968343400" class="btn-tel orange">📞 968 34 34 00 (Murcia)</a>
+      </div>
+    </div>
+
+    <div class="crisis-row">
+      <div>
+        <div class="name">Cruz Roja Te Escucha</div>
+        <div class="desc">Apoyo psicosocial y acompañamiento emocional</div>
+      </div>
+      <a href="tel:900107917" class="btn-tel">📞 900 107 917</a>
+    </div>
+
+    <div class="crisis-row">
+      <div>
+        <div class="name">112 — Emergencias</div>
+        <div class="desc">Urgencias sanitarias y psiquiátricas</div>
+      </div>
+      <a href="tel:112" class="btn-tel">📞 112</a>
+    </div>
+  </div>
+
+  <!-- ═══ SERVICIOS SOCIALES AYUNTAMIENTO ═══ -->
+  <div class="section-title">🏛️ Servicios Sociales — Ayuntamiento de Cartagena</div>
+  <div class="res-card">
+    <div>
+      <div class="res-name">Concejalía de Servicios Sociales (PASSS)</div>
+      <div class="res-meta">📍 C/ Sor Francisca Armendáriz s/n, Edificio La Milagrosa</div>
+      <div class="res-meta">Acompañamiento social, orientación familiar, atención psicológica</div>
+    </div>
+    <a href="tel:900923491" class="btn-tel purple">📞 900 923 491</a>
+  </div>
+
+  <!-- ═══ JÓVENES ═══ -->
+  <div class="section-title">👩‍🎓 Jóvenes (14–35 años)</div>
+  <div class="res-card">
+    <div>
+      <div class="res-name">Espacio Salud y Género — Concejalía de Juventud</div>
+      <div class="res-meta">Asesoramiento psicológico, terapia breve (2–3 sesiones), grupos de apoyo</div>
+      <div class="res-meta">Autoestima, habilidades sociales, diversidad, TCA</div>
+      <div class="res-meta" style="color:var(--t3);margin-top:4px">📧 espaciojoven@ayto-cartagena.es · L–V 09–14h, M–J 17–20h</div>
+    </div>
+    <div class="res-actions">
+      <a href="tel:968128862" class="btn-tel purple">📞 968 12 88 62</a>
+      <a href="https://wa.me/34661480373" target="_blank" rel="noopener" class="btn-tel green">💬 661 480 373</a>
+    </div>
+  </div>
+
+  <!-- ═══ SALUD MENTAL PÚBLICA — SMS ═══ -->
+  <div class="section-title">🏥 Salud Mental Pública — Servicio Murciano de Salud</div>
+  <div class="res-card">
+    <div>
+      <div class="res-name">Centro de Salud Mental — Adultos (≥16 años)</div>
+      <div class="res-meta">📍 C/ Real, 8, Cartagena · Psiquiatría, psicología clínica, enfermería</div>
+      <div class="res-meta" style="color:var(--t3)">Acceso: derivación desde tu médico de familia</div>
+    </div>
+    <a href="tel:968326700" class="btn-tel purple">📞 968 32 67 00</a>
+  </div>
+  <div class="res-card">
+    <div>
+      <div class="res-name">Centro de Salud Mental Infanto-Juvenil (&lt;16 años)</div>
+      <div class="res-meta">Atención psicológica, psiquiátrica y sociofamiliar a menores</div>
+      <div class="res-meta" style="color:var(--t3)">Acceso: derivación desde pediatra o médico de familia</div>
+    </div>
+    <a href="tel:968326720" class="btn-tel purple">📞 968 32 67 20</a>
+  </div>
+
+  <!-- ═══ CRUZ ROJA ═══ -->
+  <div class="section-title crisis">❤️ Cruz Roja — Programas de salud emocional</div>
+  <div class="res-card" style="background:var(--red-light);border-color:#ffcdd2">
+    <div>
+      <div style="font-size:.86rem;color:var(--t1);line-height:1.6">Talleres de gestión emocional, acompañamiento a personas en situación de soledad, campañas de sensibilización. Coordinan con recursos locales para derivar cuando es necesario.</div>
+      <div style="margin-top:8px"><a href="tel:900107917" class="btn-tel">📞 900 107 917 — Cruz Roja Te Escucha</a></div>
+    </div>
+  </div>
+
+  <!-- ═══ GUÍA RÁPIDA ═══ -->
+  <div class="quick-guide">
+    <div class="qg-title">📋 ¿Qué hago en la práctica?</div>
+    <div class="qg-line">👉 <strong>Apoyo social y psicológico municipal:</strong> Llama a Servicios Sociales <a href="tel:900923491" class="t-purple">900 923 491</a> o pide derivación a Salud Mental desde tu centro de salud.</div>
+    <div class="qg-line">👉 <strong>Si eres joven (14–35 años):</strong> Contacta con Espacio Salud por WhatsApp al <a href="https://wa.me/34661480373" target="_blank" rel="noopener" class="t-green">661 480 373</a> o llama al <a href="tel:968128862" class="t-purple">968 12 88 62</a>.</div>
+    <div class="qg-line">👉 <strong>Apoyo inmediato ahora:</strong> Llama al <a href="tel:024" class="t-red">024</a>, al <a href="tel:900107917" class="t-red">900 107 917</a> (Cruz Roja), o al <a href="tel:717003717" class="t-red">717 003 717</a> (Esperanza).</div>
+  </div>
+
+  <p class="footer-note">Información verificada con fuentes oficiales en 2026-05-01. Si detectas un teléfono o dirección incorrecta, escríbenos por <a href="https://wa.me/34661480373" target="_blank" rel="noopener">WhatsApp</a> y lo corregimos.</p>
+
+</main>
+
+<footer style="text-align:center;padding:20px;color:var(--t3);font-size:.78rem">
+  © 2026 Carlos Galera Román · MFyC, H.G.U. Santa Lucía · Área II Cartagena · <a href="aviso-legal.html" style="color:var(--purple)">Aviso legal</a> · <a href="privacidad.html" style="color:var(--purple)">Privacidad</a>
+</footer>
+
+<script>
+// Service worker (PWA)
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+
+</body>
+</html>
