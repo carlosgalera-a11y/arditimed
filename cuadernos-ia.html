@@ -413,7 +413,8 @@ async function sendChat(){
     }
   });
 
-  var sysPrompt='Eres un asistente clínico docente del Área II Cartagena. El usuario ha subido documentos médicos a su cuaderno "'+nb.name+'". Responde en español, de forma clara y profesional. Si hay imágenes de analíticas, informes o capturas médicas, extrae y organiza la información relevante. Cuando recibas un bloque CONTEXTO (fragmentos de protocolos del Área II y del cuaderno del usuario), basa tu respuesta PRIMERO en él y cita los fragmentos por número (ej. [#2]).';
+  var sysPrompt='Eres un asistente clínico docente del Área II Cartagena. El usuario ha subido documentos médicos a su cuaderno "'+nb.name+'". Responde en español, claro y profesional. Si hay imágenes de analíticas, informes o capturas médicas, extrae y organiza la información relevante. ' +
+    'REGLA ESENCIAL: cuando recibas un bloque CONTEXTO con fragmentos de protocolos del Área II o del cuaderno del usuario, DEBES extraer e integrar el contenido concreto de los fragmentos (criterios, algoritmos, dosis, derivaciones) en tu respuesta. PROHIBIDO responder solo apuntando \"existe el protocolo X\" — el usuario ya sabe que existe; entrega su CONTENIDO aplicado a la pregunta. Cita los fragmentos por su número [#1], [#2], etc. cuando uses su información.';
 
   // ── RAG: retrieve combinado (MEGA_KB global + chunks PDFs del cuaderno) ──
   var ragContext='';
