@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Plan de presentación · Cartagenaeste · 2026-04-30</title>
+<style>
+  :root{--primary:#0f6b4a;--primary-light:#e6f4ef;--primary-dark:#0a4d35;
+        --amber:#d97706;--amber-light:#fef3c7;
+        --blue:#1e40af;--blue-light:#dbeafe;
+        --red:#dc2626;--red-light:#fee2e2;
+        --purple:#7c3aed;--purple-light:#ede9fe;
+        --gray:#374151;--gray-light:#f9fafb;--border:#e5e7eb;
+        --font:'Segoe UI',system-ui,sans-serif;--mono:'Fira Code',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);font-size:10pt;color:#1f2937;background:#fff;line-height:1.5}
+  .doc{max-width:820px;margin:0 auto;padding:30px 36px 50px}
+
+  .cover{text-align:center;padding:50px 0 30px;border-bottom:3px solid var(--primary);margin-bottom:30px}
+  .cover .logo{font-size:3rem;margin-bottom:10px}
+  .cover h1{font-size:1.8rem;color:var(--primary);font-weight:800}
+  .cover .sub{font-size:1rem;color:#6b7280;margin-top:8px;font-weight:500}
+  .cover .meta{margin-top:24px;display:inline-flex;gap:24px;background:var(--gray-light);
+               border:1px solid var(--border);border-radius:8px;padding:12px 24px;font-size:.85rem}
+  .cover .meta span{display:flex;flex-direction:column}
+  .cover .meta strong{font-size:1rem;color:#111827}
+
+  h2{font-size:1.1rem;font-weight:800;color:var(--primary);border-left:4px solid var(--primary);
+     padding-left:10px;margin:28px 0 12px;page-break-after:avoid}
+  h3{font-size:.95rem;font-weight:700;color:#374151;margin:18px 0 8px;page-break-after:avoid}
+  h4{font-size:.85rem;font-weight:700;color:#4b5563;margin:12px 0 6px}
+  p{margin-bottom:8px;font-size:.88rem}
+
+  .scenarios{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 20px}
+  .sc-card{border:1.5px solid var(--border);border-radius:10px;padding:14px;background:var(--gray-light)}
+  .sc-card.hoy{border-color:var(--primary);background:var(--primary-light)}
+  .sc-card.s50{border-color:var(--blue);background:var(--blue-light)}
+  .sc-card.s100{border-color:var(--amber);background:var(--amber-light)}
+  .sc-card.s500{border-color:var(--purple);background:var(--purple-light)}
+  .sc-card .sc-title{font-size:.72rem;font-weight:800;text-transform:uppercase;
+                     letter-spacing:.05em;margin-bottom:5px}
+  .sc-card.hoy .sc-title{color:var(--primary)}
+  .sc-card.s50 .sc-title{color:var(--blue)}
+  .sc-card.s100 .sc-title{color:var(--amber)}
+  .sc-card.s500 .sc-title{color:var(--purple)}
+  .sc-card .sc-price{font-size:1.5rem;font-weight:900;font-family:var(--mono);line-height:1.05}
+  .sc-card .sc-range{font-size:.7rem;color:#6b7280;margin-top:3px}
+  .sc-card .sc-dau{font-size:.72rem;color:#4b5563;margin-top:6px;
+                       border-top:1px solid rgba(0,0,0,.1);padding-top:5px}
+
+  table{width:100%;border-collapse:collapse;font-size:.82rem;margin:8px 0 14px;page-break-inside:avoid}
+  thead tr{background:var(--primary);color:#fff}
+  thead th{padding:6px 10px;text-align:left;font-weight:700;font-size:.76rem}
+  thead th.num{text-align:right}
+  tbody tr:nth-child(even){background:var(--gray-light)}
+  td{padding:5px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  td.num{text-align:right;font-family:var(--mono);font-size:.78rem}
+  td.ok{color:var(--primary);font-weight:700}
+  td.warn{color:var(--amber);font-weight:700}
+  td.danger{color:var(--red);font-weight:700}
+  .total-row td{font-weight:800;background:#f0fdf4;color:var(--primary);border-top:2px solid var(--primary)}
+
+  .callout{border-radius:8px;padding:11px 14px;margin:10px 0;font-size:.84rem;
+           border-left:4px solid;page-break-inside:avoid}
+  .callout.info{background:var(--blue-light);border-color:var(--blue);color:#1e3a8a}
+  .callout.warn{background:var(--amber-light);border-color:var(--amber);color:#92400e}
+  .callout.ok{background:var(--primary-light);border-color:var(--primary);color:#064e3b}
+  .callout.danger{background:var(--red-light);border-color:var(--red);color:#7f1d1d}
+  .callout strong{font-weight:800}
+
+  .timeline{margin:14px 0 24px}
+  .timeline-row{display:grid;grid-template-columns:90px 1fr;gap:14px;margin-bottom:14px;page-break-inside:avoid}
+  .timeline-date{font-weight:800;font-size:.85rem;color:#fff;background:var(--primary);border-radius:6px;
+                 padding:6px 8px;text-align:center;height:fit-content}
+  .timeline-date.amber{background:var(--amber)}
+  .timeline-date.blue{background:var(--blue)}
+  .timeline-date.purple{background:var(--purple)}
+  .timeline-date.red{background:var(--red)}
+  .timeline-content{font-size:.86rem}
+  .timeline-content strong{font-size:.92rem;color:var(--primary-dark);display:block;margin-bottom:4px}
+
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;
+         font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .badge.high{background:#fee2e2;color:#991b1b}
+  .badge.med{background:#fef3c7;color:#92400e}
+  .badge.low{background:#dbeafe;color:#1e40af}
+  .badge.ok{background:#d1fae5;color:#065f46}
+
+  .checkbox{display:inline-block;width:14px;height:14px;border:1.5px solid #6b7280;border-radius:3px;
+            margin-right:6px;vertical-align:middle}
+
+  .pitch-card{border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+              background:#fff;page-break-inside:avoid}
+  .pitch-card .num{display:inline-block;background:var(--primary);color:#fff;width:26px;height:26px;
+                   border-radius:50%;text-align:center;line-height:26px;font-weight:800;margin-right:8px;font-size:.85rem}
+  .pitch-card h4{display:inline-block;color:var(--primary-dark);margin:0;font-size:.95rem}
+  .pitch-card p{font-size:.84rem;color:#4b5563;margin-top:6px;margin-left:34px;line-height:1.6}
+
+  .footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--border);
+          font-size:.74rem;color:#9ca3af;text-align:center}
+
+  @media print{
+    h2{page-break-after:avoid}
+    .doc{padding:10px 18px;max-width:100%}
+    a{color:inherit;text-decoration:none}
+  }
+  @page{margin:18mm 15mm}
+</style>
+</head>
+<body>
+<div class="doc" id="pdfContent">
+
+<!-- ════════════════════════════════════════════════ PORTADA -->
+<div class="cover">
+  <div class="logo">📋</div>
+  <h1>Plan de Presentación · Cartagenaeste</h1>
+  <div class="sub">Hoja de ruta · contactos · fechas · costes 50/100/500 DAU</div>
+  <div class="meta">
+    <span><strong>2026-04-30</strong>Fecha</span>
+    <span><strong>Carlos Galera Román</strong>Autor</span>
+    <span><strong>HSL · 8 mayo</strong>Próxima presentación</span>
+    <span><strong>v1.0</strong>Versión</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ 0. RESPUESTA RÁPIDA -->
+<h2>0. Resumen ejecutivo · costes según escenario</h2>
+
+<div class="scenarios">
+  <div class="sc-card hoy">
+    <div class="sc-title">Hoy · uso real</div>
+    <div class="sc-price">≈ 1,90 €</div>
+    <div class="sc-range">/ mes · 23 €/año</div>
+    <div class="sc-dau">10 DAU · 8 únicos / 7d<br>todo en free tier</div>
+  </div>
+  <div class="sc-card s50">
+    <div class="sc-title">50 DAU</div>
+    <div class="sc-price">≈ 5 €</div>
+    <div class="sc-range">/ mes · 60 €/año</div>
+    <div class="sc-dau">~ 250 MAU<br>aún en free tier Firebase</div>
+  </div>
+  <div class="sc-card s100">
+    <div class="sc-title">100 DAU</div>
+    <div class="sc-price">≈ 10 €</div>
+    <div class="sc-range">/ mes · 120 €/año</div>
+    <div class="sc-dau">~ 500 MAU<br>HSL Urgencias firmado</div>
+  </div>
+  <div class="sc-card s500">
+    <div class="sc-title">500 DAU</div>
+    <div class="sc-price">≈ 50 €</div>
+    <div class="sc-range">/ mes · 600 €/año</div>
+    <div class="sc-dau">~ 2.500 MAU<br>SMS multi-servicio</div>
+  </div>
+</div>
+
+<div class="callout ok">
+  <strong>Lectura comercial:</strong> con que el primer contrato HSL (14.000 €/año del dossier comercial) se firme,
+  cubre todos los costes operativos hasta 500 DAU durante <strong>23 años</strong>.
+  El proyecto NO tiene riesgo financiero — el riesgo es comercial (que se firme o no).
+</div>
+
+<!-- ════════════════════════════════════════════════ 1. ESTADO -->
+<h2>1. Estado del proyecto · qué tienes ya</h2>
+
+<table>
+  <thead><tr><th>Componente</th><th>Estado</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Webapp en producción</strong> · area2cartagena.es</td><td><span class="badge ok">Activa · uso real diario</span></td></tr>
+    <tr><td><strong>Auditoría legal completa</strong> 2026-04-28</td><td><span class="badge ok">9/11 hallazgos cerrados</span></td></tr>
+    <tr><td><strong>EIPD · RAT · AI Act dossier · MDR analysis</strong></td><td><span class="badge ok">Documentación regulatoria completa</span></td></tr>
+    <tr><td><strong>Licencia propietaria</strong> · RPI 00765-03096622</td><td><span class="badge ok">Registrada</span></td></tr>
+    <tr><td><strong>App Check enforce</strong> (H-01)</td><td><span class="badge med">Site key activa · falta Fase 3 enforce true</span></td></tr>
+    <tr><td><strong>DPAs DeepSeek/OpenRouter</strong> (H-02)</td><td><span class="badge high">Pendientes · gestión externa 2-4 semanas</span></td></tr>
+    <tr><td><strong>Dashboard admin</strong> con 11 secciones de métricas + GA4 hub + análisis Pro vs Pac</td><td><span class="badge ok">En producción</span></td></tr>
+    <tr><td><strong>Módulo paciente Mi Diario de Salud</strong> (TA + glucemia)</td><td><span class="badge ok">PR #136 · listo para merge</span></td></tr>
+    <tr><td><strong>14 fichas clínicas</strong> en consejos-salud (Hashimoto, dietas, inhaladores, toxina, etc.)</td><td><span class="badge ok">Activas</span></td></tr>
+    <tr><td><strong>Multi-tenancy</strong> (centros) + branding dinámico</td><td><span class="badge ok">PR #71 desplegado</span></td></tr>
+    <tr><td><strong>Cobertura tests</strong></td><td><span class="badge ok">124/124 pasan · ~85% coverage</span></td></tr>
+    <tr><td><strong>5 Cloud Functions IA</strong> + cadena fallback (DeepSeek · Gemini · Qwen VL · Mistral)</td><td><span class="badge ok">Operativas en europe-west1</span></td></tr>
+    <tr><td><strong>Datos reales últimos 7d</strong></td><td>70 calls IA · 8 únicos · 0 errores · cache 20%</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════════════════════════════════════════ 2. CALENDARIO -->
+<h2>2. Hoja de ruta · 12 meses · fechas concretas</h2>
+
+<div class="timeline">
+
+  <div class="timeline-row">
+    <div class="timeline-date red">8 MAY</div>
+    <div class="timeline-content">
+      <strong>Presentación HSL Urgencias 🎯 (BLOQUEANTE)</strong>
+      Ya confirmada. Llevar dossier impreso + auditoría costes + auditoría legal + demo en directo 5 min con caso pseudonimizado. Identificar decisor en sala. Pedir reunión de seguimiento en 2 semanas.
+      <br><span class="badge high">Acción: imprimir 5 dossieres + ensayar demo</span>
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date amber">9-15 MAY</div>
+    <div class="timeline-content">
+      <strong>Email de seguimiento HSL en 24h + cierre Fase 2 H-01</strong>
+      Email con resumen + materiales en PDF a cada asistente. Verificar header X-Firebase-AppCheck en producción y avisar a Claude para Fase 3 (enforce true).
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date amber">16-31 MAY</div>
+    <div class="timeline-content">
+      <strong>NEOTEC CDTI · convocatoria abierta (250.000 € subvención)</strong>
+      Plazo de presentación: típicamente hasta finales de mayo. Memoria técnica + económica. Aprovechar el dossier ya redactado.
+      <br><span class="badge high">Subvención objetivo: hasta 250.000 €</span>
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date blue">JUN 2026</div>
+    <div class="timeline-content">
+      <strong>Solicitar HONcode + WIS COMB</strong>
+      HONcode (gratis, formulario online, 2-4 semanas evaluación) + Web Médica Acreditada COMB (~250 €/año). Ambos sellos visibles en footer + página de transparencia.
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date blue">JUN 2026</div>
+    <div class="timeline-content">
+      <strong>Congreso semFYC · Madrid (junio anual)</strong>
+      Comunicación a póster con uso real Área II. Presentar métricas y caso de éxito. Difusión orgánica entre médicos AP de toda España.
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date blue">JUL 2026</div>
+    <div class="timeline-content">
+      <strong>Cerrar primera venta fuera de Área II</strong>
+      Top objetivos: Distrito Almería · Conselleria Valenciana · SESCAM Albacete. Vía SEMERGEN regional o cátedra universitaria.
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date blue">JUL 2026</div>
+    <div class="timeline-content">
+      <strong>Premios Fundación BBVA Innovación Salud</strong>
+      Plazo Q2 anual. Premio: 40.000-100.000 €. Encaje alto con el proyecto.
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date amber">SEP 2026</div>
+    <div class="timeline-content">
+      <strong>Sesión clínica acreditada SEAFORMEC</strong>
+      Acredita horas docentes. Multiplica adopción profesional. Coste ~300 €.
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date amber">OCT 2026</div>
+    <div class="timeline-content">
+      <strong>Congreso SEMERGEN · póster + comunicación</strong>
+      Plazo Q3-Q4. Premio innovación 2.000-5.000 € + visibilidad nacional. Difusión específica para AP.
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date amber">NOV-DIC 2026</div>
+    <div class="timeline-content">
+      <strong>Premios CARM Innovación Sanitaria + Best in Class</strong>
+      Premios CARM (3.000-15.000 € · alta probabilidad por ser proyecto del SMS).
+      Premios Best in Class (Diario Médico · enero votación · reconocimiento sectorial).
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date purple">DIC 2026</div>
+    <div class="timeline-content">
+      <strong>Punto de decisión estratégico</strong>
+      Evaluar: ¿continuar como autónomo / proyecto personal? ¿constituir SL? ¿entrar en aceleradora? Variables a evaluar:
+      (1) Nº servicios SMS firmados · (2) ARR &gt; 50k € · (3) Si NEOTEC u otro programa ha financiado · (4) Disponibilidad personal compatible con guardias.
+    </div>
+  </div>
+
+  <div class="timeline-row">
+    <div class="timeline-date purple">Q1-Q2 2027</div>
+    <div class="timeline-content">
+      <strong>EIT Health Catapult + plan de escalado</strong>
+      Si decisión Q4 = escalar: presentar a EIT Health Catapult (60.000 € + bootcamp europeo).
+      Si financiación NEOTEC: contratar 1 dev + 1 comercial.
+      Expansión a 3 servicios de salud regionales.
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════ 3. PITCH 8 MAYO -->
+<h2>3. Estructura del pitch · presentación 8 mayo (15 min + demo 5 min)</h2>
+
+<div class="pitch-card">
+  <span class="num">1</span><h4>Apertura · 1 minuto</h4>
+  <p>"Soy Carlos, MFyC en Urgencias del HSL. Llevo un año desarrollando una herramienta digital que <strong>ya estamos usando aquí en el Área II</strong>. Hoy os enseño qué es, los datos reales de uso y qué propongo."</p>
+</div>
+
+<div class="pitch-card">
+  <span class="num">2</span><h4>El problema · 2 minutos</h4>
+  <p>El residente / adjunto MFyC necesita: (a) consultar evidencia rápida en consulta · (b) preparar material formativo · (c) llevar notas de guardia · (d) acceso a protocolos del SMS sin descargar PDFs. Hoy: navegadores múltiples, papel, OpenEvidence bloqueado en la red SMS.</p>
+</div>
+
+<div class="pitch-card">
+  <span class="num">3</span><h4>La solución · 2 minutos</h4>
+  <p>Una webapp única, integrada, EU-compliant, con IA segura (datos seudonimizados, sin nombre completo). Acceso desde cualquier dispositivo. Sin instalar nada. <strong>Ya está funcionando</strong> y la usan 8 personas activamente esta semana.</p>
+</div>
+
+<div class="pitch-card">
+  <span class="num">4</span><h4>Demo en directo · 5 minutos</h4>
+  <p>Caso pseudonimizado (4 iniciales + edad + nº cama): triaje IA → consulta evidencia BUA → genera informe con plantilla → guarda nota de guardia. <em>Show, don't tell.</em> Mostrar la velocidad real.</p>
+</div>
+
+<div class="pitch-card">
+  <span class="num">5</span><h4>Datos reales · 2 minutos</h4>
+  <p>Métricas del dashboard: 70 llamadas IA esta semana · 8 usuarios únicos · 0 errores · ahorro de tiempo: ~5h de redacción. Cumplimiento RGPD/AI Act/MDR documentado en EIPD/RAT/dossier.</p>
+</div>
+
+<div class="pitch-card">
+  <span class="num">6</span><h4>Propuesta económica · 2 minutos</h4>
+  <p>Propuesta Año 1 para Urgencias HSL: <strong>14.000 €</strong> (licencia 80 profesionales + módulo Fármacos de Urgencia + onboarding + 40h soporte SLA 24h + reporting trimestral). Coste real de infraestructura: ~120 €/año a 100 DAU. Margen para soporte y desarrollo.</p>
+</div>
+
+<div class="pitch-card">
+  <span class="num">7</span><h4>Roadmap · 1 minuto</h4>
+  <p>Q3: módulo paciente (TA + glucemia con consentimiento RGPD). Q4: integración con HCE (FHIR R4 ya implementado). Q1 2027: expansión a otras Áreas SMS si interesa.</p>
+</div>
+
+<div class="pitch-card">
+  <span class="num">8</span><h4>Cierre · 1 minuto</h4>
+  <p>"<strong>Ya funciona, ya cumple, ya hay uso real.</strong> Lo único que falta es decidir si el HSL Área II quiere ser el primero en formalizarlo. Puedo dejaros el dossier impreso. ¿Cuándo podríamos tener una reunión de seguimiento con quien tome la decisión?"</p>
+</div>
+
+<div class="callout warn">
+  <strong>Materiales para llevar el 8 mayo (checklist)</strong><br>
+  <span class="checkbox"></span> Dossier comercial impreso × 5 copias<br>
+  <span class="checkbox"></span> Auditoría legal interna 2026-04-28 impresa × 2 (para Director Área + Subdirector Asistencial)<br>
+  <span class="checkbox"></span> Auditoría costes Blaze impresa × 2<br>
+  <span class="checkbox"></span> Tarjetas con QR al webapp + email de contacto × 20<br>
+  <span class="checkbox"></span> MacBook + cable HDMI para demo en directo<br>
+  <span class="checkbox"></span> Conexión móvil 4G/5G como respaldo de WiFi<br>
+  <span class="checkbox"></span> 2 casos clínicos pseudonimizados ya preparados (no improvisar)<br>
+  <span class="checkbox"></span> Carta de apoyo de Jefe Urgencias firmada (si procede)<br>
+  <span class="checkbox"></span> Hoja de firma de asistentes para captar emails de seguimiento
+</div>
+
+<!-- ════════════════════════════════════════════════ 4. CONTACTOS -->
+<h2>4. Mapa de contactos disponibles</h2>
+
+<h3>4.1 Institucional · Servicio Murciano de Salud</h3>
+
+<table>
+  <thead><tr>
+    <th>Contacto</th><th>Rol / cómo ayuda</th><th>Cómo abordar</th><th>Prioridad</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Jefe Servicio Urgencias HSL</strong></td>
+      <td>Aval clínico interno · primera puerta · evangelizador del proyecto</td>
+      <td>Ya hay relación · email institucional · pedir 30 min</td>
+      <td><span class="badge high">CRÍTICA</span></td>
+    </tr>
+    <tr>
+      <td><strong>Director Área II Cartagena</strong></td>
+      <td>Decisor de presupuesto local · firma contratos hasta cierto importe</td>
+      <td>Solicitar reunión vía secretaría · llevar dossier impreso · 30 min</td>
+      <td><span class="badge high">CRÍTICA</span></td>
+    </tr>
+    <tr>
+      <td><strong>Subdirector Asistencial Área II</strong></td>
+      <td>Coordina iniciativas asistenciales · puente al Director</td>
+      <td>Vía Director Área o Jefe Urgencias</td>
+      <td><span class="badge high">ALTA</span></td>
+    </tr>
+    <tr>
+      <td><strong>Jefe de Estudios MIR Área II</strong></td>
+      <td>Aval docente · facilita uso por residentes (canal viral natural)</td>
+      <td>Vía Comisión Docencia · pedir 15 min en próxima reunión</td>
+      <td><span class="badge med">ALTA</span></td>
+    </tr>
+    <tr>
+      <td><strong>Servicios Centrales SMS · DG Asistencia Sanitaria</strong></td>
+      <td>Decisión a nivel CCAA · expansión a otras Áreas</td>
+      <td>Vía Director Área II · típicamente tras pilot Área II firmado</td>
+      <td><span class="badge med">MEDIA</span></td>
+    </tr>
+    <tr>
+      <td><strong>Servicios Centrales SMS · DG Innovación Sanitaria</strong></td>
+      <td>Decisión específica para innovación digital · presupuesto ad hoc</td>
+      <td>Vía portal innovación CARM · convocatorias formales</td>
+      <td><span class="badge med">MEDIA</span></td>
+    </tr>
+    <tr>
+      <td><strong>FFIS · Fundación Formación e Investigación Sanitarias Murcia</strong></td>
+      <td>Vía financiación de proyectos sin cargo a presupuesto ordinario</td>
+      <td>Convocatorias formales + email director</td>
+      <td><span class="badge med">MEDIA</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>4.2 Académico</h3>
+
+<table>
+  <thead><tr><th>Contacto</th><th>Rol / cómo ayuda</th><th>Cómo abordar</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Cátedra UMU Innovación Sanitaria</strong></td>
+      <td>Aval académico + contactos institucionales + posible TFM/TFG colaborativo</td>
+      <td>Vía secretaría Decanato Medicina UMU · ofrecer talk/colaboración</td>
+    </tr>
+    <tr>
+      <td><strong>Universidad Católica de Murcia (UCAM)</strong></td>
+      <td>Facultad Medicina · pueden cubrir coste de algún módulo en partnership</td>
+      <td>Email a vicerrectorado de innovación</td>
+    </tr>
+    <tr>
+      <td><strong>Cátedras Salud Digital</strong> (UCM, UPV/EHU, USC)</td>
+      <td>Red nacional de salud digital · acceso a otras CCAA</td>
+      <td>Vía contactos UMU + ponencia en congreso EIT Health</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>4.3 Sociedades científicas (canal sanidad B2B)</h3>
+
+<table>
+  <thead><tr><th>Sociedad</th><th>Cómo ayuda</th><th>Cómo contactar</th></tr></thead>
+  <tbody>
+    <tr><td><strong>SEMERGEN</strong> nacional + Murcia</td><td>Avalar/patrocinar el producto · canal natural a CCAA · congreso anual</td><td>Email a Junta directiva regional</td></tr>
+    <tr><td><strong>semFYC</strong> nacional</td><td>Misma vía · audiencia AP nacional · póster en congreso junio</td><td>Web congreso · plazo presentación abril-mayo</td></tr>
+    <tr><td><strong>SEMG</strong></td><td>Médicos generales · congreso primavera</td><td>Plazo presentación enero-febrero</td></tr>
+    <tr><td><strong>SEMES</strong></td><td>Urgencias hospitalarias · congreso junio · premio innovación 2.000 €</td><td>Web SEMES</td></tr>
+    <tr><td><strong>SEEN</strong> (endocrino)</td><td>Encaje específico módulo paciente diabético + dietas + Hashimoto</td><td>Email a presidencia SEEN regional</td></tr>
+    <tr><td><strong>SEN</strong> (neurología)</td><td>Encaje específico módulo cefaleas / toxina botulínica</td><td>Email a presidencia SEN</td></tr>
+    <tr><td><strong>Colegio Oficial Médicos Murcia</strong> (COMM)</td><td>Difusión + posible respaldo institucional + premio anual 1.500-3.000 €</td><td>Email a Junta directiva COMM</td></tr>
+  </tbody>
+</table>
+
+<h3>4.4 Comercial · privado</h3>
+
+<table>
+  <thead><tr><th>Tipo</th><th>Empresas</th><th>Cómo abordar</th></tr></thead>
+  <tbody>
+    <tr><td>Aseguradoras / sanidad privada</td><td>Sanitas (BluaU) · Asisa · Adeslas · DKV · HM · Vithas · Quirónsalud</td><td>Email LinkedIn a Director Innovación</td></tr>
+    <tr><td>Industria farma</td><td>AstraZeneca España · Boehringer (EPOC/diabetes) · Esteve · Lilly (diabetes) · Novo Nordisk</td><td>⚠ Cuidado conflicto intereses · CLAUDE.md regla #5</td></tr>
+    <tr><td>EGS · Empresas Grupo Sanitario</td><td>Indra Healthcare · Telefónica Tech Sanidad · Atrys Health · everis · NTT DATA</td><td>Reseller / white-label / adquisición</td></tr>
+  </tbody>
+</table>
+
+<!-- ════════════════════════════════════════════════ 5. COSTES DETALLADOS -->
+<h2>5. Costes detallados por escenario</h2>
+
+<p style="font-size:.85rem;color:#6b7280;margin-bottom:14px">Cálculos basados en datos reales del dashboard 22-29 abril 2026 (70 calls/7d · 8 únicos · 1.25 calls/usuario/día · cache hit 20% · tokens promedio 2.335 in+out por llamada · mix DeepSeek 60% + Gemini Flash-Lite 30% + Qwen VL 10%).</p>
+
+<h3>5.1 Tabla resumen</h3>
+
+<table>
+  <thead><tr>
+    <th>Concepto</th>
+    <th class="num">Hoy<br>(10 DAU)</th>
+    <th class="num">50 DAU</th>
+    <th class="num">100 DAU</th>
+    <th class="num">500 DAU</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>MAU estimado (DAU ÷ 0,20)</td><td class="num">~ 50</td><td class="num">~ 250</td><td class="num">~ 500</td><td class="num">~ 2.500</td></tr>
+    <tr><td>Llamadas IA / mes</td><td class="num">~ 300</td><td class="num">~ 1.875</td><td class="num">~ 3.750</td><td class="num">~ 18.750</td></tr>
+    <tr><td>Llamadas facturadas (post-cache)</td><td class="num">~ 240</td><td class="num">~ 1.500</td><td class="num">~ 3.000</td><td class="num">~ 15.000</td></tr>
+    <tr><td>Tokens totales / mes</td><td class="num">~ 700k</td><td class="num">~ 4,4M</td><td class="num">~ 8,7M</td><td class="num">~ 44M</td></tr>
+    <tr><td>Reads Firestore / mes</td><td class="num">~ 10k</td><td class="num">~ 60k</td><td class="num">~ 120k</td><td class="num">~ 600k</td></tr>
+    <tr><td>Writes Firestore / mes</td><td class="num">~ 2k</td><td class="num">~ 15k</td><td class="num">~ 30k</td><td class="num">~ 150k</td></tr>
+    <tr><td>Cloud Functions invocaciones / mes</td><td class="num">~ 500</td><td class="num">~ 100k</td><td class="num">~ 200k</td><td class="num">~ 1M</td></tr>
+    <tr><td>Egress / mes</td><td class="num">&lt; 200 MiB</td><td class="num">~ 500 MiB</td><td class="num">~ 1 GiB</td><td class="num">~ 3 GiB</td></tr>
+  </tbody>
+</table>
+
+<h3>5.2 Coste detallado · línea por línea</h3>
+
+<table>
+  <thead><tr>
+    <th>Concepto</th>
+    <th class="num">Hoy</th>
+    <th class="num">50 DAU</th>
+    <th class="num">100 DAU</th>
+    <th class="num">500 DAU</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>Dominio area2cartagena.es</td><td class="num">1,25 €</td><td class="num">1,25 €</td><td class="num">1,25 €</td><td class="num">1,25 €</td></tr>
+    <tr><td>Firebase Auth (tope free 50k MAU)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr><td>Firestore reads (free 1,5M/mes)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr><td>Firestore writes (free 600k/mes)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr><td>Cloud Functions invocaciones (free 2M/mes)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr><td>Storage (free 5 GiB)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr><td>Egress GCS (free 1 GiB/día)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num warn">0,30 €</td></tr>
+    <tr><td>Backups GCS</td><td class="num ok">0 €</td><td class="num warn">0,10 €</td><td class="num warn">0,15 €</td><td class="num warn">0,40 €</td></tr>
+    <tr><td><strong>Subtotal Firebase</strong></td><td class="num ok">0 €</td><td class="num ok">0,10 €</td><td class="num ok">0,15 €</td><td class="num warn">0,70 €</td></tr>
+    <tr><td>IA · educational (DeepSeek + Gemini Flash-Lite mix)</td><td class="num">0,40 €</td><td class="num warn">2,50 €</td><td class="num warn">5 €</td><td class="num warn">25 €</td></tr>
+    <tr><td>IA · clinical_case (mix híbrido)</td><td class="num">0,15 €</td><td class="num warn">1 €</td><td class="num warn">2 €</td><td class="num warn">10 €</td></tr>
+    <tr><td>IA · vision (Qwen VL · 5-10% calls)</td><td class="num">0,10 €</td><td class="num warn">0,50 €</td><td class="num warn">1 €</td><td class="num warn">5 €</td></tr>
+    <tr><td><strong>Subtotal IA (con caché 20-40%)</strong></td><td class="num">0,65 €</td><td class="num warn">4 €</td><td class="num warn">8 €</td><td class="num warn">40 €</td></tr>
+    <tr><td>Sentry (free 5k errores/mes)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr><td>GA4</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr><td>GitHub Pages (hosting)</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td><td class="num ok">0 €</td></tr>
+    <tr class="total-row"><td><strong>TOTAL OPERATIVO MENSUAL</strong></td><td class="num">≈ 1,90 €</td><td class="num">≈ 5 €</td><td class="num">≈ 10 €</td><td class="num">≈ 50 €</td></tr>
+    <tr class="total-row"><td><strong>TOTAL ANUAL</strong></td><td class="num">≈ 23 €</td><td class="num">≈ 60 €</td><td class="num">≈ 120 €</td><td class="num">≈ 600 €</td></tr>
+  </tbody>
+</table>
+
+<h3>5.3 Costes adicionales recomendados (no operativos)</h3>
+
+<table>
+  <thead><tr><th>Concepto</th><th class="num">Coste</th><th>Recurrencia</th><th>Cuándo</th></tr></thead>
+  <tbody>
+    <tr><td>Seguro RC profesional + ciber</td><td class="num">~ 600 €</td><td>Anual</td><td>Antes de 100 DAU institucional</td></tr>
+    <tr><td>Asesor legal externo (validar DPAs · revisar EIPD)</td><td class="num">~ 800 €</td><td>One-shot</td><td>Antes de firmar primer contrato</td></tr>
+    <tr><td>Sello HONcode</td><td class="num ok">0 €</td><td>Anual revisión</td><td>Junio 2026</td></tr>
+    <tr><td>Web Médica Acreditada COMB</td><td class="num warn">~ 250 €</td><td>Anual</td><td>Junio 2026</td></tr>
+    <tr><td>Acreditación SEAFORMEC sesión clínica</td><td class="num warn">~ 300 €</td><td>One-shot por curso</td><td>Septiembre 2026</td></tr>
+    <tr><td>Asistencia 1 congreso/año (semFYC, SEMERGEN o SEMES)</td><td class="num warn">~ 400-600 €</td><td>Anual</td><td>Junio + octubre</td></tr>
+    <tr><td>Materiales presentación (impresión dossier · QR · tarjetas)</td><td class="num">~ 80 €</td><td>One-shot</td><td>Antes 8 mayo</td></tr>
+    <tr><td>Diseño profesional (logo · plantillas)</td><td class="num warn">~ 200-500 €</td><td>One-shot</td><td>Antes presentación inversor</td></tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>Total presupuesto recomendado Año 1 · 50-100 DAU:</strong> ~ 2.200 €
+  (operación 120 € + seguro 600 € + legal 800 € + sellos 250 € + congreso 400 € + materiales 80 €).
+  Incluso si no firma ningún contrato, el coste es asumible y muy por debajo del techo de 5.000 €
+  contemplado en la auditoría costes-5000eur.
+</div>
+
+<!-- ════════════════════════════════════════════════ 6. PLAN B -->
+<h2>6. Plan B · si HSL no firma el 8 mayo o tarda</h2>
+
+<table>
+  <thead><tr><th>Acción</th><th>Cuándo</th><th>Importe esperado</th></tr></thead>
+  <tbody>
+    <tr><td>Solicitar <strong>NEOTEC CDTI</strong> (subvención EBT)</td><td>Mayo 2026</td><td>Hasta 250.000 €</td></tr>
+    <tr><td>Solicitar <strong>Premios Fundación BBVA Innovación Salud</strong></td><td>Q2-Q3 2026</td><td>40.000-100.000 €</td></tr>
+    <tr><td>Solicitar <strong>Premios CARM Innovación Sanitaria</strong></td><td>Q4 2026</td><td>3.000-15.000 €</td></tr>
+    <tr><td>Comunicación <strong>Premio SEMES Urgencias</strong></td><td>Junio 2026</td><td>2.000 € + visibilidad</td></tr>
+    <tr><td>Pivotar a <strong>otro servicio receptivo</strong> (Almería · Valencia · Albacete)</td><td>Q3 2026</td><td>Contrato similar a HSL</td></tr>
+    <tr><td>Pivotar a <strong>aseguradora privada</strong> (Sanitas BluaU · Asisa)</td><td>Q3-Q4 2026</td><td>Contrato 20-50k €/año</td></tr>
+    <tr><td>Pivotar a <strong>partner farma para módulo educativo</strong> (Boehringer EPOC · Lilly diabetes)</td><td>Q4 2026</td><td>Contrato 30-80k €/año <em>con validación legal extra</em></td></tr>
+    <tr><td>Liberar <strong>Evidencia BUA como módulo independiente</strong> (oportunidad post-bloqueo OpenEvidence)</td><td>Q3 2026</td><td>Licencias 2.500-50.000 €/cliente</td></tr>
+  </tbody>
+</table>
+
+<div class="callout ok">
+  El plan B no es "esperar". Es <strong>activar 3-4 frentes en paralelo</strong>:
+  presentación HSL + NEOTEC + congresos + venta a otro servicio. Si uno falla, los otros suman.
+  Con 5.000 € de techo presupuestario tienes 5+ años para que cualquiera funcione.
+</div>
+
+<!-- ════════════════════════════════════════════════ 7. CHECKLIST -->
+<h2>7. Checklist de acciones inmediatas</h2>
+
+<h3>Esta semana (1-7 mayo)</h3>
+<p style="font-size:.85rem;line-height:1.8">
+<span class="checkbox"></span> Mergear PR #136 (módulo paciente) + push area2 mirror<br>
+<span class="checkbox"></span> Imprimir 5 dossieres comerciales + 2 auditorías legal + 2 auditorías costes<br>
+<span class="checkbox"></span> Preparar 2 casos clínicos pseudonimizados para demo<br>
+<span class="checkbox"></span> Ensayar demo 5 min cronometrada con cable HDMI<br>
+<span class="checkbox"></span> Generar tarjetas QR (existe `qr-poster.html` en el repo)<br>
+<span class="checkbox"></span> Confirmar lista de asistentes + horario + sala<br>
+<span class="checkbox"></span> Registrar reCAPTCHA secret en Firebase Console (Fase 2 H-01)<br>
+<span class="checkbox"></span> Verificar header X-Firebase-AppCheck en DevTools<br>
+</p>
+
+<h3>Mes mayo</h3>
+<p style="font-size:.85rem;line-height:1.8">
+<span class="checkbox"></span> Email seguimiento 24h post-presentación HSL<br>
+<span class="checkbox"></span> Reunión de cierre HSL (en máximo 2 semanas)<br>
+<span class="checkbox"></span> Iniciar solicitud NEOTEC CDTI<br>
+<span class="checkbox"></span> Preparar comunicación congreso semFYC junio<br>
+<span class="checkbox"></span> Solicitar DPAs DeepSeek + OpenRouter (H-02)<br>
+<span class="checkbox"></span> Activar Fase 3 H-01 (enforceAppCheck:true)<br>
+<span class="checkbox"></span> Contratar seguro RC + ciber<br>
+</p>
+
+<h3>Mes junio</h3>
+<p style="font-size:.85rem;line-height:1.8">
+<span class="checkbox"></span> Solicitar HONcode<br>
+<span class="checkbox"></span> Solicitar WIS COMB<br>
+<span class="checkbox"></span> Asistir congreso semFYC con póster<br>
+<span class="checkbox"></span> Email blog Rafalafena con propuesta post invitado<br>
+<span class="checkbox"></span> Si HSL firmado: planificar onboarding + formación equipo<br>
+<span class="checkbox"></span> Si HSL no firmado: pivotar a primer servicio fuera Área II<br>
+</p>
+
+<div class="footer">
+  Cartagenaeste · Plataforma formativa · No diagnóstica · Licencia propietaria · © 2026 Carlos Galera Román · RPI 00765-03096622<br>
+  Generado 2026-04-30 · Datos de coste basados en métricas reales del dashboard 22-29 abril 2026 · Las cifras son estimaciones según tarifas vigentes Q2 2026.
+</div>
+
+</div><!-- /.doc -->
+</body>
+</html>
