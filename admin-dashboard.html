@@ -89,6 +89,25 @@ td.num{text-align:right;font-family:var(--mono)}
 .empty{text-align:center;padding:24px;color:var(--t3);font-size:.85rem}
 .small{font-size:.78rem;color:var(--t3)}
 
+/* Bloque de error reutilizable: usado cuando una Cloud Function devuelve
+   `internal` u otro fallo. Ofrece causas probables + botón reintentar
+   en vez de un mensaje pelado. */
+.err-card{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:14px 16px;font-size:.82rem;color:var(--t2);line-height:1.5}
+.err-card .err-title{font-weight:700;color:#fca5a5;margin-bottom:6px;font-size:.88rem}
+.err-card code{background:rgba(0,0,0,.3);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:.76rem;color:#fecaca;word-break:break-word}
+.err-card ul{margin:8px 0 10px 18px;padding:0}
+.err-card li{margin:3px 0;font-size:.78rem;color:var(--t2)}
+.err-card .err-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.err-card button.btn-retry{background:#ef4444;color:#fff;border:0;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;font-size:.78rem;font-family:inherit}
+.err-card button.btn-retry:hover{background:#dc2626}
+.err-card button.btn-retry:disabled{opacity:.5;cursor:wait}
+.err-card a.err-link{color:var(--cyan);text-decoration:none;font-size:.78rem;align-self:center}
+.err-card a.err-link:hover{text-decoration:underline}
+
+.btn-refresh{background:transparent;border:1px solid var(--border2);color:var(--t2);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.74rem;font-family:inherit;margin-left:8px}
+.btn-refresh:hover{background:var(--bg3);color:var(--t1)}
+.btn-refresh:disabled{opacity:.5;cursor:wait}
+
 @media (max-width:640px){
   .wrap{padding:14px 12px}
   .kpi .val{font-size:1.5rem}
@@ -317,8 +336,8 @@ td.num{text-align:right;font-family:var(--mono)}
   </div>
 
   <div class="section" id="gaSection" style="border-left:4px solid var(--cyan)">
-    <h3>🌐 Tráfico web (GA4) <span class="meta" id="gaMeta">property 525246514</span></h3>
-    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Visitas totales a <code style="font-family:var(--mono)">area2cartagena.es</code> y <code style="font-family:var(--mono)">carlosgalera-a11y.github.io/Cartagenaeste/</code>. Datos agregados por Google Analytics 4; incluye sesiones no autenticadas (pacientes, visitantes anónimos). Latencia GA4 ~24h.</div>
+    <h3>🌐 Tráfico web (GA4) <span class="meta" id="gaMeta">property 525246514</span><button id="gaRefreshBtn" class="btn-refresh" type="button" title="Purga la caché de sessionStorage y vuelve a llamar a getGaMetrics + recalcula Uso por apartado y Embudo.">🔄 Refrescar</button></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:12px">Visitas totales a <code style="font-family:var(--mono)">area2cartagena.es</code> y <code style="font-family:var(--mono)">carlosgalera-a11y.github.io/Cartagenaeste/</code>. Datos agregados por Google Analytics 4; incluye sesiones no autenticadas (pacientes, visitantes anónimos). Latencia GA4 ~24h. Caché 5 min en sessionStorage.</div>
 
     <div class="range-tabs" id="gaFilterTabs" style="margin-bottom:14px">
       <button class="range-tab active" data-host="all">🌐 Todos los dominios</button>
@@ -1114,69 +1133,197 @@ async function loadDashboard(days){
   loadCostAudit();
 }
 
-// Segmented control del filtro GA4 (Todos / area2 / github)
+// Segmented control del filtro GA4 (Todos / area2 / github) + botón refrescar
 document.addEventListener('DOMContentLoaded', function(){
   const tabs = document.getElementById('gaFilterTabs');
-  if(!tabs) return;
-  tabs.querySelectorAll('.range-tab').forEach(function(btn){
-    btn.onclick = function(){
-      tabs.querySelectorAll('.range-tab').forEach(function(x){ x.classList.remove('active'); });
-      btn.classList.add('active');
-      loadGaMetrics(btn.dataset.host || 'all');
-    };
-  });
+  if(tabs){
+    tabs.querySelectorAll('.range-tab').forEach(function(btn){
+      btn.onclick = function(){
+        tabs.querySelectorAll('.range-tab').forEach(function(x){ x.classList.remove('active'); });
+        btn.classList.add('active');
+        loadGaMetrics(btn.dataset.host || 'all');
+      };
+    });
+  }
+  const refreshBtn = document.getElementById('gaRefreshBtn');
+  if(refreshBtn){
+    refreshBtn.addEventListener('click', function(){
+      refreshBtn.disabled = true;
+      const oldText = refreshBtn.textContent;
+      refreshBtn.textContent = '⏳ Refrescando…';
+      __gaPurgeCache();
+      // Re-pide GA4 principal + Uso por apartado (que reusa la caché).
+      // El embudo se recalcula como parte de loadAll(), pero como aquí
+      // no tenemos acceso directo a `rows`, basta con que loadGaMetrics
+      // y renderUsoSeccion vuelvan a poblar la caché — la siguiente
+      // recarga del dashboard ya verá los datos frescos.
+      Promise.allSettled([
+        loadGaMetrics(__gaFilter),
+        renderUsoSeccion()
+      ]).finally(function(){
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = oldText;
+      });
+    });
+  }
 });
 
 // ── Tráfico web GA4 (Cloud Function getGaMetrics) ─────────────────
-// Caché 5 min en sessionStorage (por filtro) para no saturar la cuota de
-// GA4 Data API al alternar entre filtros o refrescar el dashboard.
-let __gaInflight = null;
+// Caché 5 min en sessionStorage (por filtro) + dedupe de llamadas
+// in-flight. Usado por loadGaMetrics, renderUsoSeccion y el funnel —
+// los tres consumían el mismo callable independientemente y triplicaban
+// el coste de cuota GA4 al cargar el dashboard.
+const __GA_CACHE_TTL_MS = 5 * 60 * 1000;
+const __gaInflight = {}; // por filtro
 let __gaFilter = 'all';
-async function loadGaMetrics(filter){
-  const CACHE_TTL_MS = 5 * 60 * 1000;
-  const f = (filter === 'area2' || filter === 'github') ? filter : 'all';
-  __gaFilter = f;
-  const CACHE_KEY = 'cart_ga_metrics_v1_' + f;
-  try{
-    const cached = sessionStorage.getItem(CACHE_KEY);
-    if(cached){
-      const parsed = JSON.parse(cached);
-      if(parsed && (Date.now() - parsed.ts) < CACHE_TTL_MS){
-        renderGaMetrics(parsed.data);
-        return;
-      }
-    }
-  }catch(e){}
 
-  if(__gaInflight) return __gaInflight;
-  ['gaByHost','gaTopPages','gaTopSources'].forEach(function(id){
-    const el = document.getElementById(id);
-    if(el) el.innerHTML = '<div class="loading"><span class="spin"></span>Consultando GA4…</div>';
-  });
-  __gaInflight = (async function(){
+function __gaCacheKey(f){ return 'cart_ga_metrics_v1_' + f; }
+function __gaReadCache(f){
+  try{
+    const raw = sessionStorage.getItem(__gaCacheKey(f));
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(!parsed) return null;
+    if((Date.now() - parsed.ts) >= __GA_CACHE_TTL_MS) return null;
+    return parsed.data;
+  }catch(e){ return null; }
+}
+function __gaWriteCache(f, data){
+  try{ sessionStorage.setItem(__gaCacheKey(f), JSON.stringify({ ts: Date.now(), data: data })); }catch(e){}
+}
+function __gaPurgeCache(){
+  try{
+    ['all','area2','github'].forEach(function(f){ sessionStorage.removeItem(__gaCacheKey(f)); });
+  }catch(e){}
+}
+
+// Fetch compartido — devuelve una promesa por filtro (dedupe in-flight).
+function fetchGaMetricsShared(filter){
+  const f = (filter === 'area2' || filter === 'github') ? filter : 'all';
+  const cached = __gaReadCache(f);
+  if(cached) return Promise.resolve(cached);
+  if(__gaInflight[f]) return __gaInflight[f];
+  __gaInflight[f] = (async function(){
     try{
       const fn = firebase.app().functions('europe-west1').httpsCallable('getGaMetrics');
       const res = await fn({ hostname: f });
-      const data = res.data;
-      try{ sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); }catch(e){}
-      renderGaMetrics(data);
-    }catch(e){
-      const msg = (e && e.message) ? e.message : String(e);
-      const metaEl = document.getElementById('gaMeta');
-      if(metaEl) metaEl.textContent = 'error · ' + msg.substring(0,80);
-      ['gaToday','ga7d','ga28d'].forEach(function(id){
-        const el = document.getElementById(id); if(el) el.textContent = '—';
-      });
-      ['gaByHost','gaTopPages','gaTopSources'].forEach(function(id){
-        const el = document.getElementById(id);
-        if(el) el.innerHTML = '<div class="empty">'+msg+'</div>';
-      });
-      console.error('getGaMetrics error:', e);
-    }finally{
-      __gaInflight = null;
+      __gaWriteCache(f, res.data);
+      return res.data;
+    } finally {
+      __gaInflight[f] = null;
     }
   })();
-  return __gaInflight;
+  return __gaInflight[f];
+}
+
+// Render de bloque de error reutilizable. `containerId` es el div donde
+// pintamos. `retryFn` se llama cuando el usuario pulsa "Reintentar".
+function renderGaErrorBlock(containerId, err, retryFn){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const code = (err && err.code) || '';
+  const msg = (err && err.message) ? err.message : String(err || 'error desconocido');
+  // Heurística para sugerir causa según el código.
+  let causes = [
+    'La Cloud Function <code>getGaMetrics</code> ha fallado en europe-west1. Mira los logs en Firebase Console → Functions.',
+    'La service account del proyecto no tiene rol <strong>Viewer</strong> sobre la propiedad GA4 525246514.',
+    'GA4 Data API aún no ha indexado eventos — tras un deploy del tag puede tardar 24-48 h.',
+    'Cuota diaria de GA4 Data API agotada (250.000 tokens/día) — espera al reset UTC.'
+  ];
+  if(code === 'unauthenticated' || /auth/i.test(msg)){
+    causes = [
+      'No hay sesión activa con la cuenta autorizada. Recarga e inicia sesión con la cuenta de admin.',
+      'App Check podría estar rechazando el token. Revisa <code>recaptcha-key.js</code>.'
+    ];
+  } else if(code === 'permission-denied'){
+    causes = [
+      'El email autenticado no está en la lista <code>DASHBOARD_VIEWERS</code> de <code>functions/src/getGaMetrics.ts</code>.',
+      'Service account de Firebase Functions sin permiso Viewer en GA4.'
+    ];
+  } else if(code === 'resource-exhausted'){
+    causes = [
+      'Cuota diaria de GA4 Data API agotada. Reset cada día a las 00:00 UTC.',
+      'Demasiadas peticiones en poco tiempo — usa el botón Refrescar con moderación.'
+    ];
+  }
+  el.innerHTML =
+    '<div class="err-card">' +
+      '<div class="err-title">❌ No se pudieron cargar las métricas</div>' +
+      '<div>Mensaje: <code>' + esc(msg).substring(0,200) + '</code>' + (code ? ' · código <code>'+esc(code)+'</code>' : '') + '</div>' +
+      '<div class="small" style="margin-top:6px;color:var(--t2)">Causas probables:</div>' +
+      '<ul>' + causes.map(function(c){ return '<li>'+c+'</li>'; }).join('') + '</ul>' +
+      '<div class="err-actions">' +
+        '<button class="btn-retry" type="button" data-retry="'+containerId+'">🔄 Reintentar</button>' +
+        '<a class="err-link" href="https://console.firebase.google.com/project/docenciacartagenaeste/functions/logs?functionFilter=getGaMetrics(europe-west1)" target="_blank" rel="noopener">Ver logs ↗</a>' +
+      '</div>' +
+    '</div>';
+  if(typeof retryFn === 'function'){
+    const btn = el.querySelector('button.btn-retry[data-retry="'+containerId+'"]');
+    if(btn){
+      btn.addEventListener('click', function(){
+        btn.disabled = true;
+        btn.textContent = '⏳ Reintentando…';
+        __gaPurgeCache();
+        Promise.resolve(retryFn()).finally(function(){ /* el retry vuelve a renderizar todo */ });
+      });
+    }
+  }
+}
+
+// Helper: escape mínimo para HTML (evita inyectar mensajes con <>).
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+async function loadGaMetrics(filter){
+  const f = (filter === 'area2' || filter === 'github') ? filter : 'all';
+  __gaFilter = f;
+  // Estado de carga visual sólo si no hay caché válida.
+  if(!__gaReadCache(f)){
+    ['gaByHost','gaTopPages','gaTopSources'].forEach(function(id){
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = '<div class="loading"><span class="spin"></span>Consultando GA4…</div>';
+    });
+  }
+  try{
+    const data = await fetchGaMetricsShared(f);
+    renderGaMetrics(data);
+  }catch(e){
+    const msg = (e && e.message) ? e.message : String(e);
+    const metaEl = document.getElementById('gaMeta');
+    if(metaEl) metaEl.textContent = 'error · ' + String(msg).substring(0,80);
+    ['gaToday','ga7d','ga28d'].forEach(function(id){
+      const el = document.getElementById(id); if(el) el.textContent = '—';
+    });
+    ['gaTodaySub','ga7dSub','ga28dSub'].forEach(function(id){
+      const el = document.getElementById(id); if(el) el.textContent = 'sin datos';
+    });
+    // Error principal en el primer card; los otros 2 cards en estado simple
+    // para no repetir el mismo bloque tres veces.
+    renderGaErrorBlock('gaByHost', e, function(){ return loadGaMetrics(__gaFilter); });
+    ['gaTopPages','gaTopSources'].forEach(function(id){
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = '<div class="empty">No disponible — ver error arriba.</div>';
+    });
+    // Cascade a las secciones dependientes.
+    cascadeGaError(e);
+    console.error('getGaMetrics error:', e);
+  }
+}
+
+// Marca como "no disponible" los cards que dependen de getGaMetrics
+// (Uso por apartado, embudo) cuando la llamada falla. Antes se quedaban
+// indefinidamente en "Cargando…" o mostraban un Error: internal críptico.
+function cascadeGaError(e){
+  const fields = ['usoProViews','usoProUsers','usoPacViews','usoPacUsers','usoRatio'];
+  fields.forEach(function(id){ const el = document.getElementById(id); if(el && el.textContent === '—') el.textContent = 'n/d'; });
+  const proBox = document.getElementById('usoTopPro');
+  const pacBox = document.getElementById('usoTopPac');
+  const note = '<div class="small" style="color:var(--t3);padding:14px;text-align:center">⚠️ Sin datos GA4 — ver error en sección «Tráfico web (GA4)» arriba.</div>';
+  if(proBox && /loading|Cargando/i.test(proBox.innerHTML)) proBox.innerHTML = note;
+  if(pacBox && /loading|Cargando/i.test(pacBox.innerHTML)) pacBox.innerHTML = note;
 }
 
 function renderGaMetrics(d){
@@ -1849,13 +1996,14 @@ function classifyPath(path){
 // ── 1. Uso por sección · Profesionales vs Pacientes ─────────────
 async function renderUsoSeccion(){
   try {
-    const fns = firebase.app().functions ? firebase.app().functions('europe-west1') : null;
-    if(!fns) {
+    if(!firebase.app().functions){
       document.getElementById('usoTopPro').innerHTML = '<div class="small" style="color:var(--t3)">SDK Functions no disponible.</div>';
       return;
     }
-    const r = await fns.httpsCallable('getGaMetrics')({ hostname:'all' });
-    const d = r.data || {};
+    // Reutiliza la caché compartida con loadGaMetrics — antes se llamaba
+    // a getGaMetrics 3 veces (aquí, en loadGaMetrics y en el embudo) cada
+    // vez que se cargaba el dashboard.
+    const d = await fetchGaMetricsShared('all') || {};
     const topPages = d.topPages28d || [];
     let proViews = 0, pacViews = 0, otroViews = 0;
     const proPages = [], pacPages = [];
@@ -1907,7 +2055,19 @@ async function renderUsoSeccion(){
     document.getElementById('usoTopPro').innerHTML = pageTable(proPages, 6);
     document.getElementById('usoTopPac').innerHTML = pageTable(pacPages, 6);
   } catch(e){
-    document.getElementById('usoTopPro').innerHTML = '<div class="small" style="color:#f87171">Error: '+(e.message||e)+'</div>';
+    // Bloque de error estructurado en el primer card; el segundo apunta al primero.
+    renderGaErrorBlock('usoTopPro', e, function(){
+      __gaPurgeCache();
+      loadGaMetrics(__gaFilter);  // recarga el GA4 principal
+      renderUsoSeccion();          // y este apartado
+    });
+    const pacBox = document.getElementById('usoTopPac');
+    if(pacBox) pacBox.innerHTML = '<div class="small" style="color:var(--t3);padding:14px;text-align:center">⚠️ Sin datos GA4 — ver error a la izquierda.</div>';
+    // Vacía los KPI numéricos para que no queden con guión engañoso.
+    ['usoProViews','usoProUsers','usoPacViews','usoPacUsers','usoRatio'].forEach(function(id){
+      const el = document.getElementById(id); if(el) el.textContent = 'n/d';
+    });
+    console.error('renderUsoSeccion error:', e);
   }
 }
 
@@ -1977,24 +2137,18 @@ async function renderConversionFunnel(rows){
   const wrap = document.getElementById('funnelWrap');
   if(!wrap) return;
   try {
-    // Visitantes anónimos (28d): GA4 last28d.users (vía cache sessionStorage si existe)
+    // Visitantes anónimos (28d): reutiliza el fetch compartido con caché.
+    // Si la llamada falla, dejamos anonVisitors=0 y mostramos el funnel
+    // con un aviso al final, en vez de tirar todo el bloque por un error
+    // de "internal".
     let anonVisitors = 0;
+    let gaFailed = false;
     try {
-      const cached = sessionStorage.getItem('cart_ga_metrics_v1_all');
-      if(cached){
-        const parsed = JSON.parse(cached);
-        anonVisitors = parsed.data && parsed.data.ranges && parsed.data.ranges.last28d ? parsed.data.ranges.last28d.users : 0;
-      }
-    }catch(e){}
-    // Si no hay caché, llamar GA4
-    if(!anonVisitors){
-      try {
-        const fns = firebase.app().functions ? firebase.app().functions('europe-west1') : null;
-        if(fns){
-          const r = await fns.httpsCallable('getGaMetrics')({ hostname:'all' });
-          anonVisitors = (r.data && r.data.ranges && r.data.ranges.last28d && r.data.ranges.last28d.users) || 0;
-        }
-      }catch(e){}
+      const d = await fetchGaMetricsShared('all');
+      anonVisitors = (d && d.ranges && d.ranges.last28d && d.ranges.last28d.users) || 0;
+    }catch(e){
+      gaFailed = true;
+      console.warn('Funnel: GA4 no disponible —', (e && e.message) || e);
     }
 
     // Total cuentas registradas (Firestore users)
@@ -2051,9 +2205,14 @@ async function renderConversionFunnel(rows){
       html += '<span style="color:var(--t3)">Benchmark sanidad B2B: 2-5% / 30-60%</span>';
       html += '</div>';
     }
+    // Si GA4 falló, añade una nota explicando que el primer escalón está vacío.
+    if(gaFailed){
+      html += '<div class="small" style="margin-top:12px;padding:10px 12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);border-radius:8px;color:var(--t2)">⚠️ El escalón «Visitantes anónimos» no se ha podido calcular porque <code>getGaMetrics</code> ha fallado. Mira la sección <strong>Tráfico web (GA4)</strong> para reintentarlo. Los escalones de Firestore siguen siendo válidos.</div>';
+    }
     wrap.innerHTML = html;
   }catch(e){
-    wrap.innerHTML = '<div class="small" style="color:#f87171">Error: '+(e.message||e)+'</div>';
+    renderGaErrorBlock('funnelWrap', e, function(){ renderConversionFunnel(rows); });
+    console.error('renderConversionFunnel error:', e);
   }
 }
 
