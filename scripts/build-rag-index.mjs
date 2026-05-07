@@ -37,6 +37,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
 
 const NOTEBOOK_PATH = join(REPO_ROOT, 'notebook-local.html');
+const PROTOCOLOS_JS = join(REPO_ROOT, 'mega-kb-protocolos.js'); // extensión generada
 const OUTPUT_PATH = join(REPO_ROOT, 'rag-index.json');
 const PROTOCOLOS_DIR = join(REPO_ROOT, 'protocolos'); // 10 PDFs curados AP
 const DOCS_DIR = join(REPO_ROOT, 'docs');             // 600+ PDFs - filtraremos
@@ -82,37 +83,22 @@ function unescapeJsString(s) {
     .replace(/\\\\/g, '\\');
 }
 
-// ── Util: extraer MEGA_KB del HTML ──────────────────────────
-// El HTML tiene:
+// ── Util: extraer MEGA_KB de un JS/HTML ─────────────────────
+// Patrones:
 //   1. Asignación inicial: `var MEGA_KB = "..."` (single-line, \n escapados).
-//   2. Extensión opcional:
-//        MEGA_KB += '\n\n=== ... ===' +
-//        'línea 2\n' +
-//        'línea 3\n' +
-//        ... (cientos de líneas) +
-//        'última';
-//      Es UN solo statement con `+` concatenando literales en cada línea.
+//   2. Extensiones: `MEGA_KB += 'a' + 'b' + ... ;` (multi-línea).
 //
-// Estrategia: state machine line-by-line.
-//   - Detecta inicio: línea que matchea /MEGA_KB\s*\+=/.
-//   - Mientras no encuentre `;` al final, extrae el primer literal `'...'` o `"..."`
-//     de cada línea y lo concatena.
-//   - Termina cuando la línea acaba con `;`.
-function extractMegaKB(html) {
-  // 1) Asignación inicial.
-  const initMatch = html.match(/var\s+MEGA_KB\s*=\s*"((?:\\.|[^"\\])*)"/);
-  if (!initMatch) throw new Error('No se encontró `var MEGA_KB = "..."` en notebook-local.html');
-  let kb = unescapeJsString(initMatch[1]);
-
-  // 2) Extensiones via `+=` (multi-línea).
-  const lines = html.split('\n');
+// `requireInit=false` permite extraer solo los += de un archivo que no
+// declare MEGA_KB (p.ej. mega-kb-protocolos.js, generado).
+function extractAppendBlocks(text) {
+  const lines = text.split('\n');
   const stringLitRe = /'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)"/;
+  let kb = '';
   let i = 0;
   while (i < lines.length) {
     if (/MEGA_KB\s*\+=/.test(lines[i])) {
       let appendBlock = '';
       let inBlock = true;
-      let firstLine = true;
       while (inBlock && i < lines.length) {
         const line = lines[i];
         const m = line.match(stringLitRe);
@@ -120,19 +106,28 @@ function extractMegaKB(html) {
           const literal = m[1] !== undefined ? m[1] : m[2];
           appendBlock += unescapeJsString(literal);
         }
-        // Termina el statement cuando la línea acaba con `;` (ignorando whitespace y comments).
         const trimmed = line.replace(/\/\/.*$/, '').trimEnd();
-        if (trimmed.endsWith(';')) {
-          inBlock = false;
-        }
-        if (firstLine) firstLine = false;
+        if (trimmed.endsWith(';')) inBlock = false;
         i++;
       }
-      if (appendBlock) kb += '\n\n' + appendBlock;
+      if (appendBlock) kb += (kb ? '\n\n' : '') + appendBlock;
     } else {
       i++;
     }
   }
+  return kb;
+}
+
+function extractMegaKB(text, { requireInit = true } = {}) {
+  let kb = '';
+  const initMatch = text.match(/var\s+MEGA_KB\s*=\s*"((?:\\.|[^"\\])*)"/);
+  if (initMatch) {
+    kb = unescapeJsString(initMatch[1]);
+  } else if (requireInit) {
+    throw new Error('No se encontró `var MEGA_KB = "..."` en notebook-local.html');
+  }
+  const appends = extractAppendBlocks(text);
+  if (appends) kb += (kb ? '\n\n' : '') + appends;
   return kb;
 }
 
@@ -314,8 +309,20 @@ async function main() {
   const html = readFileSync(NOTEBOOK_PATH, 'utf8');
 
   console.log('🔍 Extrayendo MEGA_KB...');
-  const kb = extractMegaKB(html);
-  console.log(`   MEGA_KB extraído: ${kb.length.toLocaleString()} caracteres`);
+  let kb = extractMegaKB(html);
+  console.log(`   MEGA_KB inicial: ${kb.length.toLocaleString()} caracteres`);
+
+  // Si existe mega-kb-protocolos.js (extensión generada con
+  // gen-megakb-protocolos.mjs), añade su contenido también — son los
+  // 10 protocolos AP que se cargan en runtime via <script src>.
+  if (existsSync(PROTOCOLOS_JS)) {
+    const protoJs = readFileSync(PROTOCOLOS_JS, 'utf8');
+    const extra = extractMegaKB(protoJs, { requireInit: false }); // solo `+=` (no var)
+    if (extra) {
+      kb += '\n\n' + extra;
+      console.log(`   + protocolos AP: ${extra.length.toLocaleString()} chars (total ${kb.length.toLocaleString()})`);
+    }
+  }
 
   console.log('✂️  Troceando MEGA_KB...');
   const chunks = chunkText(kb, 'MEGA_KB');
