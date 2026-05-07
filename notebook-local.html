@@ -156,10 +156,19 @@
         });
     }
     // App Check: activa si recaptcha-key.js define una site key real.
-    try {
-      var __sk = (typeof window !== 'undefined' && window.RECAPTCHA_SITE_KEY) || '';
-      if (__sk && firebase.appCheck) firebase.appCheck().activate(__sk, true);
-    } catch(e){ console.warn('[app-check]', e && e.message); }
+    // Diferido a DOMContentLoaded porque reCAPTCHA v3 inyecta la badge
+    // en document.body (null si corremos dentro de <head>).
+    (function(){
+      function __act(){
+        try {
+          var __sk = (typeof window !== 'undefined' && window.RECAPTCHA_SITE_KEY) || '';
+          if (__sk && firebase.appCheck) firebase.appCheck().activate(__sk, true);
+        } catch(e){ console.warn('[app-check]', e && e.message); }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', __act, { once: true });
+      } else { __act(); }
+    })();
     var db = firebase.firestore();
     </script>
     <link rel="stylesheet" href="styles.css?v=20260404z">
