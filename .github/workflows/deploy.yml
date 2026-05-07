@@ -24,14 +24,30 @@ jobs:
         run: npm --prefix functions run build
       - name: Unit tests
         run: npm --prefix functions test
-      - name: Firebase deploy --only functions
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: docenciacartagenaeste
-          entryPoint: ./
-          target: functions
+      - name: Install firebase-tools
+        run: npm install -g firebase-tools@latest
+      - name: Deploy askAi Cloud Function
+        env:
+          # FIREBASE_SERVICE_ACCOUNT contiene el JSON completo de una
+          # service account con rol "Cloud Functions Admin" + "Service
+          # Account User" sobre el proyecto docenciacartagenaeste.
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          set -e
+          # 1) Si hay service account JSON en secret, escribirlo a archivo
+          # y autenticar con ADC. Si no, intentar fallback a FIREBASE_TOKEN.
+          if [ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
+            printf '%s' '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$GOOGLE_APPLICATION_CREDENTIALS"
+            echo "[deploy] usando GOOGLE_APPLICATION_CREDENTIALS de service account"
+            firebase deploy --only functions:askAi --project docenciacartagenaeste --non-interactive --force
+          elif [ -n "$FIREBASE_TOKEN" ]; then
+            echo "[deploy] usando FIREBASE_TOKEN (legacy)"
+            firebase deploy --only functions:askAi --project docenciacartagenaeste --token "$FIREBASE_TOKEN" --non-interactive --force
+          else
+            echo "[deploy] ERROR: ni FIREBASE_SERVICE_ACCOUNT ni FIREBASE_TOKEN configurados en repo secrets" >&2
+            exit 1
+          fi
 
   sync-area2:
     name: Sync a repo del dominio custom
