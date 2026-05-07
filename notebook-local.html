@@ -164,6 +164,23 @@
     </script>
     <link rel="stylesheet" href="styles.css?v=20260404z">
     <script src="ai-client.js"></script>
+    <!-- RAG client: retrieval semántico contra rag-index.json (chunks pre-embebidos
+         con Gemini text-embedding-004). Reemplaza el stuffing de los 80K chars de
+         MEGA_KB por retrieval real. Ver functions/src/embedQuery.ts y
+         scripts/build-rag-index.mjs. -->
+    <script src="rag-client.js" defer></script>
+    <script>
+      // Pre-carga del índice en background tras DOMContentLoaded — el primer
+      // mensaje del usuario suele tardar varios segundos en redactarse, así
+      // que para entonces el JSON ya está cacheado en IndexedDB.
+      window.addEventListener('DOMContentLoaded', function(){
+        if (window.RAG && typeof window.RAG.init === 'function') {
+          window.RAG.init().catch(function(e){
+            console.warn('[rag] precarga falló (no bloqueante):', e && e.message);
+          });
+        }
+      });
+    </script>
     <script src="sw-update.js" defer></script>
     <script src="errorMessages.js"></script>
     <script>window.SENTRY_DSN='https://397ff22b9f93f5ed251ec81c68806546@o4511258495090688.ingest.de.sentry.io/4511258543784016';/* ← pega aquí el DSN cuando esté: 'https://...@...ingest.de.sentry.io/...' */</script>
@@ -3069,25 +3086,63 @@ function megaDispatch(question) {
         return;
     }
 
-    // KB_MAX subido de 3000 → 80000 chars (~20K tokens). Los modelos del
-    // route 'educational' (DeepSeek V3 / Gemini 2.5 Flash-Lite) admiten
-    // 128K+ tokens de contexto, así que cabe holgado y la IA tiene acceso
-    // al contenido completo de Urgencias + AP + Farmacología + Antibióticos.
-    var KB_MAX = 80000;
-    var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
-    var fullPrompt = "CONOCIMIENTO BASE (protocolos locales Área II Cartagena):\n" + kb + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
+    // ── RAG real (2026-05) ──
+    // Antes: stuffing de 80K chars de MEGA_KB en cada pregunta → DeepSeek
+    //         lee todo siempre, lento, caro y con peor recall.
+    // Ahora: window.RAG (rag-client.js + Cloud Function embedQuery) hace
+    //         retrieval semántico contra rag-index.json (chunks pre-embebidos)
+    //         y solo se manda el contexto relevante (≤6KB) al LLM.
+    //
+    // Si el retrieval falla (rag-index.json no descargado, embedQuery error,
+    // user offline): fallback al stuffing antiguo para no romper la UX.
+    function buildContextWithRAG() {
+        if (typeof window.RAG !== 'object' || typeof window.RAG.retrieve !== 'function') {
+            return Promise.resolve(null);
+        }
+        return window.RAG.retrieve(question, { k: 6 })
+            .then(function(scored){
+                if (!scored || !scored.length) return null;
+                return window.RAG.buildContext(scored, { maxChars: 6000 });
+            })
+            .catch(function(e){
+                console.warn('[megaChat] RAG retrieve falló, uso stuffing fallback:', e && e.message);
+                return null;
+            });
+    }
 
-    window.askAi({ type: "educational", systemPrompt: sp, prompt: fullPrompt })
-        .then(function(res){
-            var ans = (res && res.text ? res.text : "").replace(/<think>[\s\S]*?<\/think>/g, "").trim();
-            if (!ans) throw new Error("Respuesta vacía");
-            megaOnAnswer(ans, btn);
-        })
-        .catch(function(e){
-            var userMsg = (e && e.userMessage) ? e.userMessage : "No se pudo conectar con la IA.";
-            megaAppendMsg("system", "⚠️ " + userMsg + " <button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
-            megaReset(btn);
-        });
+    function fallbackStuffing() {
+        var KB_MAX = 80000;
+        var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
+        return "CONOCIMIENTO BASE (protocolos locales Área II Cartagena, completo):\n" + kb;
+    }
+
+    buildContextWithRAG().then(function(ragContext){
+        var contextBlock;
+        if (ragContext) {
+            contextBlock = "PROTOCOLOS LOCALES ÁREA II CARTAGENA · fragmentos relevantes a la pregunta " +
+                "(retrieval semántico, top-6 por similitud de embedding):\n\n" + ragContext +
+                "\n\nINSTRUCCIONES: Responde basándote PRIMERO en estos fragmentos. " +
+                "Cita el número del fragmento entre corchetes (ej. [#1], [#3]) cuando uses información de él. " +
+                "Si la pregunta no está cubierta, dilo explícitamente y entonces da orientación general.";
+        } else {
+            // Fallback: stuffing antiguo si RAG no disponible.
+            contextBlock = fallbackStuffing();
+        }
+
+        var fullPrompt = contextBlock + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
+
+        window.askAi({ type: "educational", systemPrompt: sp, prompt: fullPrompt })
+            .then(function(res){
+                var ans = (res && res.text ? res.text : "").replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+                if (!ans) throw new Error("Respuesta vacía");
+                megaOnAnswer(ans, btn);
+            })
+            .catch(function(e){
+                var userMsg = (e && e.userMessage) ? e.userMessage : "No se pudo conectar con la IA.";
+                megaAppendMsg("system", "⚠️ " + userMsg + " <button onclick='megaRetryLast()' style='padding:8px 16px;background:#0d47a1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;margin-top:8px;'>🔄 Reintentar</button>");
+                megaReset(btn);
+            });
+    });
 }
 
 // megaCall{NAS,DeepSeek,OpenRouter,Pollinations} eliminadas — toda la
