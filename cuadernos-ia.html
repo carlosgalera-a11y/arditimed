@@ -414,7 +414,8 @@ async function sendChat(){
   });
 
   var sysPrompt='Eres un asistente clínico docente del Área II Cartagena. El usuario ha subido documentos médicos a su cuaderno "'+nb.name+'". Responde en español, claro y profesional. Si hay imágenes de analíticas, informes o capturas médicas, extrae y organiza la información relevante. ' +
-    'REGLA ESENCIAL: cuando recibas un bloque CONTEXTO con fragmentos de protocolos del Área II o del cuaderno del usuario, DEBES extraer e integrar el contenido concreto de los fragmentos (criterios, algoritmos, dosis, derivaciones) en tu respuesta. PROHIBIDO responder solo apuntando \"existe el protocolo X\" — el usuario ya sabe que existe; entrega su CONTENIDO aplicado a la pregunta. Cita los fragmentos por su número [#1], [#2], etc. cuando uses su información.';
+    'REGLA ESENCIAL 1: cuando recibas un bloque CONTEXTO con fragmentos de protocolos del Área II o del cuaderno del usuario, DEBES extraer e integrar el contenido concreto (criterios, algoritmos, dosis, derivaciones) en tu respuesta. PROHIBIDO responder solo apuntando \"existe el protocolo X\" — el usuario ya sabe que existe; entrega su CONTENIDO aplicado a la pregunta. Cita los fragmentos por su número [#1], [#2], etc. cuando uses su información. ' +
+    'REGLA ESENCIAL 2: NUNCA, NI AL FINAL DE LA RESPUESTA, redactes frases tipo \"existe un protocolo sobre X disponible en la web\", \"recomendación adicional: consulta el protocolo Y\" o similares. La respuesta debe ser AUTOCONTENIDA. Si el contenido está en el contexto, úsalo. Si no, dilo abiertamente sin remitir a otros documentos del sitio.';
 
   // ── RAG: retrieve combinado (MEGA_KB global + chunks PDFs del cuaderno) ──
   var ragContext='';
