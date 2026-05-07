@@ -4062,20 +4062,30 @@ window.ckGenerate=function(fromChat){
     var mi=0;
     var lt=setInterval(function(){mi=(mi+1)%CK_MSGS.length;var e=document.getElementById("ckLoadMsg");if(e)e.textContent=CK_MSGS[mi]},2000);
 
-    // Build context from protocolos + MegaCuaderno history
+    // Build context from protocolos + MegaCuaderno history.
+    // Antes mandábamos MEGA_KB.substring(0,60000) en el user prompt, lo
+    // que excede el límite de 8000 chars del backend desplegado y causaba
+    // "No se pudo generar". Ahora usamos retrieval (megaSearchRelevant)
+    // para elegir solo los chunks más relevantes al diagnóstico.
     var context="";
-    // Add MEGA_KB (protocolos locales)
-    if(typeof MEGA_KB!=="undefined" && MEGA_KB){
-        // Subido de 3000 → 60000 chars para que el Checklist Clínico IA
-        // tenga acceso al manual completo de urgencias, AP, exploración y ATB.
-        context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,60000)+"\n\n";
+    if(typeof megaSearchRelevant === 'function'){
+        var retr = megaSearchRelevant(q, 4500);
+        if(retr.chunks.length){
+            context+="=== PROTOCOLOS RELEVANTES (búsqueda automática) ===\n"+retr.chunks.join("\n\n")+"\n\n";
+        } else if(typeof MEGA_KB !== "undefined" && MEGA_KB){
+            // Fallback: primeros 4500 chars del KB.
+            context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,4500)+"\n\n";
+        }
+    } else if(typeof MEGA_KB!=="undefined" && MEGA_KB){
+        // Si megaSearchRelevant no está cargado por algún motivo, fallback al KB.
+        context+="=== PROTOCOLOS LOCALES ÁREA II CARTAGENA ===\n"+MEGA_KB.substring(0,4500)+"\n\n";
     }
     // Add MegaCuaderno conversation if available
     if(fromChat && typeof megaHistory!=="undefined" && megaHistory.length>0){
         context+="=== CONVERSACIÓN PREVIA DEL MEGACUADERNO ===\n";
-        var recent=megaHistory.slice(-8);
+        var recent=megaHistory.slice(-4);  // antes 8, bajado para dejar margen
         recent.forEach(function(m){
-            context+=(m.role==="user"?"MÉDICO: ":"IA: ")+m.content.substring(0,500)+"\n";
+            context+=(m.role==="user"?"MÉDICO: ":"IA: ")+m.content.substring(0,300)+"\n";
         });
         context+="\n";
     }
@@ -4086,6 +4096,8 @@ window.ckGenerate=function(fromChat){
     } else {
         userMsg="Genera el checklist clínico completo (5 secciones: Anamnesis, Exploración, Pruebas, Tratamiento hospitalario, Tratamiento domiciliario) para: "+q;
     }
+    // Tope defensivo bajo el límite de 8000 chars del backend desplegado.
+    if(userMsg.length > 7800) userMsg = userMsg.substring(0, 7800) + '\n[…truncado]';
 
     var msgs=[{role:"user",content:userMsg}];
 
