@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="/console-guard.js"></script>
+  <meta charset="UTF-8">
+  <meta name="author" content="Carlos Galera Román, MFyC">
+  <meta name="medical-organization" content="H.G.U. Santa Lucía · Área II · Servicio Murciano de Salud">
+  <meta name="compliance" content="RGPD · EU AI Act 2024/1689 · LPI Art. 51">
+  <meta name="last-reviewed" content="2026-05-01">
+  <meta name="generator" content="Cartagenaeste PWA">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Niños — Cartagenaeste · Área II Cartagena</title>
+  <meta name="description" content="Calculadora de dosis pediátrica orientativa por peso y hojas informativas SEUP para familias. Material formativo del Centro de Salud Virgen de la Caridad.">
+  <link rel="canonical" href="https://carlosgalera-a11y.github.io/Cartagenaeste/pacientes-ninos.html">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-96x96.png">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f4f6f8;--card:#fff;--border:#e2e8f0;--t1:#1a1f2e;--t2:#475569;--t3:#94a3b8;--primary:#0d9488;--accent:#f59e0b;--danger:#ef4444;--ok:#16a34a;--radius:12px;--shadow:0 2px 8px rgba(0,0,0,.06);--shadow-md:0 4px 14px rgba(0,0,0,.08)}
+    @media(prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--t1:#e2e8f0;--t2:#cbd5e1;--t3:#94a3b8}}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55}
+    .nav{background:var(--card);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+    .nav a{color:var(--t2);text-decoration:none;font-size:.88rem;font-weight:500}
+    .nav a:hover{color:var(--primary)}
+    .nav h1{margin:0;font-size:1rem;font-weight:600;flex:1}
+    .wrap{max-width:1000px;margin:0 auto;padding:18px}
+    .disclaimer{background:#fef3c7;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:.85rem;color:#78350f}
+    @media(prefers-color-scheme:dark){.disclaimer{background:#451a03;border-color:#92400e;color:#fde68a}}
+    .section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;box-shadow:var(--shadow)}
+    .section h2{font-size:1.15rem;margin:0 0 8px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:8px}
+    .section .lead{color:var(--t2);font-size:.88rem;margin:0 0 14px}
+    label{display:block;font-size:.82rem;font-weight:600;color:var(--t2);margin-bottom:4px}
+    select, input[type="number"]{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit;background:var(--card);color:var(--t1)}
+    select:focus, input:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px rgba(13,148,136,.15)}
+    .form-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:14px}
+    @media(max-width:640px){.form-row{grid-template-columns:1fr}}
+    .btn{background:var(--primary);color:#fff;border:0;padding:11px 20px;border-radius:8px;cursor:pointer;font-size:.92rem;font-weight:600;font-family:inherit;transition:background .15s}
+    .btn:hover{background:#0f766e}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .result{background:#ecfdf5;border:1.5px solid #6ee7b7;border-radius:10px;padding:14px 16px;margin-top:14px;font-size:.92rem}
+    .result.warn{background:#fef3c7;border-color:#fde68a;color:#78350f}
+    .result.err{background:#fee2e2;border-color:#fecaca;color:#991b1b}
+    @media(prefers-color-scheme:dark){.result{background:rgba(34,197,94,.08);color:#86efac}.result.warn{background:rgba(245,158,11,.1);color:#fde68a}.result.err{background:rgba(239,68,68,.1);color:#fca5a5}}
+    .result h3{margin:0 0 6px;font-size:.92rem}
+    .result .dose{font-size:1.4rem;font-weight:700;font-family:'Courier New',monospace;color:var(--ok);margin:6px 0}
+    .result.warn .dose, .result.err .dose{color:inherit}
+    .result ul{margin:8px 0 0 18px;padding:0;font-size:.84rem}
+    .result li{margin:3px 0}
+    .hojas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+    .hoja{padding:10px 12px;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:var(--t1);font-size:.86rem;display:flex;align-items:center;gap:8px;background:var(--card);transition:all .15s}
+    .hoja:hover{border-color:var(--primary);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+    .hoja .ic{font-size:1.1rem;flex-shrink:0}
+    .src-note{font-size:.78rem;color:var(--t3);margin-top:10px}
+    .src-note a{color:var(--primary)}
+    code{background:rgba(13,148,136,.1);padding:1px 6px;border-radius:4px;font-size:.84em;font-family:'Courier New',monospace}
+    .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;background:var(--accent);color:#fff;margin-left:6px;vertical-align:middle}
+    footer{text-align:center;padding:24px 18px;color:var(--t3);font-size:.78rem}
+    footer a{color:var(--primary);text-decoration:none}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="pacientes.html">← Pacientes</a>
+  <h1>👶 Niños · familias</h1>
+</nav>
+
+<main class="wrap">
+
+  <div class="disclaimer">
+    <strong>⚠️ Material formativo orientativo.</strong> No sustituye al juicio clínico ni al pediatra. Las dosis se calculan por peso pero <strong>siempre deben ser confirmadas por un profesional</strong> y contrastadas con el prospecto del medicamento. En caso de duda o gravedad, llamar al <strong>112</strong> o acudir a Urgencias.
+  </div>
+
+  <!-- ════════ Calculadora dosis pediátrica ════════ -->
+  <section class="section" id="calculadoraDosis">
+    <h2>🧮 Calculadora de dosis pediátrica <span class="pill">orientativa</span></h2>
+    <p class="lead">Selecciona el fármaco e introduce el peso del niño en kg. La calculadora aplica la dosis estándar por kg/dosis recomendada en pediatría española (AEPap, SEUP, AEMPS). Verifica siempre con el prospecto y consulta a tu pediatra.</p>
+
+    <div class="form-row">
+      <div>
+        <label for="dDrug">Fármaco</label>
+        <select id="dDrug" aria-label="Selecciona el fármaco"></select>
+      </div>
+      <div>
+        <label for="dWeight">Peso (kg)</label>
+        <input id="dWeight" type="number" min="2" max="80" step="0.5" placeholder="Ej. 14" aria-label="Peso del niño en kg">
+      </div>
+      <div>
+        <label for="dAge">Edad (meses)</label>
+        <input id="dAge" type="number" min="0" max="216" step="1" placeholder="Opcional" aria-label="Edad del niño en meses">
+      </div>
+    </div>
+    <button class="btn" id="dCalcBtn" type="button">Calcular dosis</button>
+
+    <div id="dResult" style="display:none"></div>
+
+    <p class="src-note">Fuentes: <a href="https://www.aepap.org/biblioteca/medicamentos" target="_blank" rel="noopener">AEPap · medicamentos pediatría</a> · <a href="https://pediamecum.es/" target="_blank" rel="noopener">Pediamécum (AEP)</a> · <a href="https://cima.aemps.es/" target="_blank" rel="noopener">CIMA AEMPS</a> · prospectos. Última revisión: 2026-05-01. Inspirado en <a href="https://dosispedia.com" target="_blank" rel="noopener">dosispedia.com</a>.</p>
+  </section>
+
+  <!-- ════════ Hojas informativas SEUP ════════ -->
+  <section class="section" id="hojasSeup">
+    <h2>📋 Hojas informativas para familias</h2>
+    <p class="lead">Información oficial de la <strong>Sociedad Española de Urgencias de Pediatría (SEUP)</strong>. Cada enlace abre el documento original en seup.org. Material gratuito y validado por urgenciólogos pediátricos.</p>
+
+    <div class="hojas-grid" id="hojasGrid"></div>
+
+    <p class="src-note">Fuente: <a href="https://seup.org/hojas-informativas/" target="_blank" rel="noopener">seup.org/hojas-informativas/</a> · © Sociedad Española de Urgencias de Pediatría. Estos documentos pertenecen a SEUP y se enlazan directamente desde su web — Cartagenaeste no aloja copia. Si un enlace falla, búscalo en seup.org.</p>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 Carlos Galera Román · MFyC, H.G.U. Santa Lucía · Área II Cartagena · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// Base de datos de fármacos pediátricos · ORIENTATIVA
+// ════════════════════════════════════════════════════════════════════
+// Cada entrada incluye:
+//   id / nombre comercial común / principio activo / mg por kg por dosis
+//   intervalo / dosis máxima por dosis / dosis máxima diaria / formato
+//   habitual (concentración) / notas / contraindicaciones / edad mínima
+//
+// Las cifras siguen las recomendaciones de Pediamécum (AEP), AEPap y los
+// prospectos AEMPS más comunes en la práctica clínica española. Cualquier
+// caso fuera de los rangos típicos (prematuros, insuf. renal/hepática,
+// alergias) DEBE ser valorado por el pediatra.
+// ════════════════════════════════════════════════════════════════════
+
+const DRUGS = [
+  {
+    id:'paracetamol',
+    label:'Paracetamol (Apiretal®, Termalgin®, Gelocatil®) — analgésico/antipirético',
+    therapClass:'Analgésico · antipirético',
+    mgKgDose:15,
+    intervalH:'4-6 h',
+    maxDose:1000,
+    maxDay:60,
+    forms:[
+      { name:'Apiretal® gotas 100 mg/mL', mgPerMl:100 },
+      { name:'Apiretal® jarabe 30 mg/mL', mgPerMl:30 },
+      { name:'Comprimido 500 mg', tabMg:500 },
+      { name:'Comprimido 650 mg', tabMg:650 },
+      { name:'Comprimido 1 g', tabMg:1000 }
+    ],
+    notes:[
+      'Vía oral o rectal. Si vómitos persistentes, valorar vía rectal o ibuprofeno.',
+      'Evitar superar 60 mg/kg/día y nunca exceder 4 g/día en niños mayores.',
+      'En lactantes <3 meses: consultar siempre antes a pediatra (dosis 10 mg/kg/dosis máx).'
+    ],
+    minAgeMonths:0
+  },
+  {
+    id:'ibuprofeno',
+    label:'Ibuprofeno (Dalsy®, Junifen®, Algidrin®) — AINE',
+    therapClass:'AINE · antitérmico',
+    mgKgDose:7,
+    intervalH:'6-8 h',
+    maxDose:600,
+    maxDay:30,
+    forms:[
+      { name:'Dalsy® 20 mg/mL', mgPerMl:20 },
+      { name:'Junifen® 40 mg/mL (concentrado)', mgPerMl:40 },
+      { name:'Algidrín® 20 mg/mL', mgPerMl:20 },
+      { name:'Comprimido 400 mg', tabMg:400 },
+      { name:'Comprimido 600 mg', tabMg:600 }
+    ],
+    notes:[
+      'Tomar SIEMPRE con alimento (gastroprotección).',
+      'Evitar en deshidratación, vómitos persistentes o varicela.',
+      'No usar en menores de 3 meses ni en peso <5 kg.'
+    ],
+    minAgeMonths:3
+  },
+  {
+    id:'amoxicilina',
+    label:'Amoxicilina (Clamoxyl®) — antibiótico β-lactámico',
+    therapClass:'Antibiótico β-lactámico',
+    mgKgDose:25,
+    mgKgDoseHigh:40,
+    intervalH:'8 h',
+    maxDose:1000,
+    maxDay:80,
+    forms:[
+      { name:'Suspensión 100 mg/mL (Clamoxyl® reconstituido)', mgPerMl:100 },
+      { name:'Suspensión 50 mg/mL', mgPerMl:50 },
+      { name:'Cápsula 500 mg', tabMg:500 },
+      { name:'Comprimido 1 g', tabMg:1000 }
+    ],
+    notes:[
+      'OMA, faringoamigdalitis estreptocócica: 50 mg/kg/día en 2-3 tomas. Otitis grave o neumonía: 80-90 mg/kg/día.',
+      'Duración típica 7-10 días. NUNCA suspender antes aunque mejore.',
+      'Avisar si reacción cutánea — descartar alergia a penicilinas.'
+    ],
+    minAgeMonths:0
+  },
+  {
+    id:'amox-clav',
+    label:'Amoxicilina-clavulánico (Augmentine®) — antibiótico',
+    therapClass:'Antibiótico β-lactámico + IBL',
+    mgKgDose:25,
+    intervalH:'8 h',
+    maxDose:875,
+    maxDay:80,
+    forms:[
+      { name:'Suspensión 100/12.5 mg/mL', mgPerMl:100 },
+      { name:'Suspensión 40/5.7 mg/mL', mgPerMl:40 },
+      { name:'Comprimido 875/125 mg', tabMg:875 }
+    ],
+    notes:[
+      'Dosis se calcula sobre la fracción de amoxicilina. Frecuente diarrea — ofrecer probiótico.',
+      'Tomar con el inicio de la comida para mejor tolerancia.',
+      'Reservar para fracaso de amoxicilina sola, OMA recidivante o sinusitis bacteriana.'
+    ],
+    minAgeMonths:0
+  },
+  {
+    id:'azitromicina',
+    label:'Azitromicina (Zitromax®) — macrólido',
+    therapClass:'Antibiótico macrólido',
+    mgKgDose:10,
+    intervalH:'24 h',
+    maxDose:500,
+    maxDay:10,
+    durationDays:3,
+    forms:[
+      { name:'Suspensión 40 mg/mL', mgPerMl:40 },
+      { name:'Comprimido 500 mg', tabMg:500 }
+    ],
+    notes:[
+      'Pauta clásica 3 días: 10 mg/kg/día UNA toma diaria.',
+      'Tomar 1 h antes o 2 h después de la comida (mejor absorción).',
+      'Indicado en alergia a β-lactámicos. Atención a interacciones (QT largo).'
+    ],
+    minAgeMonths:6
+  },
+  {
+    id:'salbutamol',
+    label:'Salbutamol (Ventolin®) — broncodilatador inhalado',
+    therapClass:'β2-agonista inhalado',
+    mgKgDose:0,
+    intervalH:'según crisis',
+    custom:true,
+    notes:[
+      'Crisis asma leve-moderada: 2-4 puffs (100 µg/puff) con cámara espaciadora cada 20 min × 3 dosis. Si peso ≥ 20 kg: hasta 6-8 puffs/dosis.',
+      'No es un fármaco "por peso" sino por número de inhalaciones — usar SIEMPRE cámara con mascarilla (<4 años) o boquilla (≥4 años).',
+      'Si la crisis no cede tras 3 tandas: acudir a urgencias inmediatamente.',
+      'Efectos esperables: temblor leve, taquicardia transitoria.'
+    ],
+    minAgeMonths:0
+  },
+  {
+    id:'prednisolona',
+    label:'Prednisolona (Estilsona®) — corticoide oral',
+    therapClass:'Corticoide oral',
+    mgKgDose:1,
+    mgKgDoseHigh:2,
+    intervalH:'24 h',
+    maxDose:60,
+    maxDay:60,
+    durationDays:5,
+    forms:[
+      { name:'Estilsona® gotas 13.3 mg/mL (≈ 7 mg = 1 mL = 40 gotas)', mgPerMl:13.3 }
+    ],
+    notes:[
+      'Crisis asmática moderada-grave: 1-2 mg/kg/día en una sola toma matutina. Pauta corta 3-5 días, sin destete si <7 días.',
+      'En laringitis: dexametasona 0.15-0.6 mg/kg dosis única (preferible).',
+      'Tomar tras desayuno. Vigilar irritabilidad o aumento del apetito.'
+    ],
+    minAgeMonths:3
+  },
+  {
+    id:'dexametasona',
+    label:'Dexametasona — corticoide para laringitis',
+    therapClass:'Corticoide oral · laringitis',
+    mgKgDose:0.15,
+    mgKgDoseHigh:0.6,
+    intervalH:'dosis única',
+    maxDose:10,
+    maxDay:10,
+    forms:[
+      { name:'Fortecortin® comprimido 1 mg', tabMg:1 },
+      { name:'Solución oral magistral 0.4 mg/mL', mgPerMl:0.4 }
+    ],
+    notes:[
+      'Laringitis aguda: dosis única 0.15-0.6 mg/kg vía oral. Eficacia comparable a la inhalada y mucho más cómoda.',
+      'Si no hay mejoría en 30-60 min: valorar adrenalina nebulizada en urgencias.',
+      'NO repetir sin valoración médica.'
+    ],
+    minAgeMonths:3
+  },
+  {
+    id:'desclorfeniramina',
+    label:'Desclorfeniramina (Polaramine®) — antihistamínico',
+    therapClass:'Antihistamínico H1',
+    mgKgDose:0.15,
+    intervalH:'6-8 h',
+    maxDose:6,
+    maxDay:0.6,
+    forms:[
+      { name:'Jarabe 0.4 mg/mL', mgPerMl:0.4 },
+      { name:'Comprimido 2 mg', tabMg:2 }
+    ],
+    notes:[
+      'Urticaria, prurito, reacciones leves alérgicas. Sedante.',
+      'En anafilaxia NO sustituye a la adrenalina IM — siempre consultar urgencias.',
+      'No recomendado en menores de 2 años.'
+    ],
+    minAgeMonths:24
+  },
+  {
+    id:'cetirizina',
+    label:'Cetirizina (Zyrtec®, Alercina®) — antihistamínico no sedante',
+    therapClass:'Antihistamínico H1 · 2ª gen',
+    mgKgDose:0.25,
+    intervalH:'24 h',
+    maxDose:10,
+    maxDay:0.5,
+    forms:[
+      { name:'Solución 1 mg/mL', mgPerMl:1 },
+      { name:'Comprimido 10 mg', tabMg:10 }
+    ],
+    notes:[
+      'Rinitis alérgica, urticaria crónica.',
+      'Una toma diaria, preferiblemente por la noche.',
+      'Edad ≥ 2 años. En niños menores valorar dexclorfeniramina.'
+    ],
+    minAgeMonths:24
+  },
+  {
+    id:'ondansetron',
+    label:'Ondansetrón (Yatrox®, Zofran®) — antiemético',
+    therapClass:'Antiemético 5-HT3',
+    mgKgDose:0.15,
+    intervalH:'8 h',
+    maxDose:8,
+    maxDay:0.5,
+    forms:[
+      { name:'Comprimido bucodispersable 4 mg', tabMg:4 },
+      { name:'Comprimido bucodispersable 8 mg', tabMg:8 },
+      { name:'Solución oral 0.8 mg/mL', mgPerMl:0.8 }
+    ],
+    notes:[
+      'Indicado en gastroenteritis aguda con vómitos persistentes que impiden hidratación oral.',
+      'Dosis única bucodispersable suele ser suficiente para reiniciar tolerancia.',
+      'Edad ≥ 6 meses. Vigilar QT en cardiopatías.'
+    ],
+    minAgeMonths:6
+  },
+  {
+    id:'racecadotrilo',
+    label:'Racecadotrilo (Tiorfan®) — antidiarreico',
+    therapClass:'Inhibidor encefalinasa',
+    mgKgDose:1.5,
+    intervalH:'8 h',
+    maxDose:100,
+    maxDay:5,
+    durationDays:7,
+    forms:[
+      { name:'Sobres 10 mg', tabMg:10 },
+      { name:'Sobres 30 mg', tabMg:30 }
+    ],
+    notes:[
+      'Diarrea aguda no invasiva en lactantes y niños como complemento a la rehidratación oral (NO la sustituye).',
+      'Edad mínima 3 meses. Suspender si fiebre alta o sangre en heces.',
+      'Máximo 7 días.'
+    ],
+    minAgeMonths:3
+  }
+];
+
+// ── Utilidad render select ─────────────────────────────────────────
+const dDrug = document.getElementById('dDrug');
+DRUGS.forEach(function(d){
+  const opt = document.createElement('option');
+  opt.value = d.id;
+  opt.textContent = d.label;
+  dDrug.appendChild(opt);
+});
+
+// ── Calcular dosis ─────────────────────────────────────────────────
+document.getElementById('dCalcBtn').addEventListener('click', function(){
+  const id = dDrug.value;
+  const drug = DRUGS.find(function(d){ return d.id === id; });
+  const weight = parseFloat(document.getElementById('dWeight').value);
+  const ageM = parseFloat(document.getElementById('dAge').value);
+  const out = document.getElementById('dResult');
+  out.style.display = 'block';
+  out.className = 'result';
+
+  if(!drug){ out.className = 'result err'; out.innerHTML = '<strong>❌ Selecciona un fármaco.</strong>'; return; }
+  if(!weight || weight < 2 || weight > 80){
+    out.className = 'result err';
+    out.innerHTML = '<strong>❌ Peso fuera de rango.</strong> Introduce un valor entre 2 y 80 kg.';
+    return;
+  }
+  if(drug.minAgeMonths && !isNaN(ageM) && ageM < drug.minAgeMonths){
+    out.className = 'result warn';
+    out.innerHTML = '<h3>⚠️ Edad por debajo del límite recomendado</h3>' +
+      '<p>El fármaco <strong>' + drug.label.split(' — ')[0] + '</strong> normalmente no se administra en menores de <strong>' + drug.minAgeMonths + ' meses</strong>. Consulta a tu pediatra antes de usarlo.</p>';
+    return;
+  }
+
+  // Caso especial: fármacos sin dosis por peso (salbutamol)
+  if(drug.custom){
+    out.innerHTML = '<h3>ℹ️ ' + drug.label.split(' — ')[0] + ' · pauta especial</h3>' +
+      '<ul>' + drug.notes.map(function(n){ return '<li>' + n + '</li>'; }).join('') + '</ul>';
+    return;
+  }
+
+  const lowMg = +(drug.mgKgDose * weight).toFixed(1);
+  const highMg = drug.mgKgDoseHigh ? +(drug.mgKgDoseHigh * weight).toFixed(1) : null;
+  const cappedLow = Math.min(lowMg, drug.maxDose);
+  const cappedHigh = highMg ? Math.min(highMg, drug.maxDose) : null;
+  const dailyMaxMg = drug.maxDay < 5 ? drug.maxDay * weight : drug.maxDay; // si maxDay es ratio (p.ej. 0.5 mg/kg/día) calcular; si es absoluto (60), usarlo
+
+  let doseStr;
+  if(cappedHigh && cappedHigh !== cappedLow){
+    doseStr = cappedLow + ' – ' + cappedHigh + ' mg / dosis';
+  } else {
+    doseStr = cappedLow + ' mg / dosis';
+  }
+  if(highMg && highMg > drug.maxDose) doseStr += ' (máx adulto ' + drug.maxDose + ' mg)';
+
+  // Render forma de administración: para cada forma calcula mL o nº de comprimidos
+  const formasHtml = drug.forms ? drug.forms.map(function(f){
+    if(f.mgPerMl){
+      const mlLow = +(cappedLow / f.mgPerMl).toFixed(2);
+      const mlHigh = cappedHigh ? +(cappedHigh / f.mgPerMl).toFixed(2) : null;
+      const range = mlHigh && mlHigh !== mlLow ? (mlLow + ' – ' + mlHigh) : mlLow;
+      return '<li><strong>' + f.name + '</strong>: <code>' + range + ' mL</code> por dosis</li>';
+    } else if(f.tabMg){
+      const tabsLow = +(cappedLow / f.tabMg).toFixed(2);
+      const tabsHigh = cappedHigh ? +(cappedHigh / f.tabMg).toFixed(2) : null;
+      const range = tabsHigh && tabsHigh !== tabsLow ? (tabsLow + ' – ' + tabsHigh) : tabsLow;
+      return '<li><strong>' + f.name + '</strong>: ≈ <code>' + range + '</code> comprimidos por dosis</li>';
+    }
+    return '';
+  }).filter(Boolean).join('') : '';
+
+  let html = '<h3>✅ ' + drug.label.split(' — ')[0] + ' · ' + drug.therapClass + '</h3>';
+  html += '<div class="dose">' + doseStr + '</div>';
+  html += '<p><strong>Intervalo:</strong> cada ' + drug.intervalH + (drug.durationDays ? ' · pauta ' + drug.durationDays + ' días' : '') + '</p>';
+  if(formasHtml) html += '<p><strong>Por formato:</strong></p><ul>' + formasHtml + '</ul>';
+  html += '<p style="margin-top:10px"><strong>Máx por dosis:</strong> ' + drug.maxDose + ' mg · <strong>Máx diaria orientativa:</strong> ' + Math.round(dailyMaxMg) + ' mg</p>';
+  if(drug.notes && drug.notes.length){
+    html += '<p style="margin-top:8px"><strong>⚠️ Recordatorios:</strong></p><ul>';
+    html += drug.notes.map(function(n){ return '<li>' + n + '</li>'; }).join('');
+    html += '</ul>';
+  }
+  html += '<p style="margin-top:10px;font-size:.78rem;color:var(--t3)"><em>Cálculo orientativo — verificar con prospecto y pediatra antes de administrar.</em></p>';
+  out.innerHTML = html;
+});
+
+// ════════════════════════════════════════════════════════════════════
+// Hojas informativas SEUP
+// ════════════════════════════════════════════════════════════════════
+// Listado oficial de hojas SEUP — enlaces directos a su web. Si SEUP
+// renueva la URL de algún PDF, fallback al índice general.
+// Última verificación: 2026-05-01
+// ════════════════════════════════════════════════════════════════════
+
+const HOJAS_SEUP = [
+  { ic:'🧠', titulo:'Alteraciones conductuales' },
+  { ic:'🚨', titulo:'Anafilaxia' },
+  { ic:'😰', titulo:'Ansiedad' },
+  { ic:'🫁', titulo:'Bronquiolitis' },
+  { ic:'🤧', titulo:'Catarro de vías altas' },
+  { ic:'🤕', titulo:'Cefalea' },
+  { ic:'👶', titulo:'Cólico del lactante' },
+  { ic:'⚠️', titulo:'Conducta autolesiva' },
+  { ic:'🆘', titulo:'Conducta suicida' },
+  { ic:'🔥', titulo:'Convulsión febril' },
+  { ic:'😮‍💨', titulo:'Crisis asmática' },
+  { ic:'🤰', titulo:'Dolor abdominal' },
+  { ic:'😢', titulo:'Espasmos del sollozo' },
+  { ic:'💩', titulo:'Estreñimiento' },
+  { ic:'🌡️', titulo:'Fiebre' },
+  { ic:'🤢', titulo:'Gastroenteritis aguda' },
+  { ic:'☀️', titulo:'Golpe de calor' },
+  { ic:'☣️', titulo:'Intoxicaciones' },
+  { ic:'🗣️', titulo:'Laringitis' },
+  { ic:'🫁', titulo:'Neumonía' },
+  { ic:'👂', titulo:'Otitis media aguda' },
+  { ic:'😵', titulo:'Síncope' },
+  { ic:'🍽️', titulo:'Trastornos de la conducta alimentaria' },
+  { ic:'🧠', titulo:'Traumatismo craneal' },
+  { ic:'🌸', titulo:'Urticaria' },
+  { ic:'💉', titulo:'Procedimientos de sedoanalgesia' },
+  { ic:'🤮', titulo:'Vómitos' },
+  { ic:'🚫', titulo:'8 acciones que NO hay que hacer ante intoxicación' },
+  { ic:'🏥', titulo:'¿Debo acudir a Urgencias? Guía rápida' }
+];
+
+const grid = document.getElementById('hojasGrid');
+HOJAS_SEUP.forEach(function(h){
+  const a = document.createElement('a');
+  a.className = 'hoja';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  // Enlace al índice general — más robusto que adivinar la URL de cada PDF.
+  a.href = 'https://seup.org/hojas-informativas/';
+  a.title = 'Abre en seup.org — busca «' + h.titulo + '» en el listado';
+  a.innerHTML = '<span class="ic" aria-hidden="true">' + h.ic + '</span><span>' + h.titulo + '</span>';
+  grid.appendChild(a);
+});
+
+// Service worker (PWA)
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+
+</body>
+</html>

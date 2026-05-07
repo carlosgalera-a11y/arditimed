@@ -71,6 +71,33 @@ service cloud.firestore {
       match /progress/{pid} {
         allow read, write: if isOwner(uid);
       }
+
+      // Health metrics (HTA + DM): cifras de tensión arterial y glucemia
+      // que el paciente anota desde mis-cifras.html para llevar al médico
+      // de cabecera. Solo el dueño accede — ningún admin lee, ningún
+      // server escribe. Validación básica de campos obligatorios y rangos
+      // razonables para evitar basura en la colección.
+      match /health_metrics/{mid} {
+        allow read, delete: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && request.resource.data.type in ['bp', 'glucose']
+          && request.resource.data.timestamp is timestamp
+          && (
+            (request.resource.data.type == 'bp'
+              && request.resource.data.systolic is number
+              && request.resource.data.systolic >= 60 && request.resource.data.systolic <= 260
+              && request.resource.data.diastolic is number
+              && request.resource.data.diastolic >= 30 && request.resource.data.diastolic <= 160)
+            ||
+            (request.resource.data.type == 'glucose'
+              && request.resource.data.glucose_mg_dl is number
+              && request.resource.data.glucose_mg_dl >= 20 && request.resource.data.glucose_mg_dl <= 800)
+          );
+        // No update — si el paciente se equivoca, borra y reanota.
+        // Mantiene un registro inmutable de cifras (sin riesgo de "maquillar"
+        // datos retroactivamente antes de la cita médica).
+        allow update: if false;
+      }
     }
 
     // ══ AI Cache ════════════════════════════════════════════════════

@@ -1,11 +1,11 @@
-// Service Worker - Área II Cartagena PWA v165 (RAG + protocolos AP)
+// Service Worker - Área II Cartagena PWA v166 (RAG + protocolos AP + Niños/HTA-DM)
 // Estrategias:
 // - Network-first con timeout 3s para HTML/navegación (caché como fallback).
 // - Stale-while-revalidate para assets estáticos versionados.
 // - Bypass de Firebase Firestore/Auth/Functions/Storage (siempre online).
 // - skipWaiting + clients.claim para update inmediato.
 
-const CACHE_NAME = 'area2-v165';
+const CACHE_NAME = 'area2-v166';
 const HTML_TIMEOUT_MS = 3000;
 
 const PRECACHE = [
@@ -54,6 +54,9 @@ const PRECACHE = [
   '/scan-pii-guard.js',
   '/canonical-banner.js',
   '/offline.html',
+  '/pacientes-ninos.html',
+  '/mis-cifras.html',
+  '/apoyo-psicologico.html',
 ];
 
 self.addEventListener('install', event => {
