@@ -256,6 +256,155 @@
 @media (max-width: 768px) {
   #qrInstallSection { display: none !important; }
   #qrMiniMobile { display: flex !important; }
+
+  /* ── Mobile UX para AP / Hospitalaria / Urgencias ──
+     Reduce padding, escala títulos, hace que los botones de la barra de
+     navegación quepan, y que los modales y secciones sean usables con el
+     pulgar en pantallas pequeñas. */
+  #pageProtocolosAP > div[style*="padding:40px"],
+  #pageProtocolosUrgencias > div[style*="padding:40px"] {
+    padding: 18px 14px !important;
+    max-width: 100% !important;
+  }
+  #pageProtocolosAP h2,
+  #pageProtocolosUrgencias h2 {
+    font-size: 1.45rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 12px !important;
+  }
+  #pageProtocolosAP p,
+  #pageProtocolosUrgencias p {
+    font-size: .88rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Fichas de consulta rápida y enlaces de tarjeta: wrap y padding ajustado */
+  #pageProtocolosAP a[href*=".html"],
+  #pageProtocolosUrgencias a[href*=".html"] {
+    flex-wrap: wrap !important;
+    padding: 12px 14px !important;
+    gap: 10px !important;
+  }
+
+  /* Barra de moderación: textos compactos para que no se desborde */
+  [id^="modBar_page"] {
+    padding: 8px 12px !important;
+    font-size: .72rem !important;
+    gap: 6px !important;
+  }
+  [id^="modBar_page"] button {
+    font-size: .72rem !important;
+    padding: 6px 10px !important;
+  }
+  [id^="modBar_page"] [id^="modBarUser_"] {
+    max-width: 130px !important;
+  }
+
+  /* Aviso propiedad intelectual: más legible en móvil */
+  #pageProtocolosAP > div[style*="background:#f0f9ff"],
+  #pageProfessionals > div[style*="background:#f0f9ff"],
+  #pageProtocolosUrgencias > div[style*="background:#f0f9ff"] {
+    margin: 8px 12px !important;
+    padding: 9px 12px !important;
+    font-size: .74rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Hospitalaria: sidebar de especialidades a pantalla completa cuando se
+     abre en móvil; main-content sin padding excesivo. */
+  #pageProfessionals .prof-layout {
+    grid-template-columns: 1fr !important;
+  }
+  #pageProfessionals .sidebar-left {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 999 !important;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    width: 100% !important;
+    max-width: 320px !important;
+    background: var(--bg-card, #fff) !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,.25);
+  }
+  #pageProfessionals .sidebar-left.open {
+    transform: translateX(0);
+  }
+  #pageProfessionals .mobile-cat-btn,
+  #pageProfessionals .mobile-cat-close {
+    display: inline-flex !important;
+  }
+  #pageProfessionals .main-content {
+    padding: 14px !important;
+  }
+  #pageProfessionals .content-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+  #pageProfessionals .content-header h3 {
+    font-size: 1.25rem !important;
+    margin: 0 !important;
+    flex: 1 1 auto;
+  }
+
+  /* Tabla larga / contenido con tablas: scroll horizontal automático */
+  #pageProtocolosAP table,
+  #pageProtocolosUrgencias table,
+  #pageProfessionals table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: .82rem;
+  }
+
+  /* Secciones del Cuaderno IA hospitalario: reducir grid de 4-5 cols a
+     2 cols cuando el contenido tiene grid-template-columns explícito. */
+  #pageProfessionals [style*="grid-template-columns:repeat(auto-fit"] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Tabs internos (VMNI · IOT · VMI · Destete · Alarmas en Urgencias):
+     que sean scrollables horizontales en lugar de hacer break y romper. */
+  #pageProtocolosUrgencias .tab-btn,
+  #pageProtocolosUrgencias .vent-tab {
+    font-size: .76rem !important;
+    padding: 8px 10px !important;
+    white-space: nowrap;
+  }
+  #pageProtocolosUrgencias [role="tablist"] {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  /* Touch-friendly: subir el target mínimo a 44 px en botones críticos. */
+  #pageProtocolosAP button,
+  #pageProtocolosUrgencias button,
+  #pageProfessionals .main-content button {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 420px) {
+  /* Pantallas muy pequeñas (iPhone SE, Android compacto): aún más compacto. */
+  #pageProtocolosAP h2,
+  #pageProtocolosUrgencias h2 {
+    font-size: 1.25rem !important;
+  }
+  #pageProtocolosAP > div[style*="padding"],
+  #pageProtocolosUrgencias > div[style*="padding"] {
+    padding: 14px 10px !important;
+  }
+  .landing-nav .nav-links button {
+    padding: 6px 10px !important;
+    font-size: .76rem !important;
+  }
+  .landing-nav h1 {
+    font-size: 1rem !important;
+  }
 }
 /* En desktop: ocultar mini QR inline */
 @media (min-width: 769px) {
