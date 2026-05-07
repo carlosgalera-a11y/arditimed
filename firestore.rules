@@ -86,6 +86,11 @@ service cloud.firestore {
     match /rate_limits/{id} {
       allow read, write: if false;
     }
+    // Rate limit por usuario para embedQuery (RAG). Solo escribe la
+    // Cloud Function via Admin SDK; ningún cliente accede directamente.
+    match /rate_limits_embed/{uid} {
+      allow read, write: if false;
+    }
 
     // ══ Informes IA — cada usuario CRUD de los suyos ═══════════════
     // El admin puede LEER (no escribir) para conteos/auditoría en el panel.

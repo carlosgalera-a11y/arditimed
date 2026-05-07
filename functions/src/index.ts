@@ -9,6 +9,7 @@ import { initializeApp } from 'firebase-admin/app';
 initializeApp();
 
 export { askAi } from './askAi';
+export { embedQuery } from './embedQuery';
 export { setUserRole } from './setUserRole';
 export { publicMetrics } from './publicMetrics';
 export { getGaMetrics } from './getGaMetrics';

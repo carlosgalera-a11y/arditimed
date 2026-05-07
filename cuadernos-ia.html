@@ -17,6 +17,27 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
 <script src="firebase-init.js"></script>
 <script src="ai-client.js"></script>
+<!-- RAG real: retrieval semántico contra MEGA_KB pre-embebido (rag-index.json)
+     + chunks de los PDFs que el usuario sube a su cuaderno (extraídos con
+     pdf.js, embebidos vía Cloud Function embedQuery, cosine local). -->
+<script src="rag-client.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module" defer></script>
+<script type="module" defer>
+  // pdf.js requiere su worker — cargado del mismo CDN.
+  import { GlobalWorkerOptions } from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
+  GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+  window.pdfjsReady = true;
+</script>
+<script>
+  // Pre-carga del índice global tras DOMContentLoaded (no bloqueante).
+  window.addEventListener('DOMContentLoaded', function(){
+    if (window.RAG && typeof window.RAG.init === 'function') {
+      window.RAG.init().catch(function(e){
+        console.warn('[rag] precarga falló (no bloqueante):', e && e.message);
+      });
+    }
+  });
+</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f7f8fa;min-height:100vh}
@@ -266,12 +287,108 @@ document.addEventListener('paste',function(ev){
 });
 
 async function addFiles(fl){
+  var pdfChunksToIndex=[];
   for(var i=0;i<fl.length;i++){
     if(fl[i].size>10*1024*1024){alert('Máximo 10MB');continue;}
     var data=await toBase64(fl[i]);
-    notebooks[currentNbId].docs.push({name:fl[i].name||'Captura_'+Date.now()+'.png',type:fl[i].type,data:data});
+    var docName=fl[i].name||'Captura_'+Date.now()+'.png';
+    var doc={name:docName,type:fl[i].type,data:data};
+    notebooks[currentNbId].docs.push(doc);
+
+    // ── Si es un PDF, extraer texto e indexarlo para RAG ──
+    var isPdf=(fl[i].type==='application/pdf')||/\.pdf$/i.test(docName);
+    if(isPdf){
+      try{
+        var text=await extractPdfText(fl[i]);
+        if(text && text.length>50){
+          // Chunk en bloques de 800 chars con 150 de overlap (peso ligero).
+          var chunks=chunkPdfText(text,800,150);
+          chunks.forEach(function(c,idx){
+            pdfChunksToIndex.push({
+              id:'nb-'+notebooks[currentNbId].id+'-'+docName+'-'+idx,
+              source:docName,
+              section:'p.'+(c.page||'?'),
+              text:c.text,
+              idx:idx
+            });
+          });
+          // Cache el texto extraído junto al doc para mostrarlo si el user expande.
+          doc.extractedText=text.substring(0,2000);
+          doc.extractedChunks=chunks.length;
+        }
+      }catch(e){
+        console.warn('[pdf] extracción falló para '+docName+':',e.message||e);
+      }
+    }
   }
   saveNotebooks();renderDocs();
+
+  // Indexa los chunks de PDFs en background (no bloquea la UI).
+  if(pdfChunksToIndex.length && window.RAG && typeof window.RAG.indexUserDocs==='function'){
+    var nbId=notebooks[currentNbId].id;
+    setTimeout(function(){
+      window.RAG.indexUserDocs(nbId,pdfChunksToIndex)
+        .then(function(total){
+          console.log('[rag] indexados '+total+' chunks del cuaderno '+nbId);
+          renderDocs();  // refresca para mostrar el contador
+        })
+        .catch(function(e){
+          console.warn('[rag] indexado falló:',e.message||e);
+        });
+    },10);
+  }
+}
+
+// ── Extracción de texto de un PDF con pdf.js ─────────────────────
+async function extractPdfText(file){
+  if(typeof pdfjsLib==='undefined' && !window.pdfjsReady){
+    // Espera hasta 3s a que pdf.js cargue (deferred).
+    var waited=0;
+    while(typeof pdfjsLib==='undefined' && !window.pdfjsReady && waited<3000){
+      await new Promise(function(r){setTimeout(r,200);}); waited+=200;
+    }
+  }
+  // Importa pdf.js dinámicamente si no está disponible globalmente.
+  if(typeof pdfjsLib==='undefined'){
+    try{
+      var mod=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs');
+      window.pdfjsLib=mod;
+      mod.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+    }catch(e){
+      throw new Error('pdf.js no disponible: '+(e.message||e));
+    }
+  }
+  var lib=window.pdfjsLib;
+  var buf=await file.arrayBuffer();
+  var doc=await lib.getDocument({data:buf}).promise;
+  var pages=[];
+  for(var p=1;p<=doc.numPages;p++){
+    var page=await doc.getPage(p);
+    var content=await page.getTextContent();
+    var txt=content.items.map(function(it){return it.str;}).join(' ');
+    pages.push({page:p,text:txt});
+  }
+  return pages.map(function(pg){return '[Página '+pg.page+']\n'+pg.text;}).join('\n\n');
+}
+
+// ── Chunking simple por longitud, manteniendo nº de página si presente ──
+function chunkPdfText(text,size,overlap){
+  size=size||800; overlap=overlap||150;
+  var chunks=[];
+  var pageRe=/\[Página\s+(\d+)\]/g;
+  // Trocea por longitud; al hacer chunk anota la última página vista.
+  var lastPage='?';
+  var idx=0;
+  while(idx<text.length){
+    var slice=text.slice(idx,idx+size);
+    var m;
+    while((m=pageRe.exec(slice))!==null){lastPage=m[1];}
+    pageRe.lastIndex=0;
+    chunks.push({text:slice,page:lastPage});
+    if(idx+size>=text.length)break;
+    idx+=size-overlap;
+  }
+  return chunks;
 }
 function removeDoc(idx){
   notebooks[currentNbId].docs.splice(idx,1);saveNotebooks();renderDocs();
@@ -296,7 +413,20 @@ async function sendChat(){
     }
   });
 
-  var sysPrompt='Eres un asistente clínico docente del Área II Cartagena. El usuario ha subido documentos médicos a su cuaderno "'+nb.name+'". Responde en español, de forma clara y profesional. Si hay imágenes de analíticas, informes o capturas médicas, extrae y organiza la información relevante.';
+  var sysPrompt='Eres un asistente clínico docente del Área II Cartagena. El usuario ha subido documentos médicos a su cuaderno "'+nb.name+'". Responde en español, de forma clara y profesional. Si hay imágenes de analíticas, informes o capturas médicas, extrae y organiza la información relevante. Cuando recibas un bloque CONTEXTO (fragmentos de protocolos del Área II y del cuaderno del usuario), basa tu respuesta PRIMERO en él y cita los fragmentos por número (ej. [#2]).';
+
+  // ── RAG: retrieve combinado (MEGA_KB global + chunks PDFs del cuaderno) ──
+  var ragContext='';
+  if(window.RAG && typeof window.RAG.retrieveCombined==='function'){
+    try{
+      var scored=await window.RAG.retrieveCombined(question,nb.id,{k:6,kGlobal:3,kUser:3});
+      if(scored && scored.length){
+        ragContext=window.RAG.buildContext(scored,{maxChars:5000});
+      }
+    }catch(e){
+      console.warn('[chat] RAG retrieve falló (sigo sin contexto):',e.message||e);
+    }
+  }
 
   var messages=[{role:'system',content:sysPrompt}];
   // Add recent chat context
@@ -304,8 +434,15 @@ async function sendChat(){
     if(m.role==='user') messages.push({role:'user',content:m.text});
     else messages.push({role:'assistant',content:m.text});
   });
+
+  // Pregunta del usuario, opcionalmente con contexto RAG inyectado antes.
+  var questionWithContext=question;
+  if(ragContext){
+    questionWithContext='CONTEXTO RECUPERADO (protocolos Área II + tu cuaderno):\n\n'+ragContext+'\n\n---\n\nPREGUNTA: '+question;
+  }
+
   // Last message with images
-  content.push({type:'text',text:question});
+  content.push({type:'text',text:questionWithContext});
   messages[messages.length-1]={role:'user',content:content};
 
   var hasImages=nb.docs.length>0;
@@ -330,7 +467,7 @@ async function sendChat(){
     var res=await window.askAi({
       type: hasImages ? 'vision' : 'educational',
       systemPrompt: sysPrompt,
-      prompt: question + (hasImages && nb.docs.length>1 ? '\n\n[Nota: solo se analiza la primera de las '+nb.docs.length+' imágenes adjuntas.]' : ''),
+      prompt: questionWithContext + (hasImages && nb.docs.length>1 ? '\n\n[Nota: solo se analiza la primera de las '+nb.docs.length+' imágenes adjuntas.]' : ''),
       imageBase64: hasImages ? firstImgB64 : undefined,
     });
     var answer=(res && res.text) ? res.text : 'Error al generar respuesta';
