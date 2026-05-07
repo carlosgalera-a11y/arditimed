@@ -3064,8 +3064,13 @@ function megaDispatch(question) {
              "Atención Primaria (protocolos AP), Farmacología (dosis, vías, duración) y Guía Hospitalaria de Terapéutica " +
              "Antimicrobiana en Adultos del SMS (4ª ed., abril 2025). " +
              "Uso exclusivamente DOCENTE e INFORMATIVO. Responde en español, claro y estructurado. " +
-             "Cita el protocolo o sección concreta cuando esté en tu base. " +
-             "Para fármacos indica dosis, vía y duración. " +
+             "REGLA ESENCIAL: cuando recibas un bloque CONTEXTO con fragmentos de protocolos, " +
+             "DEBES extraer e integrar el contenido concreto de esos fragmentos en tu respuesta " +
+             "(algoritmos, criterios, dosis, derivaciones, valores de corte). " +
+             "NUNCA respondas solo apuntando \"existe el protocolo X que podría ser de utilidad\" — " +
+             "el usuario ya sabe que existe; tu tarea es entregar el CONTENIDO del protocolo aplicado a su pregunta. " +
+             "Cita el fragmento por su número [#1], [#2], etc. al usar su contenido. " +
+             "Para fármacos indica dosis, vía, frecuencia y duración. " +
              "Si la pregunta está fuera de los protocolos locales aportados, da una orientación clínica general " +
              "razonable (basada en práctica habitual y guías españolas/europeas) e indica claramente que NO está " +
              "en el protocolo local del Área II y que conviene confirmar con guía específica de la especialidad. " +
@@ -3120,10 +3125,15 @@ function megaDispatch(question) {
         var contextBlock;
         if (ragContext) {
             contextBlock = "PROTOCOLOS LOCALES ÁREA II CARTAGENA · fragmentos relevantes a la pregunta " +
-                "(retrieval semántico, top-6 por similitud de embedding):\n\n" + ragContext +
-                "\n\nINSTRUCCIONES: Responde basándote PRIMERO en estos fragmentos. " +
-                "Cita el número del fragmento entre corchetes (ej. [#1], [#3]) cuando uses información de él. " +
-                "Si la pregunta no está cubierta, dilo explícitamente y entonces da orientación general.";
+                "(retrieval semántico, top-6 por similitud de embedding sobre MEGA_KB y PDFs indexados):\n\n" + ragContext +
+                "\n\nINSTRUCCIONES OBLIGATORIAS:\n" +
+                "1. Lee atentamente cada fragmento. Cuando uses uno, cita su número entre corchetes ([#1], [#3]…).\n" +
+                "2. Tu respuesta debe INCLUIR EL CONTENIDO CONCRETO de los fragmentos (algoritmos, criterios, " +
+                "dosis, valores de corte, criterios de derivación). PROHIBIDO responder solo con \"existe el " +
+                "protocolo X\" o \"consulta el protocolo Y\" — el usuario quiere ver el contenido aplicado a su caso.\n" +
+                "3. Si la pregunta no está cubierta por NINGÚN fragmento, dilo explícitamente al final y solo " +
+                "entonces da orientación general basada en guías europeas/españolas.\n" +
+                "4. Estructura la respuesta con secciones claras (Diagnóstico, Tratamiento, Derivación, etc. según aplique).";
         } else {
             // Fallback: stuffing antiguo si RAG no disponible.
             contextBlock = fallbackStuffing();
