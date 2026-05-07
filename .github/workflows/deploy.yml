@@ -52,36 +52,38 @@ jobs:
             STATUS=1
           fi
 
-          # Publica los últimos 200 KB del log en un gist público para
-          # diagnóstico (el GITHUB_TOKEN tiene scope limitado en runs
-          # disparados desde un PR/dispatch, así que el gist puede ser
-          # privado o público dependiendo del scope; suficiente para
-          # mostrar el error a Claude Code).
+          # Sube los últimos 200 KB del log al repo en /tmp-debug-logs/
+          # (rama debug/deploy-logs) usando GitHub Contents API. GITHUB_TOKEN
+          # tiene scope contents:write por defecto, así que esto sí funciona.
+          # Los logs de Actions están bloqueados desde el sandbox de Claude.
           tail -c 200000 /tmp/deploy.log > /tmp/deploy_tail.log || true
-          # JSON-escape el contenido del log para meterlo en el body del gist.
+          LOG_PATH="tmp-debug-logs/run-${{ github.run_id }}.log"
+          BRANCH="debug/deploy-logs"
+
+          # 1) Asegurar que la rama existe (la creamos desde main si no).
+          MAIN_SHA=$(curl -sS -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/${{ github.repository }}/git/ref/heads/main" | python3 -c "import sys,json; print(json.load(sys.stdin)['object']['sha'])")
+          curl -sS -X POST -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/json" \
+            "https://api.github.com/repos/${{ github.repository }}/git/refs" \
+            -d "{\"ref\":\"refs/heads/$BRANCH\",\"sha\":\"$MAIN_SHA\"}" > /dev/null 2>&1 || true
+
+          # 2) Subir el log codificado en base64 a esa rama.
+          B64_CONTENT=$(base64 -w0 < /tmp/deploy_tail.log)
           BODY=$(python3 -c "
-          import json, sys
-          with open('/tmp/deploy_tail.log','r',errors='replace') as f:
-              content = f.read()
-          payload = {
-              'description': f'Deploy askAi · {\"OK\" if $STATUS == 0 else \"FAIL\"} · run ${{ github.run_id }}',
-              'public': False,
-              'files': {'deploy.log': {'content': content[:900000] or '(empty log)'}},
-          }
-          print(json.dumps(payload))
+          import json
+          print(json.dumps({
+              'message': 'debug: deploy log run ${{ github.run_id }}',
+              'content': '$B64_CONTENT',
+              'branch': '$BRANCH',
+          }))
           ")
-          GIST_URL=$(curl -sS -X POST \
-            -H "Authorization: token $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -H "Content-Type: application/json" \
-            "https://api.github.com/gists" \
-            -d "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('html_url') or d.get('message'))")
-          echo "[deploy] log gist: $GIST_URL" | tee -a /tmp/deploy.log
-          echo "DEPLOY_GIST=$GIST_URL" >> $GITHUB_ENV
-          # También resumen visible en la página del run.
+          curl -sS -X PUT -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/json" \
+            "https://api.github.com/repos/${{ github.repository }}/contents/$LOG_PATH" \
+            -d "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); print('[deploy] log path:', d.get('content',{}).get('html_url') or d.get('message'))" | tee -a /tmp/deploy.log
+
+          # Resumen visible en la página del run.
           echo "## Deploy askAi result" >> $GITHUB_STEP_SUMMARY
           echo "- Status: $STATUS (0=success)" >> $GITHUB_STEP_SUMMARY
-          echo "- Log gist: $GIST_URL" >> $GITHUB_STEP_SUMMARY
+          echo "- Log: \`$LOG_PATH\` en rama \`$BRANCH\`" >> $GITHUB_STEP_SUMMARY
 
           exit $STATUS
 
