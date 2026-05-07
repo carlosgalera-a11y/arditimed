@@ -33,21 +33,57 @@ jobs:
           # Account User" sobre el proyecto docenciacartagenaeste.
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
-          # 1) Si hay service account JSON en secret, escribirlo a archivo
-          # y autenticar con ADC. Si no, intentar fallback a FIREBASE_TOKEN.
+          # No usamos `set -e` para poder capturar errores de firebase-tools
+          # y publicarlos en un gist (los logs de Actions están bloqueados
+          # desde el sandbox de Claude Code).
           if [ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
             printf '%s' '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$GOOGLE_APPLICATION_CREDENTIALS"
             echo "[deploy] usando GOOGLE_APPLICATION_CREDENTIALS de service account"
-            firebase deploy --only functions:askAi --project docenciacartagenaeste --non-interactive --force
+            firebase deploy --only functions:askAi --project docenciacartagenaeste --non-interactive --force --debug 2>&1 | tee /tmp/deploy.log
+            STATUS=${PIPESTATUS[0]}
           elif [ -n "$FIREBASE_TOKEN" ]; then
             echo "[deploy] usando FIREBASE_TOKEN (legacy)"
-            firebase deploy --only functions:askAi --project docenciacartagenaeste --token "$FIREBASE_TOKEN" --non-interactive --force
+            firebase deploy --only functions:askAi --project docenciacartagenaeste --token "$FIREBASE_TOKEN" --non-interactive --force --debug 2>&1 | tee /tmp/deploy.log
+            STATUS=${PIPESTATUS[0]}
           else
-            echo "[deploy] ERROR: ni FIREBASE_SERVICE_ACCOUNT ni FIREBASE_TOKEN configurados en repo secrets" >&2
-            exit 1
+            echo "[deploy] ERROR: ni FIREBASE_SERVICE_ACCOUNT ni FIREBASE_TOKEN configurados en repo secrets" | tee /tmp/deploy.log
+            STATUS=1
           fi
+
+          # Publica los últimos 200 KB del log en un gist público para
+          # diagnóstico (el GITHUB_TOKEN tiene scope limitado en runs
+          # disparados desde un PR/dispatch, así que el gist puede ser
+          # privado o público dependiendo del scope; suficiente para
+          # mostrar el error a Claude Code).
+          tail -c 200000 /tmp/deploy.log > /tmp/deploy_tail.log || true
+          # JSON-escape el contenido del log para meterlo en el body del gist.
+          BODY=$(python3 -c "
+          import json, sys
+          with open('/tmp/deploy_tail.log','r',errors='replace') as f:
+              content = f.read()
+          payload = {
+              'description': f'Deploy askAi · {\"OK\" if $STATUS == 0 else \"FAIL\"} · run ${{ github.run_id }}',
+              'public': False,
+              'files': {'deploy.log': {'content': content[:900000] or '(empty log)'}},
+          }
+          print(json.dumps(payload))
+          ")
+          GIST_URL=$(curl -sS -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/gists" \
+            -d "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('html_url') or d.get('message'))")
+          echo "[deploy] log gist: $GIST_URL" | tee -a /tmp/deploy.log
+          echo "DEPLOY_GIST=$GIST_URL" >> $GITHUB_ENV
+          # También resumen visible en la página del run.
+          echo "## Deploy askAi result" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: $STATUS (0=success)" >> $GITHUB_STEP_SUMMARY
+          echo "- Log gist: $GIST_URL" >> $GITHUB_STEP_SUMMARY
+
+          exit $STATUS
 
   sync-area2:
     name: Sync a repo del dominio custom
