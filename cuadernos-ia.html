@@ -419,10 +419,13 @@ async function sendChat(){
 
   // ── RAG: retrieve combinado (MEGA_KB global + chunks PDFs del cuaderno) ──
   var ragContext='';
+  var topRagScore=0;
+  var COVERAGE_THRESHOLD=0.55; // cosine similarity gemini-embedding-001
   if(window.RAG && typeof window.RAG.retrieveCombined==='function'){
     try{
       var scored=await window.RAG.retrieveCombined(question,nb.id,{k:6,kGlobal:3,kUser:3});
       if(scored && scored.length){
+        topRagScore=(scored[0] && scored[0].score)||0;
         ragContext=window.RAG.buildContext(scored,{maxChars:5000});
       }
     }catch(e){
@@ -437,10 +440,34 @@ async function sendChat(){
     else messages.push({role:'assistant',content:m.text});
   });
 
-  // Pregunta del usuario, opcionalmente con contexto RAG inyectado antes.
+  // Pregunta del usuario con estructura de 2 bloques explícita:
+  //   BLOQUE 1 = documentos embebidos (Área II + cuaderno personal)
+  //   BLOQUE 2 = conocimiento general DeepSeek, solo si BLOQUE 1 insuficiente
   var questionWithContext=question;
   if(ragContext){
-    questionWithContext='CONTEXTO RECUPERADO (protocolos Área II + tu cuaderno):\n\n'+ragContext+'\n\n---\n\nPREGUNTA: '+question;
+    var coverage=topRagScore>=COVERAGE_THRESHOLD?'ALTA':'BAJA';
+    questionWithContext=
+      '════════════════════════════════════════════════════════════\n' +
+      '📁 BLOQUE 1 · DOCUMENTOS EMBEBIDOS (Área II + tu cuaderno personal)\n' +
+      '(retrieval semántico · top score = '+topRagScore.toFixed(3)+' · cobertura '+coverage+')\n' +
+      '════════════════════════════════════════════════════════════\n\n' +
+      ragContext +
+      '\n\n════════════════════════════════════════════════════════════\n' +
+      '🧠 BLOQUE 2 · CONOCIMIENTO GENERAL DEEPSEEK (fallback)\n' +
+      'Solo si BLOQUE 1 NO cubre la pregunta de forma suficiente.\n' +
+      '════════════════════════════════════════════════════════════\n\n' +
+      'INSTRUCCIONES OBLIGATORIAS — RESPUESTA EN 2 PARTES:\n\n' +
+      'PASO 1. Construye la respuesta con la información del BLOQUE 1.\n' +
+      '  · Comienza con: «📁 Según los documentos del Área II / tu cuaderno:»\n' +
+      '  · Cita siempre los fragmentos por su número [#1], [#3] al usar su contenido.\n' +
+      '  · Incluye criterios concretos, dosis, valores, derivaciones.\n\n' +
+      'PASO 2. SOLO si los fragmentos del BLOQUE 1 NO cubren o cubren parcialmente:\n' +
+      '  · Añade encabezado: «🧠 Información complementaria (conocimiento general, NO específico del Área II):»\n' +
+      '  · Aporta orientación basada en guías europeas/españolas.\n' +
+      '  · Indica claramente que esta parte NO procede de un documento embebido.\n\n' +
+      'PASO 3. Si los fragmentos cubren bien (cobertura ALTA), OMITE el BLOQUE 2 — sin relleno.\n\n' +
+      'PROHIBIDO remitir a otros documentos del sitio. Respuesta AUTOCONTENIDA.\n\n' +
+      '---\n\nPREGUNTA DEL USUARIO: '+question;
   }
 
   // Last message with images
