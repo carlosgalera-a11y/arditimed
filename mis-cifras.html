@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="/console-guard.js"></script>
+  <meta charset="UTF-8">
+  <meta name="author" content="Carlos Galera Román, MFyC">
+  <meta name="medical-organization" content="H.G.U. Santa Lucía · Área II · Servicio Murciano de Salud">
+  <meta name="compliance" content="RGPD · EU AI Act 2024/1689 · LPI Art. 51">
+  <meta name="last-reviewed" content="2026-05-01">
+  <meta name="generator" content="Cartagenaeste PWA">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis cifras (HTA y DM) — Cartagenaeste</title>
+  <meta name="description" content="Anota y comparte con tu médico de cabecera tus cifras de tensión arterial y glucemia. Sesión Google. Datos en europe-west1.">
+  <link rel="canonical" href="https://carlosgalera-a11y.github.io/Cartagenaeste/mis-cifras.html">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-96x96.png">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-check-compat.js"></script>
+  <script src="recaptcha-key.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <style>
+    :root{--bg:#f4f6f8;--card:#fff;--border:#e2e8f0;--t1:#1a1f2e;--t2:#475569;--t3:#94a3b8;--primary:#2563eb;--bp:#dc2626;--gluc:#7c3aed;--ok:#16a34a;--warn:#f59e0b;--danger:#ef4444;--radius:12px;--shadow:0 2px 8px rgba(0,0,0,.06);--shadow-md:0 4px 14px rgba(0,0,0,.08)}
+    @media(prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--t1:#e2e8f0;--t2:#cbd5e1;--t3:#94a3b8}}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55}
+    .nav{background:var(--card);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+    .nav a{color:var(--t2);text-decoration:none;font-size:.88rem;font-weight:500}
+    .nav a:hover{color:var(--primary)}
+    .nav h1{margin:0;font-size:1rem;font-weight:600;flex:1}
+    .userbox{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--t2)}
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    .disclaimer{background:#dbeafe;border:1px solid #93c5fd;border-left:4px solid #2563eb;border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:.85rem;color:#1e3a8a}
+    @media(prefers-color-scheme:dark){.disclaimer{background:rgba(37,99,235,.1);border-color:#3b82f6;color:#bfdbfe}}
+    .gate{max-width:480px;margin:60px auto;padding:32px 28px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);text-align:center;box-shadow:var(--shadow-md)}
+    .gate h2{font-size:1.3rem;margin:0 0 8px}
+    .gate p{color:var(--t2);font-size:.92rem;margin:0 0 22px}
+    .btn-google{display:inline-flex;align-items:center;gap:10px;padding:11px 22px;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit;color:#1f2937}
+    .btn-google:hover{background:#f9fafb;border-color:#9ca3af}
+    .btn-google svg{width:20px;height:20px}
+    .tabs{display:flex;gap:4px;background:var(--border);padding:4px;border-radius:10px;margin-bottom:18px;width:fit-content}
+    .tab{padding:8px 18px;border:0;background:transparent;color:var(--t2);border-radius:8px;cursor:pointer;font-family:inherit;font-size:.9rem;font-weight:600;transition:all .15s}
+    .tab.active{background:var(--card);color:var(--t1);box-shadow:var(--shadow)}
+    .tab-bp.active{color:var(--bp)}
+    .tab-gluc.active{color:var(--gluc)}
+    .section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;box-shadow:var(--shadow)}
+    .section h2{font-size:1.1rem;margin:0 0 12px;font-weight:700}
+    label{display:block;font-size:.82rem;font-weight:600;color:var(--t2);margin-bottom:4px}
+    input[type=number],input[type=datetime-local],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit;background:var(--card);color:var(--t1)}
+    input:focus,select:focus,textarea:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
+    .btn{background:var(--primary);color:#fff;border:0;padding:11px 22px;border-radius:8px;cursor:pointer;font-size:.92rem;font-weight:600;font-family:inherit}
+    .btn:hover{background:#1d4ed8}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn-secondary{background:transparent;color:var(--t2);border:1.5px solid var(--border)}
+    .btn-secondary:hover{background:var(--bg)}
+    .btn-danger{background:var(--danger)}
+    .btn-danger:hover{background:#dc2626}
+    .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+    table{width:100%;border-collapse:collapse;font-size:.86rem}
+    th{text-align:left;padding:8px 10px;background:var(--bg);color:var(--t2);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border)}
+    td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--t1)}
+    tr:hover td{background:var(--bg)}
+    .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600}
+    .badge-ok{background:#dcfce7;color:#166534}
+    .badge-warn{background:#fef3c7;color:#92400e}
+    .badge-danger{background:#fee2e2;color:#991b1b}
+    @media(prefers-color-scheme:dark){
+      .badge-ok{background:rgba(34,197,94,.15);color:#86efac}
+      .badge-warn{background:rgba(245,158,11,.15);color:#fde68a}
+      .badge-danger{background:rgba(239,68,68,.15);color:#fca5a5}
+    }
+    .empty{text-align:center;color:var(--t3);padding:30px;font-size:.9rem}
+    .chart-box{position:relative;height:240px;margin-top:14px}
+    .meta-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px}
+    .meta-row .stats{display:flex;gap:14px;font-size:.85rem;color:var(--t2)}
+    .meta-row .stats strong{color:var(--t1)}
+    footer{text-align:center;padding:24px 18px;color:var(--t3);font-size:.78rem}
+    footer a{color:var(--primary);text-decoration:none}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="pacientes.html">← Pacientes</a>
+  <h1>🩺 Mis cifras · HTA y DM</h1>
+  <div class="userbox" id="userbox" style="display:none">
+    <span id="userEmail"></span>
+    <button class="btn btn-secondary" id="signOutBtn" style="padding:5px 12px;font-size:.8rem">Salir</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <div class="disclaimer">
+    <strong>📌 Para llevarle al médico de cabecera.</strong> Esta herramienta NO sustituye al médico ni diagnostica. Sirve para que tú anotes tus cifras de tensión arterial y glucemia y las compartas en tu próxima cita. Los datos se guardan cifrados en Firestore (UE) y solo tú los ves.
+  </div>
+
+  <!-- Pantalla de login -->
+  <div id="gate" class="gate" style="display:none">
+    <h2>🔐 Necesitas iniciar sesión</h2>
+    <p>Para guardar y consultar tus cifras de tensión y glucemia con seguridad, inicia sesión con tu cuenta de Google. Solo tú podrás ver tus datos.</p>
+    <button class="btn-google" id="signInBtn" type="button">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continuar con Google
+    </button>
+    <p style="font-size:.78rem;margin-top:18px;color:var(--t3)">No guardamos tu nombre completo, DNI ni datos identificativos. Solo email + las cifras que tú anotas.</p>
+  </div>
+
+  <!-- Contenido autenticado -->
+  <div id="app" style="display:none">
+
+    <div class="tabs" role="tablist">
+      <button class="tab tab-bp active" id="tabBP" role="tab" aria-selected="true">🩸 Tensión arterial</button>
+      <button class="tab tab-gluc" id="tabGluc" role="tab" aria-selected="false">🍬 Glucemia</button>
+    </div>
+
+    <!-- ── Sección TA ── -->
+    <div id="paneBP">
+      <section class="section">
+        <h2>➕ Nueva medición de tensión</h2>
+        <div class="form-grid">
+          <div>
+            <label for="bpSys">Sistólica (mmHg)</label>
+            <input id="bpSys" type="number" min="60" max="260" step="1" placeholder="Ej. 128">
+          </div>
+          <div>
+            <label for="bpDia">Diastólica (mmHg)</label>
+            <input id="bpDia" type="number" min="30" max="160" step="1" placeholder="Ej. 82">
+          </div>
+          <div>
+            <label for="bpPul">Pulso (lpm)</label>
+            <input id="bpPul" type="number" min="30" max="220" step="1" placeholder="Opcional">
+          </div>
+          <div>
+            <label for="bpArm">Brazo</label>
+            <select id="bpArm"><option value="izq">Izquierdo</option><option value="der">Derecho</option><option value="">No indicado</option></select>
+          </div>
+          <div>
+            <label for="bpDate">Fecha y hora</label>
+            <input id="bpDate" type="datetime-local">
+          </div>
+        </div>
+        <div>
+          <label for="bpNote">Nota (opcional)</label>
+          <input id="bpNote" type="text" placeholder="P.ej. después de andar, tras dolor cabeza…">
+        </div>
+        <div class="row-actions" style="margin-top:14px">
+          <button class="btn" id="bpSaveBtn">💾 Guardar medición</button>
+          <button class="btn btn-secondary" id="bpResetBtn" type="button">Limpiar</button>
+        </div>
+        <p id="bpMsg" style="font-size:.84rem;margin-top:8px;min-height:1.1em"></p>
+      </section>
+
+      <section class="section">
+        <div class="meta-row">
+          <h2 style="margin:0">📊 Tus mediciones de tensión</h2>
+          <div class="stats" id="bpStats"></div>
+        </div>
+        <div class="chart-box"><canvas id="bpChart"></canvas></div>
+        <div id="bpList" style="margin-top:14px"><div class="empty">Cargando…</div></div>
+        <div class="row-actions" style="margin-top:14px">
+          <button class="btn btn-secondary" id="bpExportBtn" type="button">⬇ Exportar CSV</button>
+          <button class="btn btn-secondary" id="bpPrintBtn" type="button">🖨️ Imprimir / PDF para el médico</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── Sección Glucemia ── -->
+    <div id="paneGluc" style="display:none">
+      <section class="section">
+        <h2>➕ Nueva medición de glucemia</h2>
+        <div class="form-grid">
+          <div>
+            <label for="gValue">Glucemia (mg/dL)</label>
+            <input id="gValue" type="number" min="20" max="800" step="1" placeholder="Ej. 110">
+          </div>
+          <div>
+            <label for="gContext">Contexto</label>
+            <select id="gContext">
+              <option value="ayunas">En ayunas</option>
+              <option value="preprandial">Antes de comida</option>
+              <option value="postprandial">2h tras comida</option>
+              <option value="dormir">Antes de dormir</option>
+              <option value="hipo">Síntomas hipoglucemia</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label for="gDate">Fecha y hora</label>
+            <input id="gDate" type="datetime-local">
+          </div>
+        </div>
+        <div>
+          <label for="gNote">Nota (opcional)</label>
+          <input id="gNote" type="text" placeholder="P.ej. tras correr, mareo, dosis insulina…">
+        </div>
+        <div class="row-actions" style="margin-top:14px">
+          <button class="btn" id="gSaveBtn">💾 Guardar medición</button>
+          <button class="btn btn-secondary" id="gResetBtn" type="button">Limpiar</button>
+        </div>
+        <p id="gMsg" style="font-size:.84rem;margin-top:8px;min-height:1.1em"></p>
+      </section>
+
+      <section class="section">
+        <div class="meta-row">
+          <h2 style="margin:0">📊 Tus mediciones de glucemia</h2>
+          <div class="stats" id="gStats"></div>
+        </div>
+        <div class="chart-box"><canvas id="gChart"></canvas></div>
+        <div id="gList" style="margin-top:14px"><div class="empty">Cargando…</div></div>
+        <div class="row-actions" style="margin-top:14px">
+          <button class="btn btn-secondary" id="gExportBtn" type="button">⬇ Exportar CSV</button>
+          <button class="btn btn-secondary" id="gPrintBtn" type="button">🖨️ Imprimir / PDF para el médico</button>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  © 2026 Carlos Galera Román · MFyC, H.G.U. Santa Lucía · Área II Cartagena · Datos en europe-west1 · <a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// mis-cifras.html · controlador
+// ════════════════════════════════════════════════════════════════════
+// Permite al usuario autenticado con Google registrar cifras de TA y
+// glucemia, persistirlas en Firestore (subcolección por uid) y exportar
+// CSV o imprimir para llevar al médico de cabecera.
+//
+// Modelo Firestore:
+//   users/{uid}/health_metrics/{id} {
+//     type: 'bp' | 'glucose',
+//     timestamp: Timestamp,
+//     // BP
+//     systolic: number, diastolic: number, pulse?: number, arm?: string,
+//     // Glucose
+//     glucose_mg_dl: number, context: string,
+//     note?: string,
+//     createdAt: serverTimestamp
+//   }
+//
+// Reglas (firestore.rules) — solo el dueño lee/escribe.
+// ════════════════════════════════════════════════════════════════════
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+let bpChartInstance = null;
+let gChartInstance = null;
+let bpUnsub = null;
+let gUnsub = null;
+
+// ── Auth gate ──────────────────────────────────────────────────────
+auth.onAuthStateChanged(function(u){
+  currentUser = u;
+  document.getElementById('gate').style.display = u ? 'none' : 'block';
+  document.getElementById('app').style.display = u ? 'block' : 'none';
+  document.getElementById('userbox').style.display = u ? 'flex' : 'none';
+  if(u){
+    document.getElementById('userEmail').textContent = u.email || u.displayName || '';
+    setNowDefault('bpDate'); setNowDefault('gDate');
+    subscribeBP();
+    subscribeGluc();
+  } else {
+    if(bpUnsub){ bpUnsub(); bpUnsub = null; }
+    if(gUnsub){ gUnsub(); gUnsub = null; }
+  }
+});
+
+document.getElementById('signInBtn').addEventListener('click', function(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  auth.signInWithPopup(provider).catch(function(err){
+    if(err && (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request')) return;
+    alert('No se pudo iniciar sesión: ' + (err.message || err.code));
+  });
+});
+
+document.getElementById('signOutBtn').addEventListener('click', function(){
+  if(confirm('¿Cerrar sesión?')) auth.signOut();
+});
+
+// ── Tabs ───────────────────────────────────────────────────────────
+const tabBP = document.getElementById('tabBP');
+const tabGluc = document.getElementById('tabGluc');
+tabBP.addEventListener('click', function(){
+  tabBP.classList.add('active'); tabGluc.classList.remove('active');
+  tabBP.setAttribute('aria-selected','true'); tabGluc.setAttribute('aria-selected','false');
+  document.getElementById('paneBP').style.display = 'block';
+  document.getElementById('paneGluc').style.display = 'none';
+});
+tabGluc.addEventListener('click', function(){
+  tabGluc.classList.add('active'); tabBP.classList.remove('active');
+  tabGluc.setAttribute('aria-selected','true'); tabBP.setAttribute('aria-selected','false');
+  document.getElementById('paneGluc').style.display = 'block';
+  document.getElementById('paneBP').style.display = 'none';
+});
+
+// ── Util ───────────────────────────────────────────────────────────
+function setNowDefault(id){
+  const el = document.getElementById(id);
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  el.value = now.toISOString().slice(0,16);
+}
+
+function fmtDate(ts){
+  if(!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function classifyBP(sys, dia){
+  // Adultos · ESH/ESC 2024. Sólo orientativo.
+  if(sys >= 180 || dia >= 110) return { lvl:'crisis', label:'Crisis HTA', cls:'badge-danger' };
+  if(sys >= 160 || dia >= 100) return { lvl:'grado2', label:'HTA grado 2', cls:'badge-danger' };
+  if(sys >= 140 || dia >= 90)  return { lvl:'grado1', label:'HTA grado 1', cls:'badge-warn' };
+  if(sys >= 130 || dia >= 85)  return { lvl:'normalalta', label:'Normal-alta', cls:'badge-warn' };
+  if(sys < 90 || dia < 60)     return { lvl:'hipo', label:'Hipotensión', cls:'badge-warn' };
+  return { lvl:'ok', label:'Normal', cls:'badge-ok' };
+}
+
+function classifyGluc(val, ctx){
+  // ADA 2024 simplificado.
+  if(val < 70) return { label:'Hipoglucemia', cls:'badge-danger' };
+  if(val >= 250) return { label:'Hiperglucemia importante', cls:'badge-danger' };
+  if(ctx === 'ayunas' || ctx === 'preprandial'){
+    if(val >= 126) return { label:'Diabético', cls:'badge-warn' };
+    if(val >= 100) return { label:'Prediabetes', cls:'badge-warn' };
+    return { label:'Normal', cls:'badge-ok' };
+  }
+  if(ctx === 'postprandial'){
+    if(val >= 200) return { label:'Diabético', cls:'badge-warn' };
+    if(val >= 140) return { label:'Tolerancia alterada', cls:'badge-warn' };
+    return { label:'Normal', cls:'badge-ok' };
+  }
+  if(val >= 200) return { label:'Alto', cls:'badge-warn' };
+  return { label:'En rango', cls:'badge-ok' };
+}
+
+function userMetricsCol(){
+  if(!currentUser) throw new Error('Sin sesión');
+  return db.collection('users').doc(currentUser.uid).collection('health_metrics');
+}
+
+// ── Guardado TA ────────────────────────────────────────────────────
+document.getElementById('bpSaveBtn').addEventListener('click', async function(){
+  const msg = document.getElementById('bpMsg');
+  const sys = parseInt(document.getElementById('bpSys').value, 10);
+  const dia = parseInt(document.getElementById('bpDia').value, 10);
+  const pul = parseInt(document.getElementById('bpPul').value, 10) || null;
+  const arm = document.getElementById('bpArm').value || null;
+  const dateStr = document.getElementById('bpDate').value;
+  const note = (document.getElementById('bpNote').value || '').trim().slice(0, 200);
+
+  if(!sys || !dia || sys < 60 || sys > 260 || dia < 30 || dia > 160){
+    msg.textContent = '⚠️ Introduce sistólica (60-260) y diastólica (30-160).';
+    msg.style.color = 'var(--danger)'; return;
+  }
+  if(sys <= dia){ msg.textContent = '⚠️ La sistólica debe ser mayor que la diastólica.'; msg.style.color='var(--danger)'; return; }
+
+  msg.textContent = '⏳ Guardando…'; msg.style.color = 'var(--t3)';
+  try{
+    await userMetricsCol().add({
+      type:'bp',
+      systolic:sys, diastolic:dia, pulse:pul, arm:arm,
+      note:note || null,
+      timestamp: dateStr ? firebase.firestore.Timestamp.fromDate(new Date(dateStr)) : firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    msg.textContent = '✅ Medición guardada.'; msg.style.color = 'var(--ok)';
+    document.getElementById('bpSys').value=''; document.getElementById('bpDia').value=''; document.getElementById('bpPul').value=''; document.getElementById('bpNote').value='';
+    setNowDefault('bpDate');
+  }catch(e){
+    console.error(e);
+    msg.textContent = '❌ Error guardando: ' + (e.message || e.code || e); msg.style.color = 'var(--danger)';
+  }
+});
+document.getElementById('bpResetBtn').addEventListener('click', function(){
+  ['bpSys','bpDia','bpPul','bpNote'].forEach(function(id){ document.getElementById(id).value=''; });
+  setNowDefault('bpDate'); document.getElementById('bpMsg').textContent='';
+});
+
+// ── Guardado Glucemia ──────────────────────────────────────────────
+document.getElementById('gSaveBtn').addEventListener('click', async function(){
+  const msg = document.getElementById('gMsg');
+  const val = parseInt(document.getElementById('gValue').value, 10);
+  const ctx = document.getElementById('gContext').value;
+  const dateStr = document.getElementById('gDate').value;
+  const note = (document.getElementById('gNote').value || '').trim().slice(0, 200);
+  if(!val || val < 20 || val > 800){
+    msg.textContent = '⚠️ Introduce un valor entre 20 y 800 mg/dL.'; msg.style.color = 'var(--danger)'; return;
+  }
+  msg.textContent = '⏳ Guardando…'; msg.style.color = 'var(--t3)';
+  try{
+    await userMetricsCol().add({
+      type:'glucose',
+      glucose_mg_dl:val, context:ctx,
+      note:note || null,
+      timestamp: dateStr ? firebase.firestore.Timestamp.fromDate(new Date(dateStr)) : firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    msg.textContent = '✅ Medición guardada.'; msg.style.color = 'var(--ok)';
+    document.getElementById('gValue').value=''; document.getElementById('gNote').value='';
+    setNowDefault('gDate');
+  }catch(e){
+    console.error(e);
+    msg.textContent = '❌ Error guardando: ' + (e.message || e.code || e); msg.style.color = 'var(--danger)';
+  }
+});
+document.getElementById('gResetBtn').addEventListener('click', function(){
+  ['gValue','gNote'].forEach(function(id){ document.getElementById(id).value=''; });
+  setNowDefault('gDate'); document.getElementById('gMsg').textContent='';
+});
+
+// ── Subscripciones tiempo real ────────────────────────────────────
+function subscribeBP(){
+  if(bpUnsub) bpUnsub();
+  bpUnsub = userMetricsCol().where('type','==','bp').orderBy('timestamp','desc').limit(180)
+    .onSnapshot(function(snap){
+      const rows = [];
+      snap.forEach(function(d){ rows.push(Object.assign({ id:d.id }, d.data())); });
+      renderBP(rows);
+    }, function(err){
+      console.error('bp listen:', err);
+      document.getElementById('bpList').innerHTML = '<div class="empty" style="color:var(--danger)">Error: ' + (err.message || err.code) + '</div>';
+    });
+}
+function subscribeGluc(){
+  if(gUnsub) gUnsub();
+  gUnsub = userMetricsCol().where('type','==','glucose').orderBy('timestamp','desc').limit(180)
+    .onSnapshot(function(snap){
+      const rows = [];
+      snap.forEach(function(d){ rows.push(Object.assign({ id:d.id }, d.data())); });
+      renderGluc(rows);
+    }, function(err){
+      console.error('gluc listen:', err);
+      document.getElementById('gList').innerHTML = '<div class="empty" style="color:var(--danger)">Error: ' + (err.message || err.code) + '</div>';
+    });
+}
+
+// ── Render TA ──────────────────────────────────────────────────────
+function renderBP(rows){
+  const list = document.getElementById('bpList');
+  const stats = document.getElementById('bpStats');
+  if(!rows.length){
+    list.innerHTML = '<div class="empty">Aún no has guardado mediciones. ¡Empieza con la primera!</div>';
+    stats.innerHTML = '';
+    if(bpChartInstance){ bpChartInstance.destroy(); bpChartInstance = null; }
+    return;
+  }
+  // Stats
+  const last30 = rows.slice(0, 30);
+  const avgSys = Math.round(last30.reduce(function(a,r){ return a+r.systolic; },0)/last30.length);
+  const avgDia = Math.round(last30.reduce(function(a,r){ return a+r.diastolic; },0)/last30.length);
+  stats.innerHTML = '<span>Total: <strong>'+rows.length+'</strong></span>'+
+    '<span>Media últimas '+last30.length+': <strong>'+avgSys+'/'+avgDia+'</strong></span>';
+
+  // Tabla
+  list.innerHTML = '<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Cifras</th><th>Pulso</th><th>Brazo</th><th>Clasificación</th><th>Nota</th><th></th></tr></thead><tbody>'+
+    rows.map(function(r){
+      const c = classifyBP(r.systolic, r.diastolic);
+      return '<tr>'+
+        '<td>'+fmtDate(r.timestamp)+'</td>'+
+        '<td><strong>'+r.systolic+'/'+r.diastolic+'</strong> mmHg</td>'+
+        '<td>'+(r.pulse || '—')+'</td>'+
+        '<td>'+(r.arm === 'izq' ? 'Izq' : r.arm === 'der' ? 'Der' : '—')+'</td>'+
+        '<td><span class="badge '+c.cls+'">'+c.label+'</span></td>'+
+        '<td style="font-size:.8rem;color:var(--t2)">'+(r.note ? esc(r.note) : '')+'</td>'+
+        '<td><button class="btn btn-secondary" data-del="'+r.id+'" data-type="bp" style="padding:4px 10px;font-size:.78rem">🗑</button></td>'+
+      '</tr>';
+    }).join('') + '</tbody></table></div>';
+  list.querySelectorAll('button[data-del]').forEach(function(btn){
+    btn.addEventListener('click', function(){ deleteMetric(btn.dataset.del); });
+  });
+
+  // Chart (orden cronológico ascendente)
+  const ord = rows.slice().reverse();
+  const labels = ord.map(function(r){ return fmtDate(r.timestamp).split(',')[0]; });
+  const sysData = ord.map(function(r){ return r.systolic; });
+  const diaData = ord.map(function(r){ return r.diastolic; });
+  drawChart('bpChart', labels, [
+    { label:'Sistólica', data:sysData, borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,.1)' },
+    { label:'Diastólica', data:diaData, borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,.1)' }
+  ], 'bp');
+}
+
+// ── Render Glucemia ────────────────────────────────────────────────
+function renderGluc(rows){
+  const list = document.getElementById('gList');
+  const stats = document.getElementById('gStats');
+  if(!rows.length){
+    list.innerHTML = '<div class="empty">Aún no has guardado mediciones. ¡Empieza con la primera!</div>';
+    stats.innerHTML = '';
+    if(gChartInstance){ gChartInstance.destroy(); gChartInstance = null; }
+    return;
+  }
+  const last30 = rows.slice(0, 30);
+  const avg = Math.round(last30.reduce(function(a,r){ return a+r.glucose_mg_dl; },0)/last30.length);
+  stats.innerHTML = '<span>Total: <strong>'+rows.length+'</strong></span>'+
+    '<span>Media últimas '+last30.length+': <strong>'+avg+' mg/dL</strong></span>';
+
+  list.innerHTML = '<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Glucemia</th><th>Contexto</th><th>Clasificación</th><th>Nota</th><th></th></tr></thead><tbody>'+
+    rows.map(function(r){
+      const c = classifyGluc(r.glucose_mg_dl, r.context);
+      const ctxLabel = ({ ayunas:'Ayunas', preprandial:'Preprandial', postprandial:'Postprandial', dormir:'Antes dormir', hipo:'Síntomas hipo', otro:'Otro' })[r.context] || r.context;
+      return '<tr>'+
+        '<td>'+fmtDate(r.timestamp)+'</td>'+
+        '<td><strong>'+r.glucose_mg_dl+'</strong> mg/dL</td>'+
+        '<td>'+esc(ctxLabel)+'</td>'+
+        '<td><span class="badge '+c.cls+'">'+c.label+'</span></td>'+
+        '<td style="font-size:.8rem;color:var(--t2)">'+(r.note ? esc(r.note) : '')+'</td>'+
+        '<td><button class="btn btn-secondary" data-del="'+r.id+'" data-type="glucose" style="padding:4px 10px;font-size:.78rem">🗑</button></td>'+
+      '</tr>';
+    }).join('') + '</tbody></table></div>';
+  list.querySelectorAll('button[data-del]').forEach(function(btn){
+    btn.addEventListener('click', function(){ deleteMetric(btn.dataset.del); });
+  });
+
+  const ord = rows.slice().reverse();
+  const labels = ord.map(function(r){ return fmtDate(r.timestamp).split(',')[0]; });
+  const data = ord.map(function(r){ return r.glucose_mg_dl; });
+  drawChart('gChart', labels, [
+    { label:'Glucemia mg/dL', data:data, borderColor:'#7c3aed', backgroundColor:'rgba(124,58,237,.1)' }
+  ], 'gluc');
+}
+
+function drawChart(canvasId, labels, datasets, type){
+  if(typeof Chart === 'undefined') return;
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cfg = {
+    type:'line',
+    data:{ labels:labels, datasets:datasets.map(function(d){ return Object.assign({ tension:.3, borderWidth:2, pointRadius:3, fill:true }, d); }) },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } }, scales:{ y:{ beginAtZero:false } } }
+  };
+  if(type === 'bp'){
+    if(bpChartInstance) bpChartInstance.destroy();
+    bpChartInstance = new Chart(ctx, cfg);
+  } else {
+    if(gChartInstance) gChartInstance.destroy();
+    gChartInstance = new Chart(ctx, cfg);
+  }
+}
+
+async function deleteMetric(id){
+  if(!confirm('¿Borrar esta medición? No se puede deshacer.')) return;
+  try{ await userMetricsCol().doc(id).delete(); }
+  catch(e){ alert('Error borrando: '+(e.message || e)); }
+}
+
+function esc(s){ return String(s||'').replace(/[<>&"']/g, function(c){ return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+// ── Export CSV / Print ─────────────────────────────────────────────
+async function fetchAll(typeStr){
+  const snap = await userMetricsCol().where('type','==',typeStr).orderBy('timestamp','desc').limit(2000).get();
+  const rows = [];
+  snap.forEach(function(d){ rows.push(d.data()); });
+  return rows;
+}
+
+function downloadCSV(filename, header, rows){
+  const csv = [header.join(',')].concat(rows.map(function(r){ return r.map(csvEsc).join(','); })).join('\n');
+  const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+function csvEsc(v){
+  if(v == null) return '';
+  const s = String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+
+document.getElementById('bpExportBtn').addEventListener('click', async function(){
+  const rows = await fetchAll('bp');
+  downloadCSV('tension_arterial_'+new Date().toISOString().slice(0,10)+'.csv',
+    ['fecha','sistolica_mmHg','diastolica_mmHg','pulso_lpm','brazo','clasificacion','nota'],
+    rows.map(function(r){
+      const c = classifyBP(r.systolic, r.diastolic);
+      return [fmtDate(r.timestamp), r.systolic, r.diastolic, r.pulse||'', r.arm||'', c.label, r.note||''];
+    })
+  );
+});
+document.getElementById('gExportBtn').addEventListener('click', async function(){
+  const rows = await fetchAll('glucose');
+  downloadCSV('glucemia_'+new Date().toISOString().slice(0,10)+'.csv',
+    ['fecha','glucemia_mg_dl','contexto','clasificacion','nota'],
+    rows.map(function(r){
+      const c = classifyGluc(r.glucose_mg_dl, r.context);
+      return [fmtDate(r.timestamp), r.glucose_mg_dl, r.context, c.label, r.note||''];
+    })
+  );
+});
+
+document.getElementById('bpPrintBtn').addEventListener('click', function(){
+  const list = document.getElementById('bpList').innerHTML;
+  const stats = document.getElementById('bpStats').textContent;
+  const w = window.open('', '_blank');
+  w.document.write('<html><head><title>Tensión arterial</title><style>body{font-family:Arial;padding:24px;color:#000}h1{font-size:18pt;border-bottom:2px solid #000;padding-bottom:6px}table{width:100%;border-collapse:collapse;font-size:11pt}th,td{padding:6px 8px;border:1px solid #999;text-align:left}th{background:#eee}.badge{padding:1px 6px;border:1px solid #999;border-radius:8px;font-size:9pt}@media print{button{display:none}}</style></head><body>');
+  w.document.write('<h1>Mediciones de tensión arterial</h1>');
+  w.document.write('<p>Paciente: '+esc((currentUser && currentUser.email) || '')+' · Generado: '+new Date().toLocaleString('es-ES')+'</p>');
+  w.document.write('<p>'+esc(stats)+'</p>');
+  w.document.write(list);
+  w.document.write('<p style="margin-top:20px;font-size:9pt;color:#666"><em>Para revisión clínica con el médico de cabecera. Datos auto-anotados por el paciente.</em></p>');
+  w.document.write('</body></html>');
+  w.document.close(); w.focus(); setTimeout(function(){ w.print(); }, 400);
+});
+
+document.getElementById('gPrintBtn').addEventListener('click', function(){
+  const list = document.getElementById('gList').innerHTML;
+  const stats = document.getElementById('gStats').textContent;
+  const w = window.open('', '_blank');
+  w.document.write('<html><head><title>Glucemia</title><style>body{font-family:Arial;padding:24px;color:#000}h1{font-size:18pt;border-bottom:2px solid #000;padding-bottom:6px}table{width:100%;border-collapse:collapse;font-size:11pt}th,td{padding:6px 8px;border:1px solid #999;text-align:left}th{background:#eee}.badge{padding:1px 6px;border:1px solid #999;border-radius:8px;font-size:9pt}@media print{button{display:none}}</style></head><body>');
+  w.document.write('<h1>Mediciones de glucemia</h1>');
+  w.document.write('<p>Paciente: '+esc((currentUser && currentUser.email) || '')+' · Generado: '+new Date().toLocaleString('es-ES')+'</p>');
+  w.document.write('<p>'+esc(stats)+'</p>');
+  w.document.write(list);
+  w.document.write('<p style="margin-top:20px;font-size:9pt;color:#666"><em>Para revisión clínica con el médico de cabecera. Datos auto-anotados por el paciente.</em></p>');
+  w.document.write('</body></html>');
+  w.document.close(); w.focus(); setTimeout(function(){ w.print(); }, 400);
+});
+
+// Service worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+
+</body>
+</html>
