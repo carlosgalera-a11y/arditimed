@@ -3114,6 +3114,9 @@ function megaDispatch(question) {
     //
     // Si el retrieval falla (rag-index.json no descargado, embedQuery error,
     // user offline): fallback al stuffing antiguo para no romper la UX.
+    // Devuelve { context, scored } o null si RAG no disponible.
+    // scored permite saber si la cobertura es suficiente o el LLM debe
+    // marcar claramente cuando complete con conocimiento general.
     function buildContextWithRAG() {
         if (typeof window.RAG !== 'object' || typeof window.RAG.retrieve !== 'function') {
             return Promise.resolve(null);
@@ -3121,7 +3124,7 @@ function megaDispatch(question) {
         return window.RAG.retrieve(question, { k: 6 })
             .then(function(scored){
                 if (!scored || !scored.length) return null;
-                return window.RAG.buildContext(scored, { maxChars: 6000 });
+                return { scored: scored, context: window.RAG.buildContext(scored, { maxChars: 6000 }) };
             })
             .catch(function(e){
                 console.warn('[megaChat] RAG retrieve falló, uso stuffing fallback:', e && e.message);
@@ -3132,28 +3135,66 @@ function megaDispatch(question) {
     function fallbackStuffing() {
         var KB_MAX = 80000;
         var kb = MEGA_KB.length > KB_MAX ? MEGA_KB.substring(0, KB_MAX) : MEGA_KB;
-        return "CONOCIMIENTO BASE (protocolos locales Área II Cartagena, completo):\n" + kb;
+        return kb;
     }
 
-    buildContextWithRAG().then(function(ragContext){
+    // Threshold a partir del cual consideramos que la query está "cubierta"
+    // por los documentos del Área II. Cosine similarity de gemini-embedding-001
+    // ronda 0.50-0.85 cuando hay match; <0.45 suele ser ruido.
+    var COVERAGE_THRESHOLD = 0.55;
+
+    buildContextWithRAG().then(function(rag){
         var contextBlock;
-        if (ragContext) {
-            contextBlock = "PROTOCOLOS LOCALES ÁREA II CARTAGENA · fragmentos relevantes a la pregunta " +
-                "(retrieval semántico, top-6 por similitud de embedding sobre MEGA_KB y PDFs indexados):\n\n" + ragContext +
-                "\n\nINSTRUCCIONES OBLIGATORIAS:\n" +
-                "1. Lee atentamente cada fragmento. Cuando uses uno, cita su número entre corchetes ([#1], [#3]…).\n" +
-                "2. Tu respuesta debe INCLUIR EL CONTENIDO CONCRETO de los fragmentos (algoritmos, criterios, " +
-                "dosis, valores de corte, criterios de derivación). PROHIBIDO responder solo con \"existe el " +
-                "protocolo X\" o \"consulta el protocolo Y\" — el usuario quiere ver el contenido aplicado a su caso.\n" +
-                "3. Si la pregunta no está cubierta por NINGÚN fragmento, dilo explícitamente al final y solo " +
-                "entonces da orientación general basada en guías europeas/españolas.\n" +
-                "4. Estructura la respuesta con secciones claras (Diagnóstico, Tratamiento, Derivación, etc. según aplique).";
+        var topScore = 0;
+
+        if (rag && rag.context) {
+            topScore = (rag.scored && rag.scored[0] && rag.scored[0].score) || 0;
+            var coverage = topScore >= COVERAGE_THRESHOLD ? 'ALTA' : 'BAJA';
+
+            contextBlock =
+                "════════════════════════════════════════════════════════════\n" +
+                "📁 BLOQUE 1 · DOCUMENTOS EMBEBIDOS DEL ÁREA II CARTAGENA\n" +
+                "(retrieval semántico top-6 sobre MEGA_KB + protocolos AP indexados · top score = " +
+                topScore.toFixed(3) + " · cobertura " + coverage + ")\n" +
+                "════════════════════════════════════════════════════════════\n\n" +
+                rag.context +
+                "\n\n════════════════════════════════════════════════════════════\n" +
+                "🧠 BLOQUE 2 · CONOCIMIENTO GENERAL DE DEEPSEEK (fallback)\n" +
+                "Solo úsalo si BLOQUE 1 NO cubre la pregunta de forma suficiente.\n" +
+                "════════════════════════════════════════════════════════════\n\n" +
+                "INSTRUCCIONES OBLIGATORIAS — RESPUESTA EN DOS PARTES:\n\n" +
+                "PASO 1. Construye la respuesta con la información del BLOQUE 1 (documentos del Área II).\n" +
+                "  · Cita siempre los fragmentos por su número [#1], [#3] al usar su contenido.\n" +
+                "  · Incluye criterios concretos, dosis, valores de corte, derivaciones.\n" +
+                "  · Comienza con un encabezado: «📁 Según los protocolos del Área II:»\n\n" +
+                "PASO 2. SOLO si los fragmentos del BLOQUE 1 NO cubren la pregunta o la cubren parcialmente:\n" +
+                "  · Añade un segundo encabezado: «🧠 Información complementaria (conocimiento general, NO específico del Área II):»\n" +
+                "  · Aporta orientación basada en guías europeas/españolas (NICE, GES, SEN, SECP, AEP).\n" +
+                "  · Indica claramente que esta parte NO procede del protocolo local.\n\n" +
+                "PASO 3. Si los fragmentos cubren bien (cobertura ALTA), OMITE el BLOQUE 2 — no añadas relleno.\n\n" +
+                "PROHIBIDO REMITIR a otros documentos del sitio web (\"existe un protocolo sobre X\", " +
+                "\"consulta el protocolo Y\", \"recomendación adicional: revisa Z\"). La respuesta debe ser AUTOCONTENIDA.\n";
         } else {
-            // Fallback: stuffing antiguo si RAG no disponible.
-            contextBlock = fallbackStuffing();
+            // RAG no disponible (rag-index.json no descargado o embedQuery error).
+            // Fallback al stuffing — pero MANTENEMOS la estructura de 2 bloques.
+            contextBlock =
+                "════════════════════════════════════════════════════════════\n" +
+                "📁 BLOQUE 1 · DOCUMENTOS EMBEBIDOS DEL ÁREA II CARTAGENA\n" +
+                "(stuffing completo de MEGA_KB y protocolos AP — RAG no disponible)\n" +
+                "════════════════════════════════════════════════════════════\n\n" +
+                fallbackStuffing() +
+                "\n\n════════════════════════════════════════════════════════════\n" +
+                "INSTRUCCIONES OBLIGATORIAS — RESPUESTA EN DOS PARTES:\n\n" +
+                "PASO 1. Construye la respuesta con información de los protocolos arriba (Área II).\n" +
+                "  · Comienza con: «📁 Según los protocolos del Área II:»\n" +
+                "  · Incluye criterios concretos, dosis, valores de corte, derivaciones.\n\n" +
+                "PASO 2. SOLO si los protocolos del Área II no cubren la pregunta:\n" +
+                "  · Añade encabezado: «🧠 Información complementaria (conocimiento general, NO específico del Área II):»\n" +
+                "  · Indica claramente que esta parte NO procede del protocolo local.\n\n" +
+                "PROHIBIDO remitir a otros documentos del sitio. Respuesta AUTOCONTENIDA.\n";
         }
 
-        var fullPrompt = contextBlock + historyBlock + "\n\n---\n\nPREGUNTA: " + question;
+        var fullPrompt = contextBlock + historyBlock + "\n\n---\n\nPREGUNTA DEL MÉDICO: " + question;
 
         window.askAi({ type: "educational", systemPrompt: sp, prompt: fullPrompt })
             .then(function(res){
