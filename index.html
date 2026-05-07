@@ -123,9 +123,6 @@ main{padding:24px 28px 48px;display:flex;flex-direction:column;justify-content:c
 .action-card.highlight .label{color:#0d3d26}
 .action-card.highlight .desc{color:#475569;opacity:.85}
 .action-card.highlight:hover{background:#f8fafc;box-shadow:0 14px 48px rgba(255,255,255,.16)}
-.action-card.autotriaje{background:linear-gradient(135deg,rgba(220,38,38,.3),rgba(153,27,27,.4));border-color:rgba(252,165,165,.45)}
-.action-card.autotriaje:hover{background:linear-gradient(135deg,rgba(220,38,38,.52),rgba(153,27,27,.58));border-color:#fca5a5}
-
 .disclaimer{max-width:720px;padding:10px 16px;background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.28);border-radius:10px;font-size:.76rem;line-height:1.55;color:#fff;opacity:.88;margin-top:6px}
 .disclaimer strong{color:#ffd54f}
 
@@ -258,12 +255,6 @@ footer a:hover{color:#ffd54f}
           <span class="emoji">🩺</span>
           <span class="label">Profesionales</span>
           <span class="desc">Cuaderno IA por 24 especialidades · protocolos · docencia · herramientas. Requiere login.</span>
-        </button>
-
-        <button type="button" class="action-card autotriaje" onclick="goToAutotriaje()" role="listitem" aria-label="Autotriaje" style="grid-column:1/-1">
-          <span class="emoji">🚨</span>
-          <span class="label">Autotriaje</span>
-          <span class="desc">Asistente inteligente que te orienta según tus síntomas. Sin login.</span>
         </button>
       </div>
 
@@ -428,7 +419,6 @@ footer a:hover{color:#ffd54f}
     }
 
     function goToPacientes(){ location.href = 'pacientes.html'; }
-    function goToAutotriaje(){ location.href = 'panel-medico.html?page=pageTriaje'; }
     function goToProfesionales(){
       if(currentUser){ location.href = 'profesionales.html'; }
       else { openLoginModalWithRedirect('profesionales.html', 'Inicia sesión para entrar al área de profesionales.'); }
@@ -443,7 +433,7 @@ footer a:hover{color:#ffd54f}
     }
 
     function openInstrucciones(){
-      alert('Instrucciones:\n\n• Pacientes: sin login, recursos de salud para la comunidad.\n• Profesionales: login Google requerido. 7 apartados clínicos.\n• Autotriaje: orientación automática según síntomas, sin login.\n\nTambién puedes Buscar y ver Favoritos (requiere login).');
+      alert('Instrucciones:\n\n• Pacientes: sin login, recursos de salud para la comunidad. Incluye autotriaje de urgencias.\n• Profesionales: login Google requerido. 7 apartados clínicos.\n\nTambién puedes Buscar y ver Favoritos (requiere login).');
     }
 
     function openLoginModal(){
