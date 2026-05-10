@@ -1,0 +1,29 @@
+# Cartagenaeste · Política de divulgación responsable de vulnerabilidades
+# RFC 9116 · https://securitytxt.org/
+
+# Si has descubierto una vulnerabilidad de seguridad en area2cartagena.es
+# o en el repositorio público, contacta al autor antes de divulgar.
+
+Contact: mailto:carlosgalera2roman@gmail.com
+Expires: 2027-05-10T00:00:00.000Z
+Encryption: https://github.com/carlosgalera-a11y.gpg
+Acknowledgments: https://area2cartagena.es/about.html
+Preferred-Languages: es, en
+Canonical: https://area2cartagena.es/.well-known/security.txt
+Policy: https://area2cartagena.es/aviso-legal.html
+
+# Scope:
+#  - https://area2cartagena.es (frontend GitHub Pages)
+#  - https://docenciacartagenaeste.firebaseapp.com (Firebase Auth handler)
+#  - Cloud Function askAi (europe-west1)
+#
+# Out of scope:
+#  - Spam / DoS funcional sin impacto real (rate limit ya configurado).
+#  - Hallazgos puramente teóricos sin PoC.
+#  - Repositorios espejo (carlosgalera-a11y/area2cartagena es mirror del
+#    source; reportar siempre al canónico carlosgalera-a11y/Cartagenaeste).
+#
+# Datos seudonimizados:
+#  La plataforma es formativa, no procesa datos personales identificables
+#  de pacientes (regla 2 del proyecto). Si encuentras PII expuesta,
+#  reporta inmediatamente.
