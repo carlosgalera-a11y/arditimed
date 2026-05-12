@@ -1811,12 +1811,16 @@ async function exportMonthlyPdf(){
       '</div>';
 
     document.body.appendChild(container);
-    container.style.position = 'fixed';
-    container.style.left = '0';
+    // Técnica off-screen: el contenedor debe ser fully rendered (opacity 1)
+    // para que html2canvas lo capture, pero invisible al usuario. Antes
+    // estaba con opacity:0.01 + z-index:-1, lo que en Chrome/Safari hacía
+    // que el snapshot saliera en blanco. La técnica clásica es moverlo
+    // a left:-9999px manteniendo el layout normal.
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
     container.style.top = '0';
-    container.style.zIndex = '-1';
-    container.style.opacity = '0.01';
     container.style.width = '760px';
+    container.style.opacity = '1';
 
     // Incluir directorio de usuarios registrados en el PDF
     try {
@@ -1849,11 +1853,24 @@ async function exportMonthlyPdf(){
     const filename = 'cartagenaeste-informe-' + now.toISOString().substring(0,7) + '.pdf';
     status.textContent = 'renderizando PDF…';
 
+    // Esperar 1 tick para que el navegador termine de renderizar el DOM
+    // antes de que html2canvas haga el snapshot. Sin esto, en algunos
+    // navegadores el canvas captura el container con tablas a medio pintar.
+    await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
+
     await html2pdf().set({
       margin: [12, 10, 12, 10],
       filename: filename,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 800 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 760,
+        backgroundColor: '#ffffff',
+        logging: false
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'] }
     }).from(container).save();
