@@ -241,16 +241,39 @@ export const getGaMetrics = onCall(
         topSources28d,
       };
     } catch (e) {
-      const err = e as Error & { response?: { data?: unknown; status?: number } };
+      const err = e as Error & {
+        response?: { data?: unknown; status?: number };
+        code?: number | string;
+        status?: number;
+      };
       logger.error('getGaMetrics.error', {
         message: err.message,
         status: err.response?.status,
+        code: err.code,
         body: err.response?.data,
       });
-      if (err.response?.status === 403) {
+      // Detectar 403 / PERMISSION_DENIED en cualquiera de las formas que
+      // google-auth-library / Gaxios devuelven el error.
+      const status = err.response?.status ?? err.status ?? Number(err.code) ?? 0;
+      const isPermDenied =
+        status === 403 ||
+        /PERMISSION_DENIED/i.test(err.message ?? '') ||
+        /does not have sufficient permissions/i.test(err.message ?? '');
+      if (isPermDenied) {
         throw new HttpsError(
           'permission-denied',
-          'La service account de Cloud Functions no tiene acceso al property GA4 525246514. Añadirla como Lector en GA4.',
+          'ga4_perm_denied: la service account de la Cloud Function no tiene acceso al property GA4 525246514. ' +
+            'Añadir como Viewer en https://analytics.google.com/analytics/web/#/p525246514/admin/properties/access · ' +
+            'Email a añadir: <service-account>@<project>.iam.gserviceaccount.com (ver Firebase Console → Functions → askAi → Runtime SA).',
+        );
+      }
+      const isQuota =
+        status === 429 ||
+        /quota|exhausted|rate.?limit/i.test(err.message ?? '');
+      if (isQuota) {
+        throw new HttpsError(
+          'resource-exhausted',
+          'ga4_quota_exhausted: cuota diaria de GA4 Data API agotada (250 000 tokens/día). Reset 00:00 UTC.',
         );
       }
       throw new HttpsError('internal', `ga4_data_api_error: ${err.message}`);

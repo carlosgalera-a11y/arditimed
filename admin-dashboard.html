@@ -1223,33 +1223,57 @@ function renderGaErrorBlock(containerId, err, retryFn){
   if(!el) return;
   const code = (err && err.code) || '';
   const msg = (err && err.message) ? err.message : String(err || 'error desconocido');
-  // Heurística para sugerir causa según el código.
-  let causes = [
-    'La Cloud Function <code>getGaMetrics</code> ha fallado en europe-west1. Mira los logs en Firebase Console → Functions.',
-    'La service account del proyecto no tiene rol <strong>Viewer</strong> sobre la propiedad GA4 525246514.',
-    'GA4 Data API aún no ha indexado eventos — tras un deploy del tag puede tardar 24-48 h.',
-    'Cuota diaria de GA4 Data API agotada (250.000 tokens/día) — espera al reset UTC.'
-  ];
-  if(code === 'unauthenticated' || /auth/i.test(msg)){
+  // Detecta el caso más frecuente: SA sin acceso al property GA4. Lo
+  // expone con un fix de 1 clic en lugar de la lista genérica.
+  const isPermDenied =
+    code === 'permission-denied' ||
+    /ga4_perm_denied|PERMISSION_DENIED|does not have sufficient permissions/i.test(msg);
+  const isQuota = code === 'resource-exhausted' || /ga4_quota_exhausted|quota/i.test(msg);
+
+  let causes;
+  let primaryFix = '';
+  if(isPermDenied){
+    causes = [
+      'La service account de runtime de la Cloud Function <code>getGaMetrics</code> no es <strong>Viewer</strong> en la propiedad GA4 <code>525246514</code>.',
+      'Si acabas de añadirla, GA4 propaga permisos en ~2 min; reintenta.',
+      'Verifica que <code>analyticsdata.googleapis.com</code> está habilitado en GCP.'
+    ];
+    primaryFix =
+      '<div class="err-fix" style="margin-top:10px;padding:12px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.35);border-radius:8px">' +
+        '<div style="font-weight:700;color:#22c55e;margin-bottom:6px">✅ Fix rápido (30 segundos)</div>' +
+        '<ol style="margin:0 0 8px 18px;padding:0;font-size:.85rem;line-height:1.55">' +
+          '<li>Abre <a href="https://analytics.google.com/analytics/web/#/p525246514/admin/properties/access" target="_blank" rel="noopener" style="color:#22c55e;text-decoration:underline"><strong>GA4 → Admin → Property access management ↗</strong></a>.</li>' +
+          '<li>Pulsa <strong>+</strong> arriba a la derecha → <em>Add users</em>.</li>' +
+          '<li>Email a añadir (la SA de runtime de Functions, normalmente App Engine default):<br>' +
+            '<code style="display:inline-block;margin-top:4px;padding:4px 8px;background:rgba(255,255,255,.06);border-radius:4px;user-select:all">docenciacartagenaeste@appspot.gserviceaccount.com</code></li>' +
+          '<li>Rol: <strong>Viewer</strong>. <em>Notify by email</em> desmarcado. Guarda.</li>' +
+          '<li>Vuelve aquí y pulsa <strong>🔄 Reintentar</strong> (puede tardar ~2 min en propagar).</li>' +
+        '</ol>' +
+        '<div style="font-size:.78rem;color:var(--t2)">Si tu Cloud Function usa otra SA (ver Firebase Console → Functions → getGaMetrics → Runtime service account), añade esa en lugar de la default.</div>' +
+      '</div>';
+  } else if(code === 'unauthenticated' || /auth/i.test(msg)){
     causes = [
       'No hay sesión activa con la cuenta autorizada. Recarga e inicia sesión con la cuenta de admin.',
       'App Check podría estar rechazando el token. Revisa <code>recaptcha-key.js</code>.'
     ];
-  } else if(code === 'permission-denied'){
+  } else if(isQuota){
     causes = [
-      'El email autenticado no está en la lista <code>DASHBOARD_VIEWERS</code> de <code>functions/src/getGaMetrics.ts</code>.',
-      'Service account de Firebase Functions sin permiso Viewer en GA4.'
-    ];
-  } else if(code === 'resource-exhausted'){
-    causes = [
-      'Cuota diaria de GA4 Data API agotada. Reset cada día a las 00:00 UTC.',
+      'Cuota diaria de GA4 Data API agotada (250 000 tokens/día). Reset cada día a las 00:00 UTC.',
       'Demasiadas peticiones en poco tiempo — usa el botón Refrescar con moderación.'
+    ];
+  } else {
+    causes = [
+      'La Cloud Function <code>getGaMetrics</code> ha fallado en europe-west1. Mira los logs.',
+      'La service account de Functions no tiene rol <strong>Viewer</strong> sobre el property GA4 525246514.',
+      'GA4 Data API aún no ha indexado eventos — tras un deploy del tag puede tardar 24-48 h.',
+      'Cuota diaria de GA4 Data API agotada — espera al reset UTC.'
     ];
   }
   el.innerHTML =
     '<div class="err-card">' +
       '<div class="err-title">❌ No se pudieron cargar las métricas</div>' +
       '<div>Mensaje: <code>' + esc(msg).substring(0,200) + '</code>' + (code ? ' · código <code>'+esc(code)+'</code>' : '') + '</div>' +
+      primaryFix +
       '<div class="small" style="margin-top:6px;color:var(--t2)">Causas probables:</div>' +
       '<ul>' + causes.map(function(c){ return '<li>'+c+'</li>'; }).join('') + '</ul>' +
       '<div class="err-actions">' +
