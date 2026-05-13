@@ -16,14 +16,24 @@ import { initSentry, captureException, setUser, SENTRY_DSN } from './sentry';
 const DEEPSEEK_API_KEY = defineSecret('DEEPSEEK_API_KEY');
 const OPENROUTER_API_KEY = defineSecret('OPENROUTER_API_KEY');
 
-// Secretos OPCIONALES — si existen en Secret Manager, añadirlos aquí y a
-// `secrets: [...]` más abajo. El router los prefiere automáticamente sobre
-// OpenRouter. Útil para cumplir EU-residency estricta (Gemini EU, Mistral EU).
+// ── GEMINI directo (Flash Lite) ─────────────────────────────────────
+// Activado 2026-05-06 para preferir Gemini 2.5 Flash Lite sobre OpenRouter
+// en clinical_case + educational. Routing.ts ya lo tenía contemplado en la
+// cadena; este secret hace que `buildProviderChain` ponga la llamada directa
+// a Google AI ANTES de OpenRouter.
 //
-// Ejemplo de activación:
-//   const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
-//   ... en secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY, GEMINI_API_KEY]
-//   ... en buildProviderChain: secrets: { ..., geminiKey: GEMINI_API_KEY.value() }
+// Pre-deploy: el valor debe existir en Secret Manager:
+//   firebase functions:secrets:set GEMINI_API_KEY --project docenciacartagenaeste
+//
+// Si el secreto no existe el deploy falla con error claro — no degrada a
+// runtime silencioso. Si en el futuro hace falta desactivarlo, comentar la
+// línea de defineSecret + sacarlo del array `secrets` de abajo.
+const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
+
+// Otros secretos OPCIONALES — añadir cuando se generen las keys directas:
+// const MISTRAL_API_KEY = defineSecret('MISTRAL_API_KEY');
+// const QWEN_API_KEY = defineSecret('QWEN_API_KEY');
+// (Recordar añadirlos también a secrets: [...] y a buildProviderChain.)
 
 const VALID_TYPES: readonly AiType[] = ['clinical_case', 'educational', 'vision'] as const;
 
@@ -41,7 +51,7 @@ function extractIp(raw: unknown): string {
 export const askAi = onCall(
   {
     region: 'europe-west1',
-    secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY, SENTRY_DSN],
+    secrets: [DEEPSEEK_API_KEY, OPENROUTER_API_KEY, GEMINI_API_KEY, SENTRY_DSN],
     // TODO: reactivar a true cuando el frontend envíe token App Check.
     // Requiere: reCAPTCHA v3 site key + window.RECAPTCHA_SITE_KEY + firebase.appCheck().activate(...).
     // Ver docs/s1.2-deploy-pendiente-carlos.md §3.
@@ -145,8 +155,9 @@ export const askAi = onCall(
       secrets: {
         deepseekKey: DEEPSEEK_API_KEY.value(),
         openrouterKey: OPENROUTER_API_KEY.value(),
-        // Directas opcionales (ver comentario arriba):
-        // geminiKey: GEMINI_API_KEY.value(),
+        // Gemini Flash Lite directo (UE) — preferido sobre OpenRouter Gemini.
+        geminiKey: GEMINI_API_KEY.value(),
+        // Otras directas pendientes de generar keys:
         // mistralKey: MISTRAL_API_KEY.value(),
         // qwenKey: QWEN_API_KEY.value(),
       },
