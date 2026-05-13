@@ -32,6 +32,29 @@ service firebase.storage {
       allow delete: if isOwner(uid) || isAdmin();
     }
 
+    // ── Materiales de sesión clínica de un centro de salud ──────────
+    // Path: /cs_sesiones/{cid}/{uid}/{filename}. Solo el propio usuario
+    // sube en su propio path (no podemos validar csRoles desde Storage
+    // sin custom claims, así que el path se confina por uid). El doc
+    // Firestore de la sesión sí valida csCanWrite y referencia la URL
+    // pública. Máx 50 MB. Tipos: PDF, PPT, DOC, imagen, audio, vídeo
+    // (formación clínica suele subir presentaciones + grabaciones).
+    match /cs_sesiones/{cid}/{uid}/{fileName} {
+      allow read: if signedIn();
+      allow create, update: if isOwner(uid)
+        && request.resource.size < 50 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('application/pdf')
+          || request.resource.contentType.matches('application/msword')
+          || request.resource.contentType.matches('application/vnd.openxmlformats.*')
+          || request.resource.contentType.matches('application/vnd.ms-.*')
+          || request.resource.contentType.matches('image/.*')
+          || request.resource.contentType.matches('audio/.*')
+          || request.resource.contentType.matches('video/.*')
+        );
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
     // ── Propuestas: máx 50 MB, tipos documento ───────────────────────
     match /propuestas/{fileName} {
       allow read: if signedIn();

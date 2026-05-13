@@ -348,6 +348,30 @@ service cloud.firestore {
         allow read: if signedIn();
         allow create, update, delete: if csCanWrite(cid);
       }
+
+      // Sesiones clínicas del centro (formación interna del equipo).
+      // PRIVADO POR CENTRO: sólo miembros leen — a diferencia del resto
+      // de subcolecciones que son lectura abierta autenticada. Las
+      // sesiones llevan materiales internos y casos seudonimizados del
+      // propio centro, no compartibles automáticamente con otros centros.
+      match /sesiones/{docId} {
+        allow read: if csEsMiembro(cid);
+        allow create: if csCanWrite(cid)
+          && request.resource.data.autorUid == request.auth.uid;
+        allow update: if isAdmin()
+          || csRol(cid) == 'coordinador'
+          || (csCanWrite(cid) && resource.data.autorUid == request.auth.uid);
+        allow delete: if isAdmin()
+          || csRol(cid) == 'coordinador'
+          || (csCanWrite(cid) && resource.data.autorUid == request.auth.uid);
+
+        // Asistencia opcional: cualquier miembro marca/desmarca SU
+        // propia asistencia. Útil para el dashboard.
+        match /asistencia/{uid} {
+          allow read: if csEsMiembro(cid);
+          allow create, update, delete: if request.auth.uid == uid && csEsMiembro(cid);
+        }
+      }
     }
 
     // Códigos de invitación: se crean y se canjean SOLO desde Cloud Function
