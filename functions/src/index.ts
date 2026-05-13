@@ -16,6 +16,7 @@ export { getGaMetrics } from './getGaMetrics';
 export { csCreateInvite, csRedeemInvite } from './csInvites';
 export { foroNotifyOnRespuesta } from './foroNotify';
 export { evidenciaSearch } from './evidencia/evidenciaSearch';
+export { evidenciaChat, evidenciaListChat } from './evidencia/evidenciaChat';
 export { evidenciaFeedback } from './evidencia/evidenciaFeedback';
 export { evidenciaHealthCheck } from './evidencia/healthCheck';
 export { evidenciaToggleFavorite, evidenciaListFavorites } from './evidencia/evidenciaFavorites';
