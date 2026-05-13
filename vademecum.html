@@ -157,6 +157,45 @@ body.dark .drug-computed{background:#0a0e1a}
 .to-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;background:var(--ink);color:#fff;border:none;border-radius:50%;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;visibility:hidden;transition:.25s;z-index:90}
 .to-top.visible{opacity:1;visibility:visible}
 .to-top:hover{transform:translateY(-2px);background:var(--tera)}
+
+/* ═══ URGENCIAS · Vademécum SuperVHivencia ═══════════════════════ */
+.urg-intro{background:linear-gradient(135deg,#fef3c7,#fde68a);border-left:4px solid var(--tera);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+body.dark .urg-intro{background:linear-gradient(135deg,#3a2e1a,#2a2010);color:#fef3c7}
+.urg-intro h3{font-family:'Lora',serif;font-weight:700;font-size:1.05rem;color:var(--tera);margin-bottom:6px}
+body.dark .urg-intro h3{color:#fbbf24}
+.urg-intro p{font-size:.82rem;line-height:1.55;color:var(--ink-soft)}
+body.dark .urg-intro p{color:#fcd34d}
+
+.urg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.urg-card{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:.2s;display:flex;flex-direction:column;gap:10px}
+body.dark .urg-card{background:#161d33;border-color:#1e2a45}
+.urg-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px);border-color:var(--tera)}
+.urg-card .urg-name{font-family:'Lora',serif;font-weight:700;font-size:1.05rem;color:var(--adult);letter-spacing:.01em;line-height:1.2}
+body.dark .urg-card .urg-name{color:#7aa8ff}
+.urg-card .urg-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.urg-card .urg-tag{font-size:.62rem;padding:2px 7px;border-radius:8px;background:rgba(11,71,161,.10);color:var(--adult);font-weight:600;letter-spacing:.02em;text-transform:lowercase}
+body.dark .urg-card .urg-tag{background:rgba(122,168,255,.18);color:#7aa8ff}
+.urg-block{padding:8px 10px;border-radius:8px;font-size:.85rem;line-height:1.5}
+.urg-block .lbl{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;opacity:.85}
+.urg-block .val{color:var(--ink);font-weight:400}
+body.dark .urg-block .val{color:#e8ecf4}
+.urg-block.ampolla{background:rgba(108,132,96,.10);border-left:3px solid var(--sage)}
+.urg-block.ampolla .lbl{color:var(--sage)}
+.urg-block.bolus{background:rgba(192,84,64,.10);border-left:3px solid var(--tera)}
+.urg-block.bolus .lbl{color:var(--tera)}
+.urg-block.perfusion{background:rgba(13,71,161,.08);border-left:3px solid var(--adult)}
+.urg-block.perfusion .lbl{color:var(--adult)}
+.urg-block.perfusion.empty,.urg-block.bolus.empty{opacity:.55;font-style:italic}
+.urg-block.comentario{background:rgba(185,145,70,.10);border-left:3px solid var(--gold);font-size:.82rem}
+.urg-block.comentario .lbl{color:var(--gold)}
+.urg-block.comentario .val{font-style:italic;color:var(--ink-soft)}
+body.dark .urg-block.comentario .val{color:#cbd5e1}
+.urg-block .val strong{font-weight:700;color:var(--ink)}
+body.dark .urg-block .val strong{color:#fff}
+
+@media(max-width:600px){
+  .urg-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -192,6 +231,7 @@ body.dark .drug-computed{background:#0a0e1a}
   <button class="tab-btn active" data-tab="conditions" onclick="vdSwitchTab('conditions')" role="tab">Condiciones</button>
   <button class="tab-btn" data-tab="procedures" onclick="vdSwitchTab('procedures')" role="tab">Procedimientos</button>
   <button class="tab-btn" data-tab="drugs" onclick="vdSwitchTab('drugs')" role="tab">Fármacos</button>
+  <button class="tab-btn" data-tab="urgencias" onclick="vdSwitchTab('urgencias')" role="tab">⚡ Urgencias</button>
 </div>
 
 <!-- ═══ CONTENT ═══ -->
@@ -218,6 +258,15 @@ body.dark .drug-computed{background:#0a0e1a}
     <div class="cond-list" id="vdDrugList"></div>
   </div>
 
+  <!-- URGENCIAS · Vademécum SuperVHivencia -->
+  <div class="section" id="sec-urgencias">
+    <div class="urg-intro">
+      <h3>⚡ Vademécum de urgencias</h3>
+      <p>50 fármacos de uso habitual en urgencias hospitalarias y reanimación. Cada ficha incluye <strong>presentación de ampolla</strong>, <strong>bolus</strong>, <strong>perfusión</strong> y <strong>comentario clínico</strong>. Uso exclusivamente docente — verifica siempre con ficha técnica AEMPS antes de administrar.</p>
+    </div>
+    <div id="vdUrgList" class="urg-grid"></div>
+  </div>
+
   <div class="footer">
     Vademécum Clínico · Área II Cartagena · H.G.U. Santa Lucía<br>
     <span class="legal">Herramienta docente. Verificar siempre con fuentes oficiales antes de administrar. Las dosis se calculan a título orientativo — responsabilidad clínica del prescriptor.</span>
@@ -227,6 +276,7 @@ body.dark .drug-computed{background:#0a0e1a}
 <button class="to-top" id="vdToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Arriba">↑</button>
 
 <script src="vademecum-data.js?v=20260416a"></script>
+<script src="vademecum-urgencias-drugs.js?v=20260514a"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
 //  VADEMÉCUM — State + rendering
@@ -346,6 +396,7 @@ function vdRender(){
   if(VDS.currentTab === 'conditions') vdRenderConditions();
   else if(VDS.currentTab === 'procedures') vdRenderProcedures();
   else if(VDS.currentTab === 'drugs') vdRenderDrugs();
+  else if(VDS.currentTab === 'urgencias') vdRenderUrgentDrugs();
 }
 
 function vdUpdateBreadcrumb(){
@@ -624,6 +675,57 @@ function vdRenderDrugs(){
 window.addEventListener('scroll', function(){
   document.getElementById('vdToTop').classList.toggle('visible', window.pageYOffset > 400);
 });
+
+// ═══ URGENCIAS · Vademécum SuperVHivencia renderer ═════════════
+// Filtra los 50 fármacos por VDS.search (nombre o tags). Cada card
+// muestra ampolla / bolus / perfusión / comentario en bloques de color.
+function vdRenderUrgentDrugs(){
+  var el = document.getElementById('vdUrgList');
+  if(!el) return;
+  var list = (typeof VD_URGENT_DRUGS !== 'undefined') ? VD_URGENT_DRUGS : [];
+  if(VDS.search){
+    var q = VDS.search;
+    list = list.filter(function(d){
+      var hay = (d.name + ' ' + (d.tags||[]).join(' ') + ' ' + (d.comentario||'')).toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+  }
+  if(!list.length){
+    el.innerHTML = '<div class="empty"><div class="ico">🔍</div>Sin resultados<br><span style="font-size:.85rem">Prueba otro término (ej. "vasopresor", "estatus", "anafilaxia")</span></div>';
+    return;
+  }
+  el.innerHTML = list.map(function(d){
+    var tagsHtml = (d.tags||[]).slice(0,4).map(function(t){
+      return '<span class="urg-tag">'+esc(t)+'</span>';
+    }).join('');
+    var bolusEmpty = !d.bolus || d.bolus === '—';
+    var perfEmpty = !d.perfusion || d.perfusion === '—';
+    var comEmpty = !d.comentario || d.comentario === '—';
+    return '<div class="urg-card" id="urg-'+esc(d.id)+'">'
+      + '<div>'
+      +   '<div class="urg-name">'+esc(d.name)+'</div>'
+      +   (tagsHtml ? '<div class="urg-tags">'+tagsHtml+'</div>' : '')
+      + '</div>'
+      + '<div class="urg-block ampolla">'
+      +   '<div class="lbl">💊 Ampolla</div>'
+      +   '<div class="val">'+esc(d.ampolla||'—')+'</div>'
+      + '</div>'
+      + '<div class="urg-block bolus'+(bolusEmpty?' empty':'')+'">'
+      +   '<div class="lbl">⚡ Bolus</div>'
+      +   '<div class="val">'+esc(d.bolus||'—')+'</div>'
+      + '</div>'
+      + '<div class="urg-block perfusion'+(perfEmpty?' empty':'')+'">'
+      +   '<div class="lbl">💉 Perfusión</div>'
+      +   '<div class="val">'+esc(d.perfusion||'—')+'</div>'
+      + '</div>'
+      + (comEmpty ? '' :
+          '<div class="urg-block comentario">'
+        +   '<div class="lbl">📝 Comentario</div>'
+        +   '<div class="val">'+esc(d.comentario)+'</div>'
+        + '</div>')
+      + '</div>';
+  }).join('');
+}
 
 // ─── Initialize ───
 vdRender();
