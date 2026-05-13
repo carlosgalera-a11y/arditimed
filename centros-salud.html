@@ -26,6 +26,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
 <script src="firebase-init.js"></script>
 
 <script>window.SENTRY_DSN='https://397ff22b9f93f5ed251ec81c68806546@o4511258495090688.ingest.de.sentry.io/4511258543784016';</script>
@@ -121,10 +122,100 @@ main{flex:1;padding:24px 22px 40px;max-width:1200px;width:100%;margin:0 auto}
 footer{padding:14px 22px;text-align:center;font-size:.7rem;color:rgba(255,255,255,.55);background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.08)}
 footer a{text-decoration:underline;color:#d4a853}
 
+/* ── Sesiones del centro ─────────────────────────────────────────── */
+.ses-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.ses-header h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:#fff;margin:0}
+.ses-header p{font-size:.78rem;opacity:.72;margin:4px 0 0;max-width:540px;line-height:1.45}
+.ses-area-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}
+.ses-area-chip{padding:5px 11px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#cbd5e1;font-size:.74rem;cursor:pointer;font-family:inherit;font-weight:600}
+.ses-area-chip.on{background:rgba(212,168,83,.20);border-color:#d4a853;color:#ffd54f}
+.ses-area-chip:hover{background:rgba(212,168,83,.14)}
+.ses-list{display:flex;flex-direction:column;gap:10px}
+.ses-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px}
+.ses-card.proxima{border-color:rgba(34,197,94,.40);background:rgba(34,197,94,.06)}
+.ses-card.pasada{opacity:.65}
+.ses-card-row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.ses-fecha{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:#d4a853;font-weight:700}
+.ses-fecha .dia{background:rgba(212,168,83,.18);border-radius:6px;padding:3px 8px;font-size:.86rem}
+.ses-titulo{font-size:1.0rem;font-weight:700;color:#fff;margin:4px 0 2px;line-height:1.35}
+.ses-meta{font-size:.78rem;opacity:.75;line-height:1.4}
+.ses-area-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700;letter-spacing:.04em;margin-left:6px}
+.ses-area-medico_ap{background:rgba(13,148,136,.18);color:#5eead4;border:1px solid rgba(13,148,136,.40)}
+.ses-area-pediatria{background:rgba(236,72,153,.18);color:#f9a8d4;border:1px solid rgba(236,72,153,.40)}
+.ses-area-enfermeria{background:rgba(59,130,246,.18);color:#93bbfc;border:1px solid rgba(59,130,246,.40)}
+.ses-area-administracion{background:rgba(168,85,247,.18);color:#d8b4fe;border:1px solid rgba(168,85,247,.40)}
+.ses-area-todos{background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.ses-desc{margin-top:8px;font-size:.86rem;opacity:.92;line-height:1.5;white-space:pre-wrap;color:#e9f5ee}
+.ses-mats{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.ses-mat{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:10px;background:rgba(13,148,136,.12);border:1px solid rgba(13,148,136,.30);color:#fff;font-size:.76rem;text-decoration:none;font-weight:600}
+.ses-mat:hover{background:rgba(13,148,136,.22)}
+.ses-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.ses-action{padding:6px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.78rem;cursor:pointer;font-weight:600}
+.ses-action:hover{background:rgba(255,255,255,.14)}
+.ses-action.danger{color:#fca5a5;border-color:rgba(239,68,68,.36)}
+.ses-action.danger:hover{background:rgba(239,68,68,.16)}
+.ses-action.asist{color:#5eead4;border-color:rgba(13,148,136,.50)}
+.ses-action.asist.on{background:rgba(13,148,136,.30);color:#fff}
+.ses-form{background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:16px;margin-bottom:14px;display:none}
+.ses-form.show{display:block}
+.ses-form .row2{display:grid;grid-template-columns:1fr 160px;gap:10px;margin-bottom:8px}
+.ses-form input[type=text],.ses-form input[type=date],.ses-form input[type=time],.ses-form select,.ses-form textarea{width:100%;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.92rem;padding:9px 12px}
+.ses-form textarea{resize:vertical;min-height:80px}
+.ses-form label{font-size:.74rem;opacity:.74;display:block;margin-bottom:4px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.ses-form .row3{display:grid;grid-template-columns:140px 120px 1fr;gap:10px;margin-bottom:8px}
+.ses-form .file-row{margin-top:10px;font-size:.82rem}
+.ses-form input[type=file]{font-family:inherit;font-size:.84rem;color:#e9f5ee}
+.ses-form .save-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.ses-empty{padding:24px;text-align:center;opacity:.65;border:1px dashed rgba(255,255,255,.18);border-radius:12px;font-size:.88rem}
+
+/* ── Calendario mensual ──────────────────────────────────────────── */
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.cal-head h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:#fff;margin:0}
+.cal-nav{display:flex;gap:6px;align-items:center}
+.cal-nav button{padding:6px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#fff;font-family:inherit;font-size:.84rem;cursor:pointer;font-weight:600}
+.cal-nav button:hover{background:rgba(255,255,255,.14)}
+.cal-month{font-weight:800;font-size:1.0rem;color:#d4a853;min-width:160px;text-align:center;font-family:'Playfair Display',serif}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;background:rgba(0,0,0,.16);padding:6px;border-radius:10px;border:1px solid rgba(255,255,255,.10)}
+.cal-dow{padding:6px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:center;opacity:.7}
+.cal-day{min-height:74px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 6px;font-size:.74rem;cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:all .12s}
+.cal-day:hover{background:rgba(255,255,255,.08);border-color:rgba(212,168,83,.40)}
+.cal-day.empty{background:transparent;border-color:transparent;cursor:default}
+.cal-day.today{border-color:#d4a853;background:rgba(212,168,83,.10)}
+.cal-day.has-events{background:rgba(13,148,136,.10);border-color:rgba(13,148,136,.30)}
+.cal-day-num{font-weight:700;font-size:.84rem;color:#fff}
+.cal-day.empty .cal-day-num{display:none}
+.cal-event{padding:2px 5px;background:rgba(13,148,136,.30);border-radius:4px;font-size:.66rem;color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.25}
+.cal-event-more{font-size:.62rem;opacity:.72;font-weight:700}
+.cal-day-detail{margin-top:14px;padding:14px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.14);border-radius:10px;display:none}
+.cal-day-detail.show{display:block}
+.cal-day-detail h4{font-family:'Playfair Display',serif;font-size:.98rem;color:#d4a853;margin-bottom:8px}
+
+/* ── Dashboard del centro ────────────────────────────────────────── */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:18px}
+.dash-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:14px 16px}
+.dash-card .label{font-size:.7rem;opacity:.65;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.dash-card .value{font-size:1.6rem;font-weight:800;color:#fff;margin-top:5px;font-family:'Playfair Display',serif;line-height:1.1}
+.dash-card .unit{font-size:.74rem;opacity:.65;margin-left:4px;font-family:inherit;font-weight:400}
+.dash-card .sub{font-size:.74rem;opacity:.7;margin-top:3px}
+.dash-card.accent{background:linear-gradient(135deg,rgba(13,148,136,.12),rgba(13,148,136,.04));border-color:rgba(13,148,136,.40)}
+.dash-card.warn{background:rgba(212,168,83,.08);border-color:rgba(212,168,83,.40)}
+.dash-section{margin-bottom:18px}
+.dash-section h3{font-family:'Playfair Display',serif;font-size:1.0rem;color:#fff;margin-bottom:10px}
+.dash-area-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.84rem}
+.dash-area-row .area-name{min-width:120px;font-weight:700}
+.dash-area-row .area-bar{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.dash-area-row .area-fill{height:100%;background:linear-gradient(90deg,#0d9488,#5eead4);border-radius:4px}
+.dash-area-row .area-count{min-width:42px;text-align:right;opacity:.85;font-size:.78rem;font-weight:700}
+.dash-empty{padding:22px;text-align:center;opacity:.65;border:1px dashed rgba(255,255,255,.16);border-radius:10px;font-size:.86rem}
+
 @media(max-width:640px){
   main{padding:16px 14px 28px}
   .cs-row{grid-template-columns:1fr;gap:2px}
   .cs-grid{grid-template-columns:1fr}
+  .ses-form .row2,.ses-form .row3{grid-template-columns:1fr}
+  .cal-day{min-height:54px;padding:4px}
+  .cal-day-num{font-size:.76rem}
+  .cal-event{font-size:.60rem}
 }
 </style>
 </head>
@@ -188,6 +279,9 @@ footer a{text-decoration:underline;color:#d4a853}
         <button class="cs-tab" data-tab="plantilla" onclick="setTab('plantilla')">Plantilla</button>
         <button class="cs-tab" data-tab="recursos" onclick="setTab('recursos')">Recursos</button>
         <button class="cs-tab" data-tab="particularidades" onclick="setTab('particularidades')">Particularidades</button>
+        <button class="cs-tab" data-tab="sesiones" id="csTabSesiones" onclick="setTab('sesiones')">📅 Sesiones <span class="pill" style="font-size:.62rem;padding:0 6px;margin-left:4px">solo miembros</span></button>
+        <button class="cs-tab" data-tab="calendario" id="csTabCalendario" onclick="setTab('calendario')">🗓️ Calendario</button>
+        <button class="cs-tab" data-tab="dashboard" id="csTabDashboard" onclick="setTab('dashboard')">📊 Dashboard</button>
         <button class="cs-tab" data-tab="foro" id="csTabForo" onclick="setTab('foro')">💬 Foro privado <span id="csForoBadge" class="pill" style="display:none;font-size:.62rem;padding:0 6px;margin-left:4px">solo miembros</span></button>
         <button class="cs-tab" data-tab="acceso" onclick="setTab('acceso')">Soy del equipo</button>
       </div>
@@ -197,6 +291,9 @@ footer a{text-decoration:underline;color:#d4a853}
       <div class="cs-pane" data-pane="plantilla" id="panePlantilla"></div>
       <div class="cs-pane" data-pane="recursos" id="paneRecursos"></div>
       <div class="cs-pane" data-pane="particularidades" id="paneParticularidades"></div>
+      <div class="cs-pane" data-pane="sesiones" id="paneSesiones"></div>
+      <div class="cs-pane" data-pane="calendario" id="paneCalendario"></div>
+      <div class="cs-pane" data-pane="dashboard" id="paneDashboard"></div>
       <div class="cs-pane" data-pane="foro" id="paneForo">
         <div id="foroLockBox" style="display:none" class="cs-acceso">
           <h3>🔒 Foro privado de <span id="foroNombreCentro">este centro</span></h3>
@@ -421,6 +518,9 @@ function setTab(name){
     abrirForo();
     return;
   }
+  if(name === 'sesiones') { abrirSesiones(); return; }
+  if(name === 'calendario') { abrirCalendario(); return; }
+  if(name === 'dashboard') { abrirDashboard(); return; }
   if(name !== 'acceso') renderTab(name);
 }
 
@@ -798,6 +898,587 @@ function setMsg(t, err){
   var m = document.getElementById('csCodigoMsg');
   m.textContent = t;
   m.classList.toggle('err', !!err);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Sesiones clínicas, calendario y dashboard del centro
+// ════════════════════════════════════════════════════════════════════
+// Modelo: /centros_salud/{cid}/sesiones/{sid} con campos:
+//   titulo, descripcion, fecha (YYYY-MM-DD), hora (HH:mm), duracionMin,
+//   area ('medico_ap'|'pediatria'|'enfermeria'|'administracion'|'todos'),
+//   ponenteNombre, lugar, materiales [{name,url,path,size,type}],
+//   autorUid, autorNombre, createdAt, updatedAt, updatedBy.
+//
+// Acceso: lectura solo miembros del centro (csEsMiembro). Crear/editar:
+// redactor o coordinador. Borrar: autor (si redactor) o coordinador/admin.
+//
+// El calendario muestra las mismas sesiones agrupadas por fecha + admite
+// crear sesión rápida desde una celda (puedeEditar).
+//
+// El dashboard muestra KPIs derivados: próximas, este mes, miembros con
+// rol, % por área, % asistencia confirmada.
+// ════════════════════════════════════════════════════════════════════
+
+var AREAS_LABELS = {
+  medico_ap: '🩺 Medicina AP',
+  pediatria: '👶 Pediatría',
+  enfermeria: '💉 Enfermería',
+  administracion: '📋 Administración',
+  todos: '👥 Todo el equipo',
+};
+var AREAS_ORDER = ['todos','medico_ap','pediatria','enfermeria','administracion'];
+
+// Cache local de sesiones por centro (se recarga al abrir cada tab).
+state.sesiones = [];
+state.sesionesCentroId = null;
+state.sesFilterArea = 'todos__filter';
+state.calCursor = null; // {y, m} mes mostrado (0-indexed)
+state.calSelectedDate = null; // 'YYYY-MM-DD'
+
+function fmtDateISO(d){
+  // Acepta Date o string YYYY-MM-DD y devuelve 'YYYY-MM-DD'.
+  if (typeof d === 'string') return d;
+  var y = d.getFullYear();
+  var m = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  return y + '-' + m + '-' + dd;
+}
+function fmtDateLong(iso){
+  // 'YYYY-MM-DD' → '5 de mayo de 2026'
+  if (!iso || iso.length !== 10) return iso || '';
+  var parts = iso.split('-');
+  var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return parseInt(parts[2],10) + ' de ' + meses[parseInt(parts[1],10)-1] + ' de ' + parts[0];
+}
+function isoTodayLocal(){ return fmtDateISO(new Date()); }
+
+async function cargarSesionesDelCentro(){
+  if (!state.currentId) return;
+  // Recarga solo si cambia el centro o si pasaron más de 60 s.
+  if (state.sesionesCentroId === state.currentId && Array.isArray(state.sesiones)
+      && (Date.now() - (state.sesionesCargadasAt||0)) < 60000) return;
+  state.sesionesCentroId = state.currentId;
+  try {
+    var snap = await db.collection('centros_salud').doc(state.currentId)
+      .collection('sesiones').orderBy('fecha','asc').get();
+    state.sesiones = snap.docs.map(function(d){
+      return Object.assign({ id: d.id }, d.data());
+    });
+    state.sesionesCargadasAt = Date.now();
+  } catch(e){
+    console.warn('[sesiones] error cargando', e);
+    state.sesiones = [];
+  }
+}
+
+// ──── Tab Sesiones ─────────────────────────────────────────────────
+async function abrirSesiones(){
+  var pane = document.getElementById('paneSesiones');
+  if (!esMiembroDelCentro()){
+    pane.innerHTML = '<div class="cs-acceso">'
+      + '<h3>🔒 Sesiones privadas del centro</h3>'
+      + '<p>Sólo profesionales del centro (con código de invitación canjeado) pueden ver y subir sesiones formativas. '
+      + 'Pide a tu coordinador un código y canjéalo en la pestaña <strong>Soy del equipo</strong>.</p>'
+      + '</div>';
+    return;
+  }
+  pane.innerHTML = '<p style="opacity:.7">Cargando sesiones…</p>';
+  await cargarSesionesDelCentro();
+  renderSesiones();
+}
+
+function renderSesiones(){
+  var pane = document.getElementById('paneSesiones');
+  if (!pane) return;
+  var editable = puedeEditar();
+  var ses = (state.sesiones || []).slice();
+  var hoy = isoTodayLocal();
+  // Próximas primero, luego pasadas (más recientes arriba).
+  ses.sort(function(a,b){
+    var af = a.fecha || '', bf = b.fecha || '';
+    var aFut = af >= hoy ? 1 : 0, bFut = bf >= hoy ? 1 : 0;
+    if (aFut !== bFut) return bFut - aFut;
+    return aFut ? af.localeCompare(bf) : bf.localeCompare(af);
+  });
+  // Filtro por área.
+  if (state.sesFilterArea && state.sesFilterArea !== 'todos__filter') {
+    ses = ses.filter(function(s){
+      return state.sesFilterArea === 'todos__filter' || s.area === state.sesFilterArea
+        || (s.area === 'todos' && state.sesFilterArea === 'todos__filter');
+    });
+  }
+
+  var chips = '<div class="ses-area-chips">'
+    + '<button class="ses-area-chip' + (state.sesFilterArea==='todos__filter'?' on':'') + '" data-fa="todos__filter">Todas</button>'
+    + AREAS_ORDER.map(function(k){
+        var n = (state.sesiones||[]).filter(function(s){return s.area === k;}).length;
+        return '<button class="ses-area-chip' + (state.sesFilterArea===k?' on':'') + '" data-fa="'+esc(k)+'">'
+          + esc(AREAS_LABELS[k]) + ' (' + n + ')</button>';
+      }).join('')
+    + '</div>';
+
+  var header = '<div class="ses-header">'
+    + '<div>'
+    +   '<h3>📅 Sesiones clínicas del centro</h3>'
+    +   '<p>Sesiones formativas del equipo (medicina AP, pediatría, enfermería, administración). '
+    +   'Solo visible para miembros del centro. ' + (editable ? '' : 'Pide a tu coordinador permisos de redactor si quieres subir sesiones.') + '</p>'
+    + '</div>'
+    + (editable ? '<button class="cs-save" onclick="abrirFormSesion()" style="padding:9px 14px;border-radius:10px">+ Nueva sesión</button>' : '')
+    + '</div>';
+
+  var formHtml = editable ? formSesionHtml() : '';
+
+  var lista;
+  if (!ses.length) {
+    lista = '<div class="ses-empty">Aún no hay sesiones publicadas para este centro.'
+      + (editable ? ' Pulsa <strong>+ Nueva sesión</strong> para empezar.' : '') + '</div>';
+  } else {
+    lista = '<div class="ses-list">' + ses.map(renderSesionCard).join('') + '</div>';
+  }
+
+  pane.innerHTML = header + chips + formHtml + lista;
+
+  // Listeners
+  Array.prototype.forEach.call(pane.querySelectorAll('.ses-area-chip'), function(c){
+    c.addEventListener('click', function(){
+      state.sesFilterArea = c.getAttribute('data-fa');
+      renderSesiones();
+    });
+  });
+}
+
+function formSesionHtml(editingId){
+  // Cuando editingId está, pre-poblar valores.
+  var s = null;
+  if (editingId) s = (state.sesiones || []).find(function(x){ return x.id === editingId; });
+  var v = function(k, def){ return s && s[k] != null ? s[k] : (def == null ? '' : def); };
+  return '<div class="ses-form" id="sesForm" data-edit-id="'+esc(editingId||'')+'">'
+    + '<label for="sesTitulo">Título de la sesión</label>'
+    + '<input type="text" id="sesTitulo" maxlength="140" placeholder="Ej: Actualización en hipertensión refractaria — guías ESC 2024" value="'+esc(v('titulo'))+'">'
+    + '<div class="row3" style="margin-top:10px">'
+    +   '<div><label for="sesFecha">Fecha</label><input type="date" id="sesFecha" value="'+esc(v('fecha'))+'"></div>'
+    +   '<div><label for="sesHora">Hora</label><input type="time" id="sesHora" value="'+esc(v('hora','14:00'))+'"></div>'
+    +   '<div><label for="sesDuracion">Duración (min)</label><input type="text" id="sesDuracion" placeholder="30" value="'+esc(v('duracionMin', 30))+'"></div>'
+    + '</div>'
+    + '<div class="row2" style="margin-top:6px">'
+    +   '<div><label for="sesPonente">Ponente</label><input type="text" id="sesPonente" maxlength="120" placeholder="Nombre del ponente" value="'+esc(v('ponenteNombre'))+'"></div>'
+    +   '<div><label for="sesArea">Área</label><select id="sesArea">'
+    +     AREAS_ORDER.map(function(k){
+        return '<option value="'+esc(k)+'"'+(v('area','todos')===k?' selected':'')+'>'+esc(AREAS_LABELS[k])+'</option>';
+      }).join('')
+    +   '</select></div>'
+    + '</div>'
+    + '<div style="margin-top:6px"><label for="sesLugar">Lugar (opcional)</label>'
+    +   '<input type="text" id="sesLugar" maxlength="120" placeholder="Sala de docencia, online, etc." value="'+esc(v('lugar'))+'"></div>'
+    + '<div style="margin-top:10px"><label for="sesDesc">Descripción</label>'
+    +   '<textarea id="sesDesc" maxlength="3000" placeholder="Resumen de la sesión, puntos clave, casos a discutir…">'+esc(v('descripcion'))+'</textarea></div>'
+    + '<div class="file-row"><label>Materiales (PDF, PPT, audio, vídeo — máx 50 MB cada uno)</label>'
+    +   '<input type="file" id="sesFiles" multiple accept=".pdf,.ppt,.pptx,.doc,.docx,image/*,audio/*,video/*"></div>'
+    + (s && s.materiales && s.materiales.length
+        ? '<div style="margin-top:8px;font-size:.78rem;opacity:.75">Ya tiene ' + s.materiales.length + ' archivo(s) — los nuevos se añaden, no reemplazan.</div>'
+        : '')
+    + '<div class="save-row">'
+    +   '<button class="cs-save" onclick="guardarSesion()" style="padding:9px 14px;border-radius:10px" id="sesSaveBtn">' + (editingId ? '💾 Guardar cambios' : '📤 Publicar sesión') + '</button>'
+    +   '<button class="cs-cancel" onclick="cerrarFormSesion()" style="padding:9px 14px;border-radius:10px">Cancelar</button>'
+    +   '<span class="cs-msg" id="sesMsg"></span>'
+    + '</div>'
+    + '</div>';
+}
+
+function abrirFormSesion(editId){
+  var pane = document.getElementById('paneSesiones');
+  if (!pane) return;
+  // Reemplaza el formulario anterior si existía.
+  var existing = document.getElementById('sesForm');
+  if (existing) existing.outerHTML = formSesionHtml(editId);
+  else {
+    // Inserta tras el header/chips: rerenderizamos.
+    renderSesiones();
+    var newForm = document.getElementById('sesForm');
+    if (newForm && editId) newForm.outerHTML = formSesionHtml(editId);
+  }
+  var f = document.getElementById('sesForm');
+  if (f) {
+    f.classList.add('show');
+    f.scrollIntoView({behavior:'smooth', block:'start'});
+    var t = document.getElementById('sesTitulo');
+    if (t) t.focus();
+    // Por defecto la fecha es hoy si no había una.
+    var fechaInp = document.getElementById('sesFecha');
+    if (fechaInp && !fechaInp.value) fechaInp.value = isoTodayLocal();
+  }
+}
+function cerrarFormSesion(){
+  var f = document.getElementById('sesForm');
+  if (f) f.remove();
+}
+
+async function guardarSesion(){
+  if (!puedeEditar()){ alert('No tienes permiso.'); return; }
+  var form = document.getElementById('sesForm');
+  if (!form) return;
+  var editId = form.getAttribute('data-edit-id') || '';
+  var msg = document.getElementById('sesMsg');
+  msg.classList.remove('err'); msg.textContent = '';
+
+  var titulo = (document.getElementById('sesTitulo').value || '').trim();
+  var fecha = (document.getElementById('sesFecha').value || '').trim();
+  var hora = (document.getElementById('sesHora').value || '').trim();
+  var duracionMin = parseInt((document.getElementById('sesDuracion').value || '30'), 10);
+  var ponenteNombre = (document.getElementById('sesPonente').value || '').trim();
+  var area = (document.getElementById('sesArea').value || 'todos').trim();
+  var lugar = (document.getElementById('sesLugar').value || '').trim();
+  var descripcion = (document.getElementById('sesDesc').value || '').trim();
+
+  if (titulo.length < 6) { msg.classList.add('err'); msg.textContent = 'Título demasiado corto (mín 6).'; return; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) { msg.classList.add('err'); msg.textContent = 'Fecha inválida.'; return; }
+  if (!AREAS_LABELS[area]) area = 'todos';
+  if (isNaN(duracionMin) || duracionMin < 5 || duracionMin > 480) duracionMin = 30;
+  // No PII en descripción: misma defensa que en foro.
+  if (/\b\d{8}[A-HJ-NP-TV-Z]\b|\b[XYZ]\d{7}[A-HJ-NP-TV-Z]\b/.test(titulo + ' ' + descripcion)) {
+    msg.classList.add('err'); msg.textContent = 'No incluyas DNI/NIE en el texto.'; return;
+  }
+
+  var u = auth.currentUser;
+  if (!u) return;
+  var btn = document.getElementById('sesSaveBtn');
+  btn.disabled = true; msg.textContent = 'Guardando…';
+
+  var existing = editId ? (state.sesiones || []).find(function(x){ return x.id === editId; }) : null;
+  var prevMaterials = (existing && existing.materiales) || [];
+
+  // Subida opcional de materiales nuevos a Storage.
+  var newMaterials = [];
+  try {
+    var files = document.getElementById('sesFiles').files || [];
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (f.size > 50*1024*1024) { throw new Error('"'+f.name+'" supera 50 MB.'); }
+      var safeName = f.name.replace(/[^A-Za-z0-9._-]/g,'_').slice(0,120);
+      var path = 'cs_sesiones/' + state.currentId + '/' + u.uid + '/' + Date.now() + '_' + safeName;
+      msg.textContent = 'Subiendo ' + (i+1) + '/' + files.length + '…';
+      var ref = firebase.storage().ref().child(path);
+      var snap = await ref.put(f, { contentType: f.type || 'application/octet-stream' });
+      var url = await snap.ref.getDownloadURL();
+      newMaterials.push({
+        name: f.name.slice(0,160),
+        url: url,
+        path: path,
+        size: f.size,
+        type: f.type || '',
+      });
+    }
+  } catch(e){
+    btn.disabled = false;
+    msg.classList.add('err');
+    msg.textContent = 'Error subiendo material: ' + (e.message || e.code || 'desconocido');
+    return;
+  }
+
+  var materiales = prevMaterials.concat(newMaterials).slice(0, 12);
+  var rol = state.csRoles[state.currentId] || (state.isAdmin ? 'admin' : 'redactor');
+
+  try {
+    var coll = db.collection('centros_salud').doc(state.currentId).collection('sesiones');
+    if (editId) {
+      var patch = {
+        titulo: titulo, fecha: fecha, hora: hora, duracionMin: duracionMin,
+        ponenteNombre: ponenteNombre, area: area, lugar: lugar,
+        descripcion: descripcion, materiales: materiales,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: u.uid, updatedByNombre: u.displayName || u.email || '—',
+      };
+      await coll.doc(editId).update(patch);
+    } else {
+      await coll.add({
+        titulo: titulo, fecha: fecha, hora: hora, duracionMin: duracionMin,
+        ponenteNombre: ponenteNombre, area: area, lugar: lugar,
+        descripcion: descripcion, materiales: materiales,
+        autorUid: u.uid,
+        autorNombre: u.displayName || u.email || 'Anónimo',
+        autorRol: rol,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+    msg.textContent = '✓ Guardado.';
+    state.sesionesCargadasAt = 0; // fuerza recarga
+    await cargarSesionesDelCentro();
+    cerrarFormSesion();
+    renderSesiones();
+  } catch(e){
+    btn.disabled = false;
+    msg.classList.add('err');
+    msg.textContent = 'Error: ' + (e.message || e.code || 'no se pudo guardar');
+  }
+}
+
+function renderSesionCard(s){
+  var hoy = isoTodayLocal();
+  var esProxima = (s.fecha || '') >= hoy;
+  var esPasada = (s.fecha || '') < hoy;
+  var u = auth.currentUser;
+  var puedoEditar = state.isAdmin
+    || state.csRoles[state.currentId] === 'coordinador'
+    || (puedeEditar() && u && s.autorUid === u.uid);
+  var dia = '';
+  if (s.fecha && s.fecha.length === 10) {
+    var p = s.fecha.split('-');
+    dia = p[2] + '/' + p[1];
+  }
+  var areaTag = '<span class="ses-area-tag ses-area-'+esc(s.area||'todos')+'">'+esc(AREAS_LABELS[s.area]||AREAS_LABELS.todos)+'</span>';
+  var mats = (s.materiales || []).map(function(m){
+    var icon = /pdf/i.test(m.type||m.name) ? '📄'
+            : /(ppt|presentation)/i.test(m.type||m.name) ? '📊'
+            : /(audio|mp3|wav|ogg|m4a)/i.test(m.type||m.name) ? '🎙️'
+            : /(video|mp4|webm|mov)/i.test(m.type||m.name) ? '🎬'
+            : /image\//i.test(m.type) ? '🖼️'
+            : '📎';
+    return '<a class="ses-mat" target="_blank" rel="noopener" href="'+esc(m.url||'#')+'">'+icon+' '+esc(m.name||'archivo')+'</a>';
+  }).join('');
+
+  return '<div class="ses-card '+(esProxima?'proxima':esPasada?'pasada':'')+'">'
+    + '<div class="ses-card-row1">'
+    +   '<div class="ses-fecha"><span class="dia">'+esc(dia)+'</span>'+esc(fmtDateLong(s.fecha))+(s.hora?' · '+esc(s.hora):'')+(s.duracionMin?' · '+s.duracionMin+'\'':'')+'</div>'
+    +   '<div>'+areaTag+'</div>'
+    + '</div>'
+    + '<div class="ses-titulo">'+esc(s.titulo||'(sin título)')+'</div>'
+    + '<div class="ses-meta">'+ (s.ponenteNombre?'🎤 '+esc(s.ponenteNombre):'') + (s.lugar?' · 📍 '+esc(s.lugar):'') + (s.autorNombre?' · 👤 '+esc(s.autorNombre):'') + '</div>'
+    + (s.descripcion ? '<div class="ses-desc">'+esc(s.descripcion)+'</div>' : '')
+    + (mats ? '<div class="ses-mats">'+mats+'</div>' : '')
+    + '<div class="ses-actions">'
+    +   (esProxima ? '<button class="ses-action asist" onclick="toggleAsistencia(\''+esc(s.id)+'\', this)">✋ Asistiré</button>' : '')
+    +   (puedoEditar ? '<button class="ses-action" onclick="abrirFormSesion(\''+esc(s.id)+'\')">✏️ Editar</button>' : '')
+    +   (puedoEditar ? '<button class="ses-action danger" onclick="borrarSesion(\''+esc(s.id)+'\')">🗑️ Borrar</button>' : '')
+    + '</div>'
+    + '</div>';
+}
+
+async function borrarSesion(sid){
+  if (!confirm('¿Borrar esta sesión? Esta acción no se puede deshacer.')) return;
+  try {
+    await db.collection('centros_salud').doc(state.currentId).collection('sesiones').doc(sid).delete();
+    state.sesionesCargadasAt = 0;
+    await cargarSesionesDelCentro();
+    renderSesiones();
+  } catch(e){ alert('No se pudo borrar: ' + (e.message||e.code)); }
+}
+
+async function toggleAsistencia(sid, btn){
+  var u = auth.currentUser;
+  if (!u) return;
+  var ref = db.collection('centros_salud').doc(state.currentId)
+    .collection('sesiones').doc(sid).collection('asistencia').doc(u.uid);
+  try {
+    var snap = await ref.get();
+    if (snap.exists) {
+      await ref.delete();
+      btn.classList.remove('on');
+      btn.textContent = '✋ Asistiré';
+    } else {
+      await ref.set({
+        confirmadoAt: firebase.firestore.FieldValue.serverTimestamp(),
+        nombre: u.displayName || u.email || '—',
+        rol: state.csRoles[state.currentId] || 'miembro',
+      });
+      btn.classList.add('on');
+      btn.textContent = '✓ Confirmado';
+    }
+  } catch(e){ alert('No se pudo actualizar asistencia: ' + (e.message||e.code)); }
+}
+
+// ──── Tab Calendario ───────────────────────────────────────────────
+async function abrirCalendario(){
+  var pane = document.getElementById('paneCalendario');
+  if (!esMiembroDelCentro()){
+    pane.innerHTML = '<div class="cs-acceso">'
+      + '<h3>🔒 Calendario privado del centro</h3>'
+      + '<p>El calendario de sesiones del centro es visible solo para miembros. Canjea tu código en <strong>Soy del equipo</strong>.</p>'
+      + '</div>';
+    return;
+  }
+  if (!state.calCursor) {
+    var n = new Date();
+    state.calCursor = { y: n.getFullYear(), m: n.getMonth() };
+  }
+  pane.innerHTML = '<p style="opacity:.7">Cargando calendario…</p>';
+  await cargarSesionesDelCentro();
+  renderCalendario();
+}
+function renderCalendario(){
+  var pane = document.getElementById('paneCalendario');
+  if (!pane) return;
+  var y = state.calCursor.y, m = state.calCursor.m;
+  var meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var diasSemana = ['L','M','X','J','V','S','D'];
+  // Día de la semana del 1º del mes (0=Dom, 1=Lun…) → ajustamos a Lun=0.
+  var first = new Date(y, m, 1);
+  var dowMon0 = (first.getDay() + 6) % 7; // 0..6 con lunes=0
+  var diasMes = new Date(y, m+1, 0).getDate();
+  var hoy = isoTodayLocal();
+  // Agrupar sesiones por fecha del mes mostrado.
+  var byDate = {};
+  (state.sesiones||[]).forEach(function(s){
+    if (!s.fecha) return;
+    var p = s.fecha.split('-');
+    if (parseInt(p[0],10) === y && parseInt(p[1],10) === m+1) {
+      var d = parseInt(p[2],10);
+      (byDate[d] = byDate[d] || []).push(s);
+    }
+  });
+
+  var head = '<div class="cal-head">'
+    + '<h3>🗓️ Calendario de sesiones</h3>'
+    + '<div class="cal-nav">'
+    +   '<button onclick="calNav(-1)" aria-label="Mes anterior">‹</button>'
+    +   '<span class="cal-month">'+meses[m]+' '+y+'</span>'
+    +   '<button onclick="calNav(1)" aria-label="Mes siguiente">›</button>'
+    +   '<button onclick="calHoy()" aria-label="Volver a hoy">Hoy</button>'
+    + '</div>'
+    + '</div>';
+
+  var grid = '<div class="cal-grid">';
+  // Cabecera días de la semana.
+  diasSemana.forEach(function(d){ grid += '<div class="cal-dow">'+d+'</div>'; });
+  // Huecos antes del día 1.
+  for (var i = 0; i < dowMon0; i++) grid += '<div class="cal-day empty"></div>';
+  // Días del mes.
+  for (var d = 1; d <= diasMes; d++) {
+    var iso = y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    var evs = byDate[d] || [];
+    var classes = 'cal-day';
+    if (iso === hoy) classes += ' today';
+    if (evs.length) classes += ' has-events';
+    var evsHtml = evs.slice(0, 2).map(function(e){
+      return '<div class="cal-event" title="'+esc(e.titulo||'')+'">'+esc(e.titulo||'(sin título)').slice(0,28)+'</div>';
+    }).join('');
+    if (evs.length > 2) evsHtml += '<div class="cal-event-more">+' + (evs.length-2) + ' más…</div>';
+    grid += '<div class="'+classes+'" onclick="calSeleccionarDia(\''+iso+'\')">'
+      + '<div class="cal-day-num">'+d+'</div>' + evsHtml + '</div>';
+  }
+  grid += '</div>';
+
+  var detail = '<div class="cal-day-detail" id="calDayDetail"></div>';
+  pane.innerHTML = head + grid + detail;
+  if (state.calSelectedDate) calSeleccionarDia(state.calSelectedDate);
+}
+function calNav(delta){
+  state.calCursor.m += delta;
+  if (state.calCursor.m < 0) { state.calCursor.m = 11; state.calCursor.y--; }
+  if (state.calCursor.m > 11) { state.calCursor.m = 0; state.calCursor.y++; }
+  renderCalendario();
+}
+function calHoy(){
+  var n = new Date();
+  state.calCursor = { y: n.getFullYear(), m: n.getMonth() };
+  state.calSelectedDate = isoTodayLocal();
+  renderCalendario();
+}
+function calSeleccionarDia(iso){
+  state.calSelectedDate = iso;
+  var detail = document.getElementById('calDayDetail');
+  if (!detail) return;
+  var evs = (state.sesiones||[]).filter(function(s){ return s.fecha === iso; });
+  var html = '<h4>'+esc(fmtDateLong(iso))+'</h4>';
+  if (!evs.length) {
+    html += '<p style="opacity:.7;font-size:.86rem">Sin sesiones este día.</p>';
+  } else {
+    html += '<div class="ses-list">' + evs.map(renderSesionCard).join('') + '</div>';
+  }
+  if (puedeEditar()) {
+    html += '<div style="margin-top:10px"><button class="cs-save" onclick="abrirFormSesionEnFecha(\''+esc(iso)+'\')" style="padding:8px 14px;border-radius:10px">+ Nueva sesión el '+esc(fmtDateLong(iso))+'</button></div>';
+  }
+  detail.innerHTML = html;
+  detail.classList.add('show');
+}
+function abrirFormSesionEnFecha(iso){
+  // Cambia a tab Sesiones y abre formulario pre-rellenando la fecha.
+  setTab('sesiones');
+  setTimeout(function(){
+    abrirFormSesion();
+    setTimeout(function(){
+      var fInp = document.getElementById('sesFecha');
+      if (fInp) fInp.value = iso;
+    }, 50);
+  }, 100);
+}
+
+// ──── Tab Dashboard ────────────────────────────────────────────────
+async function abrirDashboard(){
+  var pane = document.getElementById('paneDashboard');
+  if (!esMiembroDelCentro()){
+    pane.innerHTML = '<div class="cs-acceso">'
+      + '<h3>🔒 Dashboard privado del centro</h3>'
+      + '<p>Las métricas y resumen del equipo son visibles solo para miembros del centro.</p>'
+      + '</div>';
+    return;
+  }
+  pane.innerHTML = '<p style="opacity:.7">Calculando métricas…</p>';
+  await cargarSesionesDelCentro();
+  renderDashboard();
+}
+
+function renderDashboard(){
+  var pane = document.getElementById('paneDashboard');
+  if (!pane) return;
+  var hoy = isoTodayLocal();
+  var ses = state.sesiones || [];
+  var now = new Date();
+  var enRangoEsteMes = function(iso){
+    if (!iso || iso.length !== 10) return false;
+    var p = iso.split('-');
+    return parseInt(p[0],10) === now.getFullYear() && parseInt(p[1],10) === now.getMonth()+1;
+  };
+  var enRango30DiasFuturo = function(iso){
+    if (!iso) return false;
+    var d = new Date(iso);
+    var diff = (d - now) / (1000*60*60*24);
+    return diff >= -0.5 && diff <= 30;
+  };
+  var proximas = ses.filter(function(s){ return (s.fecha||'') >= hoy; })
+                    .sort(function(a,b){ return (a.fecha||'').localeCompare(b.fecha||''); });
+  var esteMes = ses.filter(function(s){ return enRangoEsteMes(s.fecha); });
+  var prox30 = ses.filter(function(s){ return enRango30DiasFuturo(s.fecha); });
+  var conMateriales = ses.filter(function(s){ return Array.isArray(s.materiales) && s.materiales.length; }).length;
+  var totalMateriales = ses.reduce(function(a,s){ return a + ((s.materiales||[]).length); }, 0);
+
+  // KPIs
+  var kpis = '<div class="dash-grid">'
+    + '<div class="dash-card accent"><div class="label">📅 Próximas 30 días</div><div class="value">'+prox30.length+'</div><div class="sub">sesiones programadas</div></div>'
+    + '<div class="dash-card"><div class="label">🗓️ Este mes</div><div class="value">'+esteMes.length+'</div><div class="sub">incluye pasadas y futuras</div></div>'
+    + '<div class="dash-card"><div class="label">📚 Total sesiones</div><div class="value">'+ses.length+'</div><div class="sub">acumulado histórico</div></div>'
+    + '<div class="dash-card"><div class="label">📎 Materiales</div><div class="value">'+totalMateriales+'</div><div class="sub">en '+conMateriales+' sesiones</div></div>'
+    + '</div>';
+
+  // Distribución por área (de todas las sesiones)
+  var areaCounts = { medico_ap:0, pediatria:0, enfermeria:0, administracion:0, todos:0 };
+  ses.forEach(function(s){
+    var k = s.area || 'todos';
+    if (areaCounts[k] != null) areaCounts[k]++;
+  });
+  var maxArea = Math.max.apply(null, Object.keys(areaCounts).map(function(k){return areaCounts[k];}).concat([1]));
+  var areasHtml = '<div class="dash-section">'
+    + '<h3>📊 Distribución por área</h3>'
+    + AREAS_ORDER.map(function(k){
+        var n = areaCounts[k] || 0;
+        var pct = maxArea > 0 ? Math.round((n / maxArea) * 100) : 0;
+        return '<div class="dash-area-row">'
+          + '<span class="area-name">'+esc(AREAS_LABELS[k])+'</span>'
+          + '<span class="area-bar"><span class="area-fill" style="width:'+pct+'%"></span></span>'
+          + '<span class="area-count">'+n+'</span>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+
+  // Próximas 5 sesiones
+  var proxHtml = '<div class="dash-section">'
+    + '<h3>⏭️ Próximas sesiones</h3>'
+    + (proximas.length
+        ? '<div class="ses-list">'+ proximas.slice(0,5).map(renderSesionCard).join('') +'</div>'
+        : '<div class="dash-empty">No hay sesiones futuras programadas. ' + (puedeEditar() ? 'Pulsa <strong>📅 Sesiones</strong> → <strong>+ Nueva sesión</strong> para añadir una.' : '') + '</div>')
+    + '</div>';
+
+  pane.innerHTML = kpis + areasHtml + proxHtml;
 }
 
 if('serviceWorker' in navigator){
