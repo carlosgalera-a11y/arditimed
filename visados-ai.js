@@ -110,22 +110,53 @@
   }
 
   var SYS_PROMPT =
-    'Eres un asistente docente del Área II Cartagena que responde dudas sobre visados de medicación '+
-    'basándote ÚNICAMENTE en la Guía de Visado para médicos prescriptores (Servicio Murciano de Salud, '+
-    'documento 457-2023) cuyos extractos se proporcionan. Normas:\n'+
-    '1) Si la respuesta no está en los extractos, dilo claramente: "No localizo eso en la guía, '+
-    'consulta con Inspección o la guía completa".\n'+
-    '2) Cita siempre la página entre paréntesis: "(pág 12)".\n'+
-    '3) Respuestas claras, con viñetas cuando proceda. Máx 180 palabras.\n'+
-    '4) No inventes dosis, indicaciones ni requisitos que no aparezcan en los extractos.\n'+
-    '5) Contexto: atención primaria y urgencias hospitalarias del Área II Cartagena.';
+    'Eres un asistente clínico-administrativo del Área II Cartagena especializado en visados de '+
+    'medicación del Servicio Murciano de Salud. Tu única fuente es la Guía de Visado para médicos '+
+    'prescriptores (SMS, documento 457-2023) cuyos extractos se te proporcionan.\n\n'+
+    'TU FUNCIÓN ES PRÁCTICA: el profesional describe una SITUACIÓN o caso (un paciente con un '+
+    'fármaco concreto, una duda de procedimiento, un visado caducado, etc.) y necesita saber '+
+    'QUÉ HACER, paso a paso, en su consulta o servicio. No le des solo qué dice la guía: dile '+
+    'cómo actuar.\n\n'+
+    'FORMATO DE RESPUESTA (adapta secciones según proceda; omite las que no apliquen):\n'+
+    '✅ Qué hacer ahora — pasos concretos en orden (1, 2, 3…), aplicables hoy en la consulta.\n'+
+    '📋 Requisitos / Criterios — qué tiene que cumplir el paciente o la prescripción para que el '+
+    'visado proceda (siempre con la página de la guía: "(pág 12)").\n'+
+    '📄 Documentación a aportar — qué impresos, informes, datos analíticos, etc.\n'+
+    '⏱️ Plazos y vigencia — duración del visado, renovación, cuándo solicitar.\n'+
+    '⚠️ Casos especiales / dudas — qué hacer si la situación es ambigua, si hay urgencia, si '+
+    'el paciente está desplazado, si el visado está caducado, off-label, etc.\n'+
+    '👉 Si dudas → contactar con: Inspección del Área II / Farmacia / la guía completa (con la '+
+    'página exacta donde leer más).\n\n'+
+    'REGLAS ESTRICTAS:\n'+
+    '1) Solo afirmaciones que puedas sustentar en los extractos. Cita la página entre paréntesis: '+
+    '"(pág 12)". Sin página → sin afirmación.\n'+
+    '2) Si la guía NO cubre la situación, dilo explícitamente y deriva a Inspección.\n'+
+    '3) NO inventes dosis, indicaciones, criterios clínicos ni tiempos no recogidos en la guía.\n'+
+    '4) Lenguaje claro, directo, en imperativo (\"Comprueba…\", \"Pide…\", \"Si dudas…\"). Sin paja.\n'+
+    '5) Máx 300 palabras. Si la situación tiene varias ramas (\"si cumple X → …, si no → …\"), '+
+    'usa árbol de decisión simple.\n'+
+    '6) Si es una pregunta de SEGUIMIENTO sobre una situación ya planteada, mantén el hilo: '+
+    'asume el contexto previo y responde solo lo que añada valor sobre lo ya dicho.\n'+
+    '7) NUNCA datos identificativos del paciente. Si los detectas en la pregunta, ignóralos.\n'+
+    '8) Contexto: atención primaria y urgencias hospitalarias, Área II Cartagena, SMS.';
 
-  function ask(question){
+  function ask(question, opts){
     if(typeof global.askAi !== 'function'){
       return Promise.reject(new Error('Cliente IA no disponible (ai-client.js no cargado).'));
     }
+    opts = opts || {};
     return load().then(function(){
-      var chunks = retrieve(question, TOP_K);
+      // Para retrieval: combinamos pregunta actual + última pregunta del hilo
+      // si existe (mejora recall de follow-ups tipo "¿y si está caducado?").
+      var retrievalQ = question;
+      if(opts.history && opts.history.length){
+        var lastUser = null;
+        for(var i = opts.history.length - 1; i >= 0; i--){
+          if(opts.history[i].role === 'user') { lastUser = opts.history[i].text; break; }
+        }
+        if(lastUser) retrievalQ = lastUser + ' ' + question;
+      }
+      var chunks = retrieve(retrievalQ, TOP_K);
       var ctx;
       if(chunks.length === 0){
         // Sin match: enviar los primeros chunks (índice) para que la IA diga si lo cubre.
@@ -134,13 +165,30 @@
         ctx = buildContext(chunks);
       }
       // Presupuesto: prompt ≤ 8000 chars (validación Cloud Function).
-      var MAX_CTX = 6800;
+      // Reservamos hasta 1200 chars para historial conversacional.
+      var MAX_CTX = 6000;
       if(ctx.length > MAX_CTX) ctx = ctx.substring(0, MAX_CTX) + '\n[…truncado]';
+
+      // Inyectar últimos 2 pares (user/ai) del hilo, recortados.
+      var historyBlock = '';
+      if(opts.history && opts.history.length){
+        var recent = opts.history.slice(-4); // últimos 4 turnos
+        historyBlock = '\n\nCONVERSACIÓN PREVIA (más antiguo arriba):\n';
+        recent.forEach(function(t){
+          var tag = t.role === 'user' ? 'PROFESIONAL' : 'ASISTENTE';
+          historyBlock += tag + ': ' + (t.text || '').slice(0, 600) + '\n';
+        });
+        historyBlock += '\nLa siguiente es una pregunta de SEGUIMIENTO sobre esta conversación.';
+      }
 
       var prompt =
         'Extractos relevantes de la Guía de Visado (SMS 457-2023):\n'+
-        '---\n'+ ctx +'\n---\n\n'+
-        'PREGUNTA DEL PROFESIONAL: '+ question;
+        '---\n'+ ctx +'\n---'+
+        historyBlock + '\n\n'+
+        'SITUACIÓN / PREGUNTA DEL PROFESIONAL:\n'+ question + '\n\n'+
+        'Responde siguiendo el FORMATO indicado en el system prompt: orientado a la acción, '+
+        'con páginas citadas. Si la situación no está cubierta por la guía, dilo y deriva a '+
+        'Inspección.';
 
       return global.askAi({
         type: 'educational',

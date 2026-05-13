@@ -1875,9 +1875,9 @@ window.showNotebooksModal=function(){
                 <div style="background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:var(--radius);padding:20px 24px;margin-bottom:18px;color:#fff;">
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
                         <span style="font-size:1.8rem;line-height:1;">📋</span>
-                        <h4 style="font-family:var(--font-display);font-size:1.15rem;margin:0;">Guía de Visado — Consulta IA</h4>
+                        <h4 style="font-family:var(--font-display);font-size:1.15rem;margin:0;">Visados — ¿qué hago en esta situación?</h4>
                     </div>
-                    <p style="font-size:.84rem;opacity:.92;font-weight:300;line-height:1.55;margin-top:6px;">Pregunta en lenguaje natural sobre la <strong>Guía de Visado para médicos prescriptores</strong> (SMS · 457-2023). DeepSeek V3 responde usando solo extractos de la guía, con cita de página.</p>
+                    <p style="font-size:.84rem;opacity:.92;font-weight:300;line-height:1.55;margin-top:6px;">Describe tu <strong>situación</strong> (paciente con un fármaco, visado caducado, paciente desplazado, urgencia…) y la IA te dice <strong>cómo actuar paso a paso</strong>, con páginas citadas de la Guía SMS 457-2023. Permite preguntas de seguimiento sobre la misma situación.</p>
                     <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
                         <a id="visadosPdfLink" href="docs/guia-visado-prescriptores-457-2023.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;font-size:.78rem;color:#fff;text-decoration:none;font-weight:600;">↗ Abrir PDF</a>
                         <span id="visadosStatus" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,.12);border-radius:20px;font-size:.75rem;opacity:.85;">Cargando guía…</span>
@@ -1888,9 +1888,15 @@ window.showNotebooksModal=function(){
                 <div id="visadosChips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;"></div>
 
                 <!-- Input -->
-                <div style="display:flex;gap:8px;margin-bottom:14px;">
-                    <input type="text" id="visadosInput" placeholder="Ej: ¿Qué criterios aplica el visado para iSGLT2 en DM2?" style="flex:1;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.92rem;font-family:var(--font-body);background:var(--bg-main);" onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')visadosAsk()">
+                <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <input type="text" id="visadosInput" placeholder="Ej: Paciente DM2 mal controlada con metformina, IMC 32 — ¿puedo iniciar empagliflozina con visado? ¿qué necesito?" style="flex:1;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.92rem;font-family:var(--font-body);background:var(--bg-main);" onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')visadosAsk()">
                     <button class="btn btn-primary" id="visadosBtn" onclick="visadosAsk()" style="padding:12px 22px;background:linear-gradient(135deg,#0d47a1,#1565c0);border:none;color:#fff;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">Preguntar</button>
+                </div>
+
+                <!-- Indicador de conversación activa -->
+                <div id="visadosThread" style="display:none;margin-bottom:14px;padding:8px 12px;background:rgba(13,71,161,.08);border:1px solid rgba(13,71,161,.25);border-left:3px solid #0d47a1;border-radius:6px;font-size:.78rem;color:var(--text);display:none;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+                    <span>🧵 <strong>Conversando</strong> sobre la misma situación · <span id="visadosThreadTurns">1</span> turno(s) · las preguntas siguientes mantienen el contexto.</span>
+                    <button onclick="visadosResetThread()" style="padding:4px 10px;background:transparent;border:1px solid rgba(13,71,161,.5);color:#0d47a1;border-radius:8px;font-size:.74rem;font-family:var(--font-body);cursor:pointer;font-weight:600;">✕ Empezar otra situación</button>
                 </div>
 
                 <!-- Respuestas -->
@@ -2515,10 +2521,14 @@ window.showNotebooksModal=function(){
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Iniciar sesión con Google
             </button>
+            <button id="msLoginBtn" disabled onclick="scanMicrosoftLogin()" style="width:100%;margin-top:10px;padding:14px;background:#fff;color:#333;border:2px solid #ddd;border-radius:var(--radius);font-size:1rem;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:.3s;display:flex;align-items:center;justify-content:center;gap:12px;opacity:.5;" onmouseover="if(!this.disabled){this.style.borderColor='#0078d4';this.style.background='#f5faff'}" onmouseout="this.style.borderColor='#ddd';this.style.background='#fff'">
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M2 2h9.5v9.5H2z"/><path fill="#7FBA00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00A4EF" d="M2 12.5h9.5V22H2z"/><path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/></svg>
+                Iniciar sesión con Microsoft / Hotmail
+            </button>
             <div id="scanLoginError" style="display:none;color:#dc2626;font-size:.85rem;text-align:center;margin-top:12px;">❌ Error al iniciar sesión</div>
             <div style="margin-top:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
                 <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.78rem;color:#64748b;line-height:1.45;">
-                    <input type="checkbox" id="disclaimerCheck" onchange="document.getElementById('googleLoginBtn').disabled=!this.checked;document.getElementById('googleLoginBtn').style.opacity=this.checked?'1':'.5'" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
+                    <input type="checkbox" id="disclaimerCheck" onchange="var on=this.checked;var g=document.getElementById('googleLoginBtn');var m=document.getElementById('msLoginBtn');if(g){g.disabled=!on;g.style.opacity=on?'1':'.5';}if(m){m.disabled=!on;m.style.opacity=on?'1':'.5';}" style="margin-top:2px;min-width:16px;height:16px;cursor:pointer;accent-color:#0066cc;">
                     <span>He leído el aviso RGPD anterior. Acepto que esta plataforma tiene <strong>finalidad exclusivamente docente e informativa</strong> y que no sustituye el juicio clínico profesional ni la historia clínica oficial.</span>
                 </label>
             </div>
@@ -2950,9 +2960,11 @@ function initLoginSession(){
 function resetDisclaimerCheck(){
     try{
         var cb=document.getElementById("disclaimerCheck");
-        var btn=document.getElementById("googleLoginBtn");
+        var gbtn=document.getElementById("googleLoginBtn");
+        var mbtn=document.getElementById("msLoginBtn");
         if(cb)cb.checked=false;
-        if(btn){btn.disabled=true;btn.style.opacity=".5";}
+        if(gbtn){gbtn.disabled=true;gbtn.style.opacity=".5";}
+        if(mbtn){mbtn.disabled=true;mbtn.style.opacity=".5";}
     }catch(e){}
 }
 
@@ -3185,16 +3197,21 @@ function switchProtocolTab(tabName,btnElement){
 }
 
 // ═══ VISADOS — consulta IA sobre Guía SMS 457-2023 ═══
+// Modo situacional: describes el caso/duda → IA te dice qué hacer paso a paso.
+// Soporta conversación de seguimiento sobre la misma situación.
 var _visadosReady = false;
+var _visadosThread = []; // {role:'user'|'ai', text:string}
 var VIS_CHIPS = [
-    '¿Qué fármacos necesitan visado de Inspección?',
-    'Criterios de visado para iSGLT2 en DM2',
-    'Visado de análogos GLP-1',
-    'Visado para nuevos anticoagulantes orales (ACOD)',
-    'Documentación necesaria para solicitar visado',
-    'Duración y renovación de un visado',
-    'Visado de opioides mayores en dolor crónico no oncológico',
-    'Fármacos excluidos del visado'
+    '🩺 Paciente DM2 mal controlada con metformina, IMC 32 — quiero iniciar empagliflozina, ¿cómo tramito el visado?',
+    '⏱️ Visado de un análogo GLP-1 caducado, paciente sigue con criterio — ¿cómo renuevo?',
+    '🚑 Urgencias: necesito prescribir un fármaco con visado pero no hay tiempo de tramitarlo, ¿qué hago?',
+    '🌍 Paciente desplazado de otra CCAA con visado de su CA — ¿es válido aquí?',
+    '🚫 La aseguradora me devuelve la prescripción "sin visado válido", ¿cómo lo resuelvo?',
+    '📋 Anciano polimedicado en residencia con opioides mayores — ¿necesito visado y qué documentación?',
+    '❓ El paciente no cumple uno de los criterios de visado pero clínicamente lo necesita — ¿qué opciones tengo?',
+    '🔄 ¿Qué hago si quiero cambiar entre dos fármacos del mismo grupo, ambos con visado?',
+    '📝 Documentación mínima imprescindible para pedir un visado en el Área II',
+    '🚷 ¿Qué fármacos NO necesitan visado aunque parezca que sí?'
 ];
 
 function visadosInit(){
@@ -3229,21 +3246,85 @@ function visadosInit(){
     }
 }
 
-function visadosAddCard(question, answer, err){
+// Convierte texto plano con secciones "✅ Qué hacer ahora", "📋 Requisitos",
+// "(pág 12)", "(pág 5)", etc. en HTML estructurado. Mínimo: respeta saltos
+// de línea, resalta las menciones de página y las cabeceras emoji-iniciales.
+function visadosFormatAnswer(raw){
+    var t = String(raw||'');
+    // Escape básico para que las inserciones HTML no se rompan.
+    var esc = function(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var out = esc(t);
+    // Cabeceras emoji-iniciales en línea propia → <strong>.
+    out = out.replace(/^([✅📋📄⏱️⚠️👉🚷🚑🔄❓📝🩺🌍🧑‍⚕️🎯])\s*([^\n]{2,80})/gm,
+        '<div style="margin-top:10px;font-weight:700;color:#0d47a1;font-size:.9rem">$1 $2</div>');
+    // Citas de página: "(pág 12)" o "(pág. 12)" → chip dorado.
+    out = out.replace(/\((pág\.?\s*\d+(?:\s*[-,]\s*\d+)?)\)/gi,
+        '<span style="display:inline-block;padding:1px 7px;background:rgba(212,168,83,.18);color:#a16207;border-radius:6px;font-size:.74rem;font-weight:700;margin:0 2px">$1</span>');
+    return out;
+}
+
+function visadosAddCard(question, answer, err, raw){
     var list = document.getElementById('visadosResults');
     if(!list) return;
     var card = document.createElement('div');
     card.style.cssText = 'background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;';
     var qDiv = document.createElement('div');
     qDiv.style.cssText = 'font-weight:700;color:#0d47a1;margin-bottom:6px;font-size:.9rem;display:flex;align-items:flex-start;gap:8px;';
-    qDiv.innerHTML = '<span>🧑‍⚕️</span><span style="flex:1">'+String(question).replace(/</g,'&lt;')+'</span>';
+    var turnLabel = _visadosThread.length > 2 ? '<span style="font-size:.7rem;background:rgba(13,71,161,.12);color:#0d47a1;padding:1px 7px;border-radius:6px;font-weight:700">↪ seguimiento</span> ' : '';
+    qDiv.innerHTML = '<span>🧑‍⚕️</span><span style="flex:1">'+turnLabel+String(question).replace(/</g,'&lt;')+'</span>';
     card.appendChild(qDiv);
     var aDiv = document.createElement('div');
     aDiv.style.cssText = 'font-size:.88rem;line-height:1.6;color:var(--text);white-space:pre-wrap;';
-    if(err){ aDiv.style.color = '#b91c1c'; aDiv.textContent = '⚠ '+answer; }
-    else aDiv.textContent = answer;
+    if(err){
+        aDiv.style.color = '#b91c1c';
+        aDiv.textContent = '⚠ '+answer;
+    } else {
+        aDiv.innerHTML = visadosFormatAnswer(answer);
+        aDiv.style.whiteSpace = 'normal';
+        // Botón "↪ Pregunta de seguimiento" enfoca el input y deja el hilo activo.
+        var followBtn = document.createElement('button');
+        followBtn.textContent = '↪ Pregunta de seguimiento sobre esta situación';
+        followBtn.style.cssText = 'margin-top:12px;padding:7px 12px;background:rgba(13,71,161,.10);border:1px solid rgba(13,71,161,.30);color:#0d47a1;border-radius:8px;font-size:.78rem;font-family:var(--font-body);cursor:pointer;font-weight:600;';
+        followBtn.onmouseover = function(){ this.style.background='rgba(13,71,161,.20)'; };
+        followBtn.onmouseout = function(){ this.style.background='rgba(13,71,161,.10)'; };
+        followBtn.onclick = function(){
+            var inp = document.getElementById('visadosInput');
+            if(inp){
+                inp.placeholder = 'Pregunta de seguimiento sobre la situación de arriba…';
+                inp.focus();
+                inp.scrollIntoView({behavior:'smooth', block:'center'});
+            }
+        };
+        card.appendChild(aDiv);
+        card.appendChild(followBtn);
+        list.insertBefore(card, list.firstChild);
+        return;
+    }
     card.appendChild(aDiv);
     list.insertBefore(card, list.firstChild);
+}
+
+function visadosUpdateThreadIndicator(){
+    var bar = document.getElementById('visadosThread');
+    var turns = document.getElementById('visadosThreadTurns');
+    if(!bar) return;
+    var userTurns = _visadosThread.filter(function(t){ return t.role === 'user'; }).length;
+    if(userTurns > 0){
+        bar.style.display = 'flex';
+        if(turns) turns.textContent = userTurns;
+    } else {
+        bar.style.display = 'none';
+    }
+}
+
+function visadosResetThread(){
+    _visadosThread = [];
+    visadosUpdateThreadIndicator();
+    var inp = document.getElementById('visadosInput');
+    if(inp){
+        inp.placeholder = 'Describe la situación clínica/administrativa que tienes delante…';
+        inp.focus();
+    }
 }
 
 function visadosAsk(){
@@ -3260,17 +3341,25 @@ function visadosAsk(){
     var loading = document.createElement('div');
     loading.id = '_visadosLoading';
     loading.style.cssText = 'padding:10px 14px;color:var(--text-muted);font-size:.85rem;';
-    loading.textContent = '⏳ Consultando la guía…';
+    loading.textContent = _visadosThread.length > 0 ? '⏳ Consultando la guía (con contexto del hilo)…' : '⏳ Consultando la guía…';
     var list = document.getElementById('visadosResults');
     if(list) list.insertBefore(loading, list.firstChild);
 
-    window.visados.ask(q).then(function(res){
+    // Snapshot del hilo antes de añadir esta pregunta (se inyecta como historial).
+    var historySnapshot = _visadosThread.slice();
+
+    window.visados.ask(q, { history: historySnapshot }).then(function(res){
         var loadingEl = document.getElementById('_visadosLoading'); if(loadingEl) loadingEl.remove();
-        // Reporte detallado: si la respuesta viene vacía o con error,
-        // mostrar la causa específica (provider, finishReason, errorReason)
-        // en lugar del genérico "Sin respuesta".
         if(res && res.text){
-            visadosAddCard(q, res.text, false);
+            // Append al hilo y a la UI.
+            _visadosThread.push({ role: 'user', text: q });
+            _visadosThread.push({ role: 'ai', text: res.text });
+            // Cap del hilo a 12 turnos (6 user + 6 ai) para no saturar el prompt.
+            if(_visadosThread.length > 12){
+                _visadosThread = _visadosThread.slice(-12);
+            }
+            visadosAddCard(q, res.text, false, res);
+            visadosUpdateThreadIndicator();
         } else {
             var reason = (res && (res.errorReason || res.error)) || 'respuesta vacía del backend';
             var provider = (res && res.provider) ? ' (' + res.provider + ')' : '';
@@ -3281,9 +3370,8 @@ function visadosAsk(){
     }).catch(function(e){
         var loadingEl = document.getElementById('_visadosLoading'); if(loadingEl) loadingEl.remove();
         var msg = (e && (e.userMessage || e.message)) || 'Error desconocido.';
-        // Mensajes específicos para errores comunes que el usuario debe conocer.
         if(/8000\s*caracteres|prompt excede/.test(msg)){
-            msg = 'El prompt es demasiado largo (>8 000 chars). Reduce los chunks de visados.';
+            msg = 'El prompt es demasiado largo. Resetea la conversación o reformula con menos texto.';
         } else if(/100000\s*caracteres|systemPrompt excede/.test(msg)){
             msg = 'El systemPrompt es demasiado largo (>100 000 chars). Avisa al admin.';
         } else if(/quota|429|rate.?limit/i.test(msg)){
