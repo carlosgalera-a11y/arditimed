@@ -90,45 +90,70 @@ export function buildProviderChain(input: RoutingInput): ProviderCall[] {
     }
 
     case 'educational': {
-      // Cadena reordenada para reducir latencia (TTFT mediano DeepSeek 4-12 s
-      // → Flash-Lite 0,8-1,5 s) manteniendo coste similar (incluso menor en
-      // input) y residencia UE en el primario. La calidad clínica de Gemini
-      // 2.5 Flash-Lite es comparable a DeepSeek V3 en preguntas educativas
-      // (>90 % paridad en MedQA), suficiente para el MegaCuaderno con KB
-      // local de Área II Cartagena en systemPrompt. modelOverride sigue
-      // prevaleciendo: gemini-* fija el modelo Gemini; deepseek-* fija
-      // DeepSeek (que aún queda en la cadena, solo que más abajo).
-      const geminiModel = modelOverride && modelOverride.startsWith('gemini') ? modelOverride : 'gemini-2.5-flash-lite';
+      // Orden: DeepSeek PRIMARIO, Gemini solo como fallback cuando
+      // DeepSeek se queda sin crédito o falla. Decisión del 2026-05-13 a
+      // petición de Carlos: prefiere mantener DeepSeek como motor principal
+      // y solo recurrir a Gemini cuando no haya crédito disponible (cuota,
+      // 402, 429, network). El secret GEMINI_API_KEY se mantiene activado
+      // para que el path "Gemini directo (UE)" exista como tercer escalón,
+      // por encima de OpenRouter Gemini, dando residencia UE en lugar de
+      // ruta US cuando DeepSeek cae.
+      //
+      // modelOverride sigue prevaleciendo: gemini-* fija Gemini en cabeza;
+      // deepseek-* fija DeepSeek (ya está primero por defecto).
       const deepseekModel = modelOverride && modelOverride.startsWith('deepseek') ? modelOverride : 'deepseek-chat';
+      const geminiModel = modelOverride && modelOverride.startsWith('gemini') ? modelOverride : 'gemini-2.5-flash-lite';
 
-      // 1. Gemini 2.5 Flash-Lite directo (EU · low latency · low cost).
-      if (secrets.geminiKey && (!modelOverride || modelOverride.startsWith('gemini'))) {
+      // Si modelOverride apunta explícitamente a Gemini, lo respetamos y
+      // ponemos Gemini en cabeza (caso edge: el caller pide Gemini a
+      // propósito, p.ej. para una task de baja latencia).
+      const forceGeminiFirst = modelOverride && modelOverride.startsWith('gemini');
+
+      if (forceGeminiFirst && secrets.geminiKey) {
+        chain.push({
+          name: 'gemini',
+          model: geminiModel,
+          execute: () => callGemini({ apiKey: secrets.geminiKey!, model: geminiModel, systemPrompt, userPrompt }),
+        });
+        chain.push({
+          name: 'openrouter',
+          model: 'google/gemini-2.5-flash-lite',
+          execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: 'google/gemini-2.5-flash-lite', systemPrompt, userPrompt }),
+        });
+      }
+
+      // 1. DeepSeek V3 DIRECTO (primario por defecto).
+      chain.push({
+        name: 'deepseek',
+        model: deepseekModel,
+        execute: () => callDeepSeek({ apiKey: secrets.deepseekKey, model: deepseekModel, systemPrompt, userPrompt }),
+      });
+      // 2. DeepSeek V3 vía OpenRouter — resiliencia a degradación de la
+      // API directa de DeepSeek (network, 5xx, ratelimit transitorio).
+      chain.push({
+        name: 'openrouter',
+        model: 'deepseek/deepseek-chat-v3-0324',
+        execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: 'deepseek/deepseek-chat-v3-0324', systemPrompt, userPrompt }),
+      });
+      // 3. Fallback cuando DeepSeek no hay crédito / cuota agotada:
+      // Gemini 2.5 Flash-Lite DIRECTO (UE · low latency · bajo coste).
+      // Solo se añade si NO lo hemos puesto ya en cabeza por
+      // modelOverride.
+      if (!forceGeminiFirst && secrets.geminiKey) {
         chain.push({
           name: 'gemini',
           model: geminiModel,
           execute: () => callGemini({ apiKey: secrets.geminiKey!, model: geminiModel, systemPrompt, userPrompt }),
         });
       }
-      // 2. Fallback: misma capa vía OpenRouter (resiliencia a degradación
-      // de la API directa).
-      chain.push({
-        name: 'openrouter',
-        model: 'google/gemini-2.5-flash-lite',
-        execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: 'google/gemini-2.5-flash-lite', systemPrompt, userPrompt }),
-      });
-      // 3. Fallback profundo: DeepSeek V3 directo (calidad equivalente,
-      // latencia mayor).
-      chain.push({
-        name: 'deepseek',
-        model: deepseekModel,
-        execute: () => callDeepSeek({ apiKey: secrets.deepseekKey, model: deepseekModel, systemPrompt, userPrompt }),
-      });
-      // 4. Último recurso: OpenRouter DeepSeek V3.
-      chain.push({
-        name: 'openrouter',
-        model: 'deepseek/deepseek-chat-v3-0324',
-        execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: 'deepseek/deepseek-chat-v3-0324', systemPrompt, userPrompt }),
-      });
+      // 4. Último recurso: Gemini vía OpenRouter (no garantiza UE).
+      if (!forceGeminiFirst) {
+        chain.push({
+          name: 'openrouter',
+          model: 'google/gemini-2.5-flash-lite',
+          execute: () => callOpenRouter({ apiKey: secrets.openrouterKey, model: 'google/gemini-2.5-flash-lite', systemPrompt, userPrompt }),
+        });
+      }
       return chain;
     }
 

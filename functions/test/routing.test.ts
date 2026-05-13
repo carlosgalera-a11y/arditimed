@@ -29,19 +29,20 @@ describe('buildProviderChain — modo mínimo (solo DeepSeek + OpenRouter)', () 
     expect(chain[2]!.model).toBe('mistralai/mistral-small-3.2-24b-instruct');
   });
 
-  it('educational sin geminiKey → OpenRouter gemini-flash-lite primario → DeepSeek directo → OpenRouter deepseek-v3', () => {
-    // Sin geminiKey, OpenRouter Gemini Flash-Lite es la primera opción (más
-    // rápida/barata que DeepSeek). DeepSeek queda como fallback profundo.
+  it('educational sin geminiKey → DeepSeek directo primario → OR DeepSeek → OR Gemini fallback', () => {
+    // Nueva política (2026-05-13): DeepSeek primario; Gemini solo cuando
+    // DeepSeek no tiene crédito o falla. Sin geminiKey, el chain queda
+    // DeepSeek directo → OpenRouter DeepSeek → OpenRouter Gemini.
     const chain = buildProviderChain({
       type: 'educational',
       userPrompt: 'u',
       systemPrompt: 's',
       secrets: minimalSecrets,
     });
-    expect(chain.map((c) => c.name)).toEqual(['openrouter', 'deepseek', 'openrouter']);
-    expect(chain[0]!.model).toBe('google/gemini-2.5-flash-lite');
-    expect(chain[1]!.model).toBe('deepseek-chat');
-    expect(chain[2]!.model).toBe('deepseek/deepseek-chat-v3-0324');
+    expect(chain.map((c) => c.name)).toEqual(['deepseek', 'openrouter', 'openrouter']);
+    expect(chain[0]!.model).toBe('deepseek-chat');
+    expect(chain[1]!.model).toBe('deepseek/deepseek-chat-v3-0324');
+    expect(chain[2]!.model).toBe('google/gemini-2.5-flash-lite');
   });
 
   it('vision → OpenRouter Qwen2.5-VL-72B primario → OpenRouter Gemini fallback', () => {
@@ -92,10 +93,11 @@ describe('buildProviderChain — direct keys preferidas', () => {
     expect(chain[3]!.model).toBe('google/gemini-2.5-flash');
   });
 
-  it('modelOverride deepseek-reasoner reordena para que DeepSeek sea primario', () => {
-    // Si el frontend pide explícitamente deepseek-* via modelOverride, el
-    // primario debe ser DeepSeek directo (no Gemini Flash-Lite). El override
-    // sigue prevaleciendo sobre la nueva política por defecto.
+  it('modelOverride deepseek-reasoner mantiene DeepSeek como primario con el modelo override', () => {
+    // modelOverride deepseek-* refuerza el orden por defecto (DeepSeek
+    // primario) y simplemente fija el modelo override en la entrada
+    // directa. Sin geminiKey: deepseek (con override) → openrouter
+    // deepseek-v3 → openrouter gemini.
     const chain = buildProviderChain({
       type: 'educational',
       userPrompt: 'u',
@@ -103,28 +105,48 @@ describe('buildProviderChain — direct keys preferidas', () => {
       modelOverride: 'deepseek-reasoner',
       secrets: minimalSecrets,
     });
-    // Sin geminiKey: openrouter gemini → deepseek directo (con modelOverride
-    // aplicado) → openrouter deepseek-v3.
-    const deepseekIdx = chain.findIndex((c) => c.name === 'deepseek');
-    expect(deepseekIdx).toBeGreaterThanOrEqual(0);
-    expect(chain[deepseekIdx]!.model).toBe('deepseek-reasoner');
+    expect(chain[0]!.name).toBe('deepseek');
+    expect(chain[0]!.model).toBe('deepseek-reasoner');
   });
 
-  it('educational con geminiKey → Gemini directo primario (EU residency, low latency)', () => {
+  it('educational con geminiKey → DeepSeek primario, Gemini directo solo como fallback', () => {
+    // Nueva política (2026-05-13): DeepSeek primario; Gemini solo cuando
+    // DeepSeek se queda sin crédito o falla. Con geminiKey el chain es:
+    // DeepSeek directo → OR DeepSeek → Gemini directo (UE) → OR Gemini.
     const chain = buildProviderChain({
       type: 'educational',
       userPrompt: 'u',
       systemPrompt: 's',
       secrets: fullSecrets,
     });
+    expect(chain[0]!.name).toBe('deepseek');
+    expect(chain[0]!.model).toBe('deepseek-chat');
+    expect(chain[1]!.name).toBe('openrouter');
+    expect(chain[1]!.model).toBe('deepseek/deepseek-chat-v3-0324');
+    expect(chain[2]!.name).toBe('gemini');
+    expect(chain[2]!.model).toBe('gemini-2.5-flash-lite');
+    expect(chain[3]!.name).toBe('openrouter');
+    expect(chain[3]!.model).toBe('google/gemini-2.5-flash-lite');
+  });
+
+  it('educational con modelOverride gemini-* fuerza Gemini en cabeza (caso edge)', () => {
+    // Si el caller pide explícitamente Gemini, lo respetamos: Gemini
+    // directo primario, OR Gemini fallback, luego DeepSeek se evita
+    // (porque el override ya pidió Gemini intencionadamente).
+    const chain = buildProviderChain({
+      type: 'educational',
+      userPrompt: 'u',
+      systemPrompt: 's',
+      modelOverride: 'gemini-2.5-flash-lite',
+      secrets: fullSecrets,
+    });
     expect(chain[0]!.name).toBe('gemini');
     expect(chain[0]!.model).toBe('gemini-2.5-flash-lite');
     expect(chain[1]!.name).toBe('openrouter');
     expect(chain[1]!.model).toBe('google/gemini-2.5-flash-lite');
+    // Tras esos dos viene la cadena por defecto DeepSeek (DeepSeek
+    // directo + OR DeepSeek) como fallback profundo.
     expect(chain[2]!.name).toBe('deepseek');
-    expect(chain[2]!.model).toBe('deepseek-chat');
-    expect(chain[3]!.name).toBe('openrouter');
-    expect(chain[3]!.model).toBe('deepseek/deepseek-chat-v3-0324');
   });
 });
 
