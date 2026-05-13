@@ -648,6 +648,26 @@ export const evidenciaSearch = onCall(
       }
     }
 
+    // Contexto compacto que se persiste en el doc para alimentar el chat
+    // de seguimiento sin tener que volver a llamar a PubMed/EuropePMC.
+    // Limitado a top 12 abstracts y 800 chars por abstract (margen para
+    // mantenernos muy por debajo del límite 1 MB de Firestore por doc).
+    const chatCtxFuentes = reranked.slice(0, 12).map((s, i) => {
+      const a = s.ref as {
+        title?: string; abstract?: string; doi?: string | null;
+        pmid?: string | null; journal?: string; year?: number | null;
+      };
+      return {
+        idx: i + 1,
+        title: (a.title ?? '').slice(0, 360),
+        abstract: (a.abstract ?? '').slice(0, 800),
+        journal: (a.journal ?? '').slice(0, 200),
+        year: typeof a.year === 'number' ? a.year : null,
+        doi: a.doi ?? null,
+        pmid: a.pmid ?? null,
+      };
+    });
+
     // Log a Firestore (best-effort).
     const ref = db.collection('evidencia_consultas').doc();
     const consultaId = ref.id;
@@ -700,6 +720,12 @@ export const evidenciaSearch = onCall(
         // Resumen corto para que la siguiente turn del hilo tenga contexto
         // sin tener que cargar el texto sintetizado completo.
         sintesis_resumen: sintesis ? sintesis.texto_sintetizado.replace(/\s+/g, ' ').slice(0, 360) : '',
+        // Texto sintetizado completo + abstracts compactos: contexto que
+        // alimenta `evidenciaChat` (turnos de seguimiento sobre los mismos
+        // resultados, sin re-buscar en PubMed). Solo se guarda si hubo
+        // síntesis exitosa — chats sin síntesis no aportarían valor.
+        sintesis_texto: sintesis ? sintesis.texto_sintetizado.slice(0, 8000) : null,
+        chatCtx: sintesis ? { fuentes: chatCtxFuentes, especialidad: especialidadKey } : null,
         ai_act_disclaimer_shown: true,
         // Evidencia procedimental de la Estrategia 3 (vínculo roto). La
         // pregunta llegó al modelo IA sanitizada y sin PII por construcción.

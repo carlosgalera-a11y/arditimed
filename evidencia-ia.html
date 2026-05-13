@@ -156,6 +156,36 @@ main{flex:1;padding:24px 22px 40px;max-width:980px;width:100%;margin:0 auto}
 .verify-nudge{margin-top:14px;padding:10px 14px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.32);border-left:4px solid #93bbfc;border-radius:8px;font-size:.82rem;color:#cbd5e1;line-height:1.5}
 .verify-nudge strong{color:#93bbfc}
 
+/* Chat de seguimiento — conversación con la IA sobre la respuesta actual */
+.chat-section{margin-top:22px;background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.30);border-radius:14px;padding:16px 18px}
+.chat-section h2{font-family:'Playfair Display',serif;font-size:1.1rem;color:#5eead4;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.chat-section .chat-help{font-size:.78rem;opacity:.72;margin-bottom:12px;line-height:1.5}
+.chat-log{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;max-height:480px;overflow-y:auto;padding-right:6px}
+.chat-log:empty{display:none}
+.chat-turn{padding:10px 14px;border-radius:10px;font-size:.9rem;line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+.chat-turn.user{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);align-self:flex-end;max-width:88%}
+.chat-turn.ai{background:rgba(13,148,136,.14);border:1px solid rgba(13,148,136,.30);align-self:flex-start;max-width:92%}
+.chat-turn.ai .cite{display:inline-block;background:rgba(212,168,83,.18);border:1px solid rgba(212,168,83,.35);color:#f3d98a;padding:0 5px;border-radius:6px;margin:0 1px;font-weight:700;font-size:.72rem;cursor:pointer;text-decoration:none}
+.chat-turn.ai .cite:hover{background:rgba(212,168,83,.32)}
+.chat-turn .role-tag{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;opacity:.55;display:block;margin-bottom:3px}
+.chat-turn.user .role-tag{color:#cbd5e1}
+.chat-turn.ai .role-tag{color:#5eead4}
+.chat-input-wrap{display:flex;gap:8px;align-items:flex-end}
+.chat-input-wrap textarea{flex:1;min-height:42px;max-height:120px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:10px 12px;color:#fff;font-family:inherit;font-size:.9rem;resize:vertical}
+.chat-input-wrap textarea:focus{outline:none;border-color:#5eead4}
+.chat-send-btn{padding:10px 16px;background:linear-gradient(135deg,#0d9488,#0f766e);border:0;border-radius:10px;color:#fff;font-family:inherit;font-weight:800;cursor:pointer;font-size:.9rem;white-space:nowrap}
+.chat-send-btn:disabled{opacity:.5;cursor:not-allowed}
+.chat-status{font-size:.78rem;opacity:.72;margin-top:6px;display:flex;align-items:center;gap:6px;min-height:18px}
+.chat-status.error{color:#fca5a5}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chat-suggestion{padding:5px 10px;font-size:.74rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#cbd5e1;border-radius:12px;cursor:pointer;font-family:inherit}
+.chat-suggestion:hover{background:rgba(13,148,136,.20);border-color:rgba(13,148,136,.40);color:#fff}
+.chat-thinking{display:inline-flex;gap:4px}
+.chat-thinking span{width:6px;height:6px;border-radius:50%;background:#5eead4;animation:chatPulse 1.4s ease-in-out infinite}
+.chat-thinking span:nth-child(2){animation-delay:.2s}
+.chat-thinking span:nth-child(3){animation-delay:.4s}
+@keyframes chatPulse{0%,80%,100%{opacity:.3;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+
 /* Modal genérico (favoritos / compartir) */
 .evi-modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .evi-modal-card{background:#0e2a1c;border:1px solid rgba(255,255,255,.18);border-radius:14px;max-width:560px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.55)}
@@ -347,6 +377,23 @@ footer a{text-decoration:underline;color:#d4a853}
         <h4 data-i18n="followups_title">↪ Preguntas relacionadas</h4>
         <div class="chips" id="eviFollowups"></div>
       </section>
+
+      <section class="chat-section" id="eviChatSection" style="display:none">
+        <h2>💬 <span data-i18n="chat_title">Conversa con la IA sobre esta respuesta</span></h2>
+        <p class="chat-help" data-i18n="chat_help">Haz preguntas de seguimiento sobre la síntesis y los abstracts de arriba — no se ejecuta una nueva búsqueda en PubMed. La IA solo usa los mismos artículos que ya tienes a la vista.</p>
+        <div class="chat-log" id="eviChatLog" aria-live="polite"></div>
+        <div class="chat-suggestions" id="eviChatSuggestions">
+          <button type="button" class="chat-suggestion" data-i18n="chat_sug_1">Resúmelo en 3 puntos clave</button>
+          <button type="button" class="chat-suggestion" data-i18n="chat_sug_2">¿Qué dice la cita [1] sobre seguridad?</button>
+          <button type="button" class="chat-suggestion" data-i18n="chat_sug_3">¿Hay diferencias por edad o sexo?</button>
+          <button type="button" class="chat-suggestion" data-i18n="chat_sug_4">¿Qué limitaciones metodológicas tiene la evidencia?</button>
+        </div>
+        <div class="chat-input-wrap" style="margin-top:10px">
+          <textarea id="eviChatInput" maxlength="500" rows="2" placeholder="Ej: explícame mejor lo que dice la cita [2]…" data-i18n-ph="chat_placeholder"></textarea>
+          <button type="button" id="eviChatSend" class="chat-send-btn" data-i18n="chat_send">Enviar</button>
+        </div>
+        <div class="chat-status" id="eviChatStatus"></div>
+      </section>
       <section class="fuentes">
         <h2 data-i18n="sources_title">📚 Fuentes consultadas</h2>
         <ol id="eviFuentes" style="list-style:none;padding-left:0"></ol>
@@ -470,6 +517,17 @@ var I18N = {
     strip_body: '· NO es producto sanitario (SaMD) · NO sustituye juicio clínico ·',
     strip_link: 'Dossier AI Act ↗',
     placeholder: 'Ej: ¿Qué dice la evidencia sobre apixaban vs warfarina en pacientes con FA no valvular mayores de 75 años en términos de mortalidad y sangrado?',
+    chat_title: 'Conversa con la IA sobre esta respuesta',
+    chat_help: 'Haz preguntas de seguimiento sobre la síntesis y los abstracts de arriba — no se ejecuta una nueva búsqueda en PubMed. La IA solo usa los mismos artículos que ya tienes a la vista.',
+    chat_sug_1: 'Resúmelo en 3 puntos clave',
+    chat_sug_2: '¿Qué dice la cita [1] sobre seguridad?',
+    chat_sug_3: '¿Hay diferencias por edad o sexo?',
+    chat_sug_4: '¿Qué limitaciones metodológicas tiene la evidencia?',
+    chat_send: 'Enviar',
+    chat_placeholder: 'Ej: explícame mejor lo que dice la cita [2]…',
+    chat_thinking: 'Pensando…',
+    chat_error: 'No se pudo enviar el mensaje.',
+    chat_limit: 'Has alcanzado el límite de turnos en esta consulta. Inicia una nueva búsqueda.',
   },
   en: {
     back_pro: '← Professionals',
@@ -489,6 +547,17 @@ var I18N = {
     strip_body: '· NOT a medical device (SaMD) · does NOT replace clinical judgement ·',
     strip_link: 'AI Act dossier ↗',
     placeholder: 'E.g.: What does the evidence say about apixaban vs warfarin in non-valvular AF patients over 75 in terms of mortality and bleeding?',
+    chat_title: 'Chat with the AI about this answer',
+    chat_help: 'Ask follow-up questions about the synthesis and abstracts above — no new PubMed search is run. The AI only uses the same articles you can already see.',
+    chat_sug_1: 'Summarize it in 3 key points',
+    chat_sug_2: 'What does citation [1] say about safety?',
+    chat_sug_3: 'Are there differences by age or sex?',
+    chat_sug_4: 'What methodological limitations does the evidence have?',
+    chat_send: 'Send',
+    chat_placeholder: 'E.g.: explain better what citation [2] says…',
+    chat_thinking: 'Thinking…',
+    chat_error: 'Could not send the message.',
+    chat_limit: 'You have reached the turn limit on this query. Start a new search.',
   },
 };
 function applyI18n(lang){
@@ -497,11 +566,22 @@ function applyI18n(lang){
     var key = el.getAttribute('data-i18n');
     if (key && dict[key] != null) el.textContent = dict[key];
   });
+  // Placeholders (data-i18n-ph para inputs/textareas).
+  Array.prototype.forEach.call(document.querySelectorAll('[data-i18n-ph]'), function(el){
+    var key = el.getAttribute('data-i18n-ph');
+    if (key && dict[key] != null) el.setAttribute('placeholder', dict[key]);
+  });
   var input = $('eviInput');
   if (input && dict.placeholder) input.setAttribute('placeholder', dict.placeholder);
   var btn = $('eviLang');
   if (btn) btn.textContent = lang === 'en' ? '🌐 EN' : '🌐 ES';
   document.documentElement.lang = lang;
+}
+function currentLangDict(){
+  try {
+    var l = localStorage.getItem('evi_lang_v1') || 'es';
+    return I18N[l] || I18N.es;
+  } catch(_) { return I18N.es; }
 }
 (function initI18n(){
   var btn = $('eviLang');
@@ -741,6 +821,10 @@ function renderResultado(d){
     $('eviSintWarn').style.display = 'none';
     $('eviVerifyNudge').style.display = 'none';
   }
+
+  // Reset del panel de chat: cada nueva consulta limpia el log y lo
+  // muestra/oculta según haya síntesis IA disponible.
+  try { resetChatPanel(); } catch(_) {}
 
   // Preguntas relacionadas (follow-ups extraídos por el splitter del backend).
   var fuBox = $('eviFollowupsBox');
@@ -1188,6 +1272,150 @@ $('eviFavListBtn').addEventListener('click', async function(){
   } finally {
     $('eviFavListBtn').disabled = false;
   }
+});
+
+// ─── Chat de seguimiento ─────────────────────────────────────────
+// Conversación sobre la respuesta actual SIN re-buscar en PubMed. Tras
+// cada renderResultado() con síntesis, mostramos el panel. La consulta
+// queda anclada por currentConsultaId: cada nueva búsqueda lo cambia y
+// resetea el chat. Las preguntas pasan por las mismas safeguards
+// server-side que evidenciaSearch.
+var chatBusy = false;
+function chatAvailable(){
+  // Solo se habilita si hay synth (currentConsultaId + texto en eviSintesis).
+  if (!currentConsultaId) return false;
+  var sintEl = $('eviSintesis');
+  if (!sintEl) return false;
+  var txt = (sintEl.textContent || '').trim();
+  return txt.length > 0 && !/Sin síntesis IA/i.test(txt);
+}
+function resetChatPanel(){
+  var section = $('eviChatSection');
+  if (!section) return;
+  if (chatAvailable()) {
+    section.style.display = 'block';
+    var log = $('eviChatLog');
+    if (log) log.innerHTML = '';
+    var inp = $('eviChatInput');
+    if (inp) inp.value = '';
+    var st = $('eviChatStatus');
+    if (st) { st.textContent = ''; st.classList.remove('error'); }
+  } else {
+    section.style.display = 'none';
+  }
+}
+function appendChatTurn(role, text){
+  var log = $('eviChatLog');
+  if (!log) return;
+  var div = document.createElement('div');
+  div.className = 'chat-turn ' + (role === 'user' ? 'user' : 'ai');
+  var tagText = role === 'user' ? '👤 Tú' : '🤖 IA';
+  var tag = document.createElement('span');
+  tag.className = 'role-tag';
+  tag.textContent = tagText;
+  div.appendChild(tag);
+  if (role === 'ai') {
+    // Convertimos [n] a chips clickables como en la síntesis principal.
+    var html = esc(text || '').replace(/\[(\d{1,2})\]/g, function(_, n){
+      return '<a class="cite" data-n="'+n+'">['+n+']</a>';
+    });
+    var body = document.createElement('span');
+    body.innerHTML = html;
+    div.appendChild(body);
+  } else {
+    div.appendChild(document.createTextNode(text || ''));
+  }
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  return div;
+}
+function setChatStatus(text, isErr){
+  var st = $('eviChatStatus');
+  if (!st) return;
+  if (!text) { st.innerHTML = ''; st.classList.remove('error'); return; }
+  st.classList.toggle('error', !!isErr);
+  st.textContent = text;
+}
+function setChatThinking(on){
+  var st = $('eviChatStatus');
+  if (!st) return;
+  if (on) {
+    var dict = currentLangDict();
+    st.classList.remove('error');
+    st.innerHTML = '<span class="chat-thinking" aria-hidden="true"><span></span><span></span><span></span></span> ' + esc(dict.chat_thinking || 'Pensando…');
+  } else {
+    st.innerHTML = '';
+  }
+}
+async function enviarChatMensaje(){
+  if (chatBusy) return;
+  var inp = $('eviChatInput');
+  if (!inp) return;
+  var msg = (inp.value || '').trim();
+  if (msg.length < 3) return;
+  if (msg.length > 500) {
+    setChatStatus('Mensaje demasiado largo (máx 500 caracteres).', true);
+    return;
+  }
+  if (!currentConsultaId) {
+    setChatStatus('No hay consulta activa.', true);
+    return;
+  }
+  chatBusy = true;
+  $('eviChatSend').disabled = true;
+  inp.disabled = true;
+  appendChatTurn('user', msg);
+  inp.value = '';
+  setChatThinking(true);
+  try {
+    var call = fns.httpsCallable('evidenciaChat');
+    var res = await call({
+      consultaId: currentConsultaId,
+      mensaje: msg,
+      ai_act_disclaimer_shown: true,
+    });
+    var d = (res && res.data) || {};
+    if (!d.ok || typeof d.respuesta !== 'string') {
+      throw new Error('Respuesta inesperada del servidor.');
+    }
+    appendChatTurn('ai', d.respuesta);
+    setChatStatus('');
+    try {
+      if (window.cartTrack) window.cartTrack('evidencia_chat_turn', {
+        consulta_id: currentConsultaId,
+        provider: d.provider || 'unknown',
+      });
+    } catch(_) {}
+  } catch(e) {
+    var dict = currentLangDict();
+    var msgErr = (e && (e.message || e.code)) || dict.chat_error || 'Error';
+    // Si el error es de tope de turnos, mensaje específico.
+    if (/resource-exhausted|limite|límite|límite de/i.test(msgErr)) {
+      msgErr = dict.chat_limit || msgErr;
+    }
+    setChatStatus(msgErr, true);
+  } finally {
+    chatBusy = false;
+    $('eviChatSend').disabled = false;
+    inp.disabled = false;
+    inp.focus();
+  }
+}
+// Botón enviar + Enter (Shift+Enter = nueva línea).
+document.getElementById('eviChatSend').addEventListener('click', enviarChatMensaje);
+document.getElementById('eviChatInput').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    enviarChatMensaje();
+  }
+});
+// Sugerencias rápidas — copian el texto al input (no envían automáticamente
+// para mantener al humano en el bucle, igual que los followups del synth).
+Array.prototype.forEach.call(document.querySelectorAll('#eviChatSuggestions .chat-suggestion'), function(btn){
+  btn.addEventListener('click', function(){
+    var inp = $('eviChatInput');
+    if (inp) { inp.value = btn.textContent || ''; inp.focus(); }
+  });
 });
 
 // ─── Export PDF ────────────────────────────────────────────────────

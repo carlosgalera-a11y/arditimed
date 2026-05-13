@@ -379,6 +379,18 @@ service cloud.firestore {
       // sanitizada antes de tocar Firestore.
       allow create, update, delete: if false;
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+
+      // Subcolección de chat de seguimiento. Lectura solo para el dueño
+      // (o admin para auditoría); escritura siempre vía Cloud Function
+      // `evidenciaChat` (Admin SDK) — desde cliente directo se prohíbe
+      // para que las safeguards de PII + diagnostic intent se apliquen
+      // server-side antes de enviar nada al modelo IA.
+      match /chat/{turnId} {
+        allow create, update, delete: if false;
+        allow read: if signedIn()
+          && (get(/databases/$(database)/documents/evidencia_consultas/$(id)).data.uid == request.auth.uid
+              || isAdmin());
+      }
     }
     match /evidencia_feedback/{id} {
       allow create, update, delete: if false; // solo Cloud Function
