@@ -1789,6 +1789,81 @@ function showScanLogin(){
     }catch(e){console.error("showScanLogin error:",e);alert("Error: "+e.message);}
 }
 
+// Login con cuenta Microsoft (Hotmail / Outlook / Live / 365 / Azure AD).
+// Comparte con scanGoogleLogin la misma lógica post-login (cargar moderadores,
+// abrir panel admin si procede, navegar al pendingPage). tenant=common acepta
+// cuentas personales y de cualquier organización Azure AD.
+function scanMicrosoftLogin(){
+    console.log("scanMicrosoftLogin called");
+    var provider=new firebase.auth.OAuthProvider('microsoft.com');
+    provider.setCustomParameters({ prompt: 'select_account', tenant: 'common' });
+    provider.addScope('email');
+    provider.addScope('openid');
+    provider.addScope('profile');
+    var errEl=document.getElementById("scanLoginError");
+    if(errEl) errEl.style.display="none";
+
+    function onLoginSuccess(user){
+        try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+        loadModeradoresFromFirestore(function(){
+            isAdminLoggedIn=isAdmin();
+            apShowAdminTab(isAdminLoggedIn);
+            updateModBadgeAll();
+            if(isAdminLoggedIn&&!pendingPageAfterLogin){
+                try{document.getElementById("adminPanel").style.display="flex";}catch(e){}
+            }
+        });
+        var pg=sessionStorage.getItem('pendingPage')||pendingPageAfterLogin;
+        sessionStorage.removeItem('pendingPage');pendingPageAfterLogin=null;
+        if(pg){logPageAccess(pg,user);showPage(pg);}
+        else if(window._pendingDocencia){
+            window._pendingDocencia=false;
+            try{document.getElementById("scanLoginModal").style.display="none";}catch(e){}
+            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+            var landing=document.getElementById('pageLanding');
+            if(landing)landing.classList.add('active');
+            setTimeout(function(){
+                var sh=document.getElementById('subHerramientas');if(sh)sh.style.display='none';
+                var sp=document.getElementById('subProtocolos');if(sp)sp.style.display='none';
+                var sd=document.getElementById('subDocencia');
+                if(sd){sd.style.display='flex';sd.scrollIntoView({behavior:'smooth',block:'nearest'});}
+            },500);
+            return;
+        }
+        else{showPage("pageScanIA");scanRenderHist();}
+    }
+
+    function handleError(error){
+        console.error("Login Microsoft error:",error.code,error.message);
+        if(error.code==="auth/cancelled-popup-request"||error.code==="auth/popup-closed-by-user"||error.code==="auth/popup-closed-by-browser"){
+            return; // benignos
+        }
+        if(error.code==="auth/popup-blocked"){
+            if(errEl){errEl.innerHTML="⚠️ El navegador bloqueó la ventana de Microsoft.<br><strong>Pulsa de nuevo el botón</strong> o desactiva el bloqueador de popups.";errEl.style.display="block";}
+            return;
+        }
+        if(error.code==="auth/operation-not-allowed"){
+            if(errEl){errEl.innerHTML="❌ Microsoft no está habilitado todavía. Avisa al administrador (provider microsoft.com en Firebase Console).";errEl.style.display="block";}
+            return;
+        }
+        if(error.code==="auth/account-exists-with-different-credential"){
+            if(errEl){errEl.innerHTML="❌ Ya existe una cuenta con este email registrada por Google. Inicia sesión con Google primero y luego vincula Microsoft.";errEl.style.display="block";}
+            return;
+        }
+        var msg=error.message||'';
+        if(msg.indexOf('AADSTS50194')>=0||msg.indexOf('AADSTS50020')>=0){
+            if(errEl){errEl.innerHTML="❌ La configuración de Azure todavía no acepta cuentas personales (Hotmail/Outlook). Avisa al administrador.";errEl.style.display="block";}
+            return;
+        }
+        if(errEl){errEl.innerHTML="❌ "+(error.message||error.code||"error desconocido");errEl.style.display="block";}
+    }
+
+    firebase.auth().signInWithPopup(provider).then(function(result){
+        console.log("[scanMicrosoftLogin] OK:",result.user&&result.user.email);
+        onLoginSuccess(result.user);
+    }).catch(handleError);
+}
+
 function scanGoogleLogin(){
     console.log("scanGoogleLogin called");
     var provider=new firebase.auth.GoogleAuthProvider();
