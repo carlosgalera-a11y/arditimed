@@ -158,7 +158,7 @@ body.dark .drug-computed{background:#0a0e1a}
 .to-top.visible{opacity:1;visibility:visible}
 .to-top:hover{transform:translateY(-2px);background:var(--tera)}
 
-/* ═══ URGENCIAS · Vademécum SuperVHivencia ═══════════════════════ */
+/* ═══ URGENCIAS · Vademécum de fármacos ═══════════════════════ */
 .urg-intro{background:linear-gradient(135deg,#fef3c7,#fde68a);border-left:4px solid var(--tera);border-radius:10px;padding:14px 16px;margin-bottom:16px}
 body.dark .urg-intro{background:linear-gradient(135deg,#3a2e1a,#2a2010);color:#fef3c7}
 .urg-intro h3{font-family:'Lora',serif;font-weight:700;font-size:1.05rem;color:var(--tera);margin-bottom:6px}
@@ -196,6 +196,37 @@ body.dark .urg-block .val strong{color:#fff}
 @media(max-width:600px){
   .urg-grid{grid-template-columns:1fr}
 }
+
+/* ═══ PROTOCOLOS · Índice por especialidad ═══════════════════════ */
+.prot-intro{background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-left:4px solid var(--adult);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+body.dark .prot-intro{background:linear-gradient(135deg,#172033,#1e2a45);color:#dbeafe}
+.prot-intro h3{font-family:'Lora',serif;font-weight:700;font-size:1.05rem;color:var(--adult);margin-bottom:6px}
+body.dark .prot-intro h3{color:#7aa8ff}
+.prot-intro p{font-size:.82rem;line-height:1.55;color:var(--ink-soft)}
+body.dark .prot-intro p{color:#bfdbfe}
+
+.prot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.prot-card{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:.2s;display:flex;flex-direction:column;gap:10px}
+body.dark .prot-card{background:#161d33;border-color:#1e2a45}
+.prot-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px);border-color:var(--adult)}
+.prot-card.pendiente{opacity:.65;border-style:dashed}
+.prot-card .prot-head{display:flex;align-items:center;gap:10px}
+.prot-card .prot-icon{font-size:1.6rem;line-height:1}
+.prot-card .prot-name{font-family:'Lora',serif;font-weight:700;font-size:1.0rem;color:var(--adult);flex:1;line-height:1.2}
+body.dark .prot-card .prot-name{color:#7aa8ff}
+.prot-card .prot-count{font-size:.7rem;background:rgba(13,71,161,.10);color:var(--adult);padding:2px 8px;border-radius:10px;font-weight:700}
+body.dark .prot-card .prot-count{background:rgba(122,168,255,.18);color:#7aa8ff}
+.prot-card .prot-count.empty{background:rgba(140,130,115,.18);color:var(--muted)}
+.prot-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+.prot-list li{padding:6px 10px;background:rgba(13,71,161,.04);border-left:2px solid var(--adult);border-radius:4px;font-size:.84rem;color:var(--ink-soft);line-height:1.4}
+body.dark .prot-list li{background:rgba(122,168,255,.06);border-left-color:#7aa8ff;color:#cbd5e1}
+.prot-list li:hover{background:rgba(13,71,161,.10);color:var(--ink)}
+body.dark .prot-list li:hover{background:rgba(122,168,255,.15);color:#fff}
+.prot-empty-msg{padding:10px 12px;background:rgba(140,130,115,.08);border:1px dashed var(--rule);border-radius:6px;font-size:.78rem;color:var(--muted);font-style:italic;text-align:center}
+
+@media(max-width:600px){
+  .prot-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -232,6 +263,7 @@ body.dark .urg-block .val strong{color:#fff}
   <button class="tab-btn" data-tab="procedures" onclick="vdSwitchTab('procedures')" role="tab">Procedimientos</button>
   <button class="tab-btn" data-tab="drugs" onclick="vdSwitchTab('drugs')" role="tab">Fármacos</button>
   <button class="tab-btn" data-tab="urgencias" onclick="vdSwitchTab('urgencias')" role="tab">⚡ Urgencias</button>
+  <button class="tab-btn" data-tab="protocolos" onclick="vdSwitchTab('protocolos')" role="tab">📋 Protocolos</button>
 </div>
 
 <!-- ═══ CONTENT ═══ -->
@@ -258,13 +290,22 @@ body.dark .urg-block .val strong{color:#fff}
     <div class="cond-list" id="vdDrugList"></div>
   </div>
 
-  <!-- URGENCIAS · Vademécum SuperVHivencia -->
+  <!-- URGENCIAS · Vademécum de fármacos de urgencias -->
   <div class="section" id="sec-urgencias">
     <div class="urg-intro">
       <h3>⚡ Vademécum de urgencias</h3>
-      <p>50 fármacos de uso habitual en urgencias hospitalarias y reanimación. Cada ficha incluye <strong>presentación de ampolla</strong>, <strong>bolus</strong>, <strong>perfusión</strong> y <strong>comentario clínico</strong>. Uso exclusivamente docente — verifica siempre con ficha técnica AEMPS antes de administrar.</p>
+      <p>52 fármacos de uso habitual en urgencias hospitalarias y reanimación. Cada ficha incluye <strong>presentación de ampolla</strong>, <strong>bolus</strong>, <strong>perfusión</strong> y <strong>comentario clínico</strong>. Uso exclusivamente docente — verifica siempre con ficha técnica AEMPS antes de administrar.</p>
     </div>
     <div id="vdUrgList" class="urg-grid"></div>
+  </div>
+
+  <!-- PROTOCOLOS · Índice por especialidad -->
+  <div class="section" id="sec-protocolos">
+    <div class="prot-intro">
+      <h3>📋 Protocolos de urgencias por especialidad</h3>
+      <p>Índice navegable de protocolos de manejo en urgencias agrupados por área clínica. El contenido detallado de cada protocolo se desarrolla en el resto del Vademécum y en el MegaCuaderno IA del Área II Cartagena. Uso exclusivamente docente.</p>
+    </div>
+    <div id="vdProtList" class="prot-grid"></div>
   </div>
 
   <div class="footer">
@@ -277,6 +318,7 @@ body.dark .urg-block .val strong{color:#fff}
 
 <script src="vademecum-data.js?v=20260416a"></script>
 <script src="vademecum-urgencias-drugs.js?v=20260514a"></script>
+<script src="vademecum-protocolos-urgencias.js?v=20260514a"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
 //  VADEMÉCUM — State + rendering
@@ -397,6 +439,7 @@ function vdRender(){
   else if(VDS.currentTab === 'procedures') vdRenderProcedures();
   else if(VDS.currentTab === 'drugs') vdRenderDrugs();
   else if(VDS.currentTab === 'urgencias') vdRenderUrgentDrugs();
+  else if(VDS.currentTab === 'protocolos') vdRenderProtocolos();
 }
 
 function vdUpdateBreadcrumb(){
@@ -676,7 +719,7 @@ window.addEventListener('scroll', function(){
   document.getElementById('vdToTop').classList.toggle('visible', window.pageYOffset > 400);
 });
 
-// ═══ URGENCIAS · Vademécum SuperVHivencia renderer ═════════════
+// ═══ URGENCIAS · Vademécum de fármacos renderer ═════════════
 // Filtra los 50 fármacos por VDS.search (nombre o tags). Cada card
 // muestra ampolla / bolus / perfusión / comentario en bloques de color.
 function vdRenderUrgentDrugs(){
@@ -724,6 +767,45 @@ function vdRenderUrgentDrugs(){
         +   '<div class="val">'+esc(d.comentario)+'</div>'
         + '</div>')
       + '</div>';
+  }).join('');
+}
+
+// ═══ PROTOCOLOS · Índice por especialidad renderer ════════════
+// Filtra las 24 categorías por nombre de especialidad o por nombre
+// de protocolo. Las categorías sin protocolos extraídos se muestran
+// como "pendiente de ampliar".
+function vdRenderProtocolos(){
+  var el = document.getElementById('vdProtList');
+  if(!el) return;
+  var list = (typeof VD_PROTOCOLOS_URGENCIAS !== 'undefined') ? VD_PROTOCOLOS_URGENCIAS : [];
+  if(VDS.search){
+    var q = VDS.search;
+    list = list.filter(function(c){
+      var hay = (c.especialidad + ' ' + (c.protocolos||[]).join(' ')).toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+  }
+  if(!list.length){
+    el.innerHTML = '<div class="empty"><div class="ico">🔍</div>Sin resultados<br><span style="font-size:.85rem">Prueba otro término (ej. "cardio", "asma", "RCP")</span></div>';
+    return;
+  }
+  el.innerHTML = list.map(function(c){
+    var n = (c.protocolos||[]).length;
+    var pendiente = !!c.pendiente || n === 0;
+    var head = '<div class="prot-head">'
+      + '<span class="prot-icon">'+esc(c.icon||'📁')+'</span>'
+      + '<span class="prot-name">'+esc(c.especialidad)+'</span>'
+      + '<span class="prot-count'+(pendiente?' empty':'')+'">'+(pendiente?'pendiente':(n+' protocolo'+(n>1?'s':'')))+'</span>'
+      + '</div>';
+    var body;
+    if(pendiente){
+      body = '<div class="prot-empty-msg">📝 Pendiente de ampliar con sub-protocolos. Consulta el resto del Vademécum o las guías locales del Servicio Murciano de Salud.</div>';
+    } else {
+      body = '<ul class="prot-list">'+ (c.protocolos||[]).map(function(p){
+        return '<li>'+esc(p)+'</li>';
+      }).join('') +'</ul>';
+    }
+    return '<div class="prot-card'+(pendiente?' pendiente':'')+'" id="'+esc(c.id)+'">'+head+body+'</div>';
   }).join('');
 }
 

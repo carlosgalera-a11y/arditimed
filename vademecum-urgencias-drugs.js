@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════
-// Vademécum SuperVHivencia · Fármacos de urgencias (Área II Cartagena)
+// Vademécum de fármacos de urgencias · Área II Cartagena
 // ═══════════════════════════════════════════════════════════════════════
-// 50 fármacos de uso habitual en urgencias hospitalarias y reanimación.
+// 52 fármacos de uso habitual en urgencias hospitalarias y reanimación.
 // Cada entrada incluye:
 //   - ampolla:   presentación (concentración por vial/ampolla)
 //   - bolus:     dosis directa (con dilución si procede)
@@ -11,7 +11,7 @@
 // Uso EXCLUSIVAMENTE docente. Verificar siempre con ficha técnica AEMPS
 // y protocolos del Servicio Murciano de Salud antes de administrar.
 //
-// Fuente: Vademécum interno SuperVHivencia (recopilación clínica del Área II).
+// Recopilación clínica interna del Área II Cartagena.
 // ═══════════════════════════════════════════════════════════════════════
 
 var VD_URGENT_DRUGS = [
