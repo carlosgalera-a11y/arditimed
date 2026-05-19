@@ -92,7 +92,7 @@ main{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:34px 20px 50px;pos
 .btn-google svg{width:20px;height:20px}
 
 .tiles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-.tile{display:flex;flex-direction:column;gap:10px;padding:24px 22px;background:linear-gradient(135deg,rgba(15,28,22,.72),rgba(8,20,14,.82));border:1.5px solid rgba(255,255,255,.28);border-radius:16px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s,background .2s;color:#fff;min-height:170px;font-family:inherit;text-align:left;position:relative;overflow:hidden;backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.tile{display:flex;flex-direction:column;gap:14px;padding:22px 22px;background:linear-gradient(135deg,rgba(15,28,22,.72),rgba(8,20,14,.82));border:1.5px solid rgba(255,255,255,.28);border-radius:16px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s,background .2s;color:#fff;min-height:120px;font-family:inherit;text-align:left;position:relative;overflow:hidden;backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .tile::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--tile-color,#d4a853);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
 .tile:hover{background:linear-gradient(135deg,rgba(26,42,34,.85),rgba(10,25,18,.92));border-color:rgba(255,255,255,.55);transform:translateY(-3px);box-shadow:0 14px 42px rgba(0,0,0,.55)}
 .tile:hover::before{transform:scaleX(1)}
@@ -235,42 +235,34 @@ footer a:hover{color:#ffd54f}
     <div id="hub" class="tiles-grid" style="display:none">
       <button type="button" class="tile" data-k="ap" onclick="openAPMenu()" aria-haspopup="dialog" aria-label="Atención Primaria — abre menú con Protocolos AP y Centros de Salud">
         <div class="tile-head"><span class="tile-icon">🏘️</span><span class="tile-title">Atención Primaria</span></div>
-        <div class="tile-desc">Protocolos de Atención Primaria · Centros de Salud del Área II.</div>
       </button>
 
       <button type="button" class="tile" data-k="hospitalaria" onclick="location.href='panel-medico.html?page=pageProfessionals'" aria-label="Atención Hospitalaria">
         <div class="tile-head"><span class="tile-icon">🏥</span><span class="tile-title">Atención Hospitalaria</span></div>
-        <div class="tile-desc">Cuaderno IA por 24 especialidades · MegaCuaderno IA · casos clínicos · calculadoras · fármacos · checklist IA.</div>
       </button>
 
       <button type="button" class="tile" data-k="urgencias" onclick="openUrgenciasMenu()" aria-haspopup="dialog" aria-label="Urgencias — abre menú con Protocolos, Camas y Ventilación">
         <div class="tile-head"><span class="tile-icon">🚨</span><span class="tile-title">Urgencias</span></div>
-        <div class="tile-desc">Protocolos (trípticos · SEMFyC · hospitalarios) · Camas &amp; Ambulancias · Ventilación.</div>
       </button>
 
       <button type="button" class="tile" data-k="enfermeria" onclick="location.href='panel-medico.html?page=pageEnfermeria'" aria-label="Enfermería">
         <div class="tile-head"><span class="tile-icon">💉</span><span class="tile-title">Enfermería</span></div>
-        <div class="tile-desc">Protocolos de enfermería, técnicas, fármacos, consultas IA especializadas.</div>
       </button>
 
       <button type="button" class="tile" data-k="herramientas" onclick="location.href='panel-medico.html?page=pageScanIA'" aria-label="Herramientas">
         <div class="tile-head"><span class="tile-icon">🔬</span><span class="tile-title">Herramientas</span></div>
-        <div class="tile-desc">Scan (Rx, ECG, derma, eco), ECG integrado, Quiz NIH Chest X-Ray, FileHub.</div>
       </button>
 
       <button type="button" class="tile" data-k="buscas" onclick="location.href='panel-medico.html?page=pageTelefonos'" aria-label="Buscas">
         <div class="tile-head"><span class="tile-icon">📟</span><span class="tile-title">Buscas</span></div>
-        <div class="tile-desc">Directorio de buscas del Hospital Santa Lucía y centros del Área II.</div>
       </button>
 
       <button type="button" class="tile" data-k="docencia" onclick="location.href='docencia.html'" aria-label="Docencia">
         <div class="tile-head"><span class="tile-icon">🎓</span><span class="tile-title">Docencia</span></div>
-        <div class="tile-desc">Generador de casos clínicos tipo test + casos MIR por especialidad.</div>
       </button>
 
       <button type="button" class="tile" data-k="evidencia-ia" onclick="location.href='evidencia-ia.html'" aria-label="EvidenciaIA">
         <div class="tile-head"><span class="tile-icon">🔬</span><span class="tile-title">EvidenciaIA</span></div>
-        <div class="tile-desc">Búsqueda bibliográfica clínica con síntesis IA y citas verificadas. PubMed · Europe PMC · AEMPS · sesgo europeo.</div>
       </button>
 
     </div>
