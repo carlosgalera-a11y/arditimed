@@ -1,7 +1,29 @@
-User-agent: *
-Allow: /
+# ═══════════════════════════════════════════════════════════════
+# robots.txt · Cartagenaeste · Área II Cartagena
+# ═══════════════════════════════════════════════════════════════
+# Política de indexación restrictiva: solo se permite el landing y
+# páginas estrictamente públicas (aviso legal, privacidad). Todo el
+# contenido formativo, paneles, vademécum y herramientas IA quedan
+# fuera del alcance de buscadores.
+#
+# Refuerzo adicional: el HTML de cada página privada lleva la meta
+# robots="noindex,nofollow" + Cartagenaeste.protect (cliente).
+# ═══════════════════════════════════════════════════════════════
 
-# No indexar paneles privados / endpoints admin
+User-agent: *
+Allow: /$
+Allow: /index.html
+Allow: /aviso-legal.html
+Allow: /privacidad.html
+Allow: /about.html
+Allow: /financiacion.html
+Allow: /acreditaciones.html
+Allow: /transparencia.html
+Allow: /status.html
+Allow: /security.txt
+Allow: /.well-known/
+
+# Bloqueo general: paneles, herramientas y contenido formativo protegido.
 Disallow: /admin-dashboard.html
 Disallow: /panel-medico.html
 Disallow: /notebook-local.html
@@ -16,5 +38,74 @@ Disallow: /triaje-ficha.html
 Disallow: /preview-claude-design.html
 Disallow: /embed-google-sites.html
 Disallow: /embed.html
+Disallow: /profesionales.html
+Disallow: /evidencia-ia.html
+Disallow: /vademecum.html
+Disallow: /centros-salud.html
+Disallow: /docencia.html
+Disallow: /camas-y-ambulancias.html
+Disallow: /casos-clinicos.html
+Disallow: /calculadoras.html
+Disallow: /consejos-salud.html
+Disallow: /fichas-consulta-rapida.html
+Disallow: /protocolos-atencion.html
+Disallow: /protocolos-nuevas-especialidades.html
+Disallow: /fuentes-recursos.html
+Disallow: /evidencia-help.html
+Disallow: /evidencia-shared.html
+Disallow: /chatbot-medicacion.html
+Disallow: /mis-cifras.html
+Disallow: /docs/
+
+# Bloqueo de assets para evitar scraping de imágenes/JS sensibles.
+Disallow: /vademecum-data.js
+Disallow: /vademecum-urgencias-drugs.js
+Disallow: /vademecum-protocolos-urgencias.js
+Disallow: /visados-ai.js
+Disallow: /content-protection.js
+Disallow: /protocolos/
+
+# Bloqueo explícito de bots agresivos / IA scrapers conocidos.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
 
 Sitemap: https://area2cartagena.es/sitemap.xml

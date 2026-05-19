@@ -490,6 +490,20 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // ══ Audit de protección de contenido ═══════════════════════════
+    // content-protection.js loga aquí los intentos de copia, impresión,
+    // apertura de DevTools, etc. Cualquier usuario autenticado puede
+    // crear (no actualizar/borrar). Solo admin lee, para forense.
+    match /protect_audit/{logId} {
+      allow read: if isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() <= 80
+        && request.resource.data.url is string
+        && request.resource.data.url.size() <= 500;
+      allow update, delete: if false;
+    }
+
     // ══ DENY BY DEFAULT ════════════════════════════════════════════
     match /{document=**} {
       allow read, write: if false;
