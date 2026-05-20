@@ -608,9 +608,26 @@ main.s2-main{max-width:none !important;width:100% !important;padding:0 !importan
 .tb-user .tb-logout{background:rgba(6,78,59,.08);color:var(--s2-primary);border:0}
 .tb-user .tb-logout:hover{background:rgba(6,78,59,.16)}
 
-/* Botones role-based conservan sus gradientes vivos (visibles tanto
-   en oscuro como en claro). Solo ajustamos el contraste del texto. */
-.tbn-guardia,.tbn-propose,.tbn-mod,.tbn-sug,.tbn-admin{color:#fff;border-color:transparent}
+/* Botones role-based: re-aplicamos sus gradientes con !important porque
+   nuestro .tb-btn (fondo blanco translúcido) los estaba pisando. Texto
+   blanco peso 700 + text-shadow sutil para legibilidad WCAG AA sobre
+   cualquier gradiente. */
+.tbn-propose{background:linear-gradient(135deg,#0066cc,#003d7a) !important}
+.tbn-mod{background:linear-gradient(135deg,#7c3aed,#5b21b6) !important}
+.tbn-sug{background:linear-gradient(135deg,#d97706,#92400e) !important}
+.tbn-admin{background:linear-gradient(135deg,#ef4444,#b91c1c) !important}
+.tbn-propose,.tbn-mod,.tbn-sug,.tbn-admin{
+  color:#fff !important;
+  border:0 !important;
+  font-weight:700 !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.40);
+  box-shadow:0 3px 8px rgba(0,0,0,.18);
+}
+.tbn-propose span,.tbn-mod span,.tbn-sug span,.tbn-admin span{color:#fff !important}
+.tbn-propose:hover{background:linear-gradient(135deg,#0052a3,#002a5c) !important}
+.tbn-mod:hover{background:linear-gradient(135deg,#6d28d9,#4c1d95) !important}
+.tbn-sug:hover{background:linear-gradient(135deg,#b45309,#78350f) !important}
+.tbn-admin:hover{background:linear-gradient(135deg,#dc2626,#991b1b) !important}
 
 @media(max-width:640px){
   .topbar{padding:10px 14px}
@@ -750,7 +767,6 @@ main.s2-main{max-width:none !important;width:100% !important;padding:0 !importan
         <span id="tbName">—</span>
         <button class="tb-logout" onclick="signOut()">Salir</button>
       </div>
-      <button class="tb-btn tbn-guardia tbn-hidden" id="tbGuardia" onclick="location.href='panel-medico.html?action=mi-guardia'">📋 <span>Mi Guardia</span></button>
       <button class="tb-btn tbn-propose tbn-hidden" id="tbPropose" onclick="location.href='panel-medico.html?action=propose'">📤 <span>Proponer contenido</span></button>
       <button class="tb-btn tbn-mod tbn-hidden" id="tbMod" onclick="location.href='panel-medico.html?action=moderate'">🛡️ <span>Moderación</span><span class="tb-badge" id="tbModCount" style="display:none"></span></button>
       <button class="tb-btn tbn-sug tbn-hidden" id="tbSug" onclick="location.href='panel-medico.html?action=sugerencias'">💡 <span>Sugerencias</span></button>
@@ -896,7 +912,6 @@ main.s2-main{max-width:none !important;width:100% !important;padding:0 !importan
         document.getElementById('tbName').textContent = u.displayName || u.email || 'Usuario';
         document.getElementById('tbAvatar').textContent = (u.displayName || u.email || '?').charAt(0).toUpperCase();
         // Mostrar botones post-login
-        document.getElementById('tbGuardia').classList.remove('tbn-hidden');
         document.getElementById('tbPropose').classList.remove('tbn-hidden');
         document.getElementById('tbSug').classList.remove('tbn-hidden');
         // Botón Admin · estricto: solo la cuenta personal del autor lo ve.
@@ -916,7 +931,7 @@ main.s2-main{max-width:none !important;width:100% !important;padding:0 !importan
       } else {
         logBtn.style.display = 'inline-flex';
         userArea.style.display = 'none';
-        ['tbGuardia','tbPropose','tbSug','tbMod','tbAdmin'].forEach(function(id){
+        ['tbPropose','tbSug','tbMod','tbAdmin'].forEach(function(id){
           var el = document.getElementById(id);
           if(el) el.classList.add('tbn-hidden');
         });
