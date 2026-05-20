@@ -32,6 +32,20 @@ service cloud.firestore {
         && !text.matches('.*[0-9]{8}[A-HJ-NP-TV-Zа-я].*')
         && !text.matches('.*[XYZ][0-9]{7}[A-HJ-NP-TV-Z].*');
     }
+    // Profesional verificado: el usuario completó el modal de número de
+    // colegiado en /profesionales.html, que escribió users/{uid}.colegiado.
+    // Admin/moderadores siempre pasan (no necesitan rellenar el modal).
+    // Coste: 1 lectura adicional por write gateada. Aceptable a la escala
+    // del proyecto (10s-100s de usuarios). Si la escala crece, migrar a
+    // custom claim (Cloud Function setUserRole) y leer request.auth.token.colegiado.
+    function hasColegiado() {
+      return isAdmin() || canModerate() || (
+        signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('colegiado', '') is string
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('colegiado', '').size() >= 4
+      );
+    }
     // ══ Usuarios ════════════════════════════════════════════════════
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
@@ -44,13 +58,17 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       // Casos docentes: DNI/NIE bloqueado, iniciales <= 4.
+      // Requiere número de colegiado verificado (modal en
+      // /profesionales.html → users/{uid}.colegiado). Admin bypass.
       match /cases/{cid} {
         allow read: if isOwner(uid) || isAdmin();
         allow create: if isOwner(uid)
+          && hasColegiado()
           && request.resource.data.initials is string
           && request.resource.data.initials.size() <= 4
           && noDni(request.resource.data.get('notes', ''));
         allow update: if isOwner(uid)
+          && hasColegiado()
           && noDni(request.resource.data.get('notes', ''));
         allow delete: if isOwner(uid) || isAdmin();
       }
@@ -121,27 +139,29 @@ service cloud.firestore {
 
     // ══ Informes IA — cada usuario CRUD de los suyos ═══════════════
     // El admin puede LEER (no escribir) para conteos/auditoría en el panel.
+    // Crear/actualizar requiere número de colegiado verificado.
     match /informes_ia/{docId} {
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow create: if hasColegiado() && request.resource.data.uid == request.auth.uid;
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
-      allow update: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if hasColegiado() && resource.data.uid == request.auth.uid;
     }
 
     // ══ Per-user docs donde el docId == uid ════════════════════════
     // Admin tiene LEctura para auditoría/conteos del panel; escritura sigue
     // siendo exclusiva del dueño (privacidad por defecto).
+    // Write requiere número de colegiado verificado (gating contenido IA).
     match /mis_plantillas/{docId} {
       allow read: if signedIn() && (docId == request.auth.uid || isAdmin());
-      allow write: if signedIn() && docId == request.auth.uid;
+      allow write: if hasColegiado() && docId == request.auth.uid;
     }
     match /mis_notebooks/{docId} {
       allow read: if signedIn() && (docId == request.auth.uid || isAdmin());
-      allow write: if signedIn() && docId == request.auth.uid;
+      allow write: if hasColegiado() && docId == request.auth.uid;
     }
     match /megacuaderno_backups/{docId} {
       allow read: if signedIn() && (docId == request.auth.uid || isAdmin());
-      allow write: if signedIn() && docId == request.auth.uid;
+      allow write: if hasColegiado() && docId == request.auth.uid;
     }
     // Boletín diario agregado por el cron `megaCuadernoDailyDigest`.
     // Lectura abierta a profesionales autenticados (lo muestra Hub Pro).
@@ -156,18 +176,21 @@ service cloud.firestore {
     // ══ Scan uploads ═══════════════════════════════════════════════
     // Admin tiene LECTURA para conteos/auditoría panel; escritura/borrado
     // siguen siendo exclusivas del dueño.
+    // Crear requiere número de colegiado verificado.
     match /scan_uploads/{docId} {
-      allow create: if signedIn();
+      allow create: if hasColegiado();
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
       allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
     // ══ Guardia pacientes (CRUD propio) ════════════════════════════
     // Admin tiene LECTURA para conteos/auditoría panel.
+    // Crear/actualizar requiere número de colegiado verificado.
     match /guardia_pacientes/{docId} {
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow create: if hasColegiado() && request.resource.data.uid == request.auth.uid;
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if hasColegiado() && resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
     // ══ Triajes (QR) ═══════════════════════════════════════════════
@@ -179,14 +202,14 @@ service cloud.firestore {
       allow update: if isAdmin();
     }
 
-    // ══ Sugerencias: crear cualquier auth, leer moderador+ ═════════
+    // ══ Sugerencias: crear profesional verificado, leer moderador+ ═
     match /sugerencias/{docId} {
-      allow create: if signedIn();
+      allow create: if hasColegiado();
       allow read: if canModerate();
       allow update, delete: if canModerate();
     }
     match /propuestas_contenido/{docId} {
-      allow create: if signedIn();
+      allow create: if hasColegiado();
       allow read: if signedIn();
       // Moderador/admin pueden cambiar estado y borrar propuestas.
       allow update: if canModerate();
@@ -217,8 +240,10 @@ service cloud.firestore {
       allow read: if signedIn();
       allow write: if isAdmin();
     }
+    // AI audit log: cliente crea entries cuando llama a askAi, solo admin
+    // lee. Crear requiere número de colegiado verificado.
     match /ai_audit_log/{docId} {
-      allow create: if signedIn();
+      allow create: if hasColegiado();
       allow read: if isAdmin();
       allow update, delete: if false;
     }
