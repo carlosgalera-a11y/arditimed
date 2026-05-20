@@ -56,6 +56,23 @@
     } catch(e) { return false; }
   }
 
+  // Detecta el dominio donde se está sirviendo la app para poder
+  // distinguir en GA4 entre las 2 URLs de producción:
+  //   · area2cartagena.es           → host_label: 'area2'
+  //   · carlosgalera-a11y.github.io → host_label: 'github'
+  //   · localhost / 127.* / file:    → host_label: 'dev'
+  //   · cualquier otro              → host_label: 'other'
+  // Permite segmentar en GA4 → Informes → Crear segmento → host_label.
+  function _hostLabel(){
+    try{
+      var h = (location.hostname || '').toLowerCase();
+      if(h.indexOf('area2cartagena') >= 0) return 'area2';
+      if(h.indexOf('github.io') >= 0) return 'github';
+      if(h === 'localhost' || h.indexOf('127.') === 0 || h === '' ) return 'dev';
+      return 'other';
+    } catch(e){ return 'unknown'; }
+  }
+
   function _activateGA(){
     if (window.__cartGaLoaded) return;
     var s = document.createElement('script');
@@ -64,11 +81,19 @@
     document.head.appendChild(s);
     window.__cartGaLoaded = true;
     gtag('js', new Date());
+    // host_label + host_full van en cada hit GA4 como user_property +
+    // event-scoped param, lo que permite filtros del tipo
+    // "host_label = github" en cualquier exploración.
     gtag('config', GA_ID, {
       page_title: document.title || 'Cartagenaeste',
       cookie_flags: 'SameSite=None;Secure',
-      anonymize_ip: true
+      anonymize_ip: true,
+      // Custom params siempre presentes (también en el page_view automático)
+      host_label: _hostLabel(),
+      host_full: (location.hostname || 'unknown').substring(0, 60)
     });
+    // Set como user_property (persistente entre sesiones del mismo cliente)
+    try { gtag('set', 'user_properties', { host_label: _hostLabel() }); } catch(e){}
     window.cartAnalyticsConfigured = true;
   }
 
@@ -99,6 +124,8 @@
   // Añade rol de usuario (detectado del email) y centroId activo.
   function enrich(params){
     var p = Object.assign({}, params || {});
+    // host_label en cada evento — permite segmentar github.io vs area2.
+    if(!p.host_label) p.host_label = _hostLabel();
     try{
       ['utm_source','utm_medium','utm_campaign'].forEach(function(k){
         var v = sessionStorage.getItem('cart_' + k);
