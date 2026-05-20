@@ -584,4 +584,150 @@ Con columnas: `fecha | descripción | categorías datos | nº afectados | riesgo
 
 ---
 
+## 12 · Rollback de producción (procedimiento exacto)
+
+> Objetivo: revertir cualquier despliegue defectuoso en **< 5 minutos** sin pérdida de datos.
+
+Cada componente tiene su propio mecanismo de rollback. Ejecuta el correspondiente según qué se rompió.
+
+### 12.1 · Frontend (área2cartagena.es) — bug visual o JS roto
+
+GitHub Pages despliega automáticamente cada push a `main` del repo mirror `area2cartagena`. Para revertir el último cambio:
+
+```bash
+cd /Users/carlos/cartagenaestewebappSOLIDA
+git fetch origin main
+git log --oneline -5            # Localiza el SHA bueno previo al despliegue malo
+git revert --no-edit <SHA_MALO> # Crea un commit que revierte
+git push origin main
+git push area2 origin/main:main # Sincroniza el mirror público
+```
+
+Comprobar que Pages rebuildea:
+
+```bash
+until [ "$(gh api repos/carlosgalera-a11y/area2cartagena/pages/builds/latest --jq .status 2>/dev/null)" = "built" ]; do echo "waiting…"; sleep 8; done
+curl -sI "https://area2cartagena.es/" | grep -i last-modified
+```
+
+Si el bug afecta a un único archivo, alternativa más rápida (commit puntual):
+
+```bash
+git checkout <SHA_BUENO> -- ruta/al/archivo.html
+git commit -m "revert: archivo.html a versión <SHA_BUENO>"
+git push origin main && git push area2 origin/main:main
+```
+
+### 12.2 · Cloud Functions (askAi, evidenciaSearch, evidenciaChat, etc.)
+
+Firebase mantiene la versión anterior accesible vía la consola, pero la forma scriptada es **redeployar el commit anterior**:
+
+```bash
+git stash                              # Si tienes cambios locales sin commit
+git checkout <SHA_BUENO_PRE_DEPLOY>
+firebase deploy --only functions:<NombreFuncion> --project docenciacartagenaeste
+git checkout main && git stash pop      # Restaurar
+```
+
+Ejemplo concreto: revertir solo `askAi` al SHA `c6a8ad2`:
+
+```bash
+git checkout c6a8ad2 -- functions/src/askAi.ts functions/src/routing.ts
+cd functions && npm run build && cd ..
+firebase deploy --only functions:askAi --project docenciacartagenaeste
+# Si todo OK:
+git checkout main -- functions/src/askAi.ts functions/src/routing.ts
+```
+
+### 12.3 · Reglas Firestore / Storage
+
+Si una nueva regla rompe accesos legítimos:
+
+```bash
+git checkout <SHA_BUENO> -- firestore.rules
+firebase deploy --only firestore:rules --project docenciacartagenaeste
+
+# Misma operación para storage:
+git checkout <SHA_BUENO> -- storage.rules
+firebase deploy --only storage --project docenciacartagenaeste
+
+# Cuando se valide la situación, restaurar:
+git checkout main -- firestore.rules storage.rules
+```
+
+> ⚠️ Reglas de Firestore se aplican en **30 segundos**. No requieren App Restart.
+
+### 12.4 · Service Worker (PWA cache)
+
+Si una versión del SW deja a usuarios atrapados con HTML viejo, hay que **bumpear la versión del CACHE_NAME** en `sw.js`:
+
+```bash
+# Localizar la línea: const CACHE_NAME = 'area2-vNNN';
+# Incrementar NNN, commitear, push.
+# El navegador detecta el SW nuevo, invalida cache y descarga lo nuevo.
+git commit -am "fix(sw): bump CACHE_NAME para invalidar cache cliente"
+git push origin main && git push area2 origin/main:main
+```
+
+Como **último recurso** (situación crítica), publica un SW que se desregistre solo:
+
+```js
+// sw.js completo (kill-switch):
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', async () => {
+  const keys = await caches.keys();
+  await Promise.all(keys.map(k => caches.delete(k)));
+  await self.registration.unregister();
+  const clients = await self.clients.matchAll();
+  clients.forEach(c => c.navigate(c.url));
+});
+```
+
+Empuja eso a `sw.js`, despliega, y los usuarios volverán al fetching directo.
+
+### 12.5 · Secret de Cloud Function (rotar API key comprometida)
+
+Si una API key se filtra (p. ej. en un PR público antes de merge), rótala YA:
+
+```bash
+# 1. Revoca la key vieja en el panel del proveedor (Gemini, DeepSeek, etc.).
+# 2. Crea key nueva y guárdala en Secret Manager:
+firebase functions:secrets:set GEMINI_API_KEY --project docenciacartagenaeste
+# 3. Redeploya las funciones que la consumen:
+firebase deploy --only functions:askAi,functions:embedQuery --project docenciacartagenaeste
+# 4. Verifica:
+firebase functions:secrets:access GEMINI_API_KEY --project docenciacartagenaeste | head -c 20
+```
+
+### 12.6 · Cuenta admin comprometida
+
+Sospecha de cuenta admin (`carlosgalera2roman@gmail.com`, `ramongalera22@gmail.com`) comprometida:
+
+```bash
+# 1. Firebase Console → Authentication → revocar tokens de la cuenta.
+#    Programáticamente con Admin SDK:
+node -e "require('firebase-admin').initializeApp(); admin.auth().revokeRefreshTokens('<UID>');"
+
+# 2. Saca el email de moderadores temporalmente:
+#    Firestore Console → moderadores → email comprometido → activo: false.
+
+# 3. Cambia contraseñas: Google, Microsoft, GitHub.
+# 4. Audita /protect_audit y /auditLogs para detectar accesos sospechosos.
+```
+
+### 12.7 · Checklist post-rollback
+
+Después de cualquier rollback verifica:
+
+- [ ] `area2cartagena.es/` carga 200.
+- [ ] Login Google/Microsoft funciona end-to-end.
+- [ ] `askAi` responde a una consulta clínica de prueba.
+- [ ] Console del navegador en panel-medico: sin errores rojos.
+- [ ] `protect_audit` y `auditLogs` siguen recibiendo eventos.
+- [ ] Sentry no reporta una avalancha de errores nuevos.
+
+Si todo OK → commit explicativo en `docs/post-mortems/YYYY-MM-DD-<incidente>.md` con timeline + root cause.
+
+---
+
 _Mantener este runbook al día cada vez que se toque functions o Firestore. Referenciar desde CLAUDE.md._
