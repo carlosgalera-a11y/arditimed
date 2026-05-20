@@ -549,13 +549,15 @@ footer a:hover{color:#ffe2a3;border-bottom-color:currentColor}
    Rediseño landing v2 (Stitch · "Inicio - QR en Barra Inferior")
    Hero a pantalla completa con imagen + overlay degradado.
    Botones grandes Pacientes / Profesionales. Banner docente.
-   Barra inferior fija con QRs. Convive con el resto del CSS legacy.
+   FAB flotante "Acceso móvil/QR" abajo-dcha que abre modal con los
+   2 QRs grandes (variante "QR Bajo Demanda" — sin barra fija para
+   liberar espacio y que el hero ocupe TODA la pantalla).
    ═══════════════════════════════════════════════════════════════════ */
-body{padding-bottom:90px}            /* hueco para la barra QR fija */
-@media(max-width:640px){body{padding-bottom:128px}}
+/* SIN padding-bottom: el contenido ocupa toda la pantalla. */
+html,body{min-height:100vh}
 
 .s2-main{min-height:calc(100vh - 80px);display:flex;flex-direction:column;background:var(--s2-surface)}
-.s2-hero{position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column;padding:120px 24px 64px;align-items:center}
+.s2-hero{position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column;padding:120px 24px 48px;align-items:center;min-height:calc(100vh - 80px)}
 .s2-hero-bg{position:absolute;inset:0;z-index:0}
 .s2-hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center}
 .s2-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(245,251,247,.42) 0%,rgba(245,251,247,.95) 78%,rgba(245,251,247,1) 100%)}
@@ -588,30 +590,43 @@ body{padding-bottom:90px}            /* hueco para la barra QR fija */
 .s2-footer nav a{font-size:.7rem;color:rgba(64,73,68,.65);text-decoration:none;text-transform:uppercase;letter-spacing:.16em;font-weight:600;transition:color .2s}
 .s2-footer nav a:hover{color:var(--s2-primary)}
 
-/* Barra inferior fija con 2 QRs */
-.s2-bottom{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(245,251,247,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(191,201,195,.35);padding:12px 24px}
-.s2-bottom-inner{max-width:var(--s2-container-max);margin:0 auto;display:flex;justify-content:center;align-items:center;gap:48px;flex-wrap:wrap}
-.s2-qr-item{display:flex;align-items:center;gap:12px}
-.s2-qr-box{width:52px;height:52px;background:var(--s2-clinical-white);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:3px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.s2-qr-box img{width:100%;height:100%;object-fit:contain;display:block}
-.s2-qr-meta{display:flex;flex-direction:column;line-height:1.2}
-.s2-qr-meta .lbl{font-size:.62rem;font-weight:700;color:var(--s2-primary);text-transform:uppercase;letter-spacing:.18em}
-.s2-qr-meta .val{font-size:.7rem;color:var(--s2-on-surface-variant);font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.s2-qr-meta .val a{color:inherit;text-decoration:none}
-.s2-qr-meta .val a:hover{color:var(--s2-primary);text-decoration:underline}
+/* FAB flotante "Acceso móvil / QR" */
+.s2-fab{position:fixed;right:24px;bottom:24px;z-index:60;display:inline-flex;align-items:center;gap:10px;padding:14px 22px;background:var(--s2-primary);color:#fff;border:0;border-radius:999px;font-family:var(--f-body);font-weight:700;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 28px -8px rgba(6,78,59,.55),0 4px 8px -2px rgba(0,0,0,.12);transition:transform .25s ease,box-shadow .25s ease,background .25s ease;line-height:1}
+.s2-fab:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 18px 36px -8px rgba(6,78,59,.7);background:#0a6b53}
+.s2-fab:active{transform:translateY(0) scale(.98)}
+.s2-fab svg{width:20px;height:20px;flex-shrink:0}
+
+/* Modal fullscreen con los 2 QRs grandes */
+.s2-qrmodal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;padding:24px;background:rgba(6,20,13,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);animation:s2FadeIn .3s ease}
+.s2-qrmodal.show{display:flex}
+@keyframes s2FadeIn{from{opacity:0}to{opacity:1}}
+.s2-qrcard{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(191,201,195,.30);border-radius:18px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px;width:200px;box-shadow:0 24px 56px -10px rgba(0,0,0,.35)}
+.s2-qrcard:hover{border-color:rgba(6,78,59,.30)}
+.s2-qrcard-head{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.s2-qrcard-head svg{width:22px;height:22px;color:rgba(6,78,59,.7)}
+.s2-qrcard-head .lbl{font-size:.66rem;font-weight:800;color:var(--s2-primary);letter-spacing:.20em;text-transform:uppercase}
+.s2-qrcard-img{width:100%;aspect-ratio:1;background:#fff;border-radius:10px;border:1px solid rgba(191,201,195,.20);box-shadow:inset 0 1px 2px rgba(0,0,0,.04);padding:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.s2-qrcard-img img{width:100%;height:100%;object-fit:contain;display:block}
+.s2-qrcard-cap{font-size:.72rem;color:var(--s2-on-surface-variant);font-weight:500;text-align:center;line-height:1.3;word-break:break-word}
+.s2-qrcard-cap a{color:inherit;text-decoration:none}
+.s2-qrcard-cap a:hover{color:var(--s2-primary);text-decoration:underline}
+.s2-qrmodal-close{position:absolute;top:24px;right:24px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s ease,transform .2s ease}
+.s2-qrmodal-close:hover{background:rgba(255,255,255,.28);transform:scale(1.08)}
+.s2-qrmodal-close svg{width:22px;height:22px}
 
 @media(max-width:640px){
-  .s2-hero{padding:96px 18px 32px}
+  .s2-hero{padding:96px 18px 32px;min-height:calc(100vh - 70px)}
   .s2-hero-inner{gap:32px}
   .s2-cta{min-width:0;width:100%;padding:18px 22px;font-size:.78rem}
   .s2-cta-row{flex-direction:column;width:100%;max-width:340px;gap:12px}
   .s2-warning{padding:20px 18px}
   .s2-warning p{font-size:.74rem;line-height:1.65}
   .s2-footer{padding:32px 18px 18px}
-  .s2-bottom{padding:10px 16px}
-  .s2-bottom-inner{gap:18px}
-  .s2-qr-box{width:44px;height:44px}
-  .s2-qr-meta .val{max-width:120px}
+  .s2-fab{right:16px;bottom:16px;padding:14px;border-radius:50%}
+  .s2-fab .s2-fab-label{display:none}
+  .s2-fab svg{width:22px;height:22px}
+  .s2-qrcard{width:170px;padding:18px}
+  .s2-qrmodal{gap:18px;padding:18px}
 }
 </style>
 </head>
@@ -689,25 +704,48 @@ body{padding-bottom:90px}            /* hueco para la barra QR fija */
     </section>
   </main>
 
-  <!-- Barra inferior fija con 2 QRs -->
-  <div class="s2-bottom" aria-label="Acceso móvil y portal docente">
-    <div class="s2-bottom-inner">
-      <div class="s2-qr-item">
-        <div class="s2-qr-box"><img src="qr-area2cartagena.png" alt="QR a area2cartagena.es" loading="lazy"></div>
-        <div class="s2-qr-meta">
-          <span class="lbl">App Móvil</span>
-          <span class="val"><a href="https://area2cartagena.es" target="_blank" rel="noopener">area2cartagena.es</a></span>
-        </div>
+  <!-- FAB flotante "Acceso móvil / QR" — variante "QR Bajo Demanda" -->
+  <button type="button" class="s2-fab" onclick="document.getElementById('s2QrModal').classList.add('show')" aria-label="Mostrar códigos QR de acceso móvil">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 18h3v3M18 14h3v0"/>
+    </svg>
+    <span class="s2-fab-label">Acceso móvil / QR</span>
+  </button>
+
+  <!-- Modal QR (oculto por defecto, se muestra al pulsar FAB) -->
+  <div class="s2-qrmodal" id="s2QrModal" role="dialog" aria-modal="true" aria-label="Códigos QR de acceso" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="s2-qrcard">
+      <div class="s2-qrcard-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        <span class="lbl">Escanea</span>
       </div>
-      <div class="s2-qr-item">
-        <div class="s2-qr-box"><img src="qr-area2cartagena.png" alt="QR a portal docente" loading="lazy"></div>
-        <div class="s2-qr-meta">
-          <span class="lbl">Portal Docente</span>
-          <span class="val"><a href="https://sites.google.com/view/area2cartagena" target="_blank" rel="noopener">Google Sites</a></span>
-        </div>
-      </div>
+      <div class="s2-qrcard-img"><img src="qr-area2cartagena.png" alt="QR a area2cartagena.es"></div>
+      <div class="s2-qrcard-cap"><a href="https://area2cartagena.es" target="_blank" rel="noopener">area2cartagena.es</a></div>
     </div>
+    <div class="s2-qrcard">
+      <div class="s2-qrcard-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span class="lbl">Portal Google</span>
+      </div>
+      <div class="s2-qrcard-img"><img src="qr-area2cartagena.png" alt="QR al portal docente"></div>
+      <div class="s2-qrcard-cap"><a href="https://sites.google.com/view/area2cartagena" target="_blank" rel="noopener">sites.google.com/view/area2cartagena</a></div>
+    </div>
+    <button type="button" class="s2-qrmodal-close" onclick="document.getElementById('s2QrModal').classList.remove('show')" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </div>
+  <script>
+    // ESC cierra el modal QR
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        var m = document.getElementById('s2QrModal');
+        if(m && m.classList.contains('show')) m.classList.remove('show');
+      }
+    });
+  </script>
 
   <!-- Modal login -->
   <div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
