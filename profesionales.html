@@ -232,6 +232,48 @@ footer a:hover{color:#ffd54f}
       </button>
     </div>
 
+    <!-- ═══ Verificación de número de colegiado (1 vez por usuario) ═══ -->
+    <div id="colegiadoGate" class="login-gate" style="display:none;max-width:520px">
+      <h2 style="color:#fff;font-family:'Playfair Display',serif;font-size:1.25rem;margin-bottom:10px">🩺 Verificación profesional</h2>
+      <p style="color:#cbd5e1;font-size:.9rem;line-height:1.55;margin-bottom:18px">
+        Para acceder a los recursos clínicos necesitamos confirmar tu condición de profesional sanitario.
+        Esta información queda asociada a tu cuenta y <strong>no la volverás a pedir</strong>.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:12px;text-align:left">
+        <label style="display:block;color:#cbd5e1;font-size:.82rem;font-weight:600">
+          Colegio profesional
+          <select id="colegiadoTipo" style="display:block;width:100%;margin-top:6px;padding:11px 14px;background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.20);border-radius:10px;color:#fff;font-family:inherit;font-size:.92rem">
+            <option value="">— Selecciona —</option>
+            <option value="medicina">⚕️ Colegio Oficial de Médicos</option>
+            <option value="enfermeria">💉 Colegio Oficial de Enfermería</option>
+            <option value="farmacia">💊 Colegio Oficial de Farmacéuticos</option>
+            <option value="fisioterapia">🤲 Colegio Oficial de Fisioterapeutas</option>
+            <option value="psicologia">🧠 Colegio Oficial de Psicólogos</option>
+            <option value="podologia">🦶 Colegio Oficial de Podólogos</option>
+            <option value="logopedia">🗣️ Colegio Oficial de Logopedas</option>
+            <option value="dietistas">🥗 Colegio Oficial de Dietistas-Nutricionistas</option>
+            <option value="otro">📋 Otro colegio profesional sanitario</option>
+          </select>
+        </label>
+        <label style="display:block;color:#cbd5e1;font-size:.82rem;font-weight:600">
+          Número de colegiado
+          <input type="text" id="colegiadoNum" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Ej: 303012345" style="display:block;width:100%;margin-top:6px;padding:11px 14px;background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.20);border-radius:10px;color:#fff;font-family:inherit;font-size:.92rem;letter-spacing:.5px"
+            onkeydown="if(event.key==='Enter')submitColegiado()"
+            oninput="this.setCustomValidity('')">
+          <span id="colegiadoHint" style="display:block;margin-top:6px;font-size:.74rem;color:#94a3b8;line-height:1.4">
+            Formato libre — 4 a 20 caracteres, números (y letras/guiones si tu colegio los usa).
+          </span>
+        </label>
+        <button onclick="submitColegiado()" style="margin-top:6px;padding:13px 22px;background:linear-gradient(135deg,#0d9488,#0f766e);border:0;border-radius:10px;color:#fff;font-family:inherit;font-weight:800;cursor:pointer;font-size:.95rem;letter-spacing:.3px">
+          Acceder a los recursos profesionales
+        </button>
+        <div id="colegiadoMsg" style="min-height:18px;font-size:.82rem;color:#fca5a5;text-align:center"></div>
+      </div>
+      <p style="margin-top:14px;font-size:.7rem;color:#94a3b8;line-height:1.5">
+        🔒 Tratamiento de datos · Tu número de colegiado se guarda asociado a tu correo electrónico únicamente para verificar tu condición profesional y trazar acceso a contenido formativo (base legal: interés legítimo profesional, art. 6.1.f RGPD). No se cede a terceros. Puedes solicitar su supresión escribiendo a <a href="mailto:carlosgalera2roman@gmail.com" style="color:#7dd3bb">carlosgalera2roman@gmail.com</a>.
+      </p>
+    </div>
+
     <div id="hub" class="tiles-grid" style="display:none">
       <button type="button" class="tile" data-k="ap" onclick="openAPMenu()" aria-haspopup="dialog" aria-label="Atención Primaria — abre menú con Protocolos AP y Centros de Salud">
         <div class="tile-head"><span class="tile-icon">🏘️</span><span class="tile-title">Atención Primaria</span></div>
@@ -358,9 +400,12 @@ footer a:hover{color:#ffd54f}
 
     auth.onAuthStateChanged(function(u){
       var toolbar = document.getElementById('proToolbar');
+      var colegiadoGate = document.getElementById('colegiadoGate');
       if(u){
         gate.style.display = 'none';
-        hub.style.display = 'grid';
+        // No mostrar hub aún — antes verificar colegiado.
+        hub.style.display = 'none';
+        if(colegiadoGate) colegiadoGate.style.display = 'none';
         if(toolbar) toolbar.style.display = 'flex';
         var ini = (u.displayName || u.email || '?').charAt(0).toUpperCase();
         var nm = u.displayName || u.email || 'Usuario';
@@ -370,13 +415,120 @@ footer a:hover{color:#ffd54f}
             '<span class="user-name">' + esc(nm) + '</span>' +
           '</span>';
         checkModeratorRole(u);
+        // Verifica si el usuario ya tiene número de colegiado registrado.
+        // Si lo tiene → muestra hub. Si no → muestra modal de captura.
+        checkColegiado(u);
       } else {
         gate.style.display = 'block';
         hub.style.display = 'none';
+        if(colegiadoGate) colegiadoGate.style.display = 'none';
         if(toolbar) toolbar.style.display = 'none';
         pill.innerHTML = '<a href="index.html" class="back-link">Inicio</a>';
       }
     });
+
+    // ─── Verificación de número de colegiado ────────────────────────
+    // Tras login, lee /users/{uid} y comprueba si tiene `colegiado`.
+    // Si lo tiene → muestra hub.
+    // Si NO → muestra modal de captura.
+    // Persistencia tras submit: /users/{uid}.{ colegiado, colegio,
+    // colegiadoSetAt }. Firestore rules ya permiten al usuario
+    // actualizar su propio doc (excepto role/csRoles).
+    var _colegiadoChecking = false;
+    function checkColegiado(u){
+      if(!u || _colegiadoChecking) return;
+      _colegiadoChecking = true;
+      var db;
+      try { db = firebase.firestore(); }
+      catch(e){
+        console.warn('[colegiado] Firestore no disponible, mostrando hub directamente.');
+        showHub();
+        _colegiadoChecking = false;
+        return;
+      }
+      db.collection('users').doc(u.uid).get().then(function(snap){
+        var data = snap.exists ? (snap.data() || {}) : {};
+        if(data.colegiado && String(data.colegiado).trim().length >= 4){
+          showHub();
+        } else {
+          showColegiadoGate();
+        }
+      }).catch(function(e){
+        // Si rules deniegan o falla, mostrar el gate por seguridad
+        // (preferir más fricción a fugar acceso).
+        console.warn('[colegiado] error leyendo users/{uid}:', e && e.message);
+        showColegiadoGate();
+      }).finally(function(){
+        _colegiadoChecking = false;
+      });
+    }
+
+    function showHub(){
+      var colegiadoGate = document.getElementById('colegiadoGate');
+      if(colegiadoGate) colegiadoGate.style.display = 'none';
+      hub.style.display = 'grid';
+    }
+
+    function showColegiadoGate(){
+      hub.style.display = 'none';
+      var cg = document.getElementById('colegiadoGate');
+      if(cg){
+        cg.style.display = 'block';
+        var inp = document.getElementById('colegiadoNum');
+        if(inp) setTimeout(function(){ try { inp.focus(); } catch(e){} }, 200);
+      }
+    }
+
+    function submitColegiado(){
+      var msg = document.getElementById('colegiadoMsg');
+      var tipoEl = document.getElementById('colegiadoTipo');
+      var numEl = document.getElementById('colegiadoNum');
+      var tipo = (tipoEl && tipoEl.value || '').trim();
+      var num = (numEl && numEl.value || '').trim().toUpperCase();
+      msg.textContent = '';
+      msg.style.color = '#fca5a5';
+
+      if(!tipo){
+        msg.textContent = '⚠️ Selecciona tu colegio profesional.';
+        return;
+      }
+      // Permite dígitos + opcional letras/guiones (algunos colegios usan).
+      if(!/^[A-Z0-9\-]{4,20}$/.test(num)){
+        msg.textContent = '⚠️ Número de colegiado inválido. 4 a 20 caracteres alfanuméricos.';
+        return;
+      }
+      var u = auth.currentUser;
+      if(!u){
+        msg.textContent = '⚠️ Sesión expirada. Recarga la página.';
+        return;
+      }
+      msg.style.color = '#86efac';
+      msg.textContent = '⏳ Guardando…';
+
+      try {
+        var db = firebase.firestore();
+        var FieldValue = firebase.firestore.FieldValue;
+        db.collection('users').doc(u.uid).set({
+          email: u.email || null,
+          displayName: u.displayName || null,
+          colegiado: num,
+          colegio: tipo,
+          colegiadoSetAt: FieldValue.serverTimestamp(),
+        }, { merge: true }).then(function(){
+          msg.style.color = '#86efac';
+          msg.textContent = '✅ Verificado. Accediendo…';
+          setTimeout(showHub, 400);
+        }).catch(function(e){
+          console.error('[colegiado] save error:', e);
+          msg.style.color = '#fca5a5';
+          msg.textContent = '❌ Error guardando: ' + ((e && e.message) || 'desconocido') + '. Intenta de nuevo.';
+        });
+      } catch(e){
+        msg.style.color = '#fca5a5';
+        msg.textContent = '❌ Firestore no disponible. Recarga la página.';
+      }
+    }
+    window.submitColegiado = submitColegiado;
 
     // Si el user es admin/superadmin (custom claim), muestra el botón Moderación con badge
     function checkModeratorRole(u){
