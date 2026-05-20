@@ -81,6 +81,7 @@
     footer{text-align:center;padding:24px 18px;color:var(--t3);font-size:.78rem}
     footer a{color:var(--primary);text-decoration:none}
   </style>
+<script src="analytics-config.js"></script>
 </head>
 <body>
 
@@ -606,7 +607,8 @@ document.getElementById('bpPrintBtn').addEventListener('click', function(){
   const list = document.getElementById('bpList').innerHTML;
   const stats = document.getElementById('bpStats').textContent;
   const w = window.open('', '_blank');
-  w.document.write('<html><head><title>Tensión arterial</title><style>body{font-family:Arial;padding:24px;color:#000}h1{font-size:18pt;border-bottom:2px solid #000;padding-bottom:6px}table{width:100%;border-collapse:collapse;font-size:11pt}th,td{padding:6px 8px;border:1px solid #999;text-align:left}th{background:#eee}.badge{padding:1px 6px;border:1px solid #999;border-radius:8px;font-size:9pt}@media print{button{display:none}}</style></head><body>');
+  w.document.write('<html><head><title>Tensión arterial</title><style>body{font-family:Arial;padding:24px;color:#000}h1{font-size:18pt;border-bottom:2px solid #000;padding-bottom:6px}table{width:100%;border-collapse:collapse;font-size:11pt}th,td{padding:6px 8px;border:1px solid #999;text-align:left}th{background:#eee}.badge{padding:1px 6px;border:1px solid #999;border-radius:8px;font-size:9pt}@media print{button{display:none}}</style><script src="analytics-config.js"></script>
+</head><body>');
   w.document.write('<h1>Mediciones de tensión arterial</h1>');
   w.document.write('<p>Paciente: '+esc((currentUser && currentUser.email) || '')+' · Generado: '+new Date().toLocaleString('es-ES')+'</p>');
   w.document.write('<p>'+esc(stats)+'</p>');
@@ -620,7 +622,8 @@ document.getElementById('gPrintBtn').addEventListener('click', function(){
   const list = document.getElementById('gList').innerHTML;
   const stats = document.getElementById('gStats').textContent;
   const w = window.open('', '_blank');
-  w.document.write('<html><head><title>Glucemia</title><style>body{font-family:Arial;padding:24px;color:#000}h1{font-size:18pt;border-bottom:2px solid #000;padding-bottom:6px}table{width:100%;border-collapse:collapse;font-size:11pt}th,td{padding:6px 8px;border:1px solid #999;text-align:left}th{background:#eee}.badge{padding:1px 6px;border:1px solid #999;border-radius:8px;font-size:9pt}@media print{button{display:none}}</style></head><body>');
+  w.document.write('<html><head><title>Glucemia</title><style>body{font-family:Arial;padding:24px;color:#000}h1{font-size:18pt;border-bottom:2px solid #000;padding-bottom:6px}table{width:100%;border-collapse:collapse;font-size:11pt}th,td{padding:6px 8px;border:1px solid #999;text-align:left}th{background:#eee}.badge{padding:1px 6px;border:1px solid #999;border-radius:8px;font-size:9pt}@media print{button{display:none}}</style><script src="analytics-config.js"></script>
+</head><body>');
   w.document.write('<h1>Mediciones de glucemia</h1>');
   w.document.write('<p>Paciente: '+esc((currentUser && currentUser.email) || '')+' · Generado: '+new Date().toLocaleString('es-ES')+'</p>');
   w.document.write('<p>'+esc(stats)+'</p>');
