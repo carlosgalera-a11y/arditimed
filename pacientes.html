@@ -344,6 +344,141 @@
         @media(max-width:420px){
             .section-header h2{font-size:1.3rem}
         }
+
+        /* ═══════════════════════════════════════════════════════════════
+           Rediseño Stitch · Pacientes — design system Clinical Precision
+           Header verde primary + hero gradiente + grid 4-col cards con
+           border-left de colores + sección Autotriaje destacada + mapa.
+           Convive con CSS legacy mediante prefijo .pa-*.
+           ═══════════════════════════════════════════════════════════════ */
+        :root{
+            --pa-primary:#003527;
+            --pa-primary-container:#064e3b;
+            --pa-on-primary-container:#80bea6;
+            --pa-tertiary-container:#004f33;
+            --pa-deep-forest:#06140D;
+            --pa-secondary:#7b5804;
+            --pa-secondary-fixed:#fdcd74;
+            --pa-on-secondary-container:#785601;
+            --pa-tertiary-fixed:#a5f3c9;
+            --pa-tertiary-fixed-dim:#8ad6ae;
+            --pa-primary-fixed:#b0f0d6;
+            --pa-primary-fixed-dim:#95d3ba;
+            --pa-secondary-fixed-dim:#eec068;
+            --pa-surface:#f5fbf7;
+            --pa-surface-container:#e9efeb;
+            --pa-surface-container-low:#eff5f1;
+            --pa-surface-container-high:#e3eae6;
+            --pa-surface-variant:#dee4e0;
+            --pa-on-surface:#171d1b;
+            --pa-on-surface-variant:#404944;
+            --pa-outline:#707974;
+            --pa-outline-variant:#bfc9c3;
+            --pa-clinical-white:#ffffff;
+            --pa-error:#ba1a1a;
+            --pa-error-container:#ffdad6;
+        }
+        body{background-color:var(--pa-surface);font-family:'Source Sans 3',-apple-system,sans-serif;color:var(--pa-on-surface)}
+        .pa-shadow{box-shadow:0 4px 20px rgba(6,78,59,.04)}
+
+        /* Header verde primary sticky */
+        nav[role="banner"]{display:none !important}  /* oculta nav legacy */
+        .pa-header{position:sticky;top:0;z-index:50;background:var(--pa-primary);box-shadow:0 1px 3px rgba(0,0,0,.10)}
+        .pa-header-inner{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 48px;max-width:1280px;margin:0 auto}
+        .pa-header-left{display:flex;align-items:center;gap:24px}
+        .pa-header-brand{font-family:'Playfair Display',serif;font-weight:700;font-size:1.5rem;color:var(--pa-secondary-fixed);letter-spacing:-.01em}
+        .pa-header-nav{display:none;align-items:center;gap:32px}
+        @media(min-width:768px){.pa-header-nav{display:flex}}
+        .pa-header-nav a{font-size:.86rem;font-weight:600;letter-spacing:.05em;color:rgba(255,255,255,.8);transition:color .2s}
+        .pa-header-nav a:hover{color:var(--pa-secondary-fixed)}
+        .pa-header-nav a.is-active{color:var(--pa-secondary-fixed);font-weight:700;border-bottom:2px solid var(--pa-secondary-fixed);padding-bottom:4px}
+        .pa-header-right{display:flex;align-items:center;gap:16px}
+        .pa-header-icon{background:transparent;border:0;color:rgba(255,255,255,.85);font-size:1.3rem;cursor:pointer;padding:4px;transition:opacity .2s}
+        .pa-header-icon:hover{opacity:1;color:#fff}
+        .pa-header-divider{height:24px;width:1px;background:rgba(255,255,255,.20)}
+        .pa-header-cta{display:none;align-items:center;gap:8px;padding:8px 22px;background:var(--pa-primary-container);color:#fff;border:0;border-radius:8px;font-family:inherit;font-weight:600;font-size:.86rem;cursor:pointer;transition:background .2s;text-decoration:none}
+        @media(min-width:768px){.pa-header-cta{display:inline-flex}}
+        .pa-header-cta:hover{background:var(--pa-tertiary-container)}
+
+        /* Hero gradiente verde */
+        .pa-hero{position:relative;background:linear-gradient(135deg,#003527 0%,#064e3b 100%);overflow:hidden;padding:96px 24px}
+        @media(min-width:768px){.pa-hero{padding:128px 48px}}
+        .pa-hero-blobs{position:absolute;inset:0;opacity:.10;pointer-events:none}
+        .pa-hero-blobs::before{content:"";position:absolute;top:0;right:0;width:384px;height:384px;background:var(--pa-primary-fixed);filter:blur(120px);border-radius:50%}
+        .pa-hero-blobs::after{content:"";position:absolute;bottom:0;left:0;width:500px;height:500px;background:var(--pa-tertiary-fixed);filter:blur(150px);border-radius:50%;opacity:.4}
+        .pa-hero-inner{max-width:1280px;margin:0 auto;position:relative;z-index:1}
+        .pa-hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--pa-secondary-fixed);font-weight:500;margin-bottom:24px}
+        .pa-hero-eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--pa-secondary-fixed-dim)}
+        .pa-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.02em;color:#fff;margin-bottom:24px;max-width:720px}
+        .pa-hero p{font-size:clamp(1rem,1.5vw,1.15rem);line-height:1.6;color:var(--pa-on-primary-container);max-width:680px;margin-bottom:40px}
+        .pa-hero-actions{display:flex;flex-wrap:wrap;gap:16px}
+        .pa-hero-btn{display:inline-flex;align-items:center;gap:10px;padding:13px 32px;border:0;border-radius:8px;font-family:inherit;font-weight:700;font-size:.86rem;cursor:pointer;transition:transform .2s,background .2s,color .2s;text-decoration:none}
+        .pa-hero-btn.primary{background:var(--pa-secondary-fixed);color:var(--pa-on-secondary-container)}
+        .pa-hero-btn.primary:hover{transform:scale(1.05)}
+        .pa-hero-btn.outline{background:transparent;color:var(--pa-on-primary-container);border:1px solid var(--pa-on-primary-container)}
+        .pa-hero-btn.outline:hover{background:#fff;color:var(--pa-primary)}
+
+        /* Wrapper content (sustituye al main legacy padding) */
+        main#main-content{max-width:none;padding:0;background:var(--pa-surface)}
+        .pa-content{max-width:1280px;margin:0 auto;padding:80px 24px}
+        @media(min-width:768px){.pa-content{padding:80px 48px}}
+
+        /* Cards grid (sustituye .cards-grid legacy) */
+        .pa-grid{display:grid;grid-template-columns:1fr;gap:24px}
+        @media(min-width:640px){.pa-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(min-width:1024px){.pa-grid{grid-template-columns:repeat(4,1fr)}}
+        .pa-grid > a, .pa-grid > button{transition:transform .3s ease,box-shadow .3s ease}
+        .pa-grid > a:hover, .pa-grid > button:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(6,78,59,.08)}
+        .pa-grid .card{display:flex;flex-direction:column;align-items:flex-start;gap:0;background:var(--pa-clinical-white);padding:32px;border-radius:12px;box-shadow:0 4px 20px rgba(6,78,59,.04);cursor:pointer;font-family:inherit;text-align:left;text-decoration:none;border:none;border-left:4px solid var(--pa-primary)}
+        .pa-grid .card[style*="border-left:4px solid #16a34a"]{border-left-color:var(--pa-primary)}
+        .pa-grid .card[style*="border-left:4px solid #2563eb"]{border-left-color:var(--pa-primary)}
+        .pa-grid .card[style*="border-left:4px solid #d4a853"]{border-left-color:var(--pa-secondary-fixed-dim)}
+        .pa-grid .card .card-icon{width:48px;height:48px;background:var(--pa-primary-fixed);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;font-size:1.6rem;color:var(--pa-primary)}
+        .pa-grid .card .card-text{display:flex;flex-direction:column;gap:6px;text-align:left;flex:1}
+        .pa-grid .card .card-text h3{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:500;color:var(--pa-primary);line-height:1.4;margin:0}
+        .pa-grid .card .card-text p{font-size:.95rem;line-height:1.55;color:var(--pa-on-surface-variant);margin:0}
+
+        /* Autotriaje destacado */
+        .pa-triage{margin-top:96px;background:var(--pa-clinical-white);border-radius:18px;box-shadow:0 4px 20px rgba(6,78,59,.04);border:1px solid var(--pa-outline-variant);overflow:hidden;display:flex;flex-direction:column}
+        @media(min-width:768px){.pa-triage{flex-direction:row}}
+        .pa-triage-left{background:var(--pa-surface-container);padding:48px;display:flex;flex-direction:column;justify-content:center}
+        @media(min-width:768px){.pa-triage-left{width:33.3%}}
+        .pa-triage-left .icon{width:64px;height:64px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 20px rgba(6,78,59,.04);font-size:1.6rem;color:var(--pa-primary)}
+        .pa-triage-left h2{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:500;color:var(--pa-primary);line-height:1.3;margin-bottom:16px}
+        .pa-triage-left p{font-size:.96rem;line-height:1.55;color:var(--pa-on-surface-variant);margin-bottom:32px}
+        .pa-triage-btn{align-self:flex-start;padding:14px 32px;background:var(--pa-primary);color:#fff;border:0;border-radius:8px;font-family:inherit;font-weight:700;font-size:.92rem;cursor:pointer;transition:background .2s}
+        .pa-triage-btn:hover{background:var(--pa-tertiary-container)}
+        .pa-triage-right{padding:48px;display:flex;flex-direction:column;justify-content:center;flex:1}
+        .pa-triage-modes{display:grid;grid-template-columns:1fr;gap:32px}
+        @media(min-width:768px){.pa-triage-modes{grid-template-columns:repeat(3,1fr)}}
+        .pa-triage-mode{display:flex;flex-direction:column;align-items:center;text-align:center}
+        .pa-triage-mode .dot{width:16px;height:16px;border-radius:50%;margin-bottom:16px}
+        .pa-triage-mode .dot.red{background:var(--pa-error)}
+        .pa-triage-mode .dot.amber{background:var(--pa-secondary)}
+        .pa-triage-mode .dot.green{background:var(--pa-tertiary-fixed-dim)}
+        .pa-triage-mode h4{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:500;color:var(--pa-primary);margin-bottom:8px}
+        .pa-triage-mode p{font-size:.92rem;color:var(--pa-on-surface-variant);line-height:1.5}
+        .pa-triage-disclaimer{margin-top:48px;background:var(--pa-surface-container-low);padding:24px;border-radius:12px;border:1px solid rgba(191,201,195,.30);text-align:center;font-style:italic;font-size:.92rem;color:var(--pa-on-surface-variant)}
+
+        /* Footer Stitch */
+        .pa-footer{background:var(--pa-surface-container);border-top:1px solid var(--pa-outline-variant);margin-top:96px}
+        .pa-footer-inner{max-width:1280px;margin:0 auto;padding:32px 24px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center}
+        @media(min-width:768px){.pa-footer-inner{flex-direction:row;justify-content:space-between;padding:32px 48px}}
+        .pa-footer-left{display:flex;flex-direction:column;align-items:center;gap:16px}
+        @media(min-width:768px){.pa-footer-left{flex-direction:row;gap:32px}}
+        .pa-footer-brand{font-size:.86rem;font-weight:700;color:var(--pa-primary);font-family:inherit}
+        .pa-footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+        .pa-footer-links a{font-size:.78rem;color:var(--pa-on-surface-variant);text-decoration:underline;transition:color .2s}
+        .pa-footer-links a:hover{color:var(--pa-primary)}
+        .pa-footer-copy{font-size:.78rem;color:var(--pa-on-surface-variant)}
+
+        /* FAB Actualizar */
+        .pa-fab{position:fixed;bottom:32px;right:32px;background:var(--pa-primary-container);color:#fff;padding:12px 24px;border-radius:9999px;box-shadow:0 4px 20px rgba(6,78,59,.10);display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.86rem;border:0;cursor:pointer;z-index:50;transition:transform .2s;font-family:inherit}
+        .pa-fab:hover{transform:scale(1.05)}
+
+        /* Animación staircase de cards */
+        .pa-grid > a, .pa-grid > button{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1), box-shadow .3s ease}
+        .pa-grid.pa-animated > a, .pa-grid.pa-animated > button{opacity:1;transform:translateY(0)}
     </style>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
@@ -438,35 +573,48 @@
     <!-- Skip link for accessibility -->
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-    <!-- Navigation -->
-    <nav role="banner" aria-label="Navegación principal">
-        <a href="index.html" class="brand" aria-label="Ir al inicio de Área II Cartagena">
-            <div class="logo" aria-hidden="true">🏥</div>
-            <h1>Área II <span>Cartagena</span></h1>
-        </a>
-        <div class="nav-actions">
-            <button class="nav-btn" onclick="toggleTheme()" aria-label="Cambiar a modo oscuro" id="themeBtn">🌙</button>
-            <a href="index.html" class="nav-btn">← Inicio</a>
-            <a href="index.html#profesionales" class="nav-btn nav-btn--accent">🔐 Profesionales</a>
+    <!-- Header Stitch verde primary -->
+    <header class="pa-header" role="banner">
+        <div class="pa-header-inner">
+            <div class="pa-header-left">
+                <a href="index.html" class="pa-header-brand">Área II Cartagena</a>
+                <nav class="pa-header-nav" aria-label="Navegación principal">
+                    <a href="index.html">Inicio</a>
+                    <a href="pacientes.html" class="is-active">Pacientes</a>
+                </nav>
+            </div>
+            <div class="pa-header-right">
+                <button class="pa-header-icon" onclick="toggleTheme()" aria-label="Cambiar tema" id="themeBtn">🌙</button>
+                <a class="pa-header-icon" href="mapa.html" aria-label="Mapa sanitario">🏥</a>
+                <div class="pa-header-divider"></div>
+                <a class="pa-header-cta" href="index.html#profesionales">Profesionales</a>
+            </div>
         </div>
-    </nav>
+    </header>
 
     <main id="main-content">
-        <!-- BREADCRUMBS -->
-        <nav class="breadcrumbs" aria-label="Migas de pan" id="breadcrumbs">
+        <!-- BREADCRUMBS (oculto visualmente con CSS pero accesible para lectores) -->
+        <nav class="breadcrumbs" aria-label="Migas de pan" id="breadcrumbs" style="display:none">
             <a href="index.html">Inicio</a><span aria-hidden="true">›</span><span id="breadcrumb-current" aria-current="page">Pacientes</span>
         </nav>
 
         <!-- ══════════ SECTION: PATIENTS ══════════ -->
         <section class="section-view active" id="secPacientes" aria-label="Recursos para pacientes">
-            <div class="section-header">
-                <div class="section-header__inner">
-                    <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Centro de Salud Virgen de la Caridad · Pacientes</span>
-                    <h2>Tu salud al alcance,<br>sin complicaciones.</h2>
-                    <p>Recursos verificados, guías prácticas y herramientas de salud para ti y tu familia. Sin login. Sin recolectar tus datos.</p>
+            <!-- Hero Stitch gradiente -->
+            <div class="pa-hero">
+                <div class="pa-hero-blobs" aria-hidden="true"></div>
+                <div class="pa-hero-inner">
+                    <span class="pa-hero-eyebrow"><span class="dot"></span>Centro de Salud Virgen de la Caridad · Pacientes</span>
+                    <h1>Tu salud al alcance,<br>sin complicaciones.</h1>
+                    <p>Recursos verificados, guías prácticas y herramientas de salud para ti y tu familia. Sin registro previo. Sin recolección de datos personales. Privacidad por diseño.</p>
+                    <div class="pa-hero-actions">
+                        <a class="pa-hero-btn primary" href="consejos-salud.html">Ver Guía de Salud</a>
+                        <a class="pa-hero-btn outline" href="mapa.html">Servicios Online</a>
+                    </div>
                 </div>
             </div>
-            <div class="cards-grid" role="list">
+            <div class="pa-content">
+            <div class="pa-grid cards-grid" role="list">
                 <a class="card" href="consejos-salud.html" role="listitem" aria-label="Consejos de Salud" style="border-left:4px solid #16a34a">
                     <div class="card-icon" aria-hidden="true">💚</div>
                     <div class="card-text"><h3>Consejos de Salud</h3><p>Qué hacer ante síntomas frecuentes</p></div>
@@ -556,20 +704,40 @@
                     <div class="card-text"><h3 style="color:#1e3a8a;">HTA y DM</h3><p style="color:#1d4ed8;">Tensión y glucemia · sesión Google</p></div>
                 </a>
 
-                <!-- Autotriaje destacado -->
-                <button class="card" onclick="showTriaje()" role="listitem" aria-label="Autotriaje de Urgencias — ¿Necesito médico ahora?" style="background:linear-gradient(135deg,#fef2f2,#fce7f3);border-color:#f87171;grid-column:1/-1">
-                    <div class="card-icon" aria-hidden="true">🩺</div>
-                    <div class="card-text">
-                        <h3 style="color:var(--red);font-size:1rem">Autotriaje de Urgencias</h3>
-                        <p style="color:#be123c">¿Necesito médico ahora? Descúbrelo en 2 minutos</p>
-                    </div>
-                    <div style="margin-left:auto;display:flex;gap:6px" aria-hidden="true">
-                        <span style="background:#fecaca;padding:3px 8px;border-radius:12px;font-size:.7rem;color:var(--red)">🔴 Emergencia</span>
-                        <span style="background:#fef3c7;padding:3px 8px;border-radius:12px;font-size:.7rem;color:#92400e">🟡 Urgencias</span>
-                        <span style="background:#dcfce7;padding:3px 8px;border-radius:12px;font-size:.7rem;color:var(--green)">🟢 Cabecera</span>
-                    </div>
-                </button>
             </div>
+
+            <!-- Autotriaje destacado · sección Stitch full-width -->
+            <div class="pa-triage">
+                <div class="pa-triage-left">
+                    <div class="icon" aria-hidden="true">🩺</div>
+                    <h2>Autotriaje de Urgencias</h2>
+                    <p>¿Necesitas médico ahora? Nuestra herramienta inteligente te ayuda a decidir en menos de 2 minutos.</p>
+                    <button type="button" class="pa-triage-btn" onclick="showTriaje()">Iniciar Evaluación</button>
+                </div>
+                <div class="pa-triage-right">
+                    <div class="pa-triage-modes">
+                        <div class="pa-triage-mode">
+                            <span class="dot red" aria-hidden="true"></span>
+                            <h4>Emergencia</h4>
+                            <p>Llamada inmediata al 112.</p>
+                        </div>
+                        <div class="pa-triage-mode">
+                            <span class="dot amber" aria-hidden="true"></span>
+                            <h4>Urgencias</h4>
+                            <p>Acudir al SUAP o centro de salud.</p>
+                        </div>
+                        <div class="pa-triage-mode">
+                            <span class="dot green" aria-hidden="true"></span>
+                            <h4>Cabecera</h4>
+                            <p>Cita previa ordinaria con tu médico.</p>
+                        </div>
+                    </div>
+                    <div class="pa-triage-disclaimer">
+                        "Esta herramienta es orientativa y no sustituye el juicio clínico de un profesional sanitario."
+                    </div>
+                </div>
+            </div>
+            </div> <!-- /pa-content -->
         </section>
 
         <!-- ══════════ SECTION: AUTOTRIAJE ══════════ -->
@@ -747,6 +915,41 @@
             </div>
         </section>
     </main>
+
+    <!-- Footer Stitch -->
+    <footer class="pa-footer">
+        <div class="pa-footer-inner">
+            <div class="pa-footer-left">
+                <div class="pa-footer-brand">Área de Salud II Cartagena</div>
+                <div class="pa-footer-links">
+                    <a href="privacidad.html">Privacidad</a>
+                    <a href="aviso-legal.html">Aviso Legal</a>
+                    <a href="accesibilidad.html">Accesibilidad</a>
+                    <a href="https://sites.google.com/view/area2cartagena/inicio" target="_blank" rel="noopener">Contacto</a>
+                </div>
+            </div>
+            <p class="pa-footer-copy">© 2026 Área de Salud II Cartagena · Servicio Murciano de Salud.</p>
+        </div>
+    </footer>
+
+    <!-- FAB Actualizar (PWA refresh) -->
+    <button type="button" class="pa-fab" data-cart-update aria-label="Actualizar aplicación">
+        🔄 <span>Actualizar</span>
+    </button>
+
+    <!-- Animación staircase de cards al cargar -->
+    <script>
+      (function(){
+        function animate(){
+          var grid = document.querySelector('.pa-grid');
+          if(!grid) return;
+          grid.classList.add('pa-animated');
+        }
+        if(document.readyState === 'loading'){
+          document.addEventListener('DOMContentLoaded', animate);
+        } else { animate(); }
+      })();
+    </script>
 
     <!-- Modal Farmacias 24h -->
     <div id="modalFarmacias" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
