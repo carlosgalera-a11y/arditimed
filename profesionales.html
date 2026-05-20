@@ -39,36 +39,212 @@
 <script src="update-button.js" defer></script>
 
 <style>
+/* ═══════════════════════════════════════════════════════════════════
+   Rediseño Stitch · "Profesionales · Área Clínica"
+   - Topbar fijo arriba oscuro (deep-forest)
+   - Sidebar fija izquierda con nav
+   - Hero verde oscuro full-width con 3 CTAs (Mi guardia / Sugerencias / Moderación)
+   - Sección "Asistencia Clínica" con cards bento
+   - Sección "Desarrollo y Evidencia" con Evidencia IA + Docencia widget
+   Tokens: --pr-primary verde oscuro #003527, --pr-deep-forest #06140D,
+   --pr-surface #f5fbf7, --pr-secondary ámbar #fdcd74.
+   ═══════════════════════════════════════════════════════════════════ */
+:root{
+  --pr-primary:#003527;
+  --pr-primary-container:#064e3b;
+  --pr-on-primary-container:#80bea6;
+  --pr-deep-forest:#06140D;
+  --pr-secondary:#7b5804;
+  --pr-secondary-container:#fdcd74;
+  --pr-on-secondary-container:#785601;
+  --pr-tertiary-fixed:#a5f3c9;
+  --pr-tertiary-fixed-dim:#8ad6ae;
+  --pr-primary-fixed-dim:#95d3ba;
+  --pr-surface:#f5fbf7;
+  --pr-surface-container:#e9efeb;
+  --pr-surface-container-low:#eff5f1;
+  --pr-surface-container-high:#e3eae6;
+  --pr-clinical-white:#ffffff;
+  --pr-outline:#707974;
+  --pr-outline-variant:#bfc9c3;
+  --pr-on-surface:#171d1b;
+  --pr-on-surface-variant:#404944;
+  --pr-error:#ba1a1a;
+  --pr-error-container:#ffdad6;
+}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 body{
   font-family:'Source Sans 3',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  color:#e9f5ee;min-height:100vh;
-  background:#0a1f14;
-  display:flex;flex-direction:column;position:relative;overflow-x:hidden;
-}
-/* Fondo: foto del HGU Santa Lucía al atardecer con blur sutil y
-   overlay verde-oscuro para que complemente sin robar atención. */
-body::after{
-  content:"";position:fixed;inset:-20px;z-index:-1;pointer-events:none;
-  background:url('hero-bg.jpg') center/cover no-repeat;
-  filter:blur(4px) saturate(1.05) brightness(.92);
-  transform:scale(1.05);
-}
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    linear-gradient(rgba(6,20,12,.72),rgba(10,31,20,.82)),
-    radial-gradient(ellipse at 15% 18%, rgba(26,107,74,.30) 0%, transparent 55%),
-    radial-gradient(ellipse at 88% 82%, rgba(212,168,83,.10) 0%, transparent 55%);
-}
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse at 15% 18%, rgba(26,107,74,.30) 0%, transparent 55%),
-    radial-gradient(ellipse at 88% 82%, rgba(212,168,83,.10) 0%, transparent 55%);
+  color:var(--pr-on-surface);min-height:100vh;
+  background:var(--pr-surface);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
 a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+.clinical-shadow{box-shadow:0 4px 20px rgba(6,78,59,.04)}
+
+/* ── Topbar fijo arriba ── */
+.pr-topbar{
+  position:fixed;top:0;left:0;right:0;z-index:50;height:80px;
+  display:flex;justify-content:space-between;align-items:center;padding:0 32px;
+  background:var(--pr-deep-forest);box-shadow:0 1px 3px rgba(0,0,0,.08);
+  color:var(--pr-clinical-white);
+}
+.pr-topbar-left{display:flex;align-items:center;gap:32px}
+.pr-topbar-brand{font-family:'Playfair Display',serif;font-weight:700;font-size:1.4rem;letter-spacing:-.01em;color:var(--pr-clinical-white)}
+.pr-topbar-nav{display:flex;gap:24px}
+.pr-topbar-nav a{font-size:.84rem;font-weight:600;letter-spacing:.06em;color:var(--pr-tertiary-fixed);transition:color .2s ease}
+.pr-topbar-nav a.is-active{color:var(--pr-tertiary-fixed);font-weight:700}
+.pr-topbar-nav a:not(.is-active){color:var(--pr-outline-variant)}
+.pr-topbar-nav a:hover{color:var(--pr-tertiary-fixed-dim)}
+.pr-topbar-right{display:flex;align-items:center;gap:16px}
+.pr-topbar-update{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:transparent;border:1px solid rgba(255,255,255,.20);border-radius:12px;color:var(--pr-clinical-white);font-size:.82rem;font-weight:600;cursor:pointer;transition:background .2s}
+.pr-topbar-update:hover{background:rgba(255,255,255,.10)}
+.pr-topbar-update svg{width:18px;height:18px}
+.pr-topbar-user{display:flex;align-items:center;gap:12px;padding-left:16px;border-left:1px solid rgba(255,255,255,.20)}
+.pr-topbar-user .name{font-size:.82rem;font-weight:600;color:var(--pr-clinical-white);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-topbar-user .avatar{width:38px;height:38px;border-radius:50%;background:var(--pr-primary-container);border:2px solid var(--pr-tertiary-fixed);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--pr-on-primary-container)}
+.pr-topbar-user.is-anonymous .name{opacity:.7}
+
+/* ── Sidebar fija izquierda ── */
+.pr-sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:264px;z-index:40;
+  background:var(--pr-clinical-white);border-right:1px solid var(--pr-outline-variant);
+  padding:96px 16px 24px;display:flex;flex-direction:column;gap:8px;
+  overflow-y:auto;
+}
+.pr-sidebar-head{padding:0 12px 16px;border-bottom:1px solid var(--pr-outline-variant);margin-bottom:8px}
+.pr-sidebar-head .titlebox{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.pr-sidebar-head .titlebox svg{width:24px;height:24px;color:var(--pr-primary)}
+.pr-sidebar-head h2{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:500;color:var(--pr-primary)}
+.pr-sidebar-head .sub{font-size:.7rem;font-weight:500;color:var(--pr-on-surface-variant);opacity:.7;text-transform:uppercase;letter-spacing:.14em}
+.pr-sidebar nav{flex:1;display:flex;flex-direction:column;gap:4px}
+.pr-side-link{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;color:var(--pr-on-surface-variant);font-size:.84rem;font-weight:600;cursor:pointer;transition:background .2s,color .2s;border:0;background:transparent;text-align:left;width:100%}
+.pr-side-link:hover{background:var(--pr-surface-container-high)}
+.pr-side-link.is-active{background:var(--pr-primary-container);color:var(--pr-on-primary-container);font-weight:700}
+.pr-side-link svg{width:20px;height:20px;flex-shrink:0}
+.pr-sidebar-cta{margin-top:16px;margin-bottom:24px;padding:14px 16px;background:var(--pr-secondary);color:var(--pr-clinical-white);border:0;border-radius:12px;font-weight:700;font-size:.84rem;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:opacity .2s;font-family:inherit}
+.pr-sidebar-cta:hover{opacity:.9}
+.pr-sidebar-cta svg{width:18px;height:18px}
+.pr-sidebar-footer{border-top:1px solid var(--pr-outline-variant);padding-top:16px;display:flex;flex-direction:column;gap:4px}
+.pr-sidebar-footer .pr-side-link{font-weight:500}
+.pr-sidebar-footer .danger{color:var(--pr-error)}
+.pr-sidebar-footer .danger:hover{background:rgba(186,26,26,.08)}
+
+/* ── Main content ── */
+.pr-main{margin-left:264px;padding-top:80px;min-height:100vh;background:var(--pr-surface)}
+
+/* ── Hero verde oscuro ── */
+.pr-hero{position:relative;width:100%;height:400px;display:flex;align-items:center;padding:0 48px;overflow:hidden;background:var(--pr-deep-forest);color:var(--pr-clinical-white)}
+.pr-hero-bg{position:absolute;inset:0;z-index:0}
+.pr-hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.30;mix-blend-mode:overlay}
+.pr-hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,var(--pr-deep-forest),rgba(6,20,13,.8),transparent)}
+.pr-hero-inner{position:relative;z-index:1;max-width:640px}
+.pr-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4.2vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.02em;color:var(--pr-clinical-white);margin-bottom:16px}
+.pr-hero p{font-size:clamp(.95rem,1.4vw,1.1rem);line-height:1.6;color:var(--pr-outline-variant);margin-bottom:32px;font-weight:400}
+.pr-hero-actions{display:flex;flex-wrap:wrap;gap:14px}
+.pr-hero-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border:0;border-radius:9999px;font-family:inherit;font-weight:700;font-size:.86rem;cursor:pointer;transition:transform .2s,filter .2s,box-shadow .2s}
+.pr-hero-btn:hover{transform:translateY(-2px);filter:brightness(1.10)}
+.pr-hero-btn svg{width:18px;height:18px}
+.pr-hero-btn.primary{background:var(--pr-primary-container);color:var(--pr-on-primary-container);box-shadow:0 4px 20px rgba(6,78,59,.10)}
+.pr-hero-btn.secondary{background:var(--pr-secondary-container);color:var(--pr-on-secondary-container);box-shadow:0 4px 20px rgba(6,78,59,.10)}
+.pr-hero-btn.ghost{background:rgba(255,255,255,.10);color:var(--pr-clinical-white);border:1px solid rgba(255,255,255,.20);backdrop-filter:blur(8px)}
+.pr-hero-btn.ghost:hover{background:rgba(255,255,255,.20)}
+
+/* ── Content wrapper ── */
+.pr-content{padding:48px;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:48px}
+@media(min-width:1024px){.pr-content{grid-template-columns:2fr 1fr;gap:32px}}
+
+.pr-section{display:flex;flex-direction:column;gap:24px}
+.pr-section h3{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:500;color:var(--pr-primary);display:flex;align-items:center;gap:12px;letter-spacing:-.01em}
+.pr-section h3::before{content:"";display:inline-block;width:5px;height:30px;background:var(--pr-bar,var(--pr-secondary));border-radius:9999px}
+.pr-section.bar-primary h3::before{background:var(--pr-primary)}
+
+/* ── Cards bento Asistencia Clínica ── */
+.pr-bento{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.pr-card{background:var(--pr-clinical-white);padding:24px;border-radius:12px;border:1px solid var(--pr-surface-container-high);box-shadow:0 4px 20px rgba(6,78,59,.04);cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;font-family:inherit;text-align:left;display:flex;flex-direction:column;gap:16px}
+.pr-card:hover{border-color:rgba(0,53,39,.20);transform:translateY(-2px);box-shadow:0 8px 32px rgba(6,78,59,.08)}
+.pr-card .icon-box{width:56px;height:56px;background:var(--pr-surface-container-low);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--pr-primary);transition:background .2s}
+.pr-card:hover .icon-box{background:var(--pr-primary-fixed-dim)}
+.pr-card .icon-box svg{width:28px;height:28px}
+.pr-card h4{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:500;color:var(--pr-primary);line-height:1.3}
+.pr-card p{font-size:.94rem;line-height:1.55;color:var(--pr-on-surface-variant);flex:1}
+.pr-card .cta{display:inline-flex;align-items:center;gap:8px;color:var(--pr-primary);font-weight:700;font-size:.92rem;margin-top:auto;transition:gap .2s}
+.pr-card:hover .cta{gap:14px}
+.pr-card .cta svg{width:18px;height:18px}
+
+/* ── Sección Evidencia IA destacada ── */
+.pr-evidencia{background:var(--pr-surface-container-low);padding:32px;border-radius:18px;border:1px solid rgba(191,201,195,.30);display:flex;flex-direction:column;gap:24px}
+@media(min-width:768px){.pr-evidencia{flex-direction:row;align-items:center;gap:32px}}
+.pr-evidencia-body{flex:1;display:flex;flex-direction:column;gap:12px}
+.pr-evidencia h4{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:500;color:var(--pr-primary);line-height:1.3}
+.pr-evidencia p{font-size:.96rem;line-height:1.55;color:var(--pr-on-surface-variant);margin-bottom:8px}
+.pr-evidencia .pr-evidencia-cta{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:var(--pr-primary);color:var(--pr-clinical-white);border:0;border-radius:12px;font-weight:700;font-size:.92rem;cursor:pointer;transition:filter .2s,transform .2s;font-family:inherit}
+.pr-evidencia .pr-evidencia-cta:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.pr-evidencia .pr-evidencia-cta svg{width:20px;height:20px}
+.pr-evidencia-art{width:100%;aspect-ratio:1;max-width:240px;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(6,78,59,.12);background:linear-gradient(135deg,var(--pr-primary-container),var(--pr-primary));display:flex;align-items:center;justify-content:center}
+.pr-evidencia-art svg{width:60%;height:60%;color:var(--pr-tertiary-fixed-dim);opacity:.6}
+
+/* ── Sidebar widgets (Docencia) ── */
+.pr-sidewidget{background:var(--pr-clinical-white);padding:24px;border-radius:12px;border:1px solid var(--pr-surface-container-high);box-shadow:0 4px 20px rgba(6,78,59,.04)}
+.pr-sidewidget h3{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:500;color:var(--pr-primary);margin-bottom:16px;display:block}
+.pr-sidewidget h3::before{display:none}
+.pr-sidewidget .desc{font-size:.9rem;line-height:1.5;color:var(--pr-on-surface-variant);margin-bottom:20px}
+.pr-sidewidget-btn{width:100%;padding:12px;background:transparent;border:1.5px solid var(--pr-primary);color:var(--pr-primary);border-radius:12px;font-weight:700;font-size:.88rem;cursor:pointer;transition:background .2s,color .2s;font-family:inherit}
+.pr-sidewidget-btn:hover{background:var(--pr-primary);color:var(--pr-clinical-white)}
+
+/* ── Footer ── */
+.pr-footer{padding:48px;background:var(--pr-deep-forest);color:var(--pr-outline-variant);display:flex;flex-direction:column;align-items:center;gap:24px;margin-top:80px}
+.pr-footer p{max-width:600px;text-align:center;font-size:.92rem;line-height:1.5}
+.pr-footer nav{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 28px}
+.pr-footer nav a{font-size:.74rem;font-weight:600;letter-spacing:.08em;color:var(--pr-outline-variant);text-transform:uppercase;transition:color .2s}
+.pr-footer nav a:hover{color:var(--pr-tertiary-fixed-dim)}
+
+/* ── Login gate (overlay sobre el main) ── */
+.pr-login-overlay{position:fixed;inset:80px 0 0 264px;background:var(--pr-surface);z-index:30;display:flex;align-items:center;justify-content:center;padding:24px}
+.pr-login-overlay .login-card{background:var(--pr-clinical-white);max-width:480px;width:100%;padding:40px;border-radius:18px;border:1px solid var(--pr-outline-variant);box-shadow:0 12px 40px rgba(6,78,59,.10);text-align:center}
+.pr-login-overlay h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--pr-primary);margin-bottom:12px}
+.pr-login-overlay .login-card p{font-size:.92rem;line-height:1.55;color:var(--pr-on-surface-variant);margin-bottom:24px}
+.btn-google{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;background:#fff;color:#3c4043;border:1.5px solid #dadce0;border-radius:12px;font-weight:600;font-size:.92rem;cursor:pointer;transition:.2s;font-family:inherit;width:100%;justify-content:center}
+.btn-google:hover{background:#f8f9fa;box-shadow:0 2px 10px rgba(0,0,0,.10)}
+.btn-google svg{width:20px;height:20px}
+
+/* ── Mobile responsive ── */
+@media(max-width:1023px){
+  .pr-sidebar{transform:translateX(-100%);transition:transform .3s ease}
+  .pr-sidebar.is-open{transform:translateX(0)}
+  .pr-main{margin-left:0}
+  .pr-login-overlay{inset:80px 0 0 0}
+  .pr-sidebar-toggle{display:flex !important}
+}
+@media(min-width:1024px){
+  .pr-sidebar-toggle{display:none !important}
+}
+.pr-sidebar-toggle{display:none;width:40px;height:40px;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(255,255,255,.20);border-radius:10px;color:var(--pr-clinical-white);cursor:pointer;font-family:inherit}
+.pr-sidebar-toggle svg{width:22px;height:22px}
+
+@media(max-width:768px){
+  .pr-topbar{padding:0 16px;height:64px}
+  .pr-topbar-brand{font-size:1.1rem}
+  .pr-topbar-nav,.pr-topbar-update span{display:none}
+  .pr-main{padding-top:64px}
+  .pr-hero{height:auto;min-height:320px;padding:48px 24px}
+  .pr-hero h1{font-size:1.8rem}
+  .pr-hero-btn{padding:12px 18px;font-size:.78rem}
+  .pr-content{padding:32px 24px;gap:32px}
+  .pr-bento{grid-template-columns:1fr;gap:16px}
+  .pr-evidencia{padding:24px}
+  .pr-footer{padding:32px 24px}
+  .pr-login-overlay{inset:64px 0 0 0;padding:16px}
+  .pr-login-overlay .login-card{padding:28px 20px}
+  .pr-topbar-user .name{display:none}
+  .pr-sidebar{padding-top:80px}
+}
+@media(max-width:480px){
+  .pr-hero-actions{flex-direction:column;width:100%}
+  .pr-hero-btn{width:100%;justify-content:center}
+}
 
 header{position:relative;z-index:2;color:#fff;padding:22px 20px 18px;text-align:center;background:rgba(0,0,0,.22);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
 .nav-top{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -189,137 +365,254 @@ footer a:hover{color:#ffd54f}
 </head>
 
 <body>
-  <header>
-    <div class="nav-top">
-      <a href="index.html" class="back-link" aria-label="Volver a inicio">← Inicio</a>
-      <div class="brand"><span style="font-size:1.3rem">🩺</span> <span class="brand-name">Profesionales</span></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <button class="back-link" data-cart-update type="button" aria-label="Actualizar aplicación" style="cursor:pointer;font-family:inherit">🔄 <span>Actualizar</span></button>
-        <div id="userPill" style="min-width:40px"></div>
-      </div>
+  <!-- Topbar fijo arriba -->
+  <header class="pr-topbar">
+    <div class="pr-topbar-left">
+      <button type="button" class="pr-sidebar-toggle" onclick="document.querySelector('.pr-sidebar').classList.toggle('is-open')" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="index.html" class="pr-topbar-brand">Profesionales</a>
+      <nav class="pr-topbar-nav">
+        <a href="#" class="is-active">Inicio</a>
+        <a href="panel-medico.html?page=pageProtocolosAP">Protocolos</a>
+        <a href="panel-medico.html?page=pageScanIA">Herramientas</a>
+      </nav>
     </div>
-    <div class="hero-title">Área de Profesionales</div>
-    <div class="hero-sub">Protocolos, docencia y herramientas clínicas.</div>
-    <!-- Toolbar: Mi Guardia / Proponer / Sugerencias / Moderación (solo autenticados; Moderación solo admin) -->
-    <div id="proToolbar" class="pro-toolbar" style="display:none">
-      <button type="button" class="pro-tbtn tbtn-guardia" onclick="location.href='panel-medico.html?action=mi-guardia'">
-        <span>📋</span><span>Mi guardia</span>
+    <div class="pr-topbar-right">
+      <button class="pr-topbar-update" data-cart-update type="button" aria-label="Actualizar aplicación">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+        <span>Actualizar</span>
       </button>
-      <button type="button" class="pro-tbtn tbtn-propose" onclick="location.href='panel-medico.html?action=propose'">
-        <span>📤</span><span>Proponer contenido</span>
-      </button>
-      <button type="button" class="pro-tbtn tbtn-sugerir" onclick="location.href='panel-medico.html?action=sugerencias'">
-        <span>💡</span><span>Sugerencias</span>
-      </button>
-      <button type="button" class="pro-tbtn tbtn-mod" id="proTbtnMod" style="display:none" onclick="location.href='panel-medico.html?action=moderate'">
-        <span>🛡️</span><span>Moderación</span>
-        <span class="badge" id="proModCount" style="display:none"></span>
-      </button>
+      <div class="pr-topbar-user" id="userPill"><a href="index.html" style="font-size:.82rem;font-weight:600;color:var(--pr-clinical-white);opacity:.85">Inicio</a></div>
     </div>
   </header>
 
-  <main>
-    <div id="loginGate" class="login-gate" style="display:none">
-      <h2>🔐 Requiere inicio de sesión</h2>
-      <p>Esta zona es exclusiva para profesionales sanitarios del Área II Cartagena. Inicia sesión con Google o con tu cuenta Microsoft (Hotmail · Outlook · Live · Microsoft 365).</p>
-      <button class="btn-google" onclick="signInWithGoogle()">
-        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        <span>Continuar con Google</span>
-      </button>
-      <button class="btn-google" onclick="signInWithMicrosoft()" style="margin-top:10px;background:#fff;color:#1f2937;border:1.5px solid #cbd5e1;">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M2 2h9.5v9.5H2z"/><path fill="#7FBA00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00A4EF" d="M2 12.5h9.5V22H2z"/><path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/></svg>
-        <span>Continuar con Microsoft (Hotmail · Outlook)</span>
-      </button>
-    </div>
-
-    <!-- ═══ Verificación de número de colegiado (1 vez por usuario) ═══ -->
-    <div id="colegiadoGate" class="login-gate" style="display:none;max-width:520px">
-      <h2 style="color:#fff;font-family:'Playfair Display',serif;font-size:1.25rem;margin-bottom:10px">🩺 Verificación profesional</h2>
-      <p style="color:#cbd5e1;font-size:.9rem;line-height:1.55;margin-bottom:18px">
-        Para acceder a los recursos clínicos necesitamos confirmar tu condición de profesional sanitario.
-        Esta información queda asociada a tu cuenta y <strong>no la volverás a pedir</strong>.
-      </p>
-      <div style="display:flex;flex-direction:column;gap:12px;text-align:left">
-        <label style="display:block;color:#cbd5e1;font-size:.82rem;font-weight:600">
-          Colegio profesional
-          <select id="colegiadoTipo" style="display:block;width:100%;margin-top:6px;padding:11px 14px;background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.20);border-radius:10px;color:#fff;font-family:inherit;font-size:.92rem">
-            <option value="">— Selecciona —</option>
-            <option value="medicina">⚕️ Colegio Oficial de Médicos</option>
-            <option value="enfermeria">💉 Colegio Oficial de Enfermería</option>
-            <option value="farmacia">💊 Colegio Oficial de Farmacéuticos</option>
-            <option value="fisioterapia">🤲 Colegio Oficial de Fisioterapeutas</option>
-            <option value="psicologia">🧠 Colegio Oficial de Psicólogos</option>
-            <option value="podologia">🦶 Colegio Oficial de Podólogos</option>
-            <option value="logopedia">🗣️ Colegio Oficial de Logopedas</option>
-            <option value="dietistas">🥗 Colegio Oficial de Dietistas-Nutricionistas</option>
-            <option value="otro">📋 Otro colegio profesional sanitario</option>
-          </select>
-        </label>
-        <label style="display:block;color:#cbd5e1;font-size:.82rem;font-weight:600">
-          Número de colegiado
-          <input type="text" id="colegiadoNum" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Ej: 303012345" style="display:block;width:100%;margin-top:6px;padding:11px 14px;background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.20);border-radius:10px;color:#fff;font-family:inherit;font-size:.92rem;letter-spacing:.5px"
-            onkeydown="if(event.key==='Enter')submitColegiado()"
-            oninput="this.setCustomValidity('')">
-          <span id="colegiadoHint" style="display:block;margin-top:6px;font-size:.74rem;color:#94a3b8;line-height:1.4">
-            Formato libre — 4 a 20 caracteres, números (y letras/guiones si tu colegio los usa).
-          </span>
-        </label>
-        <button onclick="submitColegiado()" style="margin-top:6px;padding:13px 22px;background:linear-gradient(135deg,#0d9488,#0f766e);border:0;border-radius:10px;color:#fff;font-family:inherit;font-weight:800;cursor:pointer;font-size:.95rem;letter-spacing:.3px">
-          Acceder a los recursos profesionales
-        </button>
-        <div id="colegiadoMsg" style="min-height:18px;font-size:.82rem;color:#fca5a5;text-align:center"></div>
+  <!-- Sidebar fija izquierda -->
+  <aside class="pr-sidebar">
+    <div class="pr-sidebar-head">
+      <div class="titlebox">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 8h-3V4a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v4H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1zm-9-3h4v3h-4V5zm5 10h-2v2h-2v-2H9v-2h2v-2h2v2h2v2z"/></svg>
+        <h2>Área Clínica</h2>
       </div>
-      <p style="margin-top:14px;font-size:.7rem;color:#94a3b8;line-height:1.5">
-        🔒 Tratamiento de datos · Tu número de colegiado se guarda asociado a tu correo electrónico únicamente para verificar tu condición profesional y trazar acceso a contenido formativo (base legal: interés legítimo profesional, art. 6.1.f RGPD). No se cede a terceros. Puedes solicitar su supresión escribiendo a <a href="mailto:carlosgalera2roman@gmail.com" style="color:#7dd3bb">carlosgalera2roman@gmail.com</a>.
-      </p>
+      <p class="sub">Elite Clinical Portal</p>
+    </div>
+    <nav>
+      <a href="#" class="pr-side-link is-active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Inicio
+      </a>
+      <a href="panel-medico.html?page=pageProtocolosAP" class="pr-side-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Protocolos
+      </a>
+      <a href="docencia.html" class="pr-side-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Docencia
+      </a>
+      <a href="evidencia-ia.html" class="pr-side-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 8v4M12 16h.01"/></svg>
+        Evidencia IA
+      </a>
+      <button type="button" class="pr-side-link" onclick="openUrgenciasMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Urgencias
+      </button>
+      <a href="panel-medico.html?page=pageEnfermeria" class="pr-side-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v6a6 6 0 0 1-12 0V2z"/><path d="M6 22h12"/><path d="M12 14v8"/></svg>
+        Enfermería
+      </a>
+      <a href="panel-medico.html?page=pageScanIA" class="pr-side-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Herramientas
+      </a>
+    </nav>
+    <button type="button" class="pr-sidebar-cta" onclick="location.href='panel-medico.html?action=propose'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Proponer contenido
+    </button>
+    <div class="pr-sidebar-footer">
+      <a href="#" class="pr-side-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Ajustes
+      </a>
+      <button type="button" class="pr-side-link danger" id="proSignOut" onclick="firebase.auth().signOut().then(function(){location.href='index.html';})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="pr-main">
+    <!-- Hero verde oscuro con CTAs -->
+    <section class="pr-hero" aria-label="Bienvenida a Profesionales">
+      <div class="pr-hero-bg" aria-hidden="true">
+        <img src="hero-bg.jpg" alt="" loading="eager">
+      </div>
+      <div class="pr-hero-inner">
+        <h1>Área de Profesionales</h1>
+        <p>Gestión centralizada de protocolos, docencia y herramientas clínicas de alta precisión para el Área II Cartagena.</p>
+        <div id="proToolbar" class="pr-hero-actions" style="display:none">
+          <button type="button" class="pr-hero-btn primary" onclick="location.href='panel-medico.html?action=mi-guardia'">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10z"/></svg>
+            Mi guardia
+          </button>
+          <button type="button" class="pr-hero-btn secondary" onclick="location.href='panel-medico.html?action=sugerencias'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.4 1 1.1 1 1.8V18h6v-1.5c0-.7.4-1.4 1-1.8A7 7 0 0 0 12 2z"/></svg>
+            Sugerencias
+          </button>
+          <button type="button" class="pr-hero-btn ghost" id="proTbtnMod" style="display:none" onclick="location.href='panel-medico.html?action=moderate'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Moderación
+            <span id="proModCount" style="display:none;background:#ef4444;color:#fff;border-radius:10px;padding:1px 8px;font-size:.7rem;margin-left:4px;font-weight:800"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Login gate (oculto por defecto, JS lo gestiona) -->
+    <div id="loginGate" class="pr-login-overlay" style="display:none">
+      <div class="login-card">
+        <h2>🔐 Requiere inicio de sesión</h2>
+        <p>Esta zona es exclusiva para profesionales sanitarios del Área II Cartagena. Inicia sesión con Google o con tu cuenta Microsoft (Hotmail · Outlook · Live · Microsoft 365).</p>
+        <button class="btn-google" onclick="signInWithGoogle()">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <span>Continuar con Google</span>
+        </button>
+        <button class="btn-google" onclick="signInWithMicrosoft()" style="margin-top:12px">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M2 2h9.5v9.5H2z"/><path fill="#7FBA00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00A4EF" d="M2 12.5h9.5V22H2z"/><path fill="#FFB900" d="M12.5 12.5H22V22h-9.5z"/></svg>
+          <span>Continuar con Microsoft (Hotmail · Outlook)</span>
+        </button>
+      </div>
     </div>
 
-    <div id="hub" class="tiles-grid" style="display:none">
-      <button type="button" class="tile" data-k="ap" onclick="openAPMenu()" aria-haspopup="dialog" aria-label="Atención Primaria — abre menú con Protocolos AP y Centros de Salud">
-        <div class="tile-head"><span class="tile-icon">🏘️</span><span class="tile-title">Atención Primaria</span></div>
-      </button>
+    <!-- Verificación de número de colegiado (1 vez por usuario) -->
+    <div id="colegiadoGate" class="pr-login-overlay" style="display:none">
+      <div class="login-card" style="text-align:left;max-width:520px">
+        <h2 style="text-align:center">🩺 Verificación profesional</h2>
+        <p style="text-align:center">Para acceder a los recursos clínicos necesitamos confirmar tu condición de profesional sanitario. Esta información queda asociada a tu cuenta y <strong>no la volverás a pedir</strong>.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <label style="font-size:.85rem;font-weight:600;color:var(--pr-on-surface)">
+            Colegio profesional
+            <select id="colegiadoTipo" style="display:block;width:100%;margin-top:6px;padding:12px 14px;background:var(--pr-surface-container-low);border:1.5px solid var(--pr-outline-variant);border-radius:10px;color:var(--pr-on-surface);font-family:inherit;font-size:.92rem">
+              <option value="">— Selecciona —</option>
+              <option value="medicina">⚕️ Colegio Oficial de Médicos</option>
+              <option value="enfermeria">💉 Colegio Oficial de Enfermería</option>
+              <option value="farmacia">💊 Colegio Oficial de Farmacéuticos</option>
+              <option value="fisioterapia">🤲 Colegio Oficial de Fisioterapeutas</option>
+              <option value="psicologia">🧠 Colegio Oficial de Psicólogos</option>
+              <option value="podologia">🦶 Colegio Oficial de Podólogos</option>
+              <option value="logopedia">🗣️ Colegio Oficial de Logopedas</option>
+              <option value="dietistas">🥗 Colegio Oficial de Dietistas-Nutricionistas</option>
+              <option value="otro">📋 Otro colegio profesional sanitario</option>
+            </select>
+          </label>
+          <label style="font-size:.85rem;font-weight:600;color:var(--pr-on-surface)">
+            Número de colegiado
+            <input type="text" id="colegiadoNum" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Ej: 303012345" style="display:block;width:100%;margin-top:6px;padding:12px 14px;background:var(--pr-surface-container-low);border:1.5px solid var(--pr-outline-variant);border-radius:10px;color:var(--pr-on-surface);font-family:inherit;font-size:.92rem;letter-spacing:.5px"
+              onkeydown="if(event.key==='Enter')submitColegiado()"
+              oninput="this.setCustomValidity('')">
+            <span id="colegiadoHint" style="display:block;margin-top:6px;font-size:.74rem;color:var(--pr-on-surface-variant);opacity:.8;line-height:1.4">
+              Formato libre — 4 a 20 caracteres, números (y letras/guiones si tu colegio los usa).
+            </span>
+          </label>
+          <button onclick="submitColegiado()" style="margin-top:6px;padding:13px 22px;background:var(--pr-primary);border:0;border-radius:12px;color:var(--pr-clinical-white);font-family:inherit;font-weight:800;cursor:pointer;font-size:.92rem;letter-spacing:.3px">
+            Acceder a los recursos profesionales
+          </button>
+          <div id="colegiadoMsg" style="min-height:18px;font-size:.84rem;color:var(--pr-error);text-align:center"></div>
+        </div>
+        <p style="margin-top:18px;font-size:.72rem;color:var(--pr-on-surface-variant);opacity:.7;line-height:1.5">
+          🔒 Tratamiento de datos · Tu número de colegiado se guarda asociado a tu correo electrónico únicamente para verificar tu condición profesional y trazar acceso a contenido formativo (base legal: interés legítimo profesional, art. 6.1.f RGPD). No se cede a terceros. Puedes solicitar su supresión escribiendo a <a href="mailto:carlosgalera2roman@gmail.com" style="color:var(--pr-primary);font-weight:600">carlosgalera2roman@gmail.com</a>.
+        </p>
+      </div>
+    </div>
 
-      <button type="button" class="tile" data-k="hospitalaria" onclick="location.href='panel-medico.html?page=pageProfessionals'" aria-label="Atención Hospitalaria">
-        <div class="tile-head"><span class="tile-icon">🏥</span><span class="tile-title">Atención Hospitalaria</span></div>
-      </button>
+    <!-- Hub: Asistencia Clínica + Desarrollo y Evidencia -->
+    <div id="hub" class="pr-content" style="display:none">
+      <!-- Columna izquierda: Asistencia Clínica + Evidencia IA -->
+      <div style="display:flex;flex-direction:column;gap:48px">
+        <section class="pr-section">
+          <h3>Asistencia Clínica</h3>
+          <div class="pr-bento">
+            <button type="button" class="pr-card" onclick="openAPMenu()" aria-haspopup="dialog">
+              <div class="icon-box"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12l9-9 9 9v9a2 2 0 0 1-2 2h-4v-7H10v7H6a2 2 0 0 1-2-2v-9z"/></svg></div>
+              <h4>Atención Primaria</h4>
+              <p>Guías y rutas de derivación actualizadas para centros de salud.</p>
+              <span class="cta">Ver protocolos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+            <button type="button" class="pr-card" onclick="location.href='panel-medico.html?page=pageProfessionals'">
+              <div class="icon-box"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zm6-4h2v-3h2v3h2v-7H9v7zm-4 0h2v-9H5v9zm10 0h2v-9h-2v9zm4 0h2V8h-2v9z"/></svg></div>
+              <h4>Atención Hospitalaria</h4>
+              <p>Consenso clínico interdepartamental y procesos especializados.</p>
+              <span class="cta">Explorar servicios <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+            <button type="button" class="pr-card" onclick="openUrgenciasMenu()" aria-haspopup="dialog">
+              <div class="icon-box"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-9 4v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V6l-9-4zm-1 13l-4-4 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/></svg></div>
+              <h4>Urgencias</h4>
+              <p>Protocolos, camas y ambulancias, ventilación e ISR. Materiales SEMFyC y hospitalarios.</p>
+              <span class="cta">Abrir urgencias <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+            <button type="button" class="pr-card" onclick="location.href='panel-medico.html?page=pageEnfermeria'">
+              <div class="icon-box"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 8h-3V4a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v4H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1zm-9-3h4v3h-4V5zm5 10h-2v2h-2v-2H9v-2h2v-2h2v2h2v2z"/></svg></div>
+              <h4>Enfermería</h4>
+              <p>Protocolos técnicos, escalas, fármacos y consultas IA específicas.</p>
+              <span class="cta">Ir a Enfermería <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+            <button type="button" class="pr-card" onclick="location.href='panel-medico.html?page=pageScanIA'">
+              <div class="icon-box"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.7 6.3l3-3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4l-3 3a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 1 1-3-3l6.91-6.91A6 6 0 0 1 14.7 6.3z"/></svg></div>
+              <h4>Herramientas</h4>
+              <p>Calculadoras clínicas, escalas y recursos de apoyo al diagnóstico (Scan IA, ECG, derma).</p>
+              <span class="cta">Abrir toolkit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+            <button type="button" class="pr-card" onclick="location.href='panel-medico.html?page=pageTelefonos'">
+              <div class="icon-box"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 15.5l-5.6-1.4a2 2 0 0 0-2 .5l-2.3 2.3a16 16 0 0 1-7-7l2.3-2.3a2 2 0 0 0 .5-2L4.5 4a2 2 0 0 0-2-1.5H1A19 19 0 0 0 20 23v-1.5a2 2 0 0 0-1.5-2z"/></svg></div>
+              <h4>Buscas</h4>
+              <p>Directorio rápido de personal de guardia y extensiones críticas del Área II.</p>
+              <span class="cta">Localizar busca <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+          </div>
+        </section>
 
-      <button type="button" class="tile" data-k="urgencias" onclick="openUrgenciasMenu()" aria-haspopup="dialog" aria-label="Urgencias — abre menú con Protocolos, Camas y Ventilación">
-        <div class="tile-head"><span class="tile-icon">🚨</span><span class="tile-title">Urgencias</span></div>
-      </button>
+        <section class="pr-section bar-primary">
+          <h3>Desarrollo y Evidencia</h3>
+          <div class="pr-evidencia">
+            <div class="pr-evidencia-body">
+              <h4>Evidencia IA</h4>
+              <p>Nuestro motor de búsqueda semántica para literatura médica basado en evidencia actual. Síntesis rápidas y citas verificadas (PubMed, Europe PMC, AEMPS, sesgo UE).</p>
+              <button type="button" class="pr-evidencia-cta" onclick="location.href='evidencia-ia.html'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+                Consultar IA Clínica
+              </button>
+            </div>
+            <div class="pr-evidencia-art" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18M3 12h18M12 3v18"/></svg>
+            </div>
+          </div>
+        </section>
+      </div>
 
-      <button type="button" class="tile" data-k="enfermeria" onclick="location.href='panel-medico.html?page=pageEnfermeria'" aria-label="Enfermería">
-        <div class="tile-head"><span class="tile-icon">💉</span><span class="tile-title">Enfermería</span></div>
-      </button>
-
-      <button type="button" class="tile" data-k="herramientas" onclick="location.href='panel-medico.html?page=pageScanIA'" aria-label="Herramientas">
-        <div class="tile-head"><span class="tile-icon">🔬</span><span class="tile-title">Herramientas</span></div>
-      </button>
-
-      <button type="button" class="tile" data-k="buscas" onclick="location.href='panel-medico.html?page=pageTelefonos'" aria-label="Buscas">
-        <div class="tile-head"><span class="tile-icon">📟</span><span class="tile-title">Buscas</span></div>
-      </button>
-
-      <button type="button" class="tile" data-k="docencia" onclick="location.href='docencia.html'" aria-label="Docencia">
-        <div class="tile-head"><span class="tile-icon">🎓</span><span class="tile-title">Docencia</span></div>
-      </button>
-
-      <button type="button" class="tile" data-k="evidencia-ia" onclick="location.href='evidencia-ia.html'" aria-label="EvidenciaIA">
-        <div class="tile-head"><span class="tile-icon">🔬</span><span class="tile-title">EvidenciaIA</span></div>
-      </button>
-
+      <!-- Columna derecha: Widget Docencia -->
+      <aside style="display:flex;flex-direction:column;gap:24px">
+        <div class="pr-sidewidget">
+          <h3>Docencia</h3>
+          <p class="desc">Casos clínicos tipo test y MIR por especialidad. Generador de casos asistido por IA con feedback inmediato.</p>
+          <button type="button" class="pr-sidewidget-btn" onclick="location.href='docencia.html'">Acceder al Campus</button>
+        </div>
+      </aside>
     </div>
   </main>
 
-  <footer>
-    <div>© 2026 Cartagenaeste · Uso formativo. No diagnóstico. · Reg. PI 00765-03096622</div>
-    <div class="links-row">
+  <!-- Footer -->
+  <footer class="pr-footer">
+    <p>Plataforma formativa de alta precisión para el cuerpo médico. Uso exclusivo profesional. No reemplaza el juicio clínico. © 2026 Cartagenaeste · Carlos Galera Román · Reg. PI 00765-03096622.</p>
+    <nav>
       <a href="about.html">Sobre Cartagenaeste</a>
       <a href="financiacion.html">Financiación</a>
       <a href="acreditaciones.html">Acreditaciones</a>
       <a href="privacidad.html">Privacidad</a>
       <a href="aviso-legal.html">Aviso legal</a>
       <a href="status.html">Estado</a>
-    </div>
+    </nav>
   </footer>
 
   <!-- Modal desplegable de Atención Primaria: Protocolos AP + Centros de Salud -->
@@ -410,20 +703,21 @@ footer a:hover{color:#ffd54f}
         var ini = (u.displayName || u.email || '?').charAt(0).toUpperCase();
         var nm = u.displayName || u.email || 'Usuario';
         pill.innerHTML =
-          '<span class="user-pill">' +
-            '<span class="user-avatar">' + esc(ini) + '</span>' +
-            '<span class="user-name">' + esc(nm) + '</span>' +
-          '</span>';
+          '<span class="name">' + esc(nm) + '</span>' +
+          '<span class="avatar">' + esc(ini) + '</span>';
+        pill.classList.remove('is-anonymous');
         checkModeratorRole(u);
         // Verifica si el usuario ya tiene número de colegiado registrado.
         // Si lo tiene → muestra hub. Si no → muestra modal de captura.
         checkColegiado(u);
       } else {
-        gate.style.display = 'block';
+        // .pr-login-overlay tiene display:flex en CSS — usar 'flex' aquí.
+        gate.style.display = 'flex';
         hub.style.display = 'none';
         if(colegiadoGate) colegiadoGate.style.display = 'none';
         if(toolbar) toolbar.style.display = 'none';
-        pill.innerHTML = '<a href="index.html" class="back-link">Inicio</a>';
+        pill.innerHTML = '<a href="index.html" style="font-size:.82rem;font-weight:600;color:var(--pr-clinical-white);opacity:.85">Inicio</a>';
+        pill.classList.add('is-anonymous');
       }
     });
 
@@ -466,6 +760,8 @@ footer a:hover{color:#ffd54f}
     function showHub(){
       var colegiadoGate = document.getElementById('colegiadoGate');
       if(colegiadoGate) colegiadoGate.style.display = 'none';
+      // .pr-content tiene display:grid en CSS — usar 'grid' explícito por si
+      // algo lo cambia. La media query lo redefine en >=1024 a 2 columnas.
       hub.style.display = 'grid';
     }
 
@@ -473,7 +769,8 @@ footer a:hover{color:#ffd54f}
       hub.style.display = 'none';
       var cg = document.getElementById('colegiadoGate');
       if(cg){
-        cg.style.display = 'block';
+        // .pr-login-overlay tiene display:flex en CSS.
+        cg.style.display = 'flex';
         var inp = document.getElementById('colegiadoNum');
         if(inp) setTimeout(function(){ try { inp.focus(); } catch(e){} }, 200);
       }
