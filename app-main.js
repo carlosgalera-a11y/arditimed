@@ -2683,117 +2683,24 @@ function filterTelefonos(){
 })();
 
 // ═══ PACIENTES GUARDIA ═══
+// Módulo eliminado por política de privacidad (no almacenar datos de
+// pacientes en la app). Conservamos stubs no-op para evitar errores en
+// referencias residuales hasta que se eliminen todos los call-sites.
 var GP_DATA={prof:[],urg:[]};
-try{var gd=secureStore.get("guardia_pacientes_v1");if(gd)GP_DATA=JSON.parse(gd);}catch(e){}
-
-function gpSave(){
-    secureStore.set("guardia_pacientes_v1",JSON.stringify(GP_DATA),24);
-    try{
-        var user=firebase.auth().currentUser;
-        if(user){
-            db.collection("guardia_cambios").add({
-                email:user.email||"",
-                nombre:user.displayName||"",
-                uid:user.uid,
-                pacientes_prof:GP_DATA.prof.length,
-                pacientes_urg:GP_DATA.urg.length,
-                fecha:new Date(),
-                timestamp:Date.now()
-            });
-        }
-    }catch(e){console.error("Firestore gpSave log error:",e);}
-}
-
-function gpAdd(suffix){
-    suffix=suffix||"";
-    var cama=document.getElementById("gpCama"+suffix).value.trim();
-    var id=document.getElementById("gpId"+suffix).value.trim();
-    var edad=document.getElementById("gpEdad"+suffix).value.trim();
-    var prioridad=document.getElementById("gpPrioridad"+suffix).value;
-    var motivo=document.getElementById("gpMotivo"+suffix).value.trim();
-    var notas=document.getElementById("gpNotas"+suffix).value.trim();
-    if(!cama&&!id&&!motivo){alert("Rellena al menos cama, ID o motivo.");return;}
-    var p={cama:cama,id:id,edad:edad,prioridad:prioridad,motivo:motivo,notas:notas,hora:new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}),ts:Date.now()};
-    var key=suffix==="Urg"?"urg":"prof";
-    GP_DATA[key].push(p);
-    gpSave();gpRender(suffix);gpClearForm(suffix);
-}
-
-function gpClearForm(suffix){
-    suffix=suffix||"";
-    ["gpCama","gpId","gpEdad","gpMotivo","gpNotas"].forEach(function(f){var el=document.getElementById(f+suffix);if(el)el.value="";});
-    var sel=document.getElementById("gpPrioridad"+suffix);if(sel)sel.value="normal";
-}
-
-function gpDelete(key,idx){
-    GP_DATA[key].splice(idx,1);gpSave();
-    gpRender(key==="urg"?"Urg":"");
-}
-
-function gpToggleDone(key,idx){
-    GP_DATA[key][idx].done=!GP_DATA[key][idx].done;gpSave();
-    gpRender(key==="urg"?"Urg":"");
-}
-
+function gpSave(){}
+function gpAdd(){}
+function gpClearForm(){}
+function gpDelete(){}
+function gpToggleDone(){}
 function gpRender(suffix){
-    suffix=suffix||"";
-    var key=suffix==="Urg"?"urg":"prof";
-    var list=GP_DATA[key]||[];
-    var el=document.getElementById("gpList"+suffix);
-    if(!list.length){
-        el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);opacity:.6;"><div style="font-size:2rem;margin-bottom:8px;">🛏️</div><p style="font-size:.9rem;">No hay pacientes registrados en esta guardia</p></div>';
-        return;
-    }
-    var prioOrder={urgente:0,atento:1,normal:2};
-    var sorted=list.map(function(p,i){return{p:p,i:i};}).sort(function(a,b){return(prioOrder[a.p.prioridad]||2)-(prioOrder[b.p.prioridad]||2);});
-    var prioColors={urgente:{bg:"#fef2f2",border:"#dc2626",dot:"🔴"},atento:{bg:"#fffbeb",border:"#f59e0b",dot:"🟡"},normal:{bg:suffix?"rgba(255,255,255,.06)":"var(--bg-card)",border:suffix?"rgba(255,255,255,.12)":"var(--border)",dot:"🟢"}};
-    var isDark=suffix==="Urg";
-    var html=sorted.map(function(item){
-        var p=item.p,i=item.i;
-        var pc=prioColors[p.prioridad]||prioColors.normal;
-        var doneStyle=p.done?"opacity:.5;text-decoration:line-through;":"";
-        return '<div style="background:'+(isDark?"rgba(255,255,255,.04)":pc.bg)+';border:1px solid '+(isDark?"rgba(255,255,255,.1)":pc.border)+';border-left:4px solid '+(p.prioridad==="urgente"?"#dc2626":p.prioridad==="atento"?"#f59e0b":"#4caf50")+';border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;'+doneStyle+'">'+
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'+
-        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'+
-        '<span style="font-size:.85rem;">'+pc.dot+'</span>'+
-        (p.cama?'<span style="background:'+(isDark?"rgba(255,255,255,.12)":"var(--bg-subtle)")+';padding:3px 8px;border-radius:4px;font-weight:700;font-size:.85rem;">'+p.cama+'</span>':'')+
-        (p.id?'<span style="font-weight:600;font-size:.9rem;">'+p.id+'</span>':'')+
-        (p.edad?'<span style="font-size:.82rem;color:'+(isDark?"rgba(255,255,255,.5)":"var(--text-muted)")+';">'+p.edad+'</span>':'')+
-        '<span style="font-size:.78rem;color:'+(isDark?"rgba(255,255,255,.35)":"var(--text-muted)")+';">⏰ '+p.hora+'</span>'+
-        '</div>'+
-        '<div style="display:flex;gap:4px;">'+
-        '<button onclick="gpToggleDone(\''+key+'\','+i+')" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:2px;" title="'+(p.done?"Desmarcar":"Marcar como hecho")+'">'+(p.done?"↩️":"✅")+'</button>'+
-        '<button onclick="if(confirm(\'¿Eliminar?\'))gpDelete(\''+key+'\','+i+')" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:2px;" title="Eliminar">🗑️</button>'+
-        '</div></div>'+
-        (p.motivo?'<div style="font-size:.88rem;font-weight:600;margin-bottom:4px;'+(isDark?"color:#fff;":"")+'">'+p.motivo+'</div>':'')+
-        (p.notas?'<div style="font-size:.84rem;color:'+(isDark?"rgba(255,255,255,.65)":"var(--text-light)")+';line-height:1.5;">'+p.notas.replace(/\n/g,"<br>")+'</div>':'')+
-        '</div>';
-    }).join("");
-    el.innerHTML=html;
+  var el=document.getElementById("gpList"+(suffix||""));
+  if(el)el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);opacity:.7;"><div style="font-size:2rem;margin-bottom:8px;">🔒</div><p style="font-size:.9rem;">Módulo desactivado por política de privacidad. No se almacenan datos de pacientes en esta plataforma.</p></div>';
 }
-
-function gpExport(suffix){
-    suffix=suffix||"";
-    var key=suffix==="Urg"?"urg":"prof";
-    var list=GP_DATA[key]||[];
-    if(!list.length){alert("No hay pacientes para copiar.");return;}
-    var txt="PACIENTES GUARDIA — "+new Date().toLocaleDateString("es-ES")+"\n"+("=").repeat(40)+"\n\n";
-    list.forEach(function(p,i){
-        txt+=(i+1)+". "+(p.cama||"")+" | "+(p.id||"")+" | "+(p.edad||"")+" | "+({urgente:"🔴 URGENTE",atento:"🟡 ATENTO",normal:"🟢 Normal"}[p.prioridad]||"")+"\n";
-        if(p.motivo)txt+="   Motivo: "+p.motivo+"\n";
-        if(p.notas)txt+="   Notas: "+p.notas+"\n";
-        txt+="   Hora: "+p.hora+(p.done?" ✅ HECHO":"")+"\n\n";
-    });
-    navigator.clipboard.writeText(txt).then(function(){alert("📋 Lista copiada al portapapeles");}).catch(function(){
-        var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);alert("📋 Lista copiada");
-    });
-}
-
-function gpClearAll(suffix){
-    suffix=suffix||"";
-    var key=suffix==="Urg"?"urg":"prof";
-    GP_DATA[key]=[];gpSave();gpRender(suffix);
-}
+function gpExport(){}
+function gpClearAll(){}
+// Limpieza migratoria: borra el legacy localStorage de cualquier
+// usuario que ya tuviera datos guardados antes del cambio de política.
+try{secureStore.remove&&secureStore.remove("guardia_pacientes_v1");localStorage.removeItem("guardia_pacientes_v1");}catch(e){}
 
 
 
