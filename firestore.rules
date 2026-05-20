@@ -183,14 +183,20 @@ service cloud.firestore {
       allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
-    // ══ Guardia pacientes (CRUD propio) ════════════════════════════
-    // Admin tiene LECTURA para conteos/auditoría panel.
-    // Crear/actualizar requiere número de colegiado verificado.
+    // ══ Guardia pacientes ══════════════════════════════════════════
+    // Colección DESACTIVADA por política de privacidad (no almacenar
+    // datos identificables de pacientes). El módulo frontend fue
+    // eliminado en 2026-05. Solo admins pueden leer/borrar para
+    // limpiar/auditar datos legacy. Toda escritura nueva queda
+    // denegada por defecto.
     match /guardia_pacientes/{docId} {
-      allow create: if hasColegiado() && request.resource.data.uid == request.auth.uid;
-      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow update: if hasColegiado() && resource.data.uid == request.auth.uid;
-      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow read, delete: if isAdmin();
+      allow create, update: if false;
+    }
+    // Log de cambios de gpSave también desactivado.
+    match /guardia_cambios/{docId} {
+      allow read, delete: if isAdmin();
+      allow create, update: if false;
     }
 
     // ══ Triajes (QR) ═══════════════════════════════════════════════

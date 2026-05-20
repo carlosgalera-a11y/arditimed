@@ -18,7 +18,6 @@ const PRECACHE = [
   '/firebase-init.js',
   '/triaje-ia.js',
   '/escalas-clinicas.js',
-  '/guardia-notas.js',
   '/supabase-plantillas.js',
   '/turnos-guardia.js',
   '/manifest.json',
