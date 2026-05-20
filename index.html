@@ -556,6 +556,68 @@ footer a:hover{color:#ffe2a3;border-bottom-color:currentColor}
 /* SIN padding-bottom: el contenido ocupa toda la pantalla. */
 html,body{min-height:100vh}
 
+/* OVERRIDE del body oscuro legacy — modo claro Stitch en toda la página
+   para evitar el "marco oscuro" alrededor del hero. */
+body{background:var(--s2-surface) !important;color:var(--s2-on-surface)}
+body::before,body::after{display:none !important}
+
+/* OVERRIDE del selector global `main` que limita a 980 px — el hero
+   nuevo debe ocupar todo el ancho del viewport. */
+main.s2-main{max-width:none !important;width:100% !important;padding:0 !important;margin:0 !important;gap:0 !important;justify-content:flex-start !important}
+
+/* Topbar adaptado a modo claro estilo Stitch (translúcido con blur,
+   texto verde primary, border sutil abajo). Mantiene TODOS los botones
+   funcionales. */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(245,251,247,.72);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(191,201,195,.30);
+  padding:14px 24px;
+}
+.topbar .brand{color:var(--s2-primary)}
+.topbar .brand-emblem{background:linear-gradient(135deg,#0a6b53,var(--s2-primary));border-color:rgba(6,78,59,.20);box-shadow:0 2px 8px -2px rgba(6,78,59,.30);width:38px;height:38px;font-size:1.2rem}
+.topbar .brand-emblem::after{display:none}
+.topbar .brand-name{color:var(--s2-primary);font-size:1.05rem}
+.topbar .brand-name em{color:#0a6b53}
+
+/* Subtítulo "area2cartagena.es" al lado del logo (estilo Stitch) */
+.topbar .brand-domain{
+  display:inline-block;margin-left:18px;padding-left:18px;
+  border-left:1px solid rgba(191,201,195,.50);
+  font-family:var(--f-body);font-size:.78rem;font-weight:600;
+  color:rgba(6,78,59,.75);letter-spacing:.14em;
+  white-space:nowrap;
+}
+
+/* tb-btn neutro adaptado a fondo claro */
+.tb-btn{
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(191,201,195,.40);
+  color:var(--s2-on-surface);
+  font-weight:600;font-size:.78rem;
+  backdrop-filter:blur(6px);
+  box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+.tb-btn:hover{background:#fff;border-color:rgba(6,78,59,.30);color:var(--s2-primary)}
+.tb-btn[id="tbLoginBtn"]{background:#fff;border-color:rgba(191,201,195,.55)}
+
+/* Área de usuario en modo claro */
+.tb-user{background:rgba(255,255,255,.72);border:1px solid rgba(191,201,195,.40);color:var(--s2-on-surface)}
+.tb-user .tb-avatar{background:var(--s2-primary);color:#fff}
+.tb-user .tb-logout{background:rgba(6,78,59,.08);color:var(--s2-primary);border:0}
+.tb-user .tb-logout:hover{background:rgba(6,78,59,.16)}
+
+/* Botones role-based conservan sus gradientes vivos (visibles tanto
+   en oscuro como en claro). Solo ajustamos el contraste del texto. */
+.tbn-guardia,.tbn-propose,.tbn-mod,.tbn-sug,.tbn-admin{color:#fff;border-color:transparent}
+
+@media(max-width:640px){
+  .topbar{padding:10px 14px}
+  .topbar .brand-domain{display:none}
+  .topbar .brand-name{font-size:.95rem}
+}
+
 .s2-main{min-height:calc(100vh - 80px);display:flex;flex-direction:column;background:var(--s2-surface)}
 .s2-hero{position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column;padding:120px 24px 48px;align-items:center;min-height:calc(100vh - 80px)}
 .s2-hero-bg{position:absolute;inset:0;z-index:0}
@@ -674,6 +736,7 @@ html,body{min-height:100vh}
     <a href="index.html" class="brand" aria-label="Inicio">
       <span class="brand-emblem">🏥</span>
       <span class="brand-name">Area II<em>Cartagena</em></span>
+      <span class="brand-domain" aria-hidden="true">area2cartagena.es</span>
     </a>
     <div class="toolbar" id="topToolbar">
       <button class="tb-btn" onclick="openInstrucciones()">📖 <span>Instrucciones</span></button>
