@@ -9,10 +9,14 @@
     "e2e:ui": "playwright test --ui",
     "e2e:local": "E2E_BASE_URL=http://127.0.0.1:5500 playwright test",
     "e2e:install": "playwright install --with-deps chromium firefox",
-    "e2e:report": "playwright show-report"
+    "e2e:report": "playwright show-report",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",
-    "@playwright/test": "^1.48.0"
-  }
+    "@playwright/test": "^1.48.0",
+    "vitest": "^2.1.0",
+    "jsdom": "^25.0.0"
+  },
+  "license": "SEE LICENSE IN ./LICENSE"
 }
