@@ -279,6 +279,88 @@ td.num{text-align:right;font-family:var(--mono)}
     </div>
   </div>
 
+  <!-- ═══ Cobertura documental por especialidad ═══════════════════════ -->
+  <div class="section" id="docCoverageSection" style="border-left:4px solid #ef4444">
+    <h3>📚 Cobertura documental por especialidad <span class="meta">acción pendiente</span></h3>
+    <div style="font-size:.8rem;color:var(--t3);margin-bottom:14px">
+      Especialidades de Atención Hospitalaria con su recuento de documentos cargados en
+      <code>documents.json</code>. Las que tengan <strong>0 documentos</strong> aparecen con badge rojo:
+      la consulta IA no responderá con material local hasta que se suban PDFs/protocolos al panel
+      <em>Profesionales → Atención Hospitalaria → [especialidad] → +Añadir</em>.
+    </div>
+    <div id="docCoverageTable"><div class="loading"><span class="spin"></span>Cargando…</div></div>
+    <div style="margin-top:14px;font-size:.74rem;color:var(--t3);padding:8px 12px;background:rgba(239,68,68,.08);border-radius:6px;border-left:3px solid var(--red)">
+      <strong style="color:var(--tx)">⚠️ Acción recomendada:</strong>
+      las especialidades con badge rojo (0 docs) muestran un banner amarillo a los usuarios indicando
+      que la IA no tiene material local. Para resolverlas, sube documentos propios o de fuentes con
+      licencia abierta (SEAP, SERMEF, etc.).
+    </div>
+  </div>
+
+  <script>
+  // Renderiza la tabla de cobertura. Lee documents.json y la lista
+  // de categorías de Atención Hospitalaria (subset de las 26).
+  (function () {
+    var HOSP_CATEGORIES = [
+      'Anatomía Patológica','Alergología','Cardiología','Cirugía Menor','Dermatología',
+      'Digestivo','Endocrinología','Geriatría','Ginecología','Hematología','Infecciosas',
+      'Nefrología','Neumología','Neurología','Oftalmología','ORL','Paliativos','Pediatría',
+      'Protocolos Médicos','Psiquiatría','Rehabilitación','Reumatología','Traumatología',
+      'Urgencias','Urgencias Hospitalarias','Urología',
+    ];
+    function load() {
+      fetch('documents.json?t=' + Date.now()).then(function (r) {
+        return r.ok ? r.json() : null;
+      }).then(function (d) {
+        var box = document.getElementById('docCoverageTable');
+        if (!box) return;
+        if (!d || !d.categories) {
+          box.innerHTML = '<div class="empty">No se pudo cargar documents.json.</div>';
+          return;
+        }
+        var rows = HOSP_CATEGORIES.map(function (cat) {
+          var n = Array.isArray(d.categories[cat]) ? d.categories[cat].length : 0;
+          return { cat: cat, n: n };
+        }).sort(function (a, b) {
+          return a.n - b.n; // 0 primero
+        });
+        var html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.84rem">'
+          + '<thead><tr style="background:#0f1c38;color:var(--t2)">'
+          + '<th style="padding:8px 10px;text-align:left;font-weight:700;border-bottom:1px solid var(--border)">Especialidad</th>'
+          + '<th style="padding:8px 10px;text-align:right;font-weight:700;border-bottom:1px solid var(--border)">Docs</th>'
+          + '<th style="padding:8px 10px;text-align:right;font-weight:700;border-bottom:1px solid var(--border)">Estado</th>'
+          + '</tr></thead><tbody>';
+        rows.forEach(function (r) {
+          var color = r.n === 0 ? '#ef4444'
+            : r.n < 4 ? '#f59e0b'
+              : r.n < 6 ? '#a3a3a3'
+                : '#22c55e';
+          var label = r.n === 0 ? 'SIN MATERIAL'
+            : r.n < 4 ? 'cobertura baja'
+              : r.n < 6 ? 'cobertura media'
+                : '✓ ok';
+          html += '<tr style="border-bottom:1px solid #1e293b">'
+            + '<td style="padding:7px 10px;color:var(--tx)">' + r.cat + '</td>'
+            + '<td style="padding:7px 10px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:' + color + '">' + r.n + '</td>'
+            + '<td style="padding:7px 10px;text-align:right">'
+            + '<span style="display:inline-block;padding:2px 9px;border-radius:8px;font-size:.7rem;font-weight:800;color:' + color + ';background:' + color + '14;border:1px solid ' + color + '40">'
+            + label + '</span></td></tr>';
+        });
+        html += '</tbody></table></div>';
+        box.innerHTML = html;
+      }).catch(function () {
+        var box = document.getElementById('docCoverageTable');
+        if (box) box.innerHTML = '<div class="empty">Error cargando documents.json.</div>';
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', load);
+    } else {
+      load();
+    }
+  })();
+  </script>
+
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px">
     <div class="range-tabs" style="margin:0">
       <button class="range-tab active" data-days="1">Hoy</button>
