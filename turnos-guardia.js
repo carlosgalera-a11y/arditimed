@@ -1,7 +1,7 @@
 // ═══ CALCULADORA DE TURNOS DE GUARDIA ═══
 var turnoNum=2;
 
-function turnoPreset(inicio,fin){
+function turnoPreset(inicio,fin,btn){
     if(inicio==='now'){
         var n=new Date();
         var hh=String(n.getHours()).padStart(2,'0');
@@ -12,18 +12,20 @@ function turnoPreset(inicio,fin){
         document.getElementById('turnoInicio').value=inicio+':00';
         document.getElementById('turnoFin').value=fin+':00';
     }
-    // Highlight selected preset (new Stitch class API + legacy inline-style fallback)
+    // Highlight selected preset. Preferimos el `this` pasado desde el onclick;
+    // si no, fallback a window.event (compatibilidad inline). Esto evita el bug
+    // de no resaltar cuando se llama programáticamente.
+    var tgt = btn || (typeof event!=='undefined' && event && event.target ? event.target.closest('.tg-preset') : null);
     var presets=document.querySelectorAll('#turnoPresets .tg-preset');
     if(presets.length){
         presets.forEach(function(b){b.classList.remove('is-active');});
-        var tgt=(typeof event!=='undefined' && event && event.target)?event.target.closest('.tg-preset'):null;
         if(tgt) tgt.classList.add('is-active');
     }else{
         document.querySelectorAll('#turnoPresets button').forEach(function(b){
             b.style.background='var(--bg-subtle)';b.style.borderColor='var(--border)';b.style.color='var(--text)';
         });
-        if(typeof event!=='undefined' && event && event.target){
-            event.target.style.background='#1d4ed8';event.target.style.borderColor='#1d4ed8';event.target.style.color='#fff';
+        if(tgt){
+            tgt.style.background='#1d4ed8';tgt.style.borderColor='#1d4ed8';tgt.style.color='#fff';
         }
     }
     turnoCalc();
