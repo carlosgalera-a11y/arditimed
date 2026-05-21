@@ -162,35 +162,58 @@
     }
   }, true);
 
-  // ── 6. Watermark forense ────────────────────────────────────────
-  // Se renderiza tras autenticación. Si no hay user, watermark genérico.
+  // ── 6. Watermark forense (variante discreta 2026-05) ───────────
+  // El watermark masivo en diagonal (84 repeticiones) molestaba la
+  // lectura clínica. Lo sustituimos por:
+  //   (a) Stamp pequeño esquina inferior-izquierda con email +
+  //       timestamp (solo tras login, opacidad baja). Sigue siendo
+  //       evidencia forense si el usuario hace screenshot.
+  //   (b) Bloque @media print: al imprimir o "Guardar como PDF",
+  //       imprime el mismo texto como pie de página visible y un
+  //       watermark diagonal central. Cumple el propósito original
+  //       (huella en cualquier copia distribuida) sin estorbar
+  //       durante el uso normal.
+  // El audit log (logAttempt) sigue activo — sigue grabando intentos
+  // sospechosos (devtools, save-as, view-source, copy de bloques
+  // grandes) en /protect_audit Firestore.
   function injectWatermark(label){
     if (!cfg.watermark) return;
     var existing = document.getElementById('__cartage_wm');
     if (existing) existing.remove();
+    var existingPrint = document.getElementById('__cartage_wm_print');
+    if (existingPrint) existingPrint.remove();
+
+    var text = label || '© Cartagenaeste · Reg.PI 00765-03096622';
+
+    // (a) Stamp permanente esquina inferior-izquierda, discreto.
     var wm = document.createElement('div');
     wm.id = '__cartage_wm';
     wm.setAttribute('aria-hidden', 'true');
-    wm.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;'
-      + 'z-index:9998;user-select:none;overflow:hidden;mix-blend-mode:multiply;'
-      + 'opacity:.045';
-    // Patrón de texto repetido en diagonal — visible en screenshots, no
-    // demasiado intrusivo en pantalla normal.
-    var text = label || '© Cartagenaeste · Reg.PI 00765-03096622';
-    var rows = 14, cols = 6;
-    var html = '';
-    for (var r = 0; r < rows; r++){
-      var top = (r * (100 / rows)).toFixed(1) + '%';
-      for (var c = 0; c < cols; c++){
-        var left = (c * (100 / cols)).toFixed(1) + '%';
-        html += '<span style="position:absolute;top:' + top + ';left:' + left + ';'
-          + 'transform:rotate(-28deg);font-family:system-ui,-apple-system,sans-serif;'
-          + 'font-size:.85rem;color:#000;white-space:nowrap;letter-spacing:.5px;">'
-          + text + '</span>';
-      }
-    }
-    wm.innerHTML = html;
+    wm.style.cssText = 'position:fixed;left:8px;bottom:6px;z-index:9998;'
+      + 'pointer-events:none;user-select:none;'
+      + 'font-family:system-ui,-apple-system,sans-serif;font-size:9px;'
+      + 'color:#94a3b8;opacity:.38;letter-spacing:.2px;'
+      + 'text-shadow:0 1px 0 rgba(255,255,255,.55);'
+      + 'max-width:62vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    wm.textContent = text;
     if (document.body) document.body.appendChild(wm);
+
+    // (b) Bloque print: watermark grande diagonal + pie de página.
+    var style = document.createElement('style');
+    style.id = '__cartage_wm_print';
+    style.textContent =
+      '@media print{' +
+        '#__cartage_wm{position:fixed;left:50%;top:50%;bottom:auto;' +
+          'transform:translate(-50%,-50%) rotate(-30deg);' +
+          'font-size:42pt;color:#000;opacity:.07;font-weight:700;' +
+          'letter-spacing:1px;max-width:none;white-space:nowrap;' +
+          'text-shadow:none;}' +
+        '#__cartage_wm::after{content:"' + text.replace(/"/g, '\\"') + '";' +
+          'position:fixed;left:0;right:0;bottom:6mm;font-size:8pt;' +
+          'opacity:.50;color:#475569;text-align:center;display:block;' +
+          'transform:none;font-weight:400;letter-spacing:.5px;}' +
+      '}';
+    document.head.appendChild(style);
   }
 
   // ── 7. DevTools detector (heurístico) ──────────────────────────
