@@ -12,11 +12,20 @@ function turnoPreset(inicio,fin){
         document.getElementById('turnoInicio').value=inicio+':00';
         document.getElementById('turnoFin').value=fin+':00';
     }
-    // Highlight selected preset
-    document.querySelectorAll('#turnoPresets button').forEach(function(b){
-        b.style.background='var(--bg-subtle)';b.style.borderColor='var(--border)';b.style.color='var(--text)';
-    });
-    event.target.style.background='#1d4ed8';event.target.style.borderColor='#1d4ed8';event.target.style.color='#fff';
+    // Highlight selected preset (new Stitch class API + legacy inline-style fallback)
+    var presets=document.querySelectorAll('#turnoPresets .tg-preset');
+    if(presets.length){
+        presets.forEach(function(b){b.classList.remove('is-active');});
+        var tgt=(typeof event!=='undefined' && event && event.target)?event.target.closest('.tg-preset'):null;
+        if(tgt) tgt.classList.add('is-active');
+    }else{
+        document.querySelectorAll('#turnoPresets button').forEach(function(b){
+            b.style.background='var(--bg-subtle)';b.style.borderColor='var(--border)';b.style.color='var(--text)';
+        });
+        if(typeof event!=='undefined' && event && event.target){
+            event.target.style.background='#1d4ed8';event.target.style.borderColor='#1d4ed8';event.target.style.color='#fff';
+        }
+    }
     turnoCalc();
 }
 
@@ -79,51 +88,105 @@ function minToTime(m){
 }
 
 function renderTurnos(turnos,totalH,totalM){
-    var colors=['#1d4ed8','#059669','#dc2626','#7c3aed','#ea580c','#0284c7','#ca8a04','#be185d','#475569','#15803d'];
-    var bgColors=['#eff6ff','#ecfdf5','#fef2f2','#f5f3ff','#fff7ed','#e0f2fe','#fefce8','#fdf2f8','#f1f5f9','#f0fdf4'];
+    // Update inline duración meta (matches Stitch layout)
+    var turnoMinTotal=(turnos[0].durH*60+turnos[0].durM);
+    var durMeta=document.getElementById('turnoDuracion');
+    if(durMeta){
+        durMeta.textContent='Duración total: '+totalH+'h '+totalM+'min · Cada turno: '+turnos[0].durH+'h '+turnos[0].durM+'min';
+    }
 
-    var html='<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">';
+    // Detect new Stitch panel (#panelTurnos uses .tg-* classes)
+    var stitch=!!document.querySelector('#panelTurnos .tg-card');
+    if(!stitch){
+        return _renderTurnosLegacy(turnos,totalH,totalM);
+    }
 
-    // Header
-    html+='<div style="text-align:center;margin-bottom:20px;">';
-    html+='<div style="font-size:.85rem;color:var(--text-muted);margin-bottom:4px;">Guardia de '+totalH+'h '+totalM+'min · '+turnos.length+' turnos</div>';
-    html+='<div style="font-size:1.5rem;font-weight:800;color:var(--text);">'+turnos[0].inicio+' → '+turnos[turnos.length-1].fin+'</div>';
+    var colors=['#003527','#0f6b4a','#16a34a','#52a787','#80bea6','#5a8c75','#7b5804','#fdcd74','#475569','#15803d'];
+    var bgs   =['#e9efeb','#f5fbf7','#dcfce7','#eef5f0','#e3eae6','#eff5f1','#fef3c7','#fef9c3','#f1f5f9','#f0fdf4'];
+
+    var totalMin=totalH*60+totalM;
+    var html=''
+      +'<div class="tg-result">'
+      +'<div class="tg-result-head">'
+      +'<div class="tg-result-caps">Guardia de '+totalH+'h '+totalM+'min · '+turnos.length+' turno'+(turnos.length>1?'s':'')+'</div>'
+      +'<div class="tg-result-time">'+turnos[0].inicio+' → '+turnos[turnos.length-1].fin+'</div>'
+      +'</div>';
+
+    // Timeline bar
+    html+='<div class="tg-timeline-bar" role="img" aria-label="Distribución visual de turnos">';
+    turnos.forEach(function(t,i){
+        var dur=t.durH*60+t.durM;
+        var pct=totalMin>0?(dur/totalMin*100):(100/turnos.length);
+        html+='<div style="flex:'+pct.toFixed(2)+';background:'+colors[i%colors.length]+';" title="'+_escAttr(t.nombre)+': '+t.inicio+' → '+t.fin+'"></div>';
+    });
     html+='</div>';
 
-    // Visual timeline bar
-    html+='<div style="display:flex;border-radius:10px;overflow:hidden;height:40px;margin-bottom:20px;border:1px solid var(--border);">';
+    // Timeline labels (TURNO 1 · CAMBIO HH:MM · TURNO 2 …)
+    html+='<div class="tg-timeline-labels">';
     turnos.forEach(function(t,i){
-        var pct=(t.durH*60+t.durM)/(totalH*60+(totalH===0?totalM:0))*100||100/turnos.length;
-        html+='<div style="flex:'+pct+';background:'+colors[i%colors.length]+';display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;min-width:30px;position:relative;" title="'+t.nombre+': '+t.inicio+' - '+t.fin+'">';
-        html+=t.num;
-        html+='</div>';
+        html+='<span>Turno '+t.num+'</span>';
+        if(i<turnos.length-1){
+            html+='<span class="tg-tl-sep">Cambio · '+t.fin+'</span>';
+        }
     });
     html+='</div>';
 
     // Turno cards
     turnos.forEach(function(t,i){
         var c=colors[i%colors.length];
-        var bg=bgColors[i%bgColors.length];
-        html+='<div style="display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;background:'+bg+';border-radius:10px;border-left:4px solid '+c+';">';
-        html+='<div style="min-width:44px;height:44px;border-radius:50%;background:'+c+';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.1rem;">'+t.num+'</div>';
-        html+='<div style="flex:1;">';
-        html+='<div style="font-weight:700;font-size:.95rem;color:'+c+';">'+t.nombre+'</div>';
-        html+='<div style="font-size:.85rem;color:var(--text);margin-top:2px;">'+t.inicio+' → '+t.fin+' <span style="color:var(--text-muted);font-size:.78rem;">('+t.durH+'h '+t.durM+'min)</span></div>';
-        html+='</div>';
-        html+='</div>';
+        var bg=bgs[i%bgs.length];
+        var activeCls=(i===0)?' is-active':'';
+        html+='<div class="tg-turn-card'+activeCls+'" style="background:'+bg+';">'
+          +'<div class="tg-turn-num" style="background:'+c+';">'+t.num+'</div>'
+          +'<div class="tg-turn-body">'
+          +'<div class="tg-turn-name">'+_escHtml(t.nombre)+'</div>'
+          +'<div class="tg-turn-time"><span>⏱ '+t.inicio+' → '+t.fin+'</span><span class="tg-turn-pill">'+t.durH+'h '+t.durM+'min</span></div>'
+          +'</div></div>';
     });
 
     // Actions
+    html+='<div class="tg-actions">'
+      +'<button type="button" onclick="turnoShareWA()" class="tg-act tg-act-primary">📤 WhatsApp</button>'
+      +'<button type="button" onclick="turnoCopy()" class="tg-act">📋 Copiar</button>'
+      +'<button type="button" onclick="turnoPrint()" class="tg-act">🖨 Imprimir</button>'
+      +'</div>'
+      +'</div>';
+
+    document.getElementById('turnoResult').innerHTML=html;
+    window._turnosData=turnos;
+}
+
+function _escHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+function _escAttr(s){return _escHtml(s);}
+
+function _renderTurnosLegacy(turnos,totalH,totalM){
+    var colors=['#1d4ed8','#059669','#dc2626','#7c3aed','#ea580c','#0284c7','#ca8a04','#be185d','#475569','#15803d'];
+    var bgColors=['#eff6ff','#ecfdf5','#fef2f2','#f5f3ff','#fff7ed','#e0f2fe','#fefce8','#fdf2f8','#f1f5f9','#f0fdf4'];
+
+    var html='<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">';
+    html+='<div style="text-align:center;margin-bottom:20px;">';
+    html+='<div style="font-size:.85rem;color:var(--text-muted);margin-bottom:4px;">Guardia de '+totalH+'h '+totalM+'min · '+turnos.length+' turnos</div>';
+    html+='<div style="font-size:1.5rem;font-weight:800;color:var(--text);">'+turnos[0].inicio+' → '+turnos[turnos.length-1].fin+'</div>';
+    html+='</div>';
+    html+='<div style="display:flex;border-radius:10px;overflow:hidden;height:40px;margin-bottom:20px;border:1px solid var(--border);">';
+    turnos.forEach(function(t,i){
+        var pct=(t.durH*60+t.durM)/(totalH*60+(totalH===0?totalM:0))*100||100/turnos.length;
+        html+='<div style="flex:'+pct+';background:'+colors[i%colors.length]+';display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;min-width:30px;" title="'+t.nombre+': '+t.inicio+' - '+t.fin+'">'+t.num+'</div>';
+    });
+    html+='</div>';
+    turnos.forEach(function(t,i){
+        var c=colors[i%colors.length];var bg=bgColors[i%bgColors.length];
+        html+='<div style="display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;background:'+bg+';border-radius:10px;border-left:4px solid '+c+';">';
+        html+='<div style="min-width:44px;height:44px;border-radius:50%;background:'+c+';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.1rem;">'+t.num+'</div>';
+        html+='<div style="flex:1;"><div style="font-weight:700;font-size:.95rem;color:'+c+';">'+t.nombre+'</div><div style="font-size:.85rem;color:var(--text);margin-top:2px;">'+t.inicio+' → '+t.fin+' <span style="color:var(--text-muted);font-size:.78rem;">('+t.durH+'h '+t.durM+'min)</span></div></div>';
+        html+='</div>';
+    });
     html+='<div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">';
-    html+='<button onclick="turnoShareWA()" style="padding:10px 20px;background:#25d366;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);display:flex;align-items:center;gap:6px;">📱 WhatsApp</button>';
+    html+='<button onclick="turnoShareWA()" style="padding:10px 20px;background:#25d366;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);">📱 WhatsApp</button>';
     html+='<button onclick="turnoCopy()" style="padding:10px 20px;background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;font-family:var(--font-body);">📋 Copiar</button>';
     html+='<button onclick="turnoPrint()" style="padding:10px 20px;background:var(--bg-subtle);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;font-family:var(--font-body);">🖨 Imprimir</button>';
-    html+='</div>';
-
-    html+='</div>';
+    html+='</div></div>';
     document.getElementById('turnoResult').innerHTML=html;
-
-    // Store for sharing
     window._turnosData=turnos;
 }
 
