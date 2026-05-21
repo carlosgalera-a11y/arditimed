@@ -10,22 +10,48 @@
     </div>
     <div style="flex:1;overflow-y:auto;background:var(--bg-main);padding:40px 20px;">
         <div style="max-width:800px;margin:0 auto;">
-            <div style="background:linear-gradient(135deg,#0066cc,#004499);border-radius:var(--radius);padding:28px;color:#fff;margin-bottom:28px;position:relative;overflow:hidden;">
-                <div style="position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.15;">🔬</div>
-                <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px;">🔬 Herramientas</h2>
-                <p style="opacity:.85;font-size:.95rem;font-weight:300;">Análisis de imágenes médicas con IA y casos clínicos NIH para formación.</p>
+            <!-- HERO Page (Stitch · Clinical Precision) -->
+            <style>
+              .sia-hero{background:linear-gradient(135deg,#003527 0%,#064e3b 100%);border-radius:24px;padding:34px 36px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(6,78,59,.12);}
+              .sia-hero-bg{position:absolute;right:-8%;top:-25%;width:480px;height:480px;background:rgba(176,240,214,.1);border-radius:50%;filter:blur(110px);pointer-events:none;}
+              .sia-hero-ico-bg{position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:7rem;opacity:.08;line-height:1;pointer-events:none;}
+              .sia-hero-inner{position:relative;z-index:1;max-width:640px;}
+              .sia-hero-row{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+              .sia-hero-ico{width:48px;height:48px;border-radius:14px;background:rgba(176,240,214,.18);border:1px solid rgba(176,240,214,.25);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+              .sia-hero h2{font-family:var(--font-display);font-size:1.9rem;letter-spacing:-.01em;line-height:1.15;margin:0;font-weight:700;color:#fff;}
+              .sia-hero p{opacity:.92;font-size:.95rem;font-weight:400;color:#b0f0d6;line-height:1.55;margin:0;}
+              @media (max-width:600px){.sia-hero{padding:24px;}.sia-hero h2{font-size:1.4rem;}.sia-hero-ico-bg{font-size:5rem;right:12px;}}
+            </style>
+            <div class="sia-hero">
+                <div class="sia-hero-bg"></div>
+                <div class="sia-hero-ico-bg">🔬</div>
+                <div class="sia-hero-inner">
+                    <div class="sia-hero-row">
+                        <div class="sia-hero-ico">🧪</div>
+                        <h2>Herramientas de Diagnóstico IA</h2>
+                    </div>
+                    <p>Análisis avanzado de imágenes médicas con Inteligencia Artificial y casos clínicos NIH para formación profesional continua en el Área II.</p>
+                </div>
             </div>
 
-            <!-- TABS: Herramientas -->
-            <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:3px solid var(--border);flex-wrap:wrap;">
-                <button id="tabScanIA" onclick="switchScanTab('scanIA')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:linear-gradient(135deg,#0066cc,#004499);color:#fff;font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🔬 Analizar imagen</button>
-                <button id="tabCalc" onclick="switchScanTab('calc')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🧮 Calculadoras</button>
-                <button id="tabNotebooks" onclick="switchScanTab('notebooks')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🤖 NotebookLM</button>
-                <button id="tabPlantillas" onclick="switchScanTab('plantillas')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📋 Plantillas</button>
-                <button id="tabTriaje" onclick="switchScanTab('triaje')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🚨 Triaje IA</button>
-                <button id="tabTurnos" onclick="switchScanTab('turnos')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">⏰ Turnos</button>
-                <button id="tabResumen" onclick="switchScanTab('resumen')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">📝 Resúmenes rápidos</button>
-                <button id="tabProa" onclick="switchScanTab('proa')" style="flex:1;min-width:120px;padding:12px 8px;border:none;background:var(--bg-subtle);color:var(--text);font-family:var(--font-body);font-size:.88rem;font-weight:700;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.25s;">🛡️ PROA</button>
+            <!-- TABS: Herramientas (Stitch · Clinical Precision) -->
+            <style>
+              .sia-tabs{display:flex;gap:6px;margin-bottom:24px;padding:6px;background:rgba(0,53,39,.05);border-radius:14px;flex-wrap:wrap;}
+              .sia-tabs > button{flex:1 1 110px;min-width:110px;padding:10px 8px;border:none;background:transparent;color:#404944;font-family:var(--font-body);font-size:.82rem;font-weight:700;cursor:pointer;border-radius:10px;transition:.22s;letter-spacing:.01em;}
+              .sia-tabs > button:hover{background:rgba(0,53,39,.06);color:#003527;}
+              /* Active tab: any inline gradient applied by switchScanTab() forces Stitch green */
+              .sia-tabs > button.is-active,
+              .sia-tabs > button[style*="linear-gradient"]{background:#003527 !important;background-image:none !important;color:#fff !important;box-shadow:0 2px 8px rgba(0,53,39,.18);}
+            </style>
+            <div class="sia-tabs">
+                <button id="tabScanIA" onclick="switchScanTab('scanIA')" class="is-active">🔬 Analizar imagen</button>
+                <button id="tabCalc" onclick="switchScanTab('calc')">🧮 Calculadoras</button>
+                <button id="tabNotebooks" onclick="switchScanTab('notebooks')">🤖 MegaCuaderno</button>
+                <button id="tabPlantillas" onclick="switchScanTab('plantillas')">📋 Plantillas</button>
+                <button id="tabTriaje" onclick="switchScanTab('triaje')">🚨 Triaje IA</button>
+                <button id="tabTurnos" onclick="switchScanTab('turnos')">⏰ Turnos</button>
+                <button id="tabResumen" onclick="switchScanTab('resumen')">📝 Resúmenes</button>
+                <button id="tabProa" onclick="switchScanTab('proa')">🛡️ PROA</button>
             </div>
 
             <!-- TAB 1: SCAN IA (existing) -->
@@ -55,13 +81,23 @@
                 </div>
                 <div id="scanUploadedList" style="display:none;margin-top:12px;"></div>
             </div>
-            <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
-                <button class="scan-mode-btn active" onclick="scanSetType('derma',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🩹 Dermatología</button>
-                <button class="scan-mode-btn" onclick="scanSetType('torax',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🫁 Rx Tórax</button>
-                <button class="scan-mode-btn" onclick="scanSetType('osea',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🦴 Rx Ósea</button>
-                <button class="scan-mode-btn" onclick="scanSetType('abdomen',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🔬 Rx Abdomen</button>
-                <button class="scan-mode-btn" onclick="scanSetType('ecg',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">💓 ECG</button>
-                <button class="scan-mode-btn" onclick="scanSetType('eco',this)" style="flex:1;min-width:100px;padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font-body);font-size:.85rem;font-weight:600;transition:.25s;text-align:center;">🫀 Ecografía</button>
+            <!-- Selector de especialidad (Stitch · Clinical Precision) -->
+            <style>
+              .sia-spec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+              .sia-spec-head h3{font-family:var(--font-display);color:#003527;font-size:1.05rem;font-weight:700;margin:0;}
+              .sia-spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:22px;}
+              .scan-mode-btn{background:#fff !important;border:1.5px solid rgba(191,201,195,.7) !important;border-radius:14px !important;padding:14px 8px !important;font-family:var(--font-body) !important;font-size:.82rem;font-weight:700;color:#003527 !important;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:.22s;line-height:1.2;text-align:center;min-height:74px;}
+              .scan-mode-btn .sia-spec-ico{font-size:1.5rem;line-height:1;}
+              .scan-mode-btn:hover{border-color:#003527 !important;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,53,39,.08);}
+              .scan-mode-btn.active{background:#003527 !important;color:#fff !important;border-color:#003527 !important;box-shadow:0 4px 12px rgba(0,53,39,.18);}
+            </style>
+            <div class="sia-spec">
+                <button class="scan-mode-btn active" onclick="scanSetType('derma',this)"><span class="sia-spec-ico">🩹</span><span>Dermatología</span></button>
+                <button class="scan-mode-btn" onclick="scanSetType('torax',this)"><span class="sia-spec-ico">🫁</span><span>Rx Tórax</span></button>
+                <button class="scan-mode-btn" onclick="scanSetType('osea',this)"><span class="sia-spec-ico">🦴</span><span>Rx Ósea</span></button>
+                <button class="scan-mode-btn" onclick="scanSetType('abdomen',this)"><span class="sia-spec-ico">🔬</span><span>Rx Abdomen</span></button>
+                <button class="scan-mode-btn" onclick="scanSetType('ecg',this)"><span class="sia-spec-ico">💓</span><span>ECG</span></button>
+                <button class="scan-mode-btn" onclick="scanSetType('eco',this)"><span class="sia-spec-ico">🫀</span><span>Ecografía</span></button>
             </div>
             <!-- AI Models Reference -->
             <div id="scanModelInfo" style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;font-size:.8rem;color:var(--text-light);margin-bottom:20px;line-height:1.5;display:flex;align-items:center;gap:10px;">
@@ -919,19 +955,35 @@
                     <button onclick="cronoLap()" id="cronoLapBtn" style="display:none;margin-top:4px;padding:3px 8px;border:none;border-radius:6px;background:rgba(96,165,250,.15);color:#60a5fa;font-size:.62rem;font-weight:600;cursor:pointer;width:100%;">+ Parcial</button>
                 </div>
 
-                <div style="background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                        <span style="font-size:1.8rem;">🤖</span>
+                <!-- HERO MegaCuaderno (Stitch · Clinical Precision) -->
+                <style>
+                  #panelNotebooks .mc-hero{background:linear-gradient(135deg,#003527 0%,#064e3b 100%);border-radius:24px;padding:24px 28px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(6,78,59,.1);}
+                  #panelNotebooks .mc-hero-bg{position:absolute;right:-8%;top:-30%;width:340px;height:340px;background:rgba(176,240,214,.14);border-radius:50%;filter:blur(80px);pointer-events:none;}
+                  #panelNotebooks .mc-hero-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;position:relative;z-index:1;}
+                  #panelNotebooks .mc-hero-ico{width:46px;height:46px;border-radius:12px;background:rgba(176,240,214,.18);border:1px solid rgba(176,240,214,.25);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+                  #panelNotebooks .mc-hero-title{font-family:var(--font-display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em;margin:0;}
+                  #panelNotebooks .mc-hero-sub{font-size:.82rem;opacity:.88;margin-top:2px;color:#b0f0d6;}
+                  #panelNotebooks .mc-hero-chips{display:flex;gap:6px;flex-wrap:wrap;position:relative;z-index:1;}
+                  #panelNotebooks .mc-chip{background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);padding:5px 12px;border-radius:999px;font-size:.74rem;color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:5px;}
+                  #panelNotebooks .mc-chip-emerg{background:rgba(211,47,47,.22);border-color:rgba(211,47,47,.35);}
+                  #panelNotebooks .mc-chip-info{background:rgba(2,136,209,.2);border-color:rgba(2,136,209,.3);}
+                  #panelNotebooks .mc-chip-pharm{background:rgba(123,88,4,.2);border-color:rgba(123,88,4,.3);}
+                  #panelNotebooks .mc-chip-abx{background:rgba(176,240,214,.18);border-color:rgba(176,240,214,.3);}
+                </style>
+                <div class="mc-hero">
+                    <div class="mc-hero-bg"></div>
+                    <div class="mc-hero-row">
+                        <div class="mc-hero-ico">🤖</div>
                         <div>
-                            <div style="font-weight:800;font-size:1.05rem;">MegaCuaderno Clínico</div>
-                            <div style="font-size:.78rem;opacity:.85;">Urgencias · Atención Primaria · Farmacología · Antibióticos</div>
+                            <h3 class="mc-hero-title">MegaCuaderno Clínico</h3>
+                            <div class="mc-hero-sub">Asistente IA · Protocolos Área II Cartagena</div>
                         </div>
                     </div>
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">🚨 Urgencias</span>
-                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">🩺 Atención Primaria</span>
-                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">💊 Farmacología</span>
-                        <span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;font-size:.72rem;">🦠 Antibióticos HSL</span>
+                    <div class="mc-hero-chips">
+                        <span class="mc-chip mc-chip-emerg">🚨 Urgencias</span>
+                        <span class="mc-chip mc-chip-info">🩺 Atención Primaria</span>
+                        <span class="mc-chip mc-chip-pharm">💊 Farmacología</span>
+                        <span class="mc-chip mc-chip-abx">🦠 Antibióticos HSL</span>
                     </div>
                 </div>
 
@@ -1596,65 +1648,144 @@
                 </div>
             </div><!-- end panelTriaje -->
 
-            <!-- TAB: TURNOS DE GUARDIA -->
+            <!-- TAB: TURNOS DE GUARDIA (Stitch · Clinical Precision) -->
             <div id="panelTurnos" style="display:none;">
-                <div style="background:linear-gradient(135deg,#1e40af,#1d4ed8);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;color:#fff;">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <span style="font-size:1.8rem;">⏰</span>
-                        <div>
-                            <div style="font-weight:800;font-size:1.05rem;">Calculadora de Turnos de Guardia</div>
-                            <div style="font-size:.78rem;opacity:.85;">Divide la guardia en turnos equitativos · Asigna nombres · Comparte por WhatsApp</div>
-                        </div>
-                    </div>
-                </div>
+              <style>
+                #panelTurnos{
+                  --tg-primary:#003527;
+                  --tg-primary-hover:#00533c;
+                  --tg-primary-soft:rgba(0,53,39,.08);
+                  --tg-on-primary:#ffffff;
+                  --tg-surface:#ffffff;
+                  --tg-surface-muted:#eef5f0;
+                  --tg-surface-card:#f5fbf7;
+                  --tg-border:#d6e3dc;
+                  --tg-text:#0b1f17;
+                  --tg-text-muted:#5a6b62;
+                  --tg-wa:#16a34a;
+                  --tg-wa-hover:#15803d;
+                }
+                #panelTurnos .tg-head{margin-bottom:18px;}
+                #panelTurnos .tg-head .tg-title{color:var(--tg-text);font-weight:700;font-size:1.05rem;font-family:var(--font-body);}
+                #panelTurnos .tg-head .tg-sub{color:var(--tg-text-muted);font-size:.88rem;margin-top:2px;}
+                #panelTurnos .tg-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start;}
+                @media (max-width:860px){#panelTurnos .tg-grid{grid-template-columns:1fr;}}
+                #panelTurnos .tg-card{background:var(--tg-surface);border:1px solid var(--tg-border);border-radius:14px;padding:20px;}
+                #panelTurnos .tg-caps{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--tg-text-muted);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+                #panelTurnos .tg-label{font-size:.82rem;color:var(--tg-text);font-weight:600;margin-bottom:6px;display:block;font-family:var(--font-body);}
+                #panelTurnos .tg-label--muted{color:var(--tg-text-muted);font-weight:500;}
+                #panelTurnos .tg-presets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+                #panelTurnos .tg-preset{
+                  padding:14px 10px;border-radius:12px;border:1px solid var(--tg-border);
+                  background:var(--tg-surface);cursor:pointer;text-align:center;line-height:1.2;
+                  font-family:var(--font-body);font-size:.78rem;color:var(--tg-text);font-weight:700;
+                  display:flex;flex-direction:column;align-items:center;gap:6px;transition:.18s;
+                }
+                #panelTurnos .tg-preset .tg-ico{font-size:1.2rem;}
+                #panelTurnos .tg-preset:hover{border-color:var(--tg-primary);}
+                #panelTurnos .tg-preset.is-active{background:var(--tg-primary);color:var(--tg-on-primary);border-color:var(--tg-primary);}
+                #panelTurnos .tg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+                #panelTurnos .tg-input,
+                #panelTurnos .tg-time{
+                  width:100%;padding:11px 12px;border:1px solid var(--tg-border);border-radius:10px;
+                  font-family:var(--font-body);font-size:.95rem;font-weight:600;color:var(--tg-text);
+                  background:var(--tg-surface);box-sizing:border-box;
+                }
+                #panelTurnos .tg-input:focus,#panelTurnos .tg-time:focus{outline:2px solid var(--tg-primary);outline-offset:1px;border-color:var(--tg-primary);}
+                #panelTurnos .tg-stepper{display:flex;align-items:center;gap:10px;background:var(--tg-surface-muted);border-radius:10px;padding:6px;}
+                #panelTurnos .tg-step{
+                  width:36px;height:36px;border-radius:8px;cursor:pointer;
+                  background:var(--tg-surface);color:var(--tg-text);font-size:1.2rem;font-weight:700;
+                  display:flex;align-items:center;justify-content:center;border:1px solid var(--tg-border);
+                  font-family:var(--font-body);
+                }
+                #panelTurnos .tg-step.is-plus{background:var(--tg-primary);color:var(--tg-on-primary);border-color:var(--tg-primary);}
+                #panelTurnos .tg-step-val{flex:1;text-align:center;font-weight:800;font-size:1.05rem;color:var(--tg-text);}
+                #panelTurnos .tg-meta{font-size:.78rem;color:var(--tg-text-muted);margin-top:8px;line-height:1.45;}
+                #panelTurnos .tg-cta{
+                  width:100%;margin-top:8px;padding:14px;border:none;border-radius:12px;
+                  background:var(--tg-primary);color:var(--tg-on-primary);font-weight:800;font-size:.95rem;
+                  font-family:var(--font-body);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+                  transition:.18s;
+                }
+                #panelTurnos .tg-cta:hover{background:var(--tg-primary-hover);}
 
-                <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;">
-                    <!-- Tipo de guardia -->
-                    <div style="margin-bottom:16px;">
-                        <label style="font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:6px;">Tipo de guardia</label>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="turnoPresets">
-                            <button onclick="turnoPreset('17','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🌙 17h→8h (PAC)</button>
-                            <button onclick="turnoPreset('20','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🏥 20h→8h (Hospital)</button>
-                            <button onclick="turnoPreset('15','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">📋 15h→8h (24h)</button>
-                            <button onclick="turnoPreset('08','08')" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle);cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:var(--text);">🔄 8h→8h (24h completa)</button>
-                            <button onclick="turnoPreset('now','')" style="padding:8px 16px;border:1px solid #0066cc;border-radius:8px;background:#eff6ff;cursor:pointer;font-size:.85rem;font-family:var(--font-body);font-weight:600;color:#1d4ed8;">📍 Desde ahora</button>
-                        </div>
-                    </div>
+                /* Result */
+                #panelTurnos .tg-result{background:var(--tg-surface);border:1px solid var(--tg-border);border-radius:14px;overflow:hidden;}
+                #panelTurnos .tg-result-head{background:var(--tg-primary);color:var(--tg-on-primary);padding:18px;text-align:center;}
+                #panelTurnos .tg-result-caps{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.9;}
+                #panelTurnos .tg-result-time{font-size:1.4rem;font-weight:800;margin-top:6px;letter-spacing:.04em;}
+                #panelTurnos .tg-timeline-bar{display:flex;height:6px;background:var(--tg-surface-muted);}
+                #panelTurnos .tg-timeline-labels{display:flex;justify-content:space-between;font-size:.62rem;letter-spacing:.14em;font-weight:800;color:var(--tg-text-muted);padding:10px 18px 14px;background:var(--tg-surface);text-transform:uppercase;}
+                #panelTurnos .tg-timeline-labels .tg-tl-sep{color:var(--tg-text-muted);opacity:.7;font-weight:600;}
+                #panelTurnos .tg-turn-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;margin:0 16px 10px;}
+                #panelTurnos .tg-turn-card:first-of-type{margin-top:4px;}
+                #panelTurnos .tg-turn-card.is-active{box-shadow:0 0 0 1px var(--tg-primary) inset;}
+                #panelTurnos .tg-turn-num{width:34px;height:34px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0;}
+                #panelTurnos .tg-turn-body{flex:1;min-width:0;}
+                #panelTurnos .tg-turn-name{font-weight:700;font-size:.95rem;color:var(--tg-text);}
+                #panelTurnos .tg-turn-time{font-size:.82rem;color:var(--tg-text-muted);margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+                #panelTurnos .tg-turn-pill{display:inline-block;padding:2px 8px;background:var(--tg-primary-soft);border-radius:10px;font-size:.7rem;font-weight:700;color:var(--tg-text);}
+                #panelTurnos .tg-actions{display:flex;gap:10px;padding:14px 16px 16px;border-top:1px solid var(--tg-border);background:var(--tg-surface);flex-wrap:wrap;}
+                #panelTurnos .tg-act{flex:1;min-width:110px;padding:11px 14px;border:1px solid var(--tg-border);background:var(--tg-surface);color:var(--tg-text);border-radius:10px;font-family:var(--font-body);font-weight:700;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.18s;}
+                #panelTurnos .tg-act:hover{border-color:var(--tg-primary);color:var(--tg-primary);}
+                #panelTurnos .tg-act-primary{background:var(--tg-wa);color:#fff;border-color:var(--tg-wa);}
+                #panelTurnos .tg-act-primary:hover{background:var(--tg-wa-hover);border-color:var(--tg-wa-hover);color:#fff;}
 
-                    <!-- Hora inicio / fin -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                        <div>
-                            <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Inicio de guardia</label>
-                            <input type="time" id="turnoInicio" value="17:00" onchange="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:1rem;font-family:var(--font-body);font-weight:600;">
-                        </div>
-                        <div>
-                            <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Fin de guardia</label>
-                            <input type="time" id="turnoFin" value="08:00" onchange="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:1rem;font-family:var(--font-body);font-weight:600;">
-                        </div>
-                    </div>
+                #panelTurnos .tg-empty{background:var(--tg-surface-card);border:1px dashed var(--tg-border);border-radius:14px;padding:28px 22px;text-align:center;color:var(--tg-text-muted);font-size:.88rem;line-height:1.55;}
+                #panelTurnos .tg-empty strong{display:block;color:var(--tg-text);margin-bottom:6px;font-size:1rem;}
+              </style>
 
-                    <!-- Número de turnos -->
-                    <div style="margin-bottom:16px;">
-                        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Número de turnos</label>
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <button onclick="turnoChangNum(-1)" style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg-subtle);cursor:pointer;font-size:1.2rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;">−</button>
-                            <span id="turnoNumDisplay" style="font-size:1.8rem;font-weight:800;color:#1d4ed8;min-width:40px;text-align:center;">2</span>
-                            <button onclick="turnoChangNum(1)" style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg-subtle);cursor:pointer;font-size:1.2rem;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;">+</button>
-                            <span id="turnoDuracion" style="font-size:.88rem;color:var(--text-muted);margin-left:8px;"></span>
-                        </div>
-                    </div>
+              <div class="tg-head">
+                <div class="tg-title">Calculadora de Turnos</div>
+                <div class="tg-sub">Optimiza la distribución de tiempos de guardia equitativamente.</div>
+              </div>
 
-                    <!-- Nombres -->
-                    <div style="margin-bottom:16px;" id="turnoNombresBox">
-                        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:4px;">Nombres (opcional, separados por coma)</label>
-                        <input type="text" id="turnoNombres" placeholder="Ej: Carlos, Ana, Pedro" oninput="turnoCalc()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:var(--font-body);box-sizing:border-box;">
-                    </div>
+              <div class="tg-grid">
+                <!-- Configuración -->
+                <div class="tg-card">
+                  <div class="tg-caps">⚙️ Configuración de guardia</div>
 
-                    <button onclick="turnoCalc()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1e40af,#1d4ed8);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:1rem;font-family:var(--font-body);">⏰ Calcular turnos</button>
+                  <label class="tg-label">Tipo de Jornada</label>
+                  <div class="tg-presets" id="turnoPresets">
+                    <button type="button" onclick="turnoPreset('17','08')" class="tg-preset is-active"><span class="tg-ico">🌙</span>17h → 8h (PAC)</button>
+                    <button type="button" onclick="turnoPreset('20','08')" class="tg-preset"><span class="tg-ico">🏥</span>20h → 8h (HOSP)</button>
+                    <button type="button" onclick="turnoPreset('15','08')" class="tg-preset"><span class="tg-ico">📋</span>15h → 8h (24H)</button>
+                    <button type="button" onclick="turnoPreset('08','08')" class="tg-preset"><span class="tg-ico">🔄</span>8h → 8h (FULL)</button>
+                  </div>
+
+                  <div class="tg-row">
+                    <div>
+                      <label class="tg-label tg-label--muted">Inicio</label>
+                      <input type="time" id="turnoInicio" value="17:00" onchange="turnoCalc()" class="tg-time">
+                    </div>
+                    <div>
+                      <label class="tg-label tg-label--muted">Fin</label>
+                      <input type="time" id="turnoFin" value="08:00" onchange="turnoCalc()" class="tg-time">
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom:14px;">
+                    <label class="tg-label tg-label--muted">Número de Profesionales (Turnos)</label>
+                    <div class="tg-stepper">
+                      <button type="button" onclick="turnoChangNum(-1)" class="tg-step" aria-label="Disminuir turnos">−</button>
+                      <span id="turnoNumDisplay" class="tg-step-val">2</span>
+                      <button type="button" onclick="turnoChangNum(1)" class="tg-step is-plus" aria-label="Aumentar turnos">+</button>
+                    </div>
+                    <div class="tg-meta" id="turnoDuracion">Duración total: 15h 0min · Cada turno: 7h 30min</div>
+                  </div>
+
+                  <div style="margin-bottom:14px;" id="turnoNombresBox">
+                    <label class="tg-label tg-label--muted">Nombres (opcional)</label>
+                    <input type="text" id="turnoNombres" placeholder="Ej: Carlos, Ana, Pedro" oninput="turnoCalc()" class="tg-input">
+                  </div>
+
+                  <button type="button" onclick="turnoCalc()" class="tg-cta">🗓 Calcular Turnos</button>
                 </div>
 
                 <!-- Resultado -->
-                <div id="turnoResult"></div>
+                <div id="turnoResult"><div class="tg-empty"><strong>Tu plan de guardia aparecerá aquí</strong>Elige el tipo de jornada y profesionales, después pulsa "Calcular Turnos".</div></div>
+              </div>
             </div><!-- end panelTurnos -->
 
 
@@ -1709,22 +1840,171 @@
                 </div>
             </div><!-- end panelResumen -->
 
-            <!-- TAB: PROA · Uso racional de antibióticos -->
+            <!-- TAB: PROA · Uso racional de antibióticos (Stitch · Clinical Precision) -->
             <div id="panelProa" style="display:none;">
-                <div style="background:linear-gradient(135deg,#0a4d35,#1a6b4a);border-radius:var(--radius);padding:22px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden;">
-                    <div style="position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:3.2rem;opacity:.18;">🛡️</div>
-                    <h3 style="font-family:var(--font-display);font-size:1.35rem;margin-bottom:6px;">PROA · Programa de Optimización del Uso de Antibióticos</h3>
-                    <p style="opacity:.85;font-size:.88rem;font-weight:300;line-height:1.5;max-width:680px;">Herramienta docente para prescripción antibiótica empírica basada en el <strong>Plan Nacional Resistencia Antibióticos (PRAN)</strong>, SEIMC-GEIRAS e IDSA. Acertar empírico → desescalar a 48-72 h → duración mínima eficaz.</p>
-                    <a href="proa.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 14px;background:rgba(255,255,255,.18);color:#fff;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:700;">↗ Abrir en vista completa</a>
+                <style>
+                  #panelProa{--pr-primary:#003527;--pr-primary-container:#064e3b;--pr-primary-fixed:#b0f0d6;--pr-medical-cyan:#E0F2F1;--pr-secondary:#7b5804;--pr-secondary-soft:#fdcd74;--pr-emergency:#D32F2F;--pr-clinical-bg:#F5FBF7;--pr-on-surface:#101e17;--pr-outline:#bfc9c3;}
+                  #panelProa .pr-hero{background:linear-gradient(135deg,var(--pr-primary) 0%,var(--pr-primary-container) 100%);border-radius:24px;padding:32px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;box-shadow:0 4px 12px rgba(6,78,59,.08);}
+                  #panelProa .pr-hero h3{font-family:var(--font-display);font-size:1.7rem;margin:0 0 10px;letter-spacing:-.01em;line-height:1.2;}
+                  #panelProa .pr-hero p{opacity:.9;font-size:.95rem;line-height:1.55;max-width:680px;margin:0 0 16px;color:var(--pr-primary-fixed);}
+                  #panelProa .pr-hero p strong{color:#fff;}
+                  #panelProa .pr-hero .pr-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px;}
+                  #panelProa .pr-hero .pr-cta{background:var(--pr-secondary-soft);color:#3a2a00;font-weight:700;padding:12px 22px;border-radius:12px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;font-size:.9rem;transition:.18s;}
+                  #panelProa .pr-hero .pr-cta:hover{background:#ffdea6;transform:translateY(-1px);}
+                  #panelProa .pr-hero .pr-chip{background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);padding:8px 14px;border-radius:10px;font-size:.78rem;color:#fff;display:inline-flex;align-items:center;gap:6px;}
+                  #panelProa .pr-hero-bg1{position:absolute;right:-10%;top:-20%;width:500px;height:500px;background:rgba(176,240,214,.1);border-radius:50%;filter:blur(100px);pointer-events:none;}
+                  #panelProa .pr-hero-bg2{position:absolute;right:5%;bottom:10%;opacity:.15;font-size:11rem;pointer-events:none;line-height:1;}
+                  #panelProa .pr-warning{background:rgba(253,205,116,.25);border-left:4px solid var(--pr-secondary);padding:14px 18px;display:flex;align-items:flex-start;gap:14px;border-radius:0 12px 12px 0;margin-bottom:24px;}
+                  #panelProa .pr-warning-ico{font-size:1.3rem;flex-shrink:0;}
+                  #panelProa .pr-warning-body strong{font-size:.92rem;color:#78350f;display:block;margin-bottom:3px;}
+                  #panelProa .pr-warning-body p{font-size:.85rem;color:#92400e;margin:0;line-height:1.45;}
+                  #panelProa .pr-section{margin-bottom:24px;}
+                  #panelProa .pr-section-head{display:flex;align-items:center;gap:10px;border-bottom:2px solid rgba(0,53,39,.1);padding-bottom:10px;margin-bottom:18px;}
+                  #panelProa .pr-section-head .pr-ico{font-size:1.3rem;}
+                  #panelProa .pr-section-head h4{font-family:var(--font-display);font-size:1.2rem;color:var(--pr-primary);margin:0;font-weight:700;}
+                  #panelProa .pr-bento{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+                  #panelProa .pr-card{background:#fff;border:1px solid rgba(191,201,195,.5);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:.22s;box-shadow:0 4px 12px rgba(6,78,59,.04);}
+                  #panelProa .pr-card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(6,78,59,.1);border-color:rgba(0,53,39,.18);}
+                  #panelProa .pr-card-num{width:38px;height:38px;border-radius:50%;background:var(--pr-primary-container);color:var(--pr-primary-fixed);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;}
+                  #panelProa .pr-card h5{font-size:.92rem;color:var(--pr-primary);margin:0 0 6px;font-weight:700;}
+                  #panelProa .pr-card p{font-size:.82rem;color:#5a6b62;margin:0;line-height:1.5;}
+                  #panelProa .pr-card.is-wide{grid-column:span 2;}
+                  @media (max-width:700px){#panelProa .pr-card.is-wide{grid-column:span 1;}#panelProa .pr-hero{padding:22px;}#panelProa .pr-hero h3{font-size:1.3rem;}}
+                  #panelProa .pr-syn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;}
+                  #panelProa .pr-syn{background:#fff;border-radius:20px;overflow:hidden;border:1px solid rgba(191,201,195,.5);box-shadow:0 4px 12px rgba(6,78,59,.05);}
+                  #panelProa .pr-syn-head{padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+                  #panelProa .pr-syn-head.is-nac{background:var(--pr-medical-cyan);}
+                  #panelProa .pr-syn-head.is-noso{background:rgba(253,205,116,.3);}
+                  #panelProa .pr-syn-title{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+                  #panelProa .pr-syn-title .pr-syn-ico{font-size:1.6rem;}
+                  #panelProa .pr-syn-title h5{font-family:var(--font-display);font-size:1.05rem;margin:0;color:var(--pr-primary);font-weight:700;line-height:1.2;}
+                  #panelProa .pr-syn-head.is-noso .pr-syn-title h5{color:var(--pr-secondary);}
+                  #panelProa .pr-syn-badge{font-size:.62rem;padding:3px 8px;border-radius:5px;background:rgba(0,53,39,.1);color:var(--pr-primary);text-transform:uppercase;letter-spacing:.1em;font-weight:700;display:inline-block;margin-top:3px;}
+                  #panelProa .pr-syn-head.is-noso .pr-syn-badge{background:rgba(123,88,4,.12);color:var(--pr-secondary);}
+                  #panelProa .pr-syn-pill{background:#fff;border:1px solid rgba(0,53,39,.2);padding:5px 11px;border-radius:999px;font-size:.78rem;font-weight:700;color:var(--pr-primary);flex-shrink:0;}
+                  #panelProa .pr-syn-head.is-noso .pr-syn-pill{border-color:rgba(123,88,4,.25);color:var(--pr-secondary);}
+                  #panelProa .pr-syn-body{padding:22px;display:flex;flex-direction:column;gap:14px;}
+                  #panelProa .pr-syn-box{background:var(--pr-clinical-bg);border:1px solid rgba(191,201,195,.5);border-radius:12px;padding:14px;}
+                  #panelProa .pr-syn-box-head{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;letter-spacing:.04em;color:var(--pr-primary);margin-bottom:8px;}
+                  #panelProa .pr-syn-head.is-noso ~ .pr-syn-body .pr-syn-box-head{color:var(--pr-secondary);}
+                  #panelProa .pr-syn-box-head .pr-dot{width:8px;height:8px;border-radius:50%;background:var(--pr-primary);}
+                  #panelProa .pr-syn-box-head.is-warn .pr-dot{background:var(--pr-secondary);}
+                  #panelProa .pr-syn-box-head.is-danger .pr-dot{background:var(--pr-emergency);}
+                  #panelProa .pr-syn-box-head.is-danger{color:var(--pr-emergency);}
+                  #panelProa .pr-syn-rec{font-size:.92rem;font-weight:700;color:var(--pr-on-surface);margin:0;}
+                  #panelProa .pr-syn-note{font-size:.74rem;color:#707974;font-style:italic;margin:4px 0 0;}
+                  #panelProa .pr-iframe-wrap{margin-top:22px;}
+                  #panelProa .pr-iframe-wrap details{background:#fff;border:1px solid rgba(191,201,195,.6);border-radius:14px;overflow:hidden;}
+                  #panelProa .pr-iframe-wrap summary{cursor:pointer;padding:14px 18px;font-weight:700;font-size:.92rem;color:var(--pr-primary);list-style:none;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(176,240,214,.18),rgba(224,242,241,.4));}
+                  #panelProa .pr-iframe-wrap summary::after{content:'▾';margin-left:auto;transition:.2s;}
+                  #panelProa .pr-iframe-wrap details[open] summary::after{transform:rotate(180deg);}
+                  #panelProa .pr-iframe-wrap iframe{display:block;width:100%;height:min(75vh,900px);border:0;background:#0f172a;}
+                  #panelProa .pr-fuente{margin-top:14px;font-size:.74rem;color:#707974;text-align:center;}
+                </style>
+
+                <!-- HERO -->
+                <div class="pr-hero">
+                    <div class="pr-hero-bg1"></div>
+                    <div class="pr-hero-bg2">💊</div>
+                    <h3>Programa de Optimización del Uso de Antibióticos</h3>
+                    <p>Herramienta docente para la prescripción antibiótica empírica basada en el <strong>Plan Nacional Resistencia Antibióticos (PRAN)</strong>, guías SEIMC-GEIRAS y protocolo local del H.G.U. Santa Lucía (Área II).</p>
+                    <div class="pr-actions">
+                        <a href="proa.html" target="_blank" rel="noopener" class="pr-cta">↗ Abrir en vista completa</a>
+                        <span class="pr-chip">🕒 Actualizado: Octubre 2024</span>
+                    </div>
                 </div>
 
-                <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:var(--radius);padding:12px 16px;font-size:.82rem;color:#78350f;margin-bottom:16px;line-height:1.55;">
-                    ⚠️ <strong>Uso docente.</strong> Consulta siempre el antibiograma local, al microbiólogo de guardia y el protocolo vigente del centro. La política antibiótica de Área II se actualiza semestralmente.
+                <!-- WARNING -->
+                <div class="pr-warning">
+                    <span class="pr-warning-ico">⚠️</span>
+                    <div class="pr-warning-body">
+                        <strong>Uso docente únicamente</strong>
+                        <p>Consulta siempre el antibiograma local, al microbiólogo de guardia y el protocolo vigente del centro. La política antibiótica de Área II se actualiza semestralmente.</p>
+                    </div>
                 </div>
 
-                <iframe id="proaFrame" src="about:blank" loading="lazy" style="width:100%;height:min(75vh,900px);border:1px solid var(--border);border-radius:var(--radius);background:#0f172a;display:block;" title="PROA · Uso racional de antibióticos"></iframe>
+                <!-- 7 PRINCIPIOS -->
+                <section class="pr-section">
+                    <div class="pr-section-head">
+                        <span class="pr-ico">📖</span>
+                        <h4>Siete principios PROA</h4>
+                    </div>
+                    <div class="pr-bento">
+                        <div class="pr-card"><div class="pr-card-num">1</div><div><h5>¿Es infección?</h5><p>Fiebre ≠ antibiótico. Descarta causas virales, inflamatorias o fármacos antes de prescribir.</p></div></div>
+                        <div class="pr-card"><div class="pr-card-num">2</div><div><h5>Cultivos antes del ATB</h5><p>Hemocultivos x2, urocultivo o muestra del foco si es accesible antes de iniciar terapia.</p></div></div>
+                        <div class="pr-card"><div class="pr-card-num">3</div><div><h5>Empírico por foco + riesgo</h5><p>Ajustar por origen comunitario vs nosocomial, FR-MRE e inmunosupresión.</p></div></div>
+                        <div class="pr-card"><div class="pr-card-num">4</div><div><h5>PK/PD correcto</h5><p>β-lactámicos en infusión extendida en sepsis/PCT alta. Ajustar carga de vanco/amika.</p></div></div>
+                        <div class="pr-card is-wide"><div style="display:flex;align-items:center;gap:14px;"><div class="pr-card-num" style="flex-shrink:0;">5</div><h5 style="font-size:.95rem;margin:0;">Reevaluación 48-72h</h5></div><p>Desescalada por cultivo, paso de IV a VO precoz, o suspender si la infección no se confirma.</p></div>
+                        <div class="pr-card"><div class="pr-card-num">6</div><div><h5>Duración mínima eficaz</h5><p>5-7 días cubre la mayoría de focos. "More is not better".</p></div></div>
+                        <div class="pr-card"><div class="pr-card-num">7</div><div><h5>Documenta el plan</h5><p>Diagnóstico claro, fármaco, dosis, duración prevista y fecha de revisión en historia.</p></div></div>
+                    </div>
+                </section>
 
-                <p style="margin-top:10px;font-size:.76rem;color:var(--text-muted);text-align:center;">Fuentes: PRAN · SEIMC · IDSA · WHO AWaRe 2023 · ESCMID · Protocolo Área II Cartagena</p>
+                <!-- RECOMENDACIONES EMPÍRICAS -->
+                <section class="pr-section">
+                    <div class="pr-section-head">
+                        <span class="pr-ico">📝</span>
+                        <h4>Recomendaciones empíricas por síndrome</h4>
+                    </div>
+                    <div class="pr-syn-grid">
+                        <article class="pr-syn">
+                            <div class="pr-syn-head is-nac">
+                                <div class="pr-syn-title">
+                                    <span class="pr-syn-ico">🫁</span>
+                                    <div>
+                                        <h5>Neumonía comunitaria (NAC)</h5>
+                                        <span class="pr-syn-badge">Protocolo estándar</span>
+                                    </div>
+                                </div>
+                                <span class="pr-syn-pill">CURB-65</span>
+                            </div>
+                            <div class="pr-syn-body">
+                                <div class="pr-syn-box">
+                                    <div class="pr-syn-box-head"><span class="pr-dot"></span>Ambulatoria (CURB ≤1)</div>
+                                    <p class="pr-syn-rec">amoxicilina 1 g/8h VO</p>
+                                    <p class="pr-syn-note">+ azitromicina 500 mg/24h (si sospecha atípica)</p>
+                                </div>
+                                <div class="pr-syn-box">
+                                    <div class="pr-syn-box-head is-warn"><span class="pr-dot"></span>Ingreso Planta</div>
+                                    <p class="pr-syn-rec">ceftriaxona 2 g/24h IV + azitromicina</p>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="pr-syn">
+                            <div class="pr-syn-head is-noso">
+                                <div class="pr-syn-title">
+                                    <span class="pr-syn-ico">🏥</span>
+                                    <div>
+                                        <h5>Neumonía nosocomial / VAP</h5>
+                                        <span class="pr-syn-badge">Riesgo MRE</span>
+                                    </div>
+                                </div>
+                                <span class="pr-syn-pill">NAC-IH</span>
+                            </div>
+                            <div class="pr-syn-body">
+                                <div class="pr-syn-box">
+                                    <div class="pr-syn-box-head is-warn"><span class="pr-dot"></span>Sin FR-MRE</div>
+                                    <p class="pr-syn-rec">piperacilina-tazobactam 4/0,5 g/6h</p>
+                                    <p class="pr-syn-note">IV extendida en 4 horas</p>
+                                </div>
+                                <div class="pr-syn-box">
+                                    <div class="pr-syn-box-head is-danger"><span class="pr-dot"></span>Con FR-MRE (Pseudomonas/MRSA)</div>
+                                    <p class="pr-syn-rec">cefepima 2 g/8h + amikacina/linezolid</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- IFRAME COLAPSABLE: documento PROA completo -->
+                <div class="pr-iframe-wrap">
+                    <details>
+                        <summary>📄 Ver documento PROA completo (Plan Nacional Resistencia Antibióticos · 299 páginas)</summary>
+                        <iframe id="proaFrame" src="about:blank" loading="lazy" title="PROA · Uso racional de antibióticos"></iframe>
+                    </details>
+                </div>
+
+                <p class="pr-fuente">Fuentes: PRAN · SEIMC · IDSA · WHO AWaRe 2023 · ESCMID · Protocolo Área II Cartagena</p>
             </div><!-- end panelProa -->
 
 
