@@ -2717,62 +2717,8 @@ window.showNotebooksModal=function(){
     </div>
 </div>
 
-<!-- ═══════ IMPROVED LOGIN MODAL ═══════ -->
-<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
-    <div style="background:#fff;border-radius:16px;padding:0;max-width:420px;width:90%;box-shadow:0 25px 80px rgba(0,0,0,.4);overflow:hidden;animation:slideInUp .3s ease;">
-        <!-- Header -->
-        <div style="background:linear-gradient(135deg,var(--primary),var(--primary-light));padding:32px 24px;color:#fff;text-align:center;position:relative;">
-            <div style="position:absolute;top:12px;right:12px;cursor:pointer;font-size:1.5rem;opacity:.7;hover:opacity:1;transition:.2s;" onclick="closeLoginModal()" tabindex="0" role="button">✕</div>
-            <div style="font-size:2.5rem;margin-bottom:12px;">🔐</div>
-            <h2 style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;margin:0;letter-spacing:-.5px;">Panel Admin</h2>
-            <p style="margin:6px 0 0;opacity:.9;font-size:.92rem;">Area II Cartagena</p>
-        </div>
-        
-        <!-- Form -->
-        <div style="padding:32px 24px;">
-            <div style="margin-bottom:18px;">
-                <label style="display:block;margin-bottom:8px;font-weight:600;color:var(--primary-dark);font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;">📧 Usuario</label>
-                <input type="email" id="loginUsername" placeholder="redacted@example.invalid" spellcheck="false" style="width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:var(--font-body);transition:.2s;background:var(--bg-main);" onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 4px rgba(26,107,74,.08)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
-            </div>
-            
-            <div style="margin-bottom:8px;">
-                <label style="display:block;margin-bottom:8px;font-weight:600;color:var(--primary-dark);font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;">🔑 Contraseña</label>
-                <div style="position:relative;">
-                    <input type="password" id="loginPassword" placeholder="••••••••" style="width:100%;padding:14px 16px;padding-right:44px;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:var(--font-body);transition:.2s;background:var(--bg-main);" onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 4px rgba(26,107,74,.08)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
-                    <button onclick="togglePasswordVisibility()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0;">👁️</button>
-                </div>
-            </div>
-            
-            <div style="margin-bottom:24px;display:flex;gap:8px;align-items:center;">
-                <input type="checkbox" id="rememberMe" style="width:16px;height:16px;cursor:pointer;">
-                <label for="rememberMe" style="cursor:pointer;font-size:.88rem;color:var(--text-light);">Recuérdame en este dispositivo</label>
-            </div>
-            
-            <button onclick="loginAdmin()" style="width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:14px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:.95rem;font-family:var(--font-body);transition:.2s;box-shadow:0 4px 12px rgba(26,107,74,.25);" onmouseover="this.style.boxShadow='0 6px 20px rgba(26,107,74,.35)';this.style.transform='translateY(-1px)'" onmouseout="this.style.boxShadow='0 4px 12px rgba(26,107,74,.25)';this.style.transform='translateY(0)'">
-                <span id="loginBtnText">🚀 Acceder</span>
-            </button>
-            
-            <div id="loginError" style="margin-top:16px;padding:14px;background:#fee8e8;color:#c00;border:1px solid #f0b0b0;border-radius:10px;font-size:.88rem;display:none;font-weight:500;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span style="font-size:1rem;">⚠️</span>
-                    <span id="loginErrorText">Credenciales incorrectas</span>
-                </div>
-            </div>
-            
-            <div id="loginSuccess" style="margin-top:16px;padding:14px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;border-radius:10px;font-size:.88rem;display:none;font-weight:500;">
-                <div style="display:flex;align-items:center;gap:8px;animation:fadeIn .3s ease;">
-                    <span style="font-size:1rem;">✅</span>
-                    <span>¡Acceso concedido! Redirigiendo...</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div style="padding:16px 24px;background:var(--bg-main);border-top:1px solid var(--border);text-align:center;font-size:.78rem;color:var(--text-muted);">
-            Credenciales seguras • Sesión encriptada
-        </div>
-    </div>
-</div>
+<!-- (loginModal legacy retirado: nunca se mostraba, los inputs no-op confundían.
+     Login real es scanLoginModal via Google OAuth.) -->
 
 <style>
 @keyframes slideInUp {
@@ -3142,7 +3088,10 @@ function logoutAdmin(){
     moderadoresCache=null;
     firebase.auth().signOut().then(function(){
         apShowAdminTab(false);
-        document.querySelectorAll('[id^="loginBtn"], button[onclick="showLoginModal()"]').forEach(function(btn){
+        // Selector amplio: id^="loginBtn" (Landing), botones con clase .js-loginBtn
+        // (variantes), y el legacy button[onclick="showLoginModal()"]. Antes solo
+        // capturaba el último; los botones con onclick condicional quedaban colgados.
+        document.querySelectorAll('[id^="loginBtn"], .js-loginBtn, button[onclick="showLoginModal()"]').forEach(function(btn){
             btn.textContent="🔐 Login";
             btn.style.background="linear-gradient(135deg,#1a6b4a,#238c62)";
         });

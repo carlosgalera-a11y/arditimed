@@ -3171,14 +3171,10 @@ document.addEventListener("DOMContentLoaded",function(){
     var p=new URLSearchParams(window.location.search);
     if(p.get("view")==="professionals"||p.get("category"))showPage("pageProfessionals");
     else if(p.get("view")==="patients")showPage("pagePatients");
-    
-    // Enter key en login
-    document.getElementById("loginPassword").addEventListener("keypress",function(e){
-        if(e.key==="Enter")loginAdmin();
-    });
-    document.getElementById("loginUsername").addEventListener("keypress",function(e){
-        if(e.key==="Enter")document.getElementById("loginPassword").focus();
-    });
+    // Listeners de Enter sobre #loginPassword/#loginUsername eliminados: el modal
+    // legacy con esos inputs ya no se renderiza (login real va por Google OAuth en
+    // scanLoginModal). Antes lanzaban TypeError silencioso porque getElementById
+    // devolvía null.
 });
 
 
