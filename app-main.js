@@ -608,7 +608,6 @@ function switchUrgTab(tabName, btnEl) {
     document.querySelectorAll('.tab-urg').forEach(function(b){ b.classList.remove('active'); b.style.color='rgba(255,255,255,.6)'; });
     btnEl.classList.add('active');
     btnEl.style.color='#fff';
-    if(tabName==='urg-pacientes')gpRender('Urg');
     if(tabName==='urg-farmacos'&&typeof urgFarmFilter==='function')urgFarmFilter();
     if(tabName==='urg-biblioteca'&&typeof urgUpLoadDocs==='function')urgUpLoadDocs();
 }
@@ -1143,7 +1142,7 @@ function openDocModal(idx){
   };
 }
 function eliminarNota(i){if(!confirm("¿Eliminar?"))return;notas[currentCategory].splice(i,1);guardarDatos();actualizarUI();}
-function switchTab(n,b){var page=document.getElementById("pageProfessionals");if(page){page.querySelectorAll(".tab-content").forEach(function(t){t.classList.remove("active")});page.querySelectorAll(".tab-btn").forEach(function(x){x.classList.remove("active")});}else{document.querySelectorAll("#pageProfessionals .tab-content").forEach(function(t){t.classList.remove("active")});document.querySelectorAll("#pageProfessionals .tab-btn").forEach(function(x){x.classList.remove("active")});}var el=document.getElementById(n);if(el)el.classList.add("active");if(b)b.classList.add("active");if(n==="guardiaPacientes")gpRender("");}
+function switchTab(n,b){var page=document.getElementById("pageProfessionals");if(page){page.querySelectorAll(".tab-content").forEach(function(t){t.classList.remove("active")});page.querySelectorAll(".tab-btn").forEach(function(x){x.classList.remove("active")});}else{document.querySelectorAll("#pageProfessionals .tab-content").forEach(function(t){t.classList.remove("active")});document.querySelectorAll("#pageProfessionals .tab-btn").forEach(function(x){x.classList.remove("active")});}var el=document.getElementById(n);if(el)el.classList.add("active");if(b)b.classList.add("active");}
 function cambiarCategoria(c,b){currentCategory=c;document.querySelectorAll(".category-btn").forEach(function(x){x.classList.remove("active")});if(b)b.classList.add("active");document.getElementById("categoryTitle").textContent=c;var sc=document.getElementById("studioCategory");if(sc)sc.textContent=c;switchTab("preguntas",document.querySelector(".tab-btn"));actualizarUI();closeMobileSidebar();}
 
 function openMobileSidebar(){var sb=document.getElementById("sidebarLeft");var ov=document.getElementById("sidebarOverlay");if(sb)sb.classList.add("open");if(ov)ov.classList.add("open");document.body.style.overflow="hidden";}
@@ -2354,25 +2353,30 @@ document.getElementById("scanResult").innerHTML='<div style="background:var(--bg
 
 // ═══ TAB SWITCHING ═══
 function switchScanTab(tab){
-    document.getElementById("panelScanIA").style.display=tab==="scanIA"?"block":"none";
-    document.getElementById("tabScanIA").style.background=tab==="scanIA"?"linear-gradient(135deg,#0066cc,#004499)":"var(--bg-subtle)";
-    document.getElementById("tabScanIA").style.color=tab==="scanIA"?"#fff":"var(--text)";
-    var calcEl=document.getElementById("panelCalc");if(calcEl)calcEl.style.display=tab==="calc"?"block":"none";
-    var calcBtn=document.getElementById("tabCalc");if(calcBtn){calcBtn.style.background=tab==="calc"?"linear-gradient(135deg,#7c3aed,#4f46e5)":"var(--bg-subtle)";calcBtn.style.color=tab==="calc"?"#fff":"var(--text)";}
-    var nbEl=document.getElementById("panelNotebooks");if(nbEl)nbEl.style.display=tab==="notebooks"?"block":"none";
-    var nbBtn=document.getElementById("tabNotebooks");if(nbBtn){nbBtn.style.background=tab==="notebooks"?"linear-gradient(135deg,#0d47a1,#1565c0)":"var(--bg-subtle)";nbBtn.style.color=tab==="notebooks"?"#fff":"var(--text)";}
-    var ptEl=document.getElementById("panelPlantillas");if(ptEl)ptEl.style.display=tab==="plantillas"?"block":"none";
-    var ptBtn=document.getElementById("tabPlantillas");if(ptBtn){ptBtn.style.background=tab==="plantillas"?"linear-gradient(135deg,#0a1628,#1a3050)":"var(--bg-subtle)";ptBtn.style.color=tab==="plantillas"?"#fff":"var(--text)";}
+    // Mapeo tab → {panel, btn}. La CSS Stitch (.sia-tabs > button.is-active{...})
+    // pinta verde la pestaña activa, así que solo gestionamos la clase y limpiamos
+    // estilos inline que regresiones previas dejaban embebidos.
+    var map={
+        scanIA:["panelScanIA","tabScanIA"],
+        calc:["panelCalc","tabCalc"],
+        notebooks:["panelNotebooks","tabNotebooks"],
+        plantillas:["panelPlantillas","tabPlantillas"],
+        triaje:["panelTriaje","tabTriaje"],
+        turnos:["panelTurnos","tabTurnos"],
+        resumen:["panelResumen","tabResumen"],
+        proa:["panelProa","tabProa"]
+    };
+    Object.keys(map).forEach(function(k){
+        var p=document.getElementById(map[k][0]);
+        var b=document.getElementById(map[k][1]);
+        if(p) p.style.display=(k===tab)?"block":"none";
+        if(b){
+            b.classList.toggle("is-active",k===tab);
+            b.style.background="";b.style.backgroundImage="";b.style.color="";
+        }
+    });
     if(tab==="plantillas" && typeof ptInit==="function") ptInit();
-    var trEl=document.getElementById("panelTriaje");if(trEl)trEl.style.display=tab==="triaje"?"block":"none";
-    var trBtn=document.getElementById("tabTriaje");if(trBtn){trBtn.style.background=tab==="triaje"?"linear-gradient(135deg,#dc2626,#991b1b)":"var(--bg-subtle)";trBtn.style.color=tab==="triaje"?"#fff":"var(--text)";}
-    var tuEl=document.getElementById("panelTurnos");if(tuEl)tuEl.style.display=tab==="turnos"?"block":"none";
-    var tuBtn=document.getElementById("tabTurnos");if(tuBtn){tuBtn.style.background=tab==="turnos"?"linear-gradient(135deg,#1e40af,#1d4ed8)":"var(--bg-subtle)";tuBtn.style.color=tab==="turnos"?"#fff":"var(--text)";}
-    if(tab==="turnos")turnoCalc();
-    var rsEl=document.getElementById("panelResumen");if(rsEl)rsEl.style.display=tab==="resumen"?"block":"none";
-    var rsBtn=document.getElementById("tabResumen");if(rsBtn){rsBtn.style.background=tab==="resumen"?"linear-gradient(135deg,#0d47a1,#1565c0)":"var(--bg-subtle)";rsBtn.style.color=tab==="resumen"?"#fff":"var(--text)";}
-    var paEl=document.getElementById("panelProa");if(paEl)paEl.style.display=tab==="proa"?"block":"none";
-    var paBtn=document.getElementById("tabProa");if(paBtn){paBtn.style.background=tab==="proa"?"linear-gradient(135deg,#0a4d35,#1a6b4a)":"var(--bg-subtle)";paBtn.style.color=tab==="proa"?"#fff":"var(--text)";}
+    if(tab==="turnos") turnoCalc();
     if(tab==="proa"){var pf=document.getElementById("proaFrame");if(pf && (pf.src==="about:blank"||!pf.src||pf.src.indexOf("proa.html")<0)){pf.src="proa.html";}}
 }
 
