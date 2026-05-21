@@ -5727,22 +5727,36 @@ document.addEventListener('click', function(){
       }
     }catch(e){}
 
-    // Disparar showPage cuando todo esté listo
+    // ── ANTI-FLASH (fix lag 2026-05-21) ────────────────────────────
+    // Antes había un setInterval(120ms) con espera mínima de 4 ticks
+    // (480 ms) "por si firebase tardaba". Resultado: el usuario veía
+    // pageLanding durante ~480 ms + fetch lazy (~300 ms) ≈ 1 s, y si
+    // pulsaba algo de la landing acababa navegando a otro sitio
+    // (Cardiología, Enfermería…) en mitad del flash.
+    // Solución:
+    //  1) Ocultar de inmediato pageLanding y todas sus interacciones
+    //     vía CSS injectado AHORA (antes de pintar nada).
+    //  2) Llamar a showPage(p) tan pronto como exista; el spinner
+    //     interno del data-src ya cubre la espera del fetch.
+    //  3) Si showPage aún no existe (script cargando), reintentar
+    //     cada 30 ms hasta 3 s — sin esperas artificiales.
+    var hideStyle = document.createElement('style');
+    hideStyle.id = 'cart-focus-hide-landing';
+    hideStyle.textContent = '#pageLanding{display:none!important;visibility:hidden!important;pointer-events:none!important;}';
+    document.head.appendChild(hideStyle);
     var attempts = 0;
     var iv = setInterval(function(){
       attempts++;
-      if(attempts > 60){ clearInterval(iv); return; }
+      if(attempts > 100){ clearInterval(iv); return; } // máx 3 s
       if(typeof showPage !== 'function') return;
-      if(typeof firebase !== 'undefined' && firebase.auth){
-        if(attempts < 4) return;
-      }
       clearInterval(iv);
       if(document.getElementById(p)){
         showPage(p);
-        // Conservar ?page=X en la URL para que Actualizar recargue el mismo
-        // apartado con focus-mode en vez de caer al redirect de index.html.
+        // Conservar ?page=X en la URL para que Actualizar recargue el
+        // mismo apartado con focus-mode en vez de caer al redirect de
+        // index.html.
       }
-    }, 120);
+    }, 30);
   }catch(e){ console.warn('[focus-mode] init error:', e); }
 })();
 </script>
