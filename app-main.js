@@ -783,8 +783,15 @@ function showPage(id){
         // ── Lazy-load sections from external files ──
         var src=pageEl.getAttribute("data-src");
         if(src){
+            // Dedupe: si ya hay una carga en vuelo para esta página, no relanzar.
+            if(pageEl._lazyLoading){pageEl.classList.add("active");return;}
+            pageEl._lazyLoading=true;
             pageEl.classList.add("active");
-            fetch(src+"?v="+Date.now()).then(function(r){
+            // Cache-bust por sesión, no por navegación. Antes con Date.now() cada
+            // showPage re-descargaba la sección entera; ahora la primera carga la
+            // fija y las siguientes pegan caché HTTP/SW.
+            if(!window._SESSION_LAZY_V) window._SESSION_LAZY_V=Date.now();
+            fetch(src+"?v="+window._SESSION_LAZY_V).then(function(r){
                 if(!r.ok)throw new Error("HTTP "+r.status);
                 return r.text();
             }).then(function(html){
@@ -795,17 +802,28 @@ function showPage(id){
                 if(inner){pageEl.innerHTML=inner.innerHTML;}
                 else{pageEl.innerHTML=html;}
                 pageEl.removeAttribute("data-src");
-                // Execute any <script> tags injected via innerHTML
-                pageEl.querySelectorAll("script").forEach(function(oldScript){
+                // Execute any <script> tags injected via innerHTML.
+                // Para src= externos esperamos onload antes de _showPageInit (evita
+                // race: scripts cargan async y _showPageInit usa sus globales).
+                var scripts=Array.from(pageEl.querySelectorAll("script"));
+                var pending=[];
+                scripts.forEach(function(oldScript){
                     var newScript=document.createElement("script");
-                    if(oldScript.src){newScript.src=oldScript.src;}
-                    else{newScript.textContent=oldScript.textContent;}
+                    if(oldScript.src){
+                        newScript.src=oldScript.src;
+                        pending.push(new Promise(function(res){newScript.onload=res;newScript.onerror=res;}));
+                    } else {
+                        newScript.textContent=oldScript.textContent;
+                    }
                     oldScript.parentNode.replaceChild(newScript,oldScript);
                 });
-                console.log("[LazyLoad] ✓ "+id+" loaded from "+src);
-                // Run page-specific initializations after load
-                _showPageInit(id);
+                console.log("[LazyLoad] ✓ "+id+" loaded from "+src+" ("+pending.length+" external scripts)");
+                Promise.all(pending).then(function(){
+                    pageEl._lazyLoading=false;
+                    _showPageInit(id);
+                });
             }).catch(function(e){
+                pageEl._lazyLoading=false;
                 console.error("[LazyLoad] ✗ "+id+":",e);
                 pageEl.innerHTML='<div style="padding:40px;text-align:center;"><p style="font-size:1.2rem;margin-bottom:8px;">⚠️ Error cargando sección</p><p style="color:var(--text-muted);font-size:.85rem;">'+e.message+'</p><button onclick="showPage(\''+id+'\')" class="btn btn-primary" style="margin-top:12px;">🔄 Reintentar</button></div>';
             });
@@ -823,7 +841,7 @@ function _showPageInit(id){
     try{if(typeof gaTrack==='function')gaTrack('page_view',{page_title:id,page_location:window.location.href+'#'+id});}catch(e){}
     // Inicializaciones específicas por página
     try{if(id==="pageProfessionals")initProfessionals();}catch(e){}
-    try{if(id==="pageScanIA")scanRenderHist();}catch(e){}
+    try{if(id==="pageScanIA"){scanRenderHist();scanInitDropZone();}}catch(e){}
     try{if(id==="pageTelefonos"){renderTelefonos(TEL_DATA);setTimeout(function(){var s=document.getElementById("telSearch");if(s)s.value="";},50);}}catch(e){}
     // Barra de moderación (opcional, no bloquea)
     try{
@@ -1186,14 +1204,19 @@ function initProfessionals(){
     var p=new URLSearchParams(window.location.search),c=p.get("category");if(c&&categories[c])currentCategory=c;
     var list=document.getElementById("categoriesList");
     Object.keys(categories).forEach(function(cat){var btn=document.createElement("button");btn.className="category-btn"+(cat===currentCategory?" active":"");btn.innerHTML='<span class="cat-emoji">'+categories[cat]+'</span>'+cat;btn.onclick=function(){cambiarCategoria(cat,btn)};list.appendChild(btn);});
-    document.getElementById("categoryTitle").textContent=currentCategory;
-    document.getElementById("cfgProvider").value=CONFIG.provider;cambiarProvider();
-    document.getElementById("cfgGroqKey").value=CONFIG.groqKey||"";document.getElementById("cfgGroqModel").value=CONFIG.groqModel;
-    document.getElementById("cfgQwenKey").value=CONFIG.qwenKey||"";document.getElementById("cfgQwenModel").value=CONFIG.qwenModel;
+    var catTitle=document.getElementById("categoryTitle");if(catTitle)catTitle.textContent=currentCategory;
+    // cfgProvider/cfgGroqKey/cfgQwenKey son IDs legacy de un panel de config retirado.
+    // Si reaparecen en algún HTML los rellenamos; si no, evitamos el TypeError que
+    // antes hacía que el try/catch superior se tragase cargarDatos/actualizarUI/listeners.
+    var cfgP=document.getElementById("cfgProvider");if(cfgP){cfgP.value=CONFIG.provider;cambiarProvider();}
+    var cfgGK=document.getElementById("cfgGroqKey");if(cfgGK)cfgGK.value=CONFIG.groqKey||"";
+    var cfgGM=document.getElementById("cfgGroqModel");if(cfgGM)cfgGM.value=CONFIG.groqModel;
+    var cfgQK=document.getElementById("cfgQwenKey");if(cfgQK)cfgQK.value=CONFIG.qwenKey||"";
+    var cfgQM=document.getElementById("cfgQwenModel");if(cfgQM)cfgQM.value=CONFIG.qwenModel;
     cargarDatos();updateStatus();actualizarUI();
     fetch("documents.json").then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(function(d){documents=d.categories;console.log("[Docs] Loaded "+Object.keys(d.categories).length+" categories");actualizarUI();}).catch(function(e){console.error("[Docs] Error loading documents.json:",e.message);});
-    document.getElementById("preguntaInput").addEventListener("keypress",function(e){if(e.key==="Enter")hacerPregunta()});
-    if(!isReady())setTimeout(function(){switchTab("config",document.querySelectorAll(".tab-btn")[4])},500);
+    var pq=document.getElementById("preguntaInput");if(pq)pq.addEventListener("keypress",function(e){if(e.key==="Enter")hacerPregunta()});
+    if(!isReady())setTimeout(function(){var t=document.querySelectorAll(".tab-btn");if(t[4])switchTab("config",t[4]);},500);
 }
 
 
@@ -2013,36 +2036,41 @@ function scanShowDisclaimerModal(onAccept, onCancel){
   try{ if(window.cartTrack) window.cartTrack('scan_disclaimer_shown', {}); }catch(e){}
 }
 function scanProcessFile(f){if(!f.type.startsWith("image/")){alert("Selecciona una imagen");return;}var r=new FileReader();r.onload=function(e){var d=e.target.result;scanB64=d.split(",")[1];document.getElementById("scanImgPreview").src=d;document.getElementById("scanImgPreview").style.display="block";document.getElementById("scanDropContent").style.display="none";document.getElementById("scanDropZone").style.borderStyle="solid";document.getElementById("scanDropZone").style.borderColor="#0066cc";document.getElementById("scanBtnGo").disabled=false;};r.readAsDataURL(f);}
-(function(){var z=document.getElementById("scanDropZone");if(z){z.addEventListener("dragover",function(e){e.preventDefault();z.style.borderColor="#0066cc";z.style.background="rgba(0,102,204,.04)";});z.addEventListener("dragleave",function(){z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";});z.addEventListener("drop",function(e){e.preventDefault();z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";if(e.dataTransfer.files.length)scanProcessFile(e.dataTransfer.files[0]);});}})();
-
-// ── Clipboard paste support (Ctrl+V / Cmd+V) ──
-(function(){
-    function handlePaste(e){
-        var items=e.clipboardData&&e.clipboardData.items;if(!items)return;
-        for(var i=0;i<items.length;i++){
-            if(items[i].type.indexOf("image")!==-1){
-                e.preventDefault();
-                var blob=items[i].getAsFile();
-                if(blob)scanProcessFile(blob);
-                // Visual feedback
-                var z=document.getElementById("scanDropZone");
-                if(z){z.style.borderColor="#0066cc";z.style.background="rgba(0,102,204,.08)";setTimeout(function(){z.style.background="var(--bg-card)";},300);}
-                return;
-            }
+// ── Drop zone + clipboard paste para Analizar Imagen ──
+// sections/page-scan-ia.html se carga lazy, así que NO podemos enganchar listeners
+// al cargarse este script: scanDropZone aún no existe. scanInitDropZone() se llama
+// desde _showPageInit('pageScanIA') tras inyectar la sección.
+function scanInitDropZone(){
+    var z=document.getElementById("scanDropZone");
+    if(!z) return;
+    if(z._scanInited) return; // dedupe en navegaciones repetidas
+    z._scanInited=true;
+    z.addEventListener("dragover",function(e){e.preventDefault();z.style.borderColor="#0066cc";z.style.background="rgba(0,102,204,.04)";});
+    z.addEventListener("dragleave",function(){z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";});
+    z.addEventListener("drop",function(e){e.preventDefault();z.style.borderColor="var(--border)";z.style.background="var(--bg-card)";if(e.dataTransfer.files.length)scanProcessFile(e.dataTransfer.files[0]);});
+    z.addEventListener("paste",scanHandlePaste);
+}
+function scanHandlePaste(e){
+    var items=e.clipboardData&&e.clipboardData.items;if(!items)return;
+    for(var i=0;i<items.length;i++){
+        if(items[i].type.indexOf("image")!==-1){
+            e.preventDefault();
+            var blob=items[i].getAsFile();
+            if(blob)scanProcessFile(blob);
+            var z=document.getElementById("scanDropZone");
+            if(z){z.style.borderColor="#0066cc";z.style.background="rgba(0,102,204,.08)";setTimeout(function(){z.style.background="var(--bg-card)";},300);}
+            return;
         }
     }
-    // Listen on the drop zone itself
-    var z=document.getElementById("scanDropZone");
-    if(z){z.addEventListener("paste",handlePaste);}
-    // Also listen globally so paste works anywhere on the page when scan tab is active
-    document.addEventListener("paste",function(e){
-        // Only intercept if scan module is visible and no text input is focused
-        var active=document.activeElement;
-        if(active&&(active.tagName==="INPUT"||active.tagName==="TEXTAREA"||active.isContentEditable))return;
-        var scanTab=document.getElementById("scanDropZone");
-        if(scanTab&&scanTab.offsetParent!==null)handlePaste(e);
-    });
-})();
+}
+// Listener global para Ctrl/Cmd+V: solo intercepta si scan está visible y no hay input enfocado.
+// Puede engancharse al cargar app-main.js porque va al document, no a un elemento de la sección lazy.
+document.addEventListener("paste",function(e){
+    var active=document.activeElement;
+    if(active&&(active.tagName==="INPUT"||active.tagName==="TEXTAREA"||active.isContentEditable))return;
+    var scanTab=document.getElementById("scanDropZone");
+    if(scanTab&&scanTab.offsetParent!==null)scanHandlePaste(e);
+});
 
 function scanClear(){scanB64=null;document.getElementById("scanImgPreview").style.display="none";document.getElementById("scanImgPreview").src="";document.getElementById("scanDropContent").style.display="block";document.getElementById("scanDropZone").style.borderStyle="dashed";document.getElementById("scanDropZone").style.borderColor="var(--border)";document.getElementById("scanFileIn").value="";document.getElementById("scanCtx").value="";document.getElementById("scanBtnGo").disabled=true;document.getElementById("scanResult").innerHTML="";}
 
