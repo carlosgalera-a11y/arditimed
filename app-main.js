@@ -1276,6 +1276,22 @@ function abrirModalSubir(seccionPreset){
 
 function cerrarModalSubir(){
     document.getElementById("modalSubirContenido").style.display = "none";
+    // Si entramos via ?action=propose el head inyecta <style>.page{display:none!important}</style>
+    // para evitar el flash de pageLanding. Al cerrar el modal la pantalla queda en blanco si no
+    // limpiamos ese style y forzamos navegar al inicio.
+    try{
+        var styles = document.head.querySelectorAll("style");
+        for(var i=0;i<styles.length;i++){
+            var t = styles[i].textContent || "";
+            if(t.indexOf(".page") !== -1 && t.indexOf("display:none") !== -1 && t.indexOf("!important") !== -1){
+                styles[i].remove();
+            }
+        }
+        if(document.body && document.body.style.background){ document.body.style.background = ""; }
+    }catch(e){}
+    if(!document.querySelector(".page.active")){
+        try{ showPage("pageLanding"); }catch(e){}
+    }
 }
 
 // ── Enviar propuesta ──
