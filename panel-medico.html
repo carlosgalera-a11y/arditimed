@@ -1601,22 +1601,110 @@ window.showNotebooksModal=function(){
     <div style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:8px;padding:10px 14px;margin:10px 16px;font-size:.76rem;color:#0c4a6e;line-height:1.5;">
         <strong>📚 Propiedad intelectual y uso responsable:</strong> Los documentos disponibles en esta plataforma son para uso interno del Área II de Cartagena. Su distribución externa puede vulnerar los derechos de las sociedades científicas emisoras (SEMFYC, SEMES, SMS y otras). Acceso restringido a profesionales autorizados.
     </div>
-    <div style="padding:40px;max-width:1200px;margin:0 auto;">
-        <h2 style="font-family:var(--font-display);font-size:2rem;color:var(--text);margin-bottom:20px;">📋 Protocolos de Atencion Primaria</h2>
-        <p style="font-size:.95rem;color:var(--text-light);margin-bottom:20px;max-width:600px;">Accede a los protocolos y guías de atención primaria para profesionales médicos.</p>
+
+    <!-- Stitch · Clinical Precision (Protocolos AP) -->
+    <style>
+      #pageProtocolosAP{--pa-primary:#003527;--pa-primary-container:#064e3b;--pa-primary-fixed:#b0f0d6;--pa-primary-soft:rgba(0,53,39,.06);--pa-medical-cyan:#E0F2F1;--pa-clinical-bg:#F5FBF7;--pa-secondary:#7b5804;--pa-secondary-fixed:#ffdea6;--pa-emergency:#D32F2F;--pa-info:#0288D1;--pa-on-surface:#101e17;--pa-on-surface-var:#404944;--pa-outline:#bfc9c3;--pa-tertiary:#00343c;--pa-tertiary-fixed:#a5eeff;--pa-error-container:#ffdad6;--pa-error:#ba1a1a;}
+      #pageProtocolosAP .pa-wrap{padding:32px 28px 56px;max-width:1240px;margin:0 auto;}
+      #pageProtocolosAP .pa-hero{position:relative;margin-bottom:34px;}
+      #pageProtocolosAP .pa-hero::before{content:"";position:absolute;top:-20px;left:-20px;width:280px;height:280px;background:radial-gradient(circle,rgba(176,240,214,.22) 0%,transparent 60%);pointer-events:none;z-index:0;}
+      #pageProtocolosAP .pa-crumb{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--pa-on-surface-var);margin-bottom:10px;position:relative;z-index:1;font-family:var(--font-body);}
+      #pageProtocolosAP .pa-crumb-sep{color:var(--pa-outline);font-size:.65rem;}
+      #pageProtocolosAP .pa-crumb-active{color:var(--pa-primary);font-weight:700;}
+      #pageProtocolosAP .pa-h1{font-family:var(--font-display);font-size:2.4rem;font-weight:700;color:var(--pa-primary);line-height:1.1;letter-spacing:-.01em;margin:0 0 14px;position:relative;z-index:1;}
+      #pageProtocolosAP .pa-lead{font-size:1.05rem;color:var(--pa-on-surface-var);max-width:640px;line-height:1.5;margin:0 0 22px;position:relative;z-index:1;}
+      @media (max-width:760px){#pageProtocolosAP .pa-h1{font-size:1.65rem;}#pageProtocolosAP .pa-lead{font-size:.95rem;}#pageProtocolosAP .pa-wrap{padding:22px 16px 40px;}}
+      #pageProtocolosAP .pa-search{position:relative;z-index:1;background:#fff;border:1px solid rgba(191,201,195,.5);border-radius:24px;padding:8px;box-shadow:0 8px 24px rgba(6,78,59,.06);display:flex;align-items:center;gap:8px;flex-wrap:nowrap;}
+      #pageProtocolosAP .pa-search-icon-wrap{position:relative;flex:1;min-width:0;}
+      #pageProtocolosAP .pa-search-icon{position:absolute;left:22px;top:50%;transform:translateY(-50%);color:rgba(0,53,39,.4);font-size:1.2rem;pointer-events:none;}
+      #pageProtocolosAP .pa-search input{width:100%;padding:18px 18px 18px 52px;border:0;border-radius:16px;font-size:1rem;background:transparent;font-family:var(--font-body);color:var(--pa-on-surface);box-sizing:border-box;}
+      #pageProtocolosAP .pa-search input:focus{outline:0;}
+      #pageProtocolosAP .pa-search input::placeholder{color:rgba(0,53,39,.45);}
+      #pageProtocolosAP .pa-search-btn{padding:14px 28px;border:0;border-radius:16px;background:var(--pa-primary);color:#fff;font-weight:700;font-family:var(--font-body);font-size:.95rem;cursor:pointer;transition:.18s;flex-shrink:0;}
+      #pageProtocolosAP .pa-search-btn:hover{box-shadow:0 6px 16px rgba(0,53,39,.25);}
+      #pageProtocolosAP .pa-search-tune{padding:14px 18px;border:0;border-radius:16px;background:transparent;color:var(--pa-on-surface-var);font-family:var(--font-body);font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;flex-shrink:0;}
+      #pageProtocolosAP .pa-search-tune:hover{background:var(--pa-primary-soft);color:var(--pa-primary);}
+      @media (max-width:680px){#pageProtocolosAP .pa-search{flex-wrap:wrap;}#pageProtocolosAP .pa-search-btn{flex:1;}}
+      #pageProtocolosAP .pa-fichas{display:flex;align-items:center;gap:14px;padding:16px 20px;margin-bottom:26px;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(59,130,246,.08));border:1px solid rgba(124,58,237,.3);border-radius:18px;text-decoration:none;color:var(--pa-on-surface);transition:.2s;}
+      #pageProtocolosAP .pa-fichas:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(124,58,237,.18);}
+      #pageProtocolosAP .pa-fichas-emoji{font-size:2.2rem;line-height:1;}
+      #pageProtocolosAP .pa-fichas-title{font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:#5b21b6;}
+      #pageProtocolosAP .pa-fichas-sub{font-size:.8rem;color:var(--pa-on-surface-var);line-height:1.5;margin-top:2px;}
+      #pageProtocolosAP .pa-fichas-pill{display:inline-flex;align-items:center;gap:4px;background:#7c3aed;color:#fff;padding:6px 13px;border-radius:18px;font-size:.74rem;font-weight:700;white-space:nowrap;}
+      #pageProtocolosAP .pa-tabbar{display:flex;border-bottom:1px solid rgba(191,201,195,.5);overflow-x:auto;gap:4px;margin-bottom:24px;padding-bottom:0;scrollbar-width:none;}
+      #pageProtocolosAP .pa-tabbar::-webkit-scrollbar{display:none;}
+      #pageProtocolosAP .pa-tabbar .tab-btn.tab-protocols{padding:14px 22px;background:transparent !important;background-image:none !important;border:0 !important;border-radius:0 !important;color:var(--pa-on-surface-var) !important;font-family:var(--font-body) !important;font-size:.88rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;border-bottom:2px solid transparent !important;transition:.2s;letter-spacing:.01em;}
+      #pageProtocolosAP .pa-tabbar .tab-btn.tab-protocols:hover{color:var(--pa-primary) !important;background:var(--pa-primary-soft) !important;}
+      #pageProtocolosAP .pa-tabbar .tab-btn.tab-protocols.active{color:var(--pa-primary) !important;border-bottom-color:var(--pa-primary) !important;background:transparent !important;}
+      #pageProtocolosAP .pa-card-shell{background:transparent;border-radius:0;padding:0;margin-bottom:0;}
+      #pageProtocolosAP .pa-chips{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:24px;}
+      #pageProtocolosAP .pa-chips-label{font-size:.78rem;font-weight:700;color:var(--pa-on-surface-var);letter-spacing:.04em;margin-right:4px;}
+      #pageProtocolosAP .pa-chip{padding:8px 18px;border-radius:999px;background:#fff;border:1px solid rgba(191,201,195,.55);color:var(--pa-on-surface-var);font-size:.74rem;font-weight:700;cursor:pointer;transition:.18s;font-family:var(--font-body);}
+      #pageProtocolosAP .pa-chip:hover{border-color:var(--pa-primary);color:var(--pa-primary);}
+      #pageProtocolosAP .pa-chip.is-active{background:var(--pa-primary);color:#fff;border-color:var(--pa-primary);}
+      #pageProtocolosAP .pa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px;}
+      #pageProtocolosAP .pa-pcard{background:rgba(255,255,255,.7);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5);box-shadow:0 4px 24px -1px rgba(0,53,39,.04);border-radius:22px;padding:22px;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:.3s cubic-bezier(.4,0,.2,1);cursor:pointer;}
+      #pageProtocolosAP .pa-pcard:hover{transform:translateY(-4px);box-shadow:0 12px 32px -4px rgba(0,53,39,.1);}
+      #pageProtocolosAP .pa-pcard-ico{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.55rem;margin-bottom:14px;line-height:1;}
+      #pageProtocolosAP .pa-pcard-ico.bg-secondary-fixed{background:var(--pa-secondary-fixed);color:var(--pa-secondary);}
+      #pageProtocolosAP .pa-pcard-ico.bg-medical-cyan{background:var(--pa-medical-cyan);color:var(--pa-primary);}
+      #pageProtocolosAP .pa-pcard-ico.bg-error-container{background:var(--pa-error-container);color:var(--pa-error);}
+      #pageProtocolosAP .pa-pcard-ico.bg-primary-fixed{background:var(--pa-primary-fixed);color:var(--pa-primary);}
+      #pageProtocolosAP .pa-pcard-ico.bg-tertiary-fixed{background:var(--pa-tertiary-fixed);color:var(--pa-tertiary);}
+      #pageProtocolosAP .pa-pcard-ico.bg-secondary-fixed-dim{background:#eec068;color:var(--pa-secondary);}
+      #pageProtocolosAP .pa-pcard-ico.bg-surface-variant{background:#d5e7da;color:var(--pa-on-surface-var);}
+      #pageProtocolosAP .pa-pcard-ico.bg-tertiary-fixed-dim{background:#7ad3e7;color:var(--pa-tertiary);}
+      #pageProtocolosAP .pa-pcard-title{font-size:1rem;font-weight:700;color:var(--pa-primary);margin:0 0 4px;font-family:var(--font-display);}
+      #pageProtocolosAP .pa-pcard-meta{font-size:.74rem;color:var(--pa-on-surface-var);margin:0 0 22px;}
+      #pageProtocolosAP .pa-pcard-foot{margin-top:auto;padding-top:14px;border-top:1px solid rgba(191,201,195,.4);display:flex;align-items:center;justify-content:space-between;}
+      #pageProtocolosAP .pa-pcard-foot-text{font-size:.72rem;font-weight:700;color:var(--pa-primary);}
+      #pageProtocolosAP .pa-pcard-arrow{color:var(--pa-primary);font-size:1.1rem;line-height:1;transition:transform .22s;}
+      #pageProtocolosAP .pa-pcard:hover .pa-pcard-arrow{transform:translateX(6px);}
+      #pageProtocolosAP .pa-cta{margin-top:48px;background:var(--pa-primary-container);border-radius:32px;padding:48px 36px;display:flex;flex-direction:column;gap:18px;color:var(--pa-primary-fixed);position:relative;overflow:hidden;}
+      #pageProtocolosAP .pa-cta::after{content:"";position:absolute;top:-50%;right:-30%;width:520px;height:520px;background:rgba(0,53,39,.18);border-radius:50%;filter:blur(80px);pointer-events:none;}
+      #pageProtocolosAP .pa-cta-body{position:relative;z-index:1;max-width:560px;}
+      #pageProtocolosAP .pa-cta-body h2{font-family:var(--font-display);font-size:1.55rem;font-weight:700;color:var(--pa-primary-fixed);margin:0 0 12px;}
+      #pageProtocolosAP .pa-cta-body p{font-size:.95rem;color:rgba(176,240,214,.85);line-height:1.55;margin:0 0 22px;}
+      #pageProtocolosAP .pa-cta-row{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1;}
+      #pageProtocolosAP .pa-cta-btn{padding:14px 26px;border-radius:14px;font-weight:700;cursor:pointer;border:0;font-family:var(--font-body);font-size:.92rem;transition:.2s;}
+      #pageProtocolosAP .pa-cta-btn-primary{background:var(--pa-primary);color:#fff;}
+      #pageProtocolosAP .pa-cta-btn-primary:hover{box-shadow:0 6px 18px rgba(0,53,39,.35);transform:translateY(-1px);}
+      #pageProtocolosAP .pa-cta-btn-ghost{background:rgba(255,255,255,.45);backdrop-filter:blur(12px);color:var(--pa-primary);border:1px solid rgba(255,255,255,.4);}
+      #pageProtocolosAP .pa-cta-btn-ghost:hover{background:rgba(255,255,255,.7);}
+    </style>
+
+    <div class="pa-wrap">
+        <!-- HERO + SEARCH -->
+        <section class="pa-hero">
+            <nav class="pa-crumb">
+                <span>Atención Primaria</span>
+                <span class="pa-crumb-sep">›</span>
+                <span class="pa-crumb-active">Protocolos Clínicos</span>
+            </nav>
+            <h1 class="pa-h1">Guías de Actuación<br>Clínica Área II</h1>
+            <p class="pa-lead">Repositorio centralizado de protocolos validados y herramientas de soporte a la decisión clínica para profesionales de Santa Lucía.</p>
+            <div class="pa-search">
+                <div class="pa-search-icon-wrap">
+                    <span class="pa-search-icon">🔍</span>
+                    <input id="paSearchInput" type="text" placeholder="Buscar por patología, fármaco o especialidad..." oninput="paFilterCards(this.value)">
+                </div>
+                <button type="button" class="pa-search-tune" onclick="document.getElementById('paSearchInput').focus()" aria-label="Filtros">⚙ <span style="font-family:var(--font-body);">Filtros</span></button>
+                <button type="button" class="pa-search-btn" onclick="paFilterCards(document.getElementById('paSearchInput').value)">Buscar</button>
+            </div>
+        </section>
 
         <!-- ── Fichas de Consulta Rápida (acceso directo) ── -->
-        <a href="fichas-consulta-rapida.html" target="_blank" style="display:flex;align-items:center;gap:14px;padding:16px 20px;margin-bottom:26px;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(59,130,246,.1));border:1px solid rgba(124,58,237,.35);border-radius:var(--radius);text-decoration:none;color:var(--text);transition:.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(124,58,237,.25)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
-            <span style="font-size:2.2rem;line-height:1;">📑</span>
+        <a href="fichas-consulta-rapida.html" target="_blank" class="pa-fichas">
+            <span class="pa-fichas-emoji">📑</span>
             <div style="flex:1;">
-                <div style="font-family:var(--font-display);font-size:1.08rem;font-weight:700;color:var(--primary-dark);">Fichas de Consulta Rápida</div>
-                <div style="font-size:.82rem;color:var(--text-muted);line-height:1.5;margin-top:2px;">Motivo → DDx → manejo → derivación → fármacos. Epistaxis, faringoamigdalitis, lumbalgia, fiebre en niños, cefalea, otitis, ictus, ITU, agudización EPOC.</div>
+                <div class="pa-fichas-title">Fichas de Consulta Rápida</div>
+                <div class="pa-fichas-sub">Motivo → DDx → manejo → derivación → fármacos. Epistaxis, faringoamigdalitis, lumbalgia, fiebre en niños, cefalea, otitis, ictus, ITU, agudización EPOC.</div>
             </div>
-            <span style="display:inline-flex;align-items:center;gap:4px;background:#7c3aed;color:#fff;padding:6px 12px;border-radius:18px;font-size:.76rem;font-weight:700;white-space:nowrap;">9 fichas ↗</span>
+            <span class="pa-fichas-pill">9 fichas ↗</span>
         </a>
 
-        <div style="background:var(--bg-card);border-radius:var(--radius);padding:24px;margin-bottom:30px;">
-            <div class="tab-buttons"><button class="tab-btn tab-protocols active" onclick="switchProtocolTab('generales',this)" style="cursor:pointer;">📋 Protocolos</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('por-especialidad-ap',this);cargarAportacionesAP();" style="cursor:pointer;">📚 Por especialidad</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('preguntas-proto',this)" style="cursor:pointer;">🤖 Preguntas IA</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('studio-ap',this)" style="cursor:pointer;">✨ Studio</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('informes-ap',this)" style="cursor:pointer;">📄 Informes</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('visados-ap',this)" style="cursor:pointer;">📋 Visados</button></div>
+        <div class="pa-card-shell">
+            <div class="pa-tabbar"><button class="tab-btn tab-protocols active" onclick="switchProtocolTab('generales',this)">📋 Explorar Protocolos</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('por-especialidad-ap',this);cargarAportacionesAP();">📚 Por especialidad</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('preguntas-proto',this)">🤖 Preguntas IA</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('studio-ap',this)">✨ Studio IA</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('informes-ap',this)">📄 Informes</button><button class="tab-btn tab-protocols" onclick="switchProtocolTab('visados-ap',this)">📋 Visados</button></div>
 
             <!-- ─── Tab: Por especialidad AP (dinámico desde documentos_aprobados) ─── -->
             <div id="por-especialidad-ap-content" class="protocol-content" style="display:none;margin-top:20px;">
@@ -1634,90 +1722,86 @@ window.showNotebooksModal=function(){
             </div>
             
             <div id="generales-content" class="protocol-content" style="display:block;margin-top:20px;">
-                <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:var(--text-muted);line-height:1.5;">
+                <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:.78rem;color:var(--text-muted);line-height:1.5;">
                     📚 <strong>Fuentes:</strong> Adaptación docente basada en guías SEMFYC, ESC 2024, GOLD 2024, GINA 2024, guías SEN, SEMERGEN, AEP y protocolos del Servicio Murciano de Salud. Contenido revisado para uso formativo — verificar siempre con fuentes oficiales actualizadas.
                 </div>
-                <div id="generalesProtocols" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
-                    <!-- Protocolo 1 -->
-                    <a href="protocolos-1.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">👂 ORL en Atención Primaria</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">5.2 KB</div>
-                        </div>
+
+                <!-- Filtro por categoría (Stitch) -->
+                <div class="pa-chips">
+                    <span class="pa-chips-label">Filtrar por:</span>
+                    <button type="button" class="pa-chip is-active" data-cat="all" onclick="paFilterByCat('all',this)">Todos</button>
+                    <button type="button" class="pa-chip" data-cat="urgencias" onclick="paFilterByCat('urgencias',this)">Urgencias</button>
+                    <button type="button" class="pa-chip" data-cat="cronicos" onclick="paFilterByCat('cronicos',this)">Crónicos</button>
+                    <button type="button" class="pa-chip" data-cat="pediatria" onclick="paFilterByCat('pediatria',this)">Pediatría</button>
+                    <button type="button" class="pa-chip" data-cat="quirurgicos" onclick="paFilterByCat('quirurgicos',this)">Quirúrgicos</button>
+                </div>
+
+                <div id="generalesProtocols" class="pa-grid">
+                    <a href="protocolos-1.pdf" target="_blank" class="pa-pcard" data-cat="urgencias" data-keywords="orl otorrinolaringología epistaxis faringitis otitis vértigo">
+                        <div class="pa-pcard-ico bg-secondary-fixed">👂</div>
+                        <h3 class="pa-pcard-title">ORL en Atención Primaria</h3>
+                        <p class="pa-pcard-meta">12 protocolos validados</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 2 -->
-                    <a href="protocolos-2.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">🫘 Riñón y Vías Urinarias</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">5.6 KB</div>
-                        </div>
+                    <a href="protocolos-2.pdf" target="_blank" class="pa-pcard" data-cat="cronicos" data-keywords="riñón nefrología urología urinario itu cálculo prostatismo">
+                        <div class="pa-pcard-ico bg-medical-cyan">🫘</div>
+                        <h3 class="pa-pcard-title">Riñón y Vías Urinarias</h3>
+                        <p class="pa-pcard-meta">9 guías clínicas</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 3 -->
-                    <a href="protocolos-3.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">🩹 Dermatología en AP</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">5.4 KB</div>
-                        </div>
+                    <a href="protocolos-3.pdf" target="_blank" class="pa-pcard" data-cat="urgencias" data-keywords="dermatología piel celulitis micosis dermatitis psoriasis acné">
+                        <div class="pa-pcard-ico bg-error-container">🩹</div>
+                        <h3 class="pa-pcard-title">Dermatología en AP</h3>
+                        <p class="pa-pcard-meta">15 documentos</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 4 -->
-                    <a href="protocolos-4.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">🦴 Musculoesquelético</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">5.7 KB</div>
-                        </div>
+                    <a href="protocolos-4.pdf" target="_blank" class="pa-pcard" data-cat="quirurgicos" data-keywords="musculoesquelético traumatología lumbalgia cervicalgia tendinitis artrosis esguince">
+                        <div class="pa-pcard-ico bg-primary-fixed">🦴</div>
+                        <h3 class="pa-pcard-title">Musculoesquelético</h3>
+                        <p class="pa-pcard-meta">20 protocolos</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 5 -->
-                    <a href="protocolos-5.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">💊 Enfermedades Crónicas</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">6.4 KB</div>
-                        </div>
+                    <a href="protocolos-5.pdf" target="_blank" class="pa-pcard" data-cat="cronicos" data-keywords="hta dm2 epoc enfermedad crónica hipertensión diabetes obesidad dislipemia">
+                        <div class="pa-pcard-ico bg-tertiary-fixed">💊</div>
+                        <h3 class="pa-pcard-title">Enfermedades Crónicas</h3>
+                        <p class="pa-pcard-meta">18 guías rápidas</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 6 -->
-                    <a href="protocolos-6.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">🧠 Salud Mental</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">5.9 KB</div>
-                        </div>
+                    <a href="protocolos-6.pdf" target="_blank" class="pa-pcard" data-cat="cronicos" data-keywords="salud mental psiquiatría depresión ansiedad insomnio adicciones">
+                        <div class="pa-pcard-ico bg-tertiary-fixed-dim">🧠</div>
+                        <h3 class="pa-pcard-title">Salud Mental</h3>
+                        <p class="pa-pcard-meta">12 documentos</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 7 -->
-                    <a href="protocolos-7.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">🧠 Sistema Nervioso</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">7.7 KB</div>
-                        </div>
+                    <a href="protocolos-7.pdf" target="_blank" class="pa-pcard" data-cat="urgencias" data-keywords="sistema nervioso neurología cefalea migraña ictus convulsión vértigo demencia">
+                        <div class="pa-pcard-ico bg-surface-variant">🧠</div>
+                        <h3 class="pa-pcard-title">Sistema Nervioso</h3>
+                        <p class="pa-pcard-meta">10 protocolos</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 8 -->
-                    <a href="protocolos-8.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">🍽️ Problemas Digestivos (I)</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">6.4 KB</div>
-                        </div>
+                    <a href="protocolos-8.pdf" target="_blank" class="pa-pcard" data-cat="urgencias" data-keywords="digestivo gastroenteritis epigastralgia reflujo dispepsia hepatitis cólico biliar">
+                        <div class="pa-pcard-ico bg-secondary-fixed">🍽️</div>
+                        <h3 class="pa-pcard-title">Problemas Digestivos (I)</h3>
+                        <p class="pa-pcard-meta">8 guías clínicas</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 9 -->
-                    <a href="protocolos-9.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">🍽️ Problemas Digestivos (II)</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">6.4 KB</div>
-                        </div>
+                    <a href="protocolos-9.pdf" target="_blank" class="pa-pcard" data-cat="cronicos" data-keywords="digestivo crónico colon irritable enfermedad inflamatoria intestinal eii estreñimiento">
+                        <div class="pa-pcard-ico bg-secondary-fixed-dim">🍽️</div>
+                        <h3 class="pa-pcard-title">Problemas Digestivos (II)</h3>
+                        <p class="pa-pcard-meta">7 guías clínicas</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
-                    <!-- Protocolo 10 -->
-                    <a href="protocolos-10.pdf" target="_blank" style="text-decoration:none;">
-                        <div style="background:var(--bg-card);padding:16px;border-radius:8px;border:2px solid #1a6b4a;border-left:4px solid #1a6b4a;text-align:center;transition:all .2s;cursor:pointer;" onmouseover="this.style.boxShadow='0 4px 12px rgba(26,107,74,.2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
-                            <div style="font-size:1.8rem;margin-bottom:8px;">📄</div>
-                            <div style="font-weight:600;color:var(--primary-dark);margin-bottom:2px;font-size:.9rem;">❤️ Respiratorio y Cardiovascular</div>
-                            <div style="font-size:.75rem;color:var(--text-muted);">6.7 KB</div>
-                        </div>
+                    <a href="protocolos-10.pdf" target="_blank" class="pa-pcard" data-cat="urgencias" data-keywords="respiratorio cardiovascular epoc asma neumonía cardiopatía hta insuficiencia cardiaca">
+                        <div class="pa-pcard-ico bg-medical-cyan">❤️</div>
+                        <h3 class="pa-pcard-title">Respiratorio y Cardiovascular</h3>
+                        <p class="pa-pcard-meta">22 protocolos validados</p>
+                        <div class="pa-pcard-foot"><span class="pa-pcard-foot-text">Ver Documentos</span><span class="pa-pcard-arrow">→</span></div>
                     </a>
+                </div>
+
+                <div id="paNoResults" style="display:none;padding:40px;text-align:center;color:var(--pa-on-surface-var);font-size:.92rem;background:var(--bg-subtle);border-radius:18px;margin-top:18px;">
+                    <div style="font-size:2.2rem;margin-bottom:8px;opacity:.5;">🔍</div>
+                    <p style="margin:0;">No se encontraron protocolos con esos criterios.</p>
                 </div>
             </div>
             
@@ -1946,7 +2030,51 @@ window.showNotebooksModal=function(){
             
             <div style="margin-top:20px;padding:16px;background:#e3f2fd;border-radius:8px;font-size:.88rem;color:#1565c0;"><strong>💡 Tip:</strong> Accede al Panel Admin para subir protocolos de Atencion Primaria.</div>
         </div>
+
+        <!-- CTA Stitch · ¿Dudas sobre un protocolo? -->
+        <section class="pa-cta">
+            <div class="pa-cta-body">
+                <h2>¿Dudas sobre un protocolo?</h2>
+                <p>Si detectas una incongruencia o necesitas una guía que no está disponible, contacta con la Comisión de Protocolos del Área II o usa el asistente IA para una consulta rápida.</p>
+            </div>
+            <div class="pa-cta-row">
+                <button type="button" class="pa-cta-btn pa-cta-btn-primary" onclick="abrirSugerencias && abrirSugerencias()">💡 Enviar Sugerencia</button>
+                <button type="button" class="pa-cta-btn pa-cta-btn-ghost" onclick="showPage('pageTelefonos')">📞 Directorio de Contactos</button>
+            </div>
+        </section>
     </div>
+
+    <script>
+      // Filtros del grid de protocolos (Stitch)
+      (function(){
+        window._paActiveCat = 'all';
+        function _norm(s){return (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+        window.paFilterCards = function(query){
+          var q = _norm(query).trim();
+          var cards = document.querySelectorAll('#generalesProtocols .pa-pcard');
+          var any = false;
+          cards.forEach(function(c){
+            var cat = c.getAttribute('data-cat') || '';
+            var kw  = _norm(c.getAttribute('data-keywords') || '');
+            var title = _norm(c.querySelector('.pa-pcard-title') ? c.querySelector('.pa-pcard-title').textContent : '');
+            var catOk = (window._paActiveCat === 'all') || (cat === window._paActiveCat);
+            var qOk = !q || kw.indexOf(q) >= 0 || title.indexOf(q) >= 0;
+            var show = catOk && qOk;
+            c.style.display = show ? '' : 'none';
+            if(show) any = true;
+          });
+          var empty = document.getElementById('paNoResults');
+          if(empty) empty.style.display = any ? 'none' : 'block';
+        };
+        window.paFilterByCat = function(cat, btn){
+          window._paActiveCat = cat;
+          document.querySelectorAll('#pageProtocolosAP .pa-chip').forEach(function(b){b.classList.remove('is-active');});
+          if(btn) btn.classList.add('is-active');
+          var inp = document.getElementById('paSearchInput');
+          window.paFilterCards(inp ? inp.value : '');
+        };
+      })();
+    </script>
 </div>
 
 <!-- ═══════ PROTOCOLOS URGENCIAS PAGE ═══════ -->
