@@ -39,7 +39,6 @@
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-list',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📋</span> Protocolos</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-ia',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🤖</span> Preguntas IA</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-studio',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">✨</span> Studio</button>
-                <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-pacientes',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">🛏️</span> Pacientes</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-farmacos',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">💊</span> Fármacos</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-atls',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;background:linear-gradient(135deg,rgba(220,38,38,.25),rgba(153,27,27,.15));"><span style="font-size:1.1rem;">📕</span> ATLS</button>
                 <button class="tab-btn tab-urg" onclick="switchUrgTab('urg-biblioteca',this)" style="cursor:pointer;color:rgba(255,255,255,.88);display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.82rem;padding:9px 14px;"><span style="font-size:1.1rem;">📚</span> Biblioteca</button>
@@ -640,41 +639,6 @@
                     <button onclick="urgStudioEnviar()" id="urgStudioBtn" style="padding:11px 18px;background:linear-gradient(135deg,#c62828,#b71c1c);color:#fff;border:none;border-radius:var(--radius);font-size:.88rem;font-weight:700;cursor:pointer;font-family:var(--font-body);white-space:nowrap;">Enviar ✨</button>
                 </div>
                 <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:5px;text-align:right;">DeepSeek V3 · 77 protocolos de urgencias</div>
-            </div>
-
-            <div id="urg-pacientes-content" class="urg-tab-content" style="display:none;margin-top:20px;">
-                <div style="background:rgba(255,193,7,.12);border:1px solid rgba(255,193,7,.35);border-radius:var(--radius);padding:14px 18px;font-size:.84rem;color:#ffc107;margin-bottom:20px;line-height:1.6;">
-                    🔒 <strong>Datos anonimizados.</strong> No incluyas nombre, DNI, NHC ni datos identificativos. Usa solo iniciales o número de cama. Los datos se guardan localmente en tu dispositivo.
-                </div>
-                <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
-                    <h4 style="font-family:var(--font-display);margin-bottom:14px;">➕ Nuevo paciente de guardia</h4>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                        <input type="text" id="gpCamaUrg" placeholder="Cama / Box (ej: Box3, C12)" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
-                        <input type="text" id="gpIdUrg" placeholder="ID anónimo (ej: JM, Pac.3)" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                        <input type="text" id="gpEdadUrg" placeholder="Edad / Sexo (ej: 72M)" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
-                        <select id="gpPrioridadUrg" style="padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;">
-                            <option value="normal">🟢 Normal</option>
-                            <option value="atento">🟡 Atento</option>
-                            <option value="urgente">🔴 Urgente</option>
-                        </select>
-                    </div>
-                    <input type="text" id="gpMotivoUrg" placeholder="Motivo ingreso / consulta" style="width:100%;padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;background:rgba(255,255,255,.08);color:#fff;margin-bottom:10px;">
-                    <textarea id="gpNotasUrg" placeholder="Notas / pendientes / recordatorios..." style="width:100%;padding:10px;border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.9rem;min-height:70px;resize:vertical;background:rgba(255,255,255,.08);color:#fff;margin-bottom:10px;"></textarea>
-                    <div style="display:flex;gap:10px;">
-                        <button class="btn btn-primary btn-small" onclick="gpAdd('Urg')">🛏️ Añadir paciente</button>
-                        <button class="btn btn-secondary btn-small" onclick="gpClearForm('Urg')">Limpiar</button>
-                    </div>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                    <h4 style="font-family:var(--font-display);">🛏️ Lista de pacientes en guardia</h4>
-                    <div style="display:flex;gap:8px;">
-                        <button onclick="gpExport('Urg')" style="padding:6px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;font-family:var(--font-body);font-weight:600;color:#fff;">📋 Copiar</button>
-                        <button onclick="if(confirm('¿Borrar todos los pacientes?'))gpClearAll('Urg')" style="padding:6px 12px;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.4);border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;font-family:var(--font-body);font-weight:600;color:#fca5a5;">🗑️ Borrar todo</button>
-                    </div>
-                </div>
-                <div id="gpListUrg"><div style="text-align:center;padding:30px;opacity:.5;"><div style="font-size:2rem;margin-bottom:8px;">🛏️</div><p>No hay pacientes registrados en esta guardia</p></div></div>
             </div>
 
             <!-- FÁRMACOS DE URGENCIA -->
