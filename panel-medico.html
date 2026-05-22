@@ -766,6 +766,113 @@ body { padding-bottom: env(safe-area-inset-bottom, 0px); }
       </div>
     </div>
 
+    <!-- ═══ PRIMEROS AUXILIOS / EMERGENCIAS ═══ -->
+    <div style="grid-column:1/-1;margin-bottom:8px;">
+      <div onclick="var p=document.getElementById('primAuxList');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#b71c1c,#d32f2f);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+        <div style="display:flex;align-items:center;gap:10px;color:#fff;"><span style="font-size:1.4rem;">🆘</span><div><div style="font-weight:700;font-size:1rem;">Primeros Auxilios — Emergencias</div><div style="font-size:.75rem;opacity:.85;">Cómo actuar ante una parada, un ictus o un atragantamiento</div></div></div>
+        <span class="arr" style="color:#fff;font-size:.9rem;">▶</span>
+      </div>
+      <div id="primAuxList" style="display:none;margin-top:8px;">
+
+        <div style="background:#ffebee;border:1px solid #ef9a9a;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:.78rem;color:#b71c1c;">⚠️ <strong>Ante cualquier emergencia, llama primero al <a href="tel:112" style="color:#b71c1c;font-weight:700;">112</a>.</strong> Esta información es orientativa y formativa — no sustituye un curso presencial de soporte vital.</div>
+
+        <!-- RCP -->
+        <div style="margin-bottom:12px;">
+          <div onclick="var p=document.getElementById('paRcp');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">❤️</span><strong style="font-size:.92rem;color:#bf360c;">Cómo hacer la RCP (reanimación cardiopulmonar)</strong></div>
+            <span class="arr2" style="color:#bf360c;font-size:.85rem;">▶</span>
+          </div>
+          <div id="paRcp" style="display:none;padding:16px;background:#fff;border:1px solid #ffe0b2;border-radius:0 0 10px 10px;border-top:none;">
+            <div style="background:#e3f2fd;border-left:4px solid #1565c0;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#0d47a1;margin-bottom:6px;">ℹ️ ¿Cuándo hacer RCP?</div>
+              <p style="font-size:.83rem;color:#333;line-height:1.6;margin:0;">Cuando una persona <strong>no responde y no respira con normalidad</strong> (o solo jadea/boquea). Cada minuto sin RCP reduce las probabilidades de supervivencia ~10%.</p>
+            </div>
+            <ol style="font-size:.85rem;color:#333;line-height:1.8;margin:0 0 14px;padding-left:22px;">
+              <li><strong>Comprueba la seguridad</strong> del entorno y tu propia seguridad.</li>
+              <li><strong>Comprueba la respuesta:</strong> sacude suavemente los hombros y pregunta «¿estás bien?».</li>
+              <li><strong>Pide ayuda y llama al <a href="tel:112" style="color:#c62828;font-weight:700;">112</a></strong> (pon el manos libres). Pide un <strong>desfibrilador (DEA)</strong> si hay alguno cerca.</li>
+              <li><strong>Abre la vía aérea:</strong> inclina la cabeza hacia atrás y eleva el mentón. Mira, escucha y siente la respiración <strong>máximo 10 segundos</strong>.</li>
+              <li><strong>Inicia compresiones torácicas:</strong> en el <strong>centro del pecho</strong>, con el talón de una mano y la otra encima, brazos rectos.</li>
+              <li><strong>Ritmo 100-120 por minuto</strong> y profundidad <strong>5-6 cm</strong>. Deja que el pecho suba del todo entre compresión y compresión.</li>
+              <li>Si estás formado: alterna <strong>30 compresiones con 2 ventilaciones</strong>. Si no, haz <strong>solo compresiones, sin parar</strong>.</li>
+              <li><strong>Usa el DEA en cuanto llegue:</strong> enciéndelo y sigue sus instrucciones de voz.</li>
+              <li><strong>No te detengas</strong> hasta que llegue el personal sanitario, la persona respire con normalidad o estés agotado.</li>
+            </ol>
+            <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#6d4c00;line-height:1.6;">👶 <strong>Bebés y niños:</strong> da primero <strong>5 ventilaciones de rescate</strong>, luego 30:2. En bebés comprime con 2 dedos; en niños, con una mano. Profundidad: 1/3 del tórax.</div>
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:10px;">Fuente: recomendaciones del Consejo Europeo de Resucitación (ERC) / Consejo Español de RCP. Uso formativo.</p>
+          </div>
+        </div>
+
+        <!-- ICTUS -->
+        <div style="margin-bottom:12px;">
+          <div onclick="var p=document.getElementById('paIctus');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:#ede7f6;border:1px solid #b39ddb;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">🧠</span><strong style="font-size:.92rem;color:#4527a0;">Cómo detectar un ictus</strong></div>
+            <span class="arr2" style="color:#4527a0;font-size:.85rem;">▶</span>
+          </div>
+          <div id="paIctus" style="display:none;padding:16px;background:#fff;border:1px solid #d1c4e9;border-radius:0 0 10px 10px;border-top:none;">
+            <div style="background:#ede7f6;border-left:4px solid #5e35b1;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#4527a0;margin-bottom:6px;">ℹ️ ¿Qué es un ictus?</div>
+              <p style="font-size:.83rem;color:#333;line-height:1.6;margin:0;">Es una interrupción brusca del riego sanguíneo en el cerebro. Los síntomas aparecen <strong>de forma repentina</strong>. Actuar rápido salva neuronas: «<strong>tiempo es cerebro</strong>».</p>
+            </div>
+            <div style="font-weight:700;font-size:.9rem;color:#4527a0;margin-bottom:8px;">🔎 Test rápido — busca estos signos súbitos:</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-bottom:14px;">
+              <div style="background:#faf5ff;border:1px solid #e1bee7;border-radius:8px;padding:10px 12px;"><div style="font-size:.84rem;font-weight:700;color:#6a1b9a;margin-bottom:3px;">😮 Cara</div><p style="font-size:.79rem;color:#444;margin:0;line-height:1.5;">Pídele que sonría. ¿Se le tuerce la boca o se le cae un párpado?</p></div>
+              <div style="background:#faf5ff;border:1px solid #e1bee7;border-radius:8px;padding:10px 12px;"><div style="font-size:.84rem;font-weight:700;color:#6a1b9a;margin-bottom:3px;">💪 Brazo</div><p style="font-size:.79rem;color:#444;margin:0;line-height:1.5;">Pídele que levante los dos brazos. ¿Cae uno o no tiene fuerza?</p></div>
+              <div style="background:#faf5ff;border:1px solid #e1bee7;border-radius:8px;padding:10px 12px;"><div style="font-size:.84rem;font-weight:700;color:#6a1b9a;margin-bottom:3px;">🗣️ Habla</div><p style="font-size:.79rem;color:#444;margin:0;line-height:1.5;">Pídele que repita una frase. ¿Habla raro, arrastra las palabras o no entiende?</p></div>
+              <div style="background:#faf5ff;border:1px solid #e1bee7;border-radius:8px;padding:10px 12px;"><div style="font-size:.84rem;font-weight:700;color:#6a1b9a;margin-bottom:3px;">⏱️ Tiempo</div><p style="font-size:.79rem;color:#444;margin:0;line-height:1.5;">Si falla cualquiera de los anteriores, <strong>llama YA al 112</strong>. Anota la hora de inicio.</p></div>
+            </div>
+            <div style="background:#e8f5e9;border-left:4px solid #2e7d32;border-radius:6px;padding:10px 12px;margin-bottom:8px;">
+              <div style="font-weight:700;font-size:.85rem;color:#1b5e20;margin-bottom:4px;">Otros signos de alarma súbitos</div>
+              <ul style="font-size:.8rem;color:#333;line-height:1.7;margin:0;padding-left:20px;">
+                <li>Pérdida brusca de visión en uno o ambos ojos</li>
+                <li>Mareo intenso, pérdida de equilibrio o de coordinación al caminar</li>
+                <li>Dolor de cabeza muy intenso y repentino, sin causa conocida</li>
+                <li>Adormecimiento o pérdida de sensibilidad en cara, brazo o pierna de un lado</li>
+              </ul>
+            </div>
+            <div style="background:#ffebee;border:2px solid #ef5350;border-radius:8px;padding:12px;margin-bottom:8px;">
+              <div style="font-weight:700;font-size:.9rem;color:#c62828;margin-bottom:6px;">🚨 Mientras esperas al 112</div>
+              <ul style="font-size:.82rem;color:#333;line-height:1.8;margin:0;padding-left:20px;">
+                <li>Acuesta a la persona con la cabeza ligeramente elevada</li>
+                <li><strong>No le des comida, bebida ni medicación</strong> (riesgo de atragantamiento)</li>
+                <li>Apunta la hora exacta en que empezaron los síntomas — es clave para el tratamiento</li>
+              </ul>
+            </div>
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:8px;">Fuente: Federación Española de Ictus / Código Ictus SMS. Uso formativo.</p>
+          </div>
+        </div>
+
+        <!-- HEIMLICH -->
+        <div style="margin-bottom:4px;">
+          <div onclick="var p=document.getElementById('paHeimlich');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr2').textContent=p.style.display==='none'?'▶':'▼'" style="background:#e0f2f1;border:1px solid #80cbc4;border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.2rem;">🫁</span><strong style="font-size:.92rem;color:#00695c;">Cómo hacer la maniobra de Heimlich (atragantamiento)</strong></div>
+            <span class="arr2" style="color:#00695c;font-size:.85rem;">▶</span>
+          </div>
+          <div id="paHeimlich" style="display:none;padding:16px;background:#fff;border:1px solid #b2dfdb;border-radius:0 0 10px 10px;border-top:none;">
+            <div style="background:#e0f2f1;border-left:4px solid #00897b;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
+              <div style="font-weight:700;font-size:.9rem;color:#00695c;margin-bottom:6px;">ℹ️ ¿Obstrucción leve o grave?</div>
+              <p style="font-size:.83rem;color:#333;line-height:1.6;margin:0;"><strong>Leve:</strong> la persona puede toser, hablar o respirar → anímale a <strong>seguir tosiendo</strong>, no intervengas. <strong>Grave:</strong> no puede toser, hablar ni respirar, se lleva las manos al cuello → <strong>actúa de inmediato</strong>.</p>
+            </div>
+            <div style="font-weight:700;font-size:.9rem;color:#00695c;margin-bottom:8px;">👤 Adulto o niño consciente con obstrucción grave</div>
+            <ol style="font-size:.85rem;color:#333;line-height:1.8;margin:0 0 14px;padding-left:22px;">
+              <li><strong>Pregunta «¿te estás atragantando?»</strong> y avisa de que vas a ayudar.</li>
+              <li><strong>5 golpes en la espalda:</strong> colócate a su lado y algo por detrás, inclínale el tronco hacia delante y da 5 golpes secos entre los omóplatos con el talón de la mano.</li>
+              <li>Si no se resuelve, <strong>5 compresiones abdominales (Heimlich):</strong> colócate detrás, rodéale la cintura con los brazos, cierra un puño entre el ombligo y el esternón, sujétalo con la otra mano y comprime con fuerza <strong>hacia dentro y hacia arriba</strong>.</li>
+              <li><strong>Alterna 5 golpes en la espalda y 5 compresiones abdominales</strong> hasta que expulse el objeto o pierda el conocimiento.</li>
+              <li>Llama al <a href="tel:112" style="color:#c62828;font-weight:700;">112</a> cuanto antes si no se resuelve enseguida.</li>
+            </ol>
+            <div style="background:#ffebee;border:2px solid #ef5350;border-radius:8px;padding:12px;margin-bottom:10px;">
+              <div style="font-weight:700;font-size:.88rem;color:#c62828;margin-bottom:6px;">🚨 Si pierde el conocimiento</div>
+              <p style="font-size:.82rem;color:#333;line-height:1.7;margin:0;">Túmbala con cuidado en el suelo, llama al <strong>112</strong> e <strong>inicia la RCP</strong> (compresiones torácicas). Cada vez que vayas a dar ventilaciones, mira la boca y retira el objeto solo si lo ves claramente.</p>
+            </div>
+            <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px 12px;font-size:.8rem;color:#6d4c00;line-height:1.6;">👶 <strong>Bebés (menos de 1 año):</strong> <strong>no</strong> se hace Heimlich. Boca abajo sobre tu antebrazo, da <strong>5 golpes en la espalda</strong>; luego boca arriba, <strong>5 compresiones torácicas</strong> con 2 dedos. Alterna hasta resolver.</div>
+            <p style="font-size:.7rem;color:#888;text-align:center;margin-top:10px;">Fuente: recomendaciones del Consejo Europeo de Resucitación (ERC). Uso formativo.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ═══ RECOMENDACIONES PARA PACIENTES ═══ -->
     <div style="grid-column:1/-1;margin-bottom:8px;">
       <div onclick="var p=document.getElementById('recoList');p.style.display=p.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=p.style.display==='none'?'▶':'▼'" style="background:linear-gradient(135deg,#e65100,#f57c00);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" tabindex="0" role="button">
