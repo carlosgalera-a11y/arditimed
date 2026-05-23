@@ -57,8 +57,9 @@
   }
 
   // Detecta el dominio donde se está sirviendo la app para poder
-  // distinguir en GA4 entre las 2 URLs de producción:
+  // distinguir en GA4 entre las URLs de producción:
   //   · area2cartagena.es           → host_label: 'area2'
+  //   · arditimed.es                → host_label: 'arditimed'
   //   · carlosgalera-a11y.github.io → host_label: 'github'
   //   · localhost / 127.* / file:    → host_label: 'dev'
   //   · cualquier otro              → host_label: 'other'
@@ -67,6 +68,7 @@
     try{
       var h = (location.hostname || '').toLowerCase();
       if(h.indexOf('area2cartagena') >= 0) return 'area2';
+      if(h.indexOf('arditimed') >= 0) return 'arditimed';
       if(h.indexOf('github.io') >= 0) return 'github';
       if(h === 'localhost' || h.indexOf('127.') === 0 || h === '' ) return 'dev';
       return 'other';

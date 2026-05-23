@@ -4,7 +4,7 @@
 // 👉 PARA ACTIVAR APP CHECK EN PRODUCCIÓN:
 //    1. Crear site key en https://www.google.com/recaptcha/admin/create
 //       · Tipo: reCAPTCHA v3
-//       · Dominios: area2cartagena.es, carlosgalera-a11y.github.io
+//       · Dominios: area2cartagena.es, arditimed.es, carlosgalera-a11y.github.io
 //    2. Registrarla en Firebase App Check:
 //       https://console.firebase.google.com/project/docenciacartagenaeste/appcheck/apps
 //    3. Pegar la site key abajo, commit + merge.

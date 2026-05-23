@@ -29,26 +29,26 @@
 7. Plan antes de código. Una rama por sesión. PR por feature. Carlos revisa rules y secretos.
 8. Nunca hacer force push a main. Nunca borrar commits de otros.
 9. Hosting es GitHub Pages. No usar `firebase deploy --only hosting`. Las cabeceras de seguridad van como `<meta>` tags en HTML, no en `firebase.json`. El frontend se despliega con `git push` a main.
-10. **Dos repos en GitHub, mismo contenido**. `carlosgalera-a11y/Cartagenaeste` es el source of truth (aquí se trabaja y se abren PRs). `carlosgalera-a11y/area2cartagena` es una copia conectada al dominio custom `area2cartagena.es` vía GitHub Pages. Tras cada merge a `Cartagenaeste/main`, re-sincronizar el segundo repo con `git push area2 main:main` (fast-forward; NO usar `--force-with-lease` por defecto — la branch protection de area2/main bloquea force-push intencionadamente).
-11. **Branch protection activa en ambos repos** (2026-04-21):
+10. **Tres repos en GitHub, mismo contenido**. `carlosgalera-a11y/Cartagenaeste` es el source of truth (aquí se trabaja y se abren PRs). Dos mirrors sirven sendos dominios custom vía GitHub Pages:
+    - `carlosgalera-a11y/area2cartagena` → `area2cartagena.es` (CNAME=area2cartagena.es).
+    - `carlosgalera-a11y/arditimed` → `arditimed.es` (CNAME=arditimed.es). El sync overlay-commitea el swap del CNAME porque la fuente tiene `area2cartagena.es`.
+    Tras cada merge a `Cartagenaeste/main`, lanzar `./scripts/sync-mirrors.sh` (empuja a area2 + clona arditimed, swap CNAME, push, espera builds, verifica last-modified).
+11. **Branch protection activa en los tres repos** (2026-05-23 actualizado para arditimed):
     - `Cartagenaeste/main`: PR requerido (0 approvers), force-push bloqueado, delete bloqueado, enforce_admins=true, conversation resolution requerida. Todo cambio entra por PR.
-    - `area2cartagena/main`: push directo permitido (es mirror del source), force-push bloqueado, delete bloqueado, enforce_admins=true. No se abren PRs aquí.
+    - `area2cartagena/main`: push directo permitido (mirror del source), force-push bloqueado, delete bloqueado, enforce_admins=true. No se abren PRs aquí.
+    - `arditimed/main`: push directo permitido (mirror del source con swap de CNAME), force-push bloqueado pero el script usa `--force-with-lease` porque cada sync es un commit overlay sobre la última `main` fuente (no hay merge directo, así que no hay fast-forward limpio). Branch protection permite force-with-lease vía API mientras `allow_force_pushes=false`; si en el futuro endurecemos eso habrá que reabrir temporalmente igual que en operaciones destructivas.
     - Operaciones destructivas (ej. `git filter-repo`) requieren relajar temporalmente allow_force_pushes vía `gh api -X PUT` y re-locking justo después. Ver `docs/s1.2-rotacion-claves-carlos.md` para el procedimiento exacto.
 
-## Operaciones en dos repos (procedimiento)
+## Operaciones en los tres repos (procedimiento)
 
 ```bash
-# Una vez por sesión fresca:
+# Una vez por sesión fresca (idempotente, el script los añade si faltan):
 cd /Users/carlos/cartagenaestewebappSOLIDA
-git remote add area2 https://github.com/carlosgalera-a11y/area2cartagena.git 2>/dev/null || true
-git fetch area2
+git remote add area2     https://github.com/carlosgalera-a11y/area2cartagena.git 2>/dev/null || true
+git remote add arditimed https://github.com/carlosgalera-a11y/arditimed.git 2>/dev/null || true
 
-# Tras cada merge a Cartagenaeste/main, sincronizar (fast-forward):
-git push area2 main:main
-
-# Verificar que GitHub Pages rebuild completó:
-until [ "$(gh api repos/carlosgalera-a11y/area2cartagena/pages/builds/latest --jq .status)" = "built" ]; do sleep 5; done
-curl -sI "https://area2cartagena.es/" | grep -i last-modified
+# Tras cada merge a Cartagenaeste/main, sincronizar AMBOS mirrors:
+./scripts/sync-mirrors.sh
 ```
 
 Para operaciones destructivas que requieran reescribir historia (p.ej. `git filter-repo`):
