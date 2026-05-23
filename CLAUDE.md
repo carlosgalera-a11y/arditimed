@@ -36,7 +36,7 @@
 11. **Branch protection activa en los tres repos** (2026-05-23 actualizado para arditimed):
     - `Cartagenaeste/main`: PR requerido (0 approvers), force-push bloqueado, delete bloqueado, enforce_admins=true, conversation resolution requerida. Todo cambio entra por PR.
     - `area2cartagena/main`: push directo permitido (mirror del source), force-push bloqueado, delete bloqueado, enforce_admins=true. No se abren PRs aquí.
-    - `arditimed/main`: push directo permitido (mirror del source con swap de CNAME), force-push bloqueado pero el script usa `--force-with-lease` porque cada sync es un commit overlay sobre la última `main` fuente (no hay merge directo, así que no hay fast-forward limpio). Branch protection permite force-with-lease vía API mientras `allow_force_pushes=false`; si en el futuro endurecemos eso habrá que reabrir temporalmente igual que en operaciones destructivas.
+    - `arditimed/main`: push directo permitido (mirror del source con swap de CNAME), force-push y delete bloqueados, enforce_admins=true. El script de sync hace **commit overlay fast-forward**: borra los tracked files, vuelca el árbol fuente con `git archive`, sobreescribe CNAME y commitea encima de la última `main`. Así no necesita force-push y respeta la branch protection completa.
     - Operaciones destructivas (ej. `git filter-repo`) requieren relajar temporalmente allow_force_pushes vía `gh api -X PUT` y re-locking justo después. Ver `docs/s1.2-rotacion-claves-carlos.md` para el procedimiento exacto.
 
 ## Operaciones en los tres repos (procedimiento)

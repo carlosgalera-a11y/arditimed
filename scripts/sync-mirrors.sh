@@ -34,7 +34,11 @@ fi
 echo "[sync] → area2cartagena.es ..."
 git push area2 main:main
 
-# ── 2. arditimed (swap CNAME en commit overlay) ──
+# ── 2. arditimed (commit overlay fast-forward sobre arditimed/main) ──
+# Como arditimed/main tiene branch protection (force-push bloqueado), no podemos
+# resetear el HEAD al árbol fuente. En su lugar añadimos un commit nuevo encima
+# del último commit de arditimed/main cuyo árbol contiene exactamente el árbol
+# fuente con CNAME swapeado. Eso es fast-forward y no requiere force.
 echo "[sync] → arditimed.es ..."
 SHA="$(git rev-parse HEAD)"
 TMPDIR="$(mktemp -d)"
@@ -42,17 +46,21 @@ trap 'rm -rf "$TMPDIR"' EXIT
 git clone --quiet --branch main https://github.com/carlosgalera-a11y/arditimed.git "$TMPDIR/arditimed"
 cd "$TMPDIR/arditimed"
 
-# Fetchea el árbol del commit fuente y crea un commit overlay con CNAME swapeado
-git fetch --quiet "$REPO_ROOT" main
-# Hard-reset al árbol fuente
-git reset --hard FETCH_HEAD
+# Borrar todos los archivos tracked (no el .git) y volcar el árbol fuente encima
+git ls-files -z | xargs -0 rm -f
+# Copiar el árbol fuente (sin .git) preservando estructura. Usamos git archive
+# del repo fuente para incluir solo archivos versionados.
+( cd "$REPO_ROOT" && git archive --format=tar HEAD ) | tar -x -f - -C .
 # Swap CNAME
 echo "arditimed.es" > CNAME
-git -c user.email=mirror@arditimed.es -c user.name="mirror-bot" \
-    add CNAME && \
-git -c user.email=mirror@arditimed.es -c user.name="mirror-bot" \
-    commit -m "chore(mirror): swap CNAME a arditimed.es (sync de ${SHA:0:7})" --quiet
-git push origin main --force-with-lease
+git add -A
+if git diff --cached --quiet; then
+  echo "[sync]   arditimed.es ya está al día — nada que sincronizar."
+else
+  git -c user.email=mirror@arditimed.es -c user.name="mirror-bot" \
+      commit -m "chore(mirror): sync de Cartagenaeste@${SHA:0:7} (CNAME=arditimed.es)" --quiet
+  git push origin main
+fi
 cd "$REPO_ROOT"
 
 # ── 3. Esperar builds de Pages ──
