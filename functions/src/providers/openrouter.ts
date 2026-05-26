@@ -43,8 +43,8 @@ export async function callOpenRouter(opts: OpenRouterOpts): Promise<ProviderResu
         'Content-Type': 'application/json',
         Authorization: `Bearer ${opts.apiKey}`,
         // OpenRouter requiere estos dos para attribution + rate limits justos.
-        'HTTP-Referer': 'https://area2cartagena.es',
-        'X-Title': 'Cartagenaeste',
+        'HTTP-Referer': 'https://medikai.es',
+        'X-Title': 'MedikAI',
       },
       body: JSON.stringify({
         model: opts.model,

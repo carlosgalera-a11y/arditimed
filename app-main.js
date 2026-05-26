@@ -100,8 +100,20 @@ var CALC_CATS={
   'Caprini':'quirurgico','RTS':'quirurgico','Ottawa':'quirurgico','Fager':'quirurgico','IMC':'quirurgico'
 };
 function filterCalc(cat){
-  document.querySelectorAll('.calc-filter').forEach(function(b){b.style.background='#fff';b.style.color='#333';});
-  event.target.style.background='#1a6b4a';event.target.style.color='#fff';
+  // Toggle active class (Stitch) + clear legacy inline styles
+  document.querySelectorAll('.calc-filter').forEach(function(b){
+    b.classList.remove('active');
+    b.style.removeProperty('background');
+    b.style.removeProperty('color');
+  });
+  var tgt=(typeof event!=='undefined' && event && event.target)?event.target.closest('.calc-filter'):null;
+  if(tgt){
+    tgt.classList.add('active');
+    // Legacy fallback for panels without .tc-filter styles
+    if(!tgt.classList.contains('tc-filter')){
+      tgt.style.background='#1a6b4a';tgt.style.color='#fff';
+    }
+  }
   var grid=document.getElementById('calcGrid');
   if(!grid)return;
   var cards=grid.children;
@@ -1342,6 +1354,7 @@ async function enviarPropuesta(){
     // necesidad de pasar por el panel de moderación.
     var esModerador = (typeof isAdmin === "function" && isAdmin());
     var propuesta = {
+        uid:         user.uid,
         titulo:      titulo,
         descripcion: descripcion,
         seccion:     seccion,
@@ -2387,15 +2400,19 @@ function resumenSwitch(which){
     var i = document.getElementById('subpanelInter');
     var ba= document.getElementById('subtabAnalitica');
     var bi= document.getElementById('subtabInter');
-    var on='linear-gradient(135deg,#0d47a1,#1565c0)', off='var(--bg-subtle)';
+    // Toggle Stitch class API (and clear any legacy inline styles)
+    [ba,bi].forEach(function(b){
+      if(!b) return;
+      b.classList.remove('is-active');
+      b.style.removeProperty('background');
+      b.style.removeProperty('color');
+    });
     if(which==='analitica'){
         a.style.display='block'; i.style.display='none';
-        ba.style.background=on; ba.style.color='#fff';
-        bi.style.background=off; bi.style.color='var(--text)';
+        if(ba) ba.classList.add('is-active');
     } else {
         a.style.display='none'; i.style.display='block';
-        bi.style.background=on; bi.style.color='#fff';
-        ba.style.background=off; ba.style.color='var(--text)';
+        if(bi) bi.classList.add('is-active');
     }
 }
 

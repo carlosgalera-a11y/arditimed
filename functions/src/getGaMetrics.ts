@@ -104,6 +104,11 @@ export const getGaMetrics = onCall(
     timeoutSeconds: 30,
     cors: [
       'https://area2cartagena.es',
+      'https://www.area2cartagena.es',
+      'https://arditimed.es',
+      'https://www.arditimed.es',
+      'https://medikai.es',
+      'https://www.medikai.es',
       'https://carlosgalera-a11y.github.io',
       'http://localhost:5000',
     ],

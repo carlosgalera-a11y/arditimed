@@ -6,6 +6,11 @@ import { logger } from 'firebase-functions/v2';
 const REGION = 'europe-west1';
 const CORS = [
   'https://area2cartagena.es',
+      'https://www.area2cartagena.es',
+      'https://arditimed.es',
+      'https://www.arditimed.es',
+      'https://medikai.es',
+      'https://www.medikai.es',
   'https://carlosgalera-a11y.github.io',
   'http://localhost:5000',
 ];

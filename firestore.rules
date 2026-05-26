@@ -176,9 +176,20 @@ service cloud.firestore {
     // ══ Scan uploads ═══════════════════════════════════════════════
     // Admin tiene LECTURA para conteos/auditoría panel; escritura/borrado
     // siguen siendo exclusivas del dueño.
-    // Crear requiere número de colegiado verificado.
+    //
+    // 2026-05-25: la subida real viene de scan-upload.html (QR escaneado
+    // desde el móvil), que usa auth.signInAnonymously() — un anónimo NO
+    // puede satisfacer hasColegiado(). El intent del flujo es: cualquier
+    // signed-in (incl. anon) crea el doc apuntando al uid del dueño que
+    // generó el QR. El dueño es quien luego lee/actualiza/borra.
+    // El campo `uid` del documento DEBE existir y ser string, y `status`
+    // debe ser 'pending' al crear. El imageURL apunta a Storage donde
+    // las reglas validan tamaño y tipo del fichero.
     match /scan_uploads/{docId} {
-      allow create: if hasColegiado();
+      allow create: if signedIn()
+        && request.resource.data.uid is string
+        && request.resource.data.uid.size() > 0
+        && request.resource.data.status == 'pending';
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
       allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
@@ -208,14 +219,26 @@ service cloud.firestore {
       allow update: if isAdmin();
     }
 
-    // ══ Sugerencias: crear profesional verificado, leer moderador+ ═
+    // ══ Sugerencias y propuestas de contenido ═══════════════════════
+    // 2026-05-25: la barrera de hasColegiado() estaba bloqueando a
+    // usuarios legítimos que aún no habían rellenado /profesionales.html.
+    // El flujo de moderación (estado='pendiente' → admin revisa) es la
+    // protección real. Cualquier signed-in puede proponer; admins/mods
+    // aprueban/rechazan. Spam queda contenido por la cuota Firestore.
     match /sugerencias/{docId} {
-      allow create: if hasColegiado();
+      // Cualquier signed-in puede dejar una sugerencia. La protección
+      // es el panel de moderación (solo canModerate lee/borra).
+      allow create: if signedIn();
       allow read: if canModerate();
       allow update, delete: if canModerate();
     }
     match /propuestas_contenido/{docId} {
-      allow create: if hasColegiado();
+      // Cualquier signed-in puede proponer. uid debe coincidir con el
+      // autor para evitar impostura. Moderadores pueden crear ya
+      // aprobado (auto-publish); el resto debe crear como 'pendiente'.
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && (request.resource.data.estado == 'pendiente' || canModerate());
       allow read: if signedIn();
       // Moderador/admin pueden cambiar estado y borrar propuestas.
       allow update: if canModerate();
