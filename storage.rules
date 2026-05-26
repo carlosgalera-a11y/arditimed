@@ -15,9 +15,15 @@ service firebase.storage {
 
     // ── Scan uploads por usuario ─────────────────────────────────────
     // /scan_uploads/{uid}/{filename}: máx 5 MB, solo imagen o PDF.
+    //
+    // 2026-05-25: el flujo real es QR-móvil → scan-upload.html con
+    // auth.signInAnonymously(), por lo que CREATE permite cualquier
+    // signed-in (incluido anon) hacia /scan_uploads/{uid}/. La protección
+    // efectiva queda en el límite de tamaño + content-type. READ/UPDATE/
+    // DELETE siguen restringidos al dueño del path (uid) o admin.
     match /scan_uploads/{uid}/{fileName} {
       allow read: if isOwner(uid) || isAdmin();
-      allow create: if isOwner(uid)
+      allow create: if signedIn()
         && request.resource.size < 5 * 1024 * 1024
         && (
           request.resource.contentType.matches('image/.*')

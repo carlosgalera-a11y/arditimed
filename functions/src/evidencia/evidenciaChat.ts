@@ -28,6 +28,11 @@ const OPENROUTER_API_KEY = defineSecret('OPENROUTER_API_KEY');
 const REGION = 'europe-west1';
 const CORS = [
   'https://area2cartagena.es',
+      'https://www.area2cartagena.es',
+      'https://arditimed.es',
+      'https://www.arditimed.es',
+      'https://medikai.es',
+      'https://www.medikai.es',
   'https://carlosgalera-a11y.github.io',
   'http://localhost:5000',
 ];

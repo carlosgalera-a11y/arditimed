@@ -166,7 +166,12 @@ export const fhirExport = onCall(
     region: REGION,
     memory: '512MiB',
     timeoutSeconds: 120,
-    cors: ['https://area2cartagena.es', 'https://carlosgalera-a11y.github.io', 'http://localhost:5000'],
+    cors: ['https://area2cartagena.es',
+      'https://www.area2cartagena.es',
+      'https://arditimed.es',
+      'https://www.arditimed.es',
+      'https://medikai.es',
+      'https://www.medikai.es', 'https://carlosgalera-a11y.github.io', 'http://localhost:5000'],
   },
   async (request) => {
     if (!request.auth) {

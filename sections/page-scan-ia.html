@@ -120,18 +120,43 @@
 
             <!-- TAB 3: CALCULADORAS MÉDICAS -->
             <div id="panelCalc" style="display:none;">
+              <style>
+                #panelCalc{
+                  --tc-primary:#003527; --tc-primary-hover:#00533c; --tc-on-primary:#fff;
+                  --tc-surface:#fff; --tc-surface-muted:#eef5f0; --tc-border:#d6e3dc;
+                  --tc-text:#0b1f17; --tc-text-muted:#5a6b62; --tc-add:#16a34a; --tc-add-hover:#15803d;
+                }
+                #panelCalc .tc-hero{background:linear-gradient(135deg,var(--tc-primary),#064e3b);color:var(--tc-on-primary);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+                #panelCalc .tc-hero::after{content:"🧮";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:2.6rem;opacity:.14;}
+                #panelCalc .tc-hero-ico{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+                #panelCalc .tc-hero-title{font-weight:800;font-size:1.05rem;font-family:var(--font-body);}
+                #panelCalc .tc-hero-sub{font-size:.78rem;opacity:.85;margin-top:2px;color:#b0f0d6;}
+                #panelCalc .tc-filterbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:8px;background:var(--tc-surface-muted);border-radius:12px;border:1px solid var(--tc-border);}
+                #panelCalc .tc-filter{padding:7px 13px;border:1px solid var(--tc-border);border-radius:999px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--tc-surface);color:var(--tc-text);transition:.18s;}
+                #panelCalc .tc-filter:hover{border-color:var(--tc-primary);color:var(--tc-primary);}
+                #panelCalc .tc-filter.active{background:var(--tc-primary);color:var(--tc-on-primary);border-color:var(--tc-primary);}
+                #panelCalc .tc-add{margin-left:auto;padding:7px 14px;border:1px solid var(--tc-add);border-radius:999px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--tc-add);color:#fff;display:flex;align-items:center;gap:4px;transition:.18s;}
+                #panelCalc .tc-add:hover{background:var(--tc-add-hover);border-color:var(--tc-add-hover);}
+              </style>
+              <div class="tc-hero">
+                <div class="tc-hero-ico">🧮</div>
+                <div>
+                  <div class="tc-hero-title">Calculadoras Médicas</div>
+                  <div class="tc-hero-sub">Escalas validadas para gravedad, pronóstico y cribado · Resultado inmediato</div>
+                </div>
+              </div>
               <!-- Filter bar -->
-              <div id="calcFilterBar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:8px;background:rgba(0,0,0,.02);border-radius:10px;">
-                <button onclick="filterCalc('all')" class="calc-filter active" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#1a6b4a;color:#fff;">📋 Todas</button>
-                <button onclick="filterCalc('gravedad')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🏥 Gravedad</button>
-                <button onclick="filterCalc('cardio')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">❤️ Cardiovascular</button>
-                <button onclick="filterCalc('respiratorio')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🫁 Respiratorio</button>
-                <button onclick="filterCalc('digestivo')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🍽️ Digestivo</button>
-                <button onclick="filterCalc('nefro')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">💧 Nefrología</button>
-                <button onclick="filterCalc('neuro')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🧠 Neurología</button>
-                <button onclick="filterCalc('enfermeria')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">👩‍⚕️ Enfermería</button>
-                <button onclick="filterCalc('quirurgico')" class="calc-filter" style="padding:6px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;">🔪 Quirúrgico</button>
-                <button onclick="toggleAddCalc()" style="padding:6px 12px;border:1px solid #16a34a;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;background:#16a34a;color:#fff;margin-left:auto;">➕ Añadir escala</button>
+              <div id="calcFilterBar" class="tc-filterbar">
+                <button onclick="filterCalc('all')" class="calc-filter tc-filter active">📋 Todas</button>
+                <button onclick="filterCalc('gravedad')" class="calc-filter tc-filter">🏥 Gravedad</button>
+                <button onclick="filterCalc('cardio')" class="calc-filter tc-filter">❤️ Cardiovascular</button>
+                <button onclick="filterCalc('respiratorio')" class="calc-filter tc-filter">🫁 Respiratorio</button>
+                <button onclick="filterCalc('digestivo')" class="calc-filter tc-filter">🍽️ Digestivo</button>
+                <button onclick="filterCalc('nefro')" class="calc-filter tc-filter">💧 Nefrología</button>
+                <button onclick="filterCalc('neuro')" class="calc-filter tc-filter">🧠 Neurología</button>
+                <button onclick="filterCalc('enfermeria')" class="calc-filter tc-filter">👩‍⚕️ Enfermería</button>
+                <button onclick="filterCalc('quirurgico')" class="calc-filter tc-filter">🔪 Quirúrgico</button>
+                <button onclick="toggleAddCalc()" class="tc-add">➕ Añadir escala</button>
               </div>
               <!-- Form añadir escala personalizada -->
               <div id="addCalcForm" style="display:none;background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:14px;">
@@ -1791,53 +1816,88 @@
 
             <!-- TAB 7: RESÚMENES RÁPIDOS -->
             <div id="panelResumen" style="display:none;">
-                <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);padding:12px 16px;font-size:.82rem;color:#856404;margin-bottom:14px;line-height:1.55;">
-                    ⚠️ <strong>Datos seudonimizados.</strong> Pega solo iniciales/edad/motivo. NO incluyas nombre, DNI, NHC u otros identificadores. Uso docente.
+              <style>
+                #panelResumen{
+                  --tr-primary:#003527; --tr-primary-hover:#00533c; --tr-on-primary:#fff;
+                  --tr-surface:#fff; --tr-surface-muted:#eef5f0; --tr-border:#d6e3dc;
+                  --tr-text:#0b1f17; --tr-text-muted:#5a6b62;
+                }
+                #panelResumen .tr-hero{background:linear-gradient(135deg,var(--tr-primary),#064e3b);color:var(--tr-on-primary);border-radius:14px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+                #panelResumen .tr-hero::after{content:"📝";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:2.6rem;opacity:.14;}
+                #panelResumen .tr-hero-ico{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+                #panelResumen .tr-hero-title{font-weight:800;font-size:1.05rem;font-family:var(--font-body);}
+                #panelResumen .tr-hero-sub{font-size:.78rem;opacity:.85;margin-top:2px;color:#b0f0d6;}
+                #panelResumen .tr-subtabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--tr-border);overflow-x:auto;}
+                #panelResumen .tr-subtab{padding:10px 18px;border:none;background:var(--tr-surface-muted);color:var(--tr-text);border-radius:10px 10px 0 0;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);white-space:nowrap;transition:.18s;}
+                #panelResumen .tr-subtab:hover{color:var(--tr-primary);}
+                #panelResumen .tr-subtab.is-active{background:var(--tr-primary);color:var(--tr-on-primary);}
+                #panelResumen .tr-cta{padding:12px 22px;background:var(--tr-primary);border:none;color:var(--tr-on-primary);border-radius:10px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:.18s;}
+                #panelResumen .tr-cta:hover{background:var(--tr-primary-hover);}
+                #panelResumen .tr-secondary{padding:12px 16px;background:var(--tr-surface-muted);border:1px solid var(--tr-border);color:var(--tr-text);border-radius:10px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:.18s;}
+                #panelResumen .tr-secondary:hover{border-color:var(--tr-primary);color:var(--tr-primary);}
+                #panelResumen .tr-textarea{width:100%;min-height:200px;padding:12px 14px;border:1.5px solid var(--tr-border);border-radius:10px;font-size:.88rem;background:var(--tr-surface);line-height:1.5;box-sizing:border-box;transition:.18s;}
+                #panelResumen .tr-textarea:focus{outline:none;border-color:var(--tr-primary);box-shadow:0 0 0 3px rgba(0,53,39,.08);}
+                #panelResumen .tr-select{padding:10px 12px;border:1.5px solid var(--tr-border);border-radius:10px;font-family:var(--font-body);font-size:.88rem;background:var(--tr-surface);color:var(--tr-text);}
+                #panelResumen .tr-select:focus{outline:none;border-color:var(--tr-primary);}
+                #panelResumen .tr-h3{color:var(--tr-primary);margin-bottom:6px;font-size:1.1rem;font-weight:800;}
+                #panelResumen .tr-p{color:var(--tr-text-muted);font-size:.84rem;line-height:1.55;margin-bottom:12px;}
+              </style>
+
+              <div class="tr-hero">
+                <div class="tr-hero-ico">📝</div>
+                <div>
+                  <div class="tr-hero-title">Resúmenes rápidos</div>
+                  <div class="tr-hero-sub">Analíticas e interconsultas redactadas por IA · Datos seudonimizados</div>
                 </div>
+              </div>
 
-                <!-- Sub-tabs -->
-                <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);overflow-x:auto;">
-                    <button id="subtabAnalitica" onclick="resumenSwitch('analitica')" style="padding:10px 18px;border:none;background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);white-space:nowrap;">🧪 Analíticas</button>
-                    <button id="subtabInter" onclick="resumenSwitch('inter')" style="padding:10px 18px;border:none;background:var(--bg-subtle);color:var(--text);border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--font-body);white-space:nowrap;">📨 Interconsultas</button>
-                </div>
+              <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:12px 16px;font-size:.82rem;color:#856404;margin-bottom:14px;line-height:1.55;">
+                  ⚠️ <strong>Datos seudonimizados.</strong> Pega solo iniciales/edad/motivo. NO incluyas nombre, DNI, NHC u otros identificadores. Uso docente.
+              </div>
 
-                <!-- Sub-panel: Analíticas -->
-                <div id="subpanelAnalitica">
-                    <h3 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:6px;font-size:1.1rem;">🧪 Resumen rápido de analítica</h3>
-                    <p style="color:var(--text-muted);font-size:.84rem;line-height:1.55;margin-bottom:12px;">Pega aquí una analítica completa (hemograma, bioquímica, coagulación, gasometría…). La IA DeepSeek V3 devuelve un resumen estructurado con hallazgos relevantes.</p>
-                    <textarea id="anaInput" placeholder="Pega la analítica completa tal cual (no pasa nada si hay columnas y espacios)…" style="width:100%;min-height:200px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:ui-monospace,monospace;background:var(--bg-main);line-height:1.5;" onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'"></textarea>
-                    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
-                        <button class="btn btn-primary" id="anaBtn" onclick="anaResumir()" style="padding:12px 22px;background:linear-gradient(135deg,#0d47a1,#1565c0);border:none;color:#fff;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">📝 Resumir con IA</button>
-                        <button class="btn btn-secondary" onclick="document.getElementById('anaInput').value='';document.getElementById('anaOut').innerHTML='';" style="padding:12px 16px;background:var(--bg-subtle);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">🗑 Limpiar</button>
-                    </div>
-                    <div id="anaOut" style="margin-top:14px;"></div>
-                </div>
+              <!-- Sub-tabs -->
+              <div class="tr-subtabs">
+                  <button id="subtabAnalitica" onclick="resumenSwitch('analitica')" class="tr-subtab is-active">🧪 Analíticas</button>
+                  <button id="subtabInter" onclick="resumenSwitch('inter')" class="tr-subtab">📨 Interconsultas</button>
+              </div>
 
-                <!-- Sub-panel: Interconsultas -->
-                <div id="subpanelInter" style="display:none;">
-                    <h3 style="font-family:var(--font-display);color:var(--primary-dark);margin-bottom:6px;font-size:1.1rem;">📨 Redactar interconsulta (≤ 700 car.)</h3>
-                    <p style="color:var(--text-muted);font-size:.84rem;line-height:1.55;margin-bottom:12px;">Pega texto o varias capturas (Cmd+V sobre la caja) con procesos/antecedentes del paciente. La IA redacta un párrafo único y compacto listo para enviar al especialista.</p>
+              <!-- Sub-panel: Analíticas -->
+              <div id="subpanelAnalitica">
+                  <h3 class="tr-h3" style="font-family:var(--font-display);">🧪 Resumen rápido de analítica</h3>
+                  <p class="tr-p">Pega aquí una analítica completa (hemograma, bioquímica, coagulación, gasometría…). La IA DeepSeek V3 devuelve un resumen estructurado con hallazgos relevantes.</p>
+                  <textarea id="anaInput" placeholder="Pega la analítica completa tal cual (no pasa nada si hay columnas y espacios)…" class="tr-textarea" style="font-family:ui-monospace,monospace;"></textarea>
+                  <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+                      <button class="btn btn-primary tr-cta" id="anaBtn" onclick="anaResumir()">📝 Resumir con IA</button>
+                      <button class="btn btn-secondary tr-secondary" onclick="document.getElementById('anaInput').value='';document.getElementById('anaOut').innerHTML='';">🗑 Limpiar</button>
+                  </div>
+                  <div id="anaOut" style="margin-top:14px;"></div>
+              </div>
 
-                    <!-- Zona para imágenes pegadas (OCR con Qwen2.5-VL) -->
-                    <div id="interImgs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
+              <!-- Sub-panel: Interconsultas -->
+              <div id="subpanelInter" style="display:none;">
+                  <h3 class="tr-h3" style="font-family:var(--font-display);">📨 Redactar interconsulta (≤ 700 car.)</h3>
+                  <p class="tr-p">Pega texto o varias capturas (Cmd+V sobre la caja) con procesos/antecedentes del paciente. La IA redacta un párrafo único y compacto listo para enviar al especialista.</p>
 
-                    <textarea id="interInput" placeholder="Pega aquí texto clínico (antecedentes, tratamientos, analíticas previas, pruebas). También puedes hacer Cmd+V con capturas y se añadirán abajo…" style="width:100%;min-height:200px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:var(--font-body);background:var(--bg-main);line-height:1.5;" onfocus="this.style.borderColor='#0d47a1'" onblur="this.style.borderColor='var(--border)'" onpaste="interOnPaste(event)"></textarea>
+                  <!-- Zona para imágenes pegadas (OCR con Qwen2.5-VL) -->
+                  <div id="interImgs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
 
-                    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center;">
-                        <select id="interDest" style="padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.88rem;background:var(--bg-main);">
-                            <option value="">(Destino — opcional)</option>
-                            <option>Cardiología</option><option>Neurología</option><option>Digestivo</option>
-                            <option>Endocrinología</option><option>Nefrología</option><option>Reumatología</option>
-                            <option>Neumología</option><option>Hematología</option><option>Psiquiatría</option>
-                            <option>Cirugía General</option><option>Traumatología</option><option>Urología</option>
-                            <option>ORL</option><option>Oftalmología</option><option>Dermatología</option>
-                            <option>Ginecología</option><option>Medicina Interna</option>
-                        </select>
-                        <button class="btn btn-primary" id="interBtn" onclick="interResumir()" style="padding:12px 22px;background:linear-gradient(135deg,#0d47a1,#1565c0);border:none;color:#fff;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">✉️ Generar interconsulta</button>
-                        <button class="btn btn-secondary" onclick="document.getElementById('interInput').value='';document.getElementById('interOut').innerHTML='';document.getElementById('interImgs').innerHTML='';window._interImgs=[];" style="padding:12px 16px;background:var(--bg-subtle);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-family:var(--font-body);">🗑 Limpiar</button>
-                    </div>
-                    <div id="interOut" style="margin-top:14px;"></div>
-                </div>
+                  <textarea id="interInput" placeholder="Pega aquí texto clínico (antecedentes, tratamientos, analíticas previas, pruebas). También puedes hacer Cmd+V con capturas y se añadirán abajo…" class="tr-textarea" style="font-family:var(--font-body);" onpaste="interOnPaste(event)"></textarea>
+
+                  <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center;">
+                      <select id="interDest" class="tr-select">
+                          <option value="">(Destino — opcional)</option>
+                          <option>Cardiología</option><option>Neurología</option><option>Digestivo</option>
+                          <option>Endocrinología</option><option>Nefrología</option><option>Reumatología</option>
+                          <option>Neumología</option><option>Hematología</option><option>Psiquiatría</option>
+                          <option>Cirugía General</option><option>Traumatología</option><option>Urología</option>
+                          <option>ORL</option><option>Oftalmología</option><option>Dermatología</option>
+                          <option>Ginecología</option><option>Medicina Interna</option>
+                      </select>
+                      <button class="btn btn-primary tr-cta" id="interBtn" onclick="interResumir()">✉️ Generar interconsulta</button>
+                      <button class="btn btn-secondary tr-secondary" onclick="document.getElementById('interInput').value='';document.getElementById('interOut').innerHTML='';document.getElementById('interImgs').innerHTML='';window._interImgs=[];">🗑 Limpiar</button>
+                  </div>
+                  <div id="interOut" style="margin-top:14px;"></div>
+              </div>
             </div><!-- end panelResumen -->
 
             <!-- TAB: PROA · Uso racional de antibióticos (Stitch · Clinical Precision) -->
