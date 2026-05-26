@@ -140,7 +140,6 @@ footer a{color:#64748b;text-decoration:underline}
 
 <div class="tabs" role="tablist">
   <button class="tab active" id="tabGen" onclick="switchTab('gen')" role="tab">🧪 Generador de casos</button>
-  <button class="tab" id="tabMir" onclick="switchTab('mir')" role="tab">📚 Casos clínicos MIR</button>
   <button class="tab" id="tabFuentes" onclick="switchTab('fuentes')" role="tab">📚 Fuentes y Recursos</button>
 </div>
 
@@ -205,38 +204,6 @@ footer a{color:#64748b;text-decoration:underline}
     </div>
   </section>
 
-  <!-- TAB 2: MIR -->
-  <section id="panelMir" class="panel-content" style="display:none">
-    <div class="card">
-      <h2>📚 Casos Clínicos MIR</h2>
-      <p class="lead">136 preguntas de 17 especialidades MIR. Elige una especialidad para empezar a estudiar.</p>
-
-      <div class="mir-grid">
-        <a class="mir-tile" href="casos-clinicos.html?esp=cardiologia"><span class="mir-tile-emoji">🫀</span><div class="mir-tile-name">Cardiología</div><div class="mir-tile-count">10 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=neumologia"><span class="mir-tile-emoji">🫁</span><div class="mir-tile-name">Neumología</div><div class="mir-tile-count">8 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=digestivo"><span class="mir-tile-emoji">🫃</span><div class="mir-tile-name">Digestivo</div><div class="mir-tile-count">12 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=nefrologia"><span class="mir-tile-emoji">🧪</span><div class="mir-tile-name">Nefrología</div><div class="mir-tile-count">6 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=endocrino"><span class="mir-tile-emoji">🧬</span><div class="mir-tile-name">Endocrino</div><div class="mir-tile-count">8 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=infecciosas"><span class="mir-tile-emoji">🦠</span><div class="mir-tile-name">Infecciosas</div><div class="mir-tile-count">10 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=hematologia"><span class="mir-tile-emoji">🩸</span><div class="mir-tile-name">Hematología</div><div class="mir-tile-count">6 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=neurologia"><span class="mir-tile-emoji">🧠</span><div class="mir-tile-name">Neurología</div><div class="mir-tile-count">10 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=reumatologia"><span class="mir-tile-emoji">🦴</span><div class="mir-tile-name">Reumatología</div><div class="mir-tile-count">6 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=oncologia"><span class="mir-tile-emoji">🎗️</span><div class="mir-tile-name">Oncología</div><div class="mir-tile-count">8 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=ginecologia"><span class="mir-tile-emoji">🤰</span><div class="mir-tile-name">Ginecología</div><div class="mir-tile-count">8 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=pediatria"><span class="mir-tile-emoji">👶</span><div class="mir-tile-name">Pediatría</div><div class="mir-tile-count">10 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=psiquiatria"><span class="mir-tile-emoji">🧠</span><div class="mir-tile-name">Psiquiatría</div><div class="mir-tile-count">6 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=dermatologia"><span class="mir-tile-emoji">🩹</span><div class="mir-tile-name">Dermatología</div><div class="mir-tile-count">6 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=traumatologia"><span class="mir-tile-emoji">🩻</span><div class="mir-tile-name">Traumatología</div><div class="mir-tile-count">8 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=urologia"><span class="mir-tile-emoji">💧</span><div class="mir-tile-name">Urología</div><div class="mir-tile-count">6 casos</div></a>
-        <a class="mir-tile" href="casos-clinicos.html?esp=urgencias"><span class="mir-tile-emoji">🚨</span><div class="mir-tile-name">Urgencias</div><div class="mir-tile-count">8 casos</div></a>
-      </div>
-
-      <div style="text-align:center;margin-top:20px">
-        <a href="casos-clinicos.html" class="btn-primary">📖 Abrir catálogo completo</a>
-      </div>
-    </div>
-  </section>
-
   <!-- TAB 3: Fuentes y Recursos -->
   <section id="panelFuentes" class="panel-content" style="display:none">
     <div class="card" style="padding:0;overflow:hidden">
@@ -266,7 +233,6 @@ footer a{color:#64748b;text-decoration:underline}
     currentUser = u;
     document.getElementById('loginGate').style.display = u ? 'none' : 'block';
     document.getElementById('panelGen').style.display = u ? (activeTab==='gen'?'block':'none') : 'none';
-    document.getElementById('panelMir').style.display = u ? (activeTab==='mir'?'block':'none') : 'none';
     document.getElementById('panelFuentes').style.display = u ? (activeTab==='fuentes'?'block':'none') : 'none';
     document.querySelector('.tabs').style.display = u ? 'flex' : 'none';
   });
@@ -284,10 +250,8 @@ footer a{color:#64748b;text-decoration:underline}
   function switchTab(name){
     activeTab = name;
     document.getElementById('tabGen').classList.toggle('active', name==='gen');
-    document.getElementById('tabMir').classList.toggle('active', name==='mir');
     var tf = document.getElementById('tabFuentes'); if(tf) tf.classList.toggle('active', name==='fuentes');
     document.getElementById('panelGen').style.display = name==='gen' ? 'block' : 'none';
-    document.getElementById('panelMir').style.display = name==='mir' ? 'block' : 'none';
     var pf = document.getElementById('panelFuentes');
     if(pf){
       pf.style.display = name==='fuentes' ? 'block' : 'none';
